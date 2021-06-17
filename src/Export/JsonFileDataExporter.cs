@@ -4,17 +4,12 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ConsoleLoaderUtility.Export
+namespace Export
 {
     public class JsonFileDataExporter : IDataExporter<string, string>
-
     {
-        public JsonFileDataExporter(string fileName)
-        {
-            _fileName = fileName;
-        }
 
-        public async Task ExportAsync(IDictionary<string, string> data, CancellationToken ct)
+        public async Task ExportAsync(IDictionary<string, string> data, string topic, CancellationToken ct)
         {
             var inner = string.Join(",\n", data.Values);
             var sb = new StringBuilder();
@@ -23,11 +18,7 @@ namespace ConsoleLoaderUtility.Export
             sb.AppendLine(inner);
             sb.AppendLine("]");
             sb.AppendLine("}");
-            await File.WriteAllTextAsync(_fileName, sb.ToString(), ct);
+            await File.WriteAllTextAsync(topic.Replace("-", "_"), sb.ToString(), ct).ConfigureAwait(false);
         }
-
-        private readonly string _fileName;
-
-
     }
 }

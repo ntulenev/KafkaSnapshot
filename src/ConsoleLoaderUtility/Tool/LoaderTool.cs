@@ -1,76 +1,51 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-
-using Microsoft.Extensions.Options;
-
-using Confluent.Kafka;
-
-using ConsoleLoaderUtility.Export;
-using ConsoleLoaderUtility.Tool.Configuration;
+using System.Collections.Generic;
+using System.Linq;
 
 using KafkaSnapshot;
-using KafkaSnapshot.Metadata;
+
+using Export;
+
 
 namespace ConsoleLoaderUtility.Tool
 {
     public class LoaderTool
     {
-        public LoaderTool(IOptions<LoaderToolConfiguration> options)
+        public LoaderTool(IDictionary<string, ISnapshotLoader<string, string>> processors, IDataExporter<string, string> exporter)
         {
-            if (options is null)
+            if (processors is null)
             {
-                throw new ArgumentNullException(nameof(options));
+                throw new ArgumentNullException(nameof(processors));
             }
 
-            if (options.Value is null)
+            if (!processors.Any())
             {
-                throw new ArgumentException("Options is not set", nameof(options));
+                throw new ArgumentException("Processors for topics not set.", nameof(processors));
             }
 
-            _options = options.Value;
+            _processors = processors;
+            _exporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
         }
 
         public async Task ProcessAsync(CancellationToken ct)
         {
             int indexer = 0;
 
-            var servers = string.Join(",", _options.BootstrapServers);
-
-            foreach (var topic in _options.Topics)
+            foreach (var (topic, processor) in _processors)
             {
-                Console.WriteLine($"{++indexer}/{_options.Topics.Count} Processing topic {topic}.");
+                Console.WriteLine($"{++indexer}/{_processors.Count} Processing topic {topic}.");
 
-                Func<IConsumer<string, string>> cFactory = () =>
-                {
-                    var conf = new ConsumerConfig
-                    {
-                        BootstrapServers = servers,
-                        AutoOffsetReset = AutoOffsetReset.Earliest,
-                        GroupId = Guid.NewGuid().ToString()
-                    };
+                var items = await processor.LoadCompactSnapshotAsync(ct);
+                await _exporter.ExportAsync(items, topic, ct);
 
-                    return new ConsumerBuilder<string, string>(conf).Build();
-                };
-
-                var adminConfig = new AdminClientConfig()
-                {
-                    BootstrapServers = servers
-                };
-
-                var adminClient = new AdminClientBuilder(adminConfig).Build();
-
-                var wLoader = new TopicWatermarkLoader(new TopicName(topic), adminClient, _options.MetadataTimeout);
-
-                var exporter = new JsonFileDataExporter($"{topic.Replace('-', '_')}.txt");
-                var loader = new SnapshotLoader<string, string>(cFactory, wLoader);
-                var dump = await loader.LoadCompactSnapshotAsync(CancellationToken.None);
-                await exporter.ExportAsync(dump, CancellationToken.None);
             }
 
             Console.WriteLine("Done.");
         }
 
-        private readonly LoaderToolConfiguration _options;
+        private readonly IDictionary<string, ISnapshotLoader<string, string>> _processors;
+        private readonly IDataExporter<string, string> _exporter;
     }
 }

@@ -2,10 +2,10 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ConsoleLoaderUtility.Export
+namespace Export
 {
     public interface IDataExporter<Key, Message>
     {
-        public Task ExportAsync(IDictionary<Key, Message> data, CancellationToken ct);
+        public Task ExportAsync(IDictionary<Key, Message> data, string topic, CancellationToken ct);
     }
 }

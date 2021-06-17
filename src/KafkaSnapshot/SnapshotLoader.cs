@@ -11,7 +11,7 @@ using KafkaSnapshot.Watermarks;
 
 namespace KafkaSnapshot
 {
-    public class SnapshotLoader<Key, Message> where Key : notnull
+    public class SnapshotLoader<Key, Message> : ISnapshotLoader<Key, Message> where Key : notnull
     {
 
         public SnapshotLoader(Func<IConsumer<Key, Message>> consumerFactory,
@@ -24,8 +24,8 @@ namespace KafkaSnapshot
 
         public async Task<IDictionary<Key, Message>> LoadCompactSnapshotAsync(CancellationToken ct)
         {
-            var topicWatermark = await _topicWatermarkLoader.LoadWatermarksAsync(_consumerFactory, ct);
-            var initialState = await ConsumeInitialAsync(topicWatermark, ct);
+            var topicWatermark = await _topicWatermarkLoader.LoadWatermarksAsync(_consumerFactory, ct).ConfigureAwait(false);
+            var initialState = await ConsumeInitialAsync(topicWatermark, ct).ConfigureAwait(false);
             var compactedState = CreateSnapshot(initialState);
             return compactedState;
         }
@@ -53,6 +53,7 @@ namespace KafkaSnapshot
                 do
                 {
                     result = consumer.Consume(ct);
+                    // TODO Add Desirializer for result.Message.Value depend on topic
                     yield return new KeyValuePair<Key, Message>(result.Message.Key, result.Message.Value);
 
                 } while (watermark.IsWatermarkAchievedBy(result));

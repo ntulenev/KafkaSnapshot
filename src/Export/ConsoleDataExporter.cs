@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ConsoleLoaderUtility.Export
+namespace Export
 {
     public class ConsoleDataExporter : IDataExporter<string, string>
     {
-        public Task ExportAsync(IDictionary<string, string> data, CancellationToken ct)
+        public Task ExportAsync(IDictionary<string, string> data, string topic, CancellationToken ct)
         {
+            Console.WriteLine($"Topic : {topic}");
             foreach (var item in data)
             {
                 Console.WriteLine(item.Key);

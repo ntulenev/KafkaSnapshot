@@ -9,4 +9,8 @@
 	<Platforms>x64</Platforms>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Confluent.Kafka" Version="1.7.0" />
+  </ItemGroup>
+
 </Project>

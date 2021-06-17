@@ -75,6 +75,8 @@ namespace ConsoleLoaderUtility
 
             var config = section.Get<LoaderToolConfiguration>();
 
+            // TODO Add config validation
+
             var servers = string.Join(",", config.BootstrapServers);
 
             IConsumer<string, string> createConsumer()
@@ -98,6 +100,8 @@ namespace ConsoleLoaderUtility
 
                 var adminClient = new AdminClientBuilder(adminConfig).Build();
                 var wLoader = new TopicWatermarkLoader(new TopicName(topic), adminClient, config.MetadataTimeout);
+
+                // TODO Add support different Key type + Add custom deserializer if any needed
                 dictionary.Add(topic, new SnapshotLoader<string, string>(createConsumer, wLoader));
             }
 

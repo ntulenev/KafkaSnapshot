@@ -26,37 +26,44 @@ namespace ConsoleLoaderUtility
     {
         static async Task Main(string[] args)
         {
-            var builder = new HostBuilder()
-            .ConfigureAppConfiguration((hostingContext, config) =>
+            try
             {
-                config.AddJsonFile("appsettings.json", optional: true);
-            })
-            .ConfigureServices((hostContext, services) =>
-            {
-                services.AddScoped<LoaderTool>();
-                services.AddSingleton<IDataExporter<string, string>, JsonFileDataExporter>();
-                services.AddSingleton(sp => CreateTopicLoaders(hostContext.Configuration));
-                services.Configure<LoaderToolConfiguration>(hostContext.Configuration.GetSection(nameof(LoaderToolConfiguration)));
+                var builder = new HostBuilder()
+                    .ConfigureAppConfiguration((hostingContext, config) =>
+                    {
+                        config.AddJsonFile("appsettings.json", optional: true);
+                    })
+                    .ConfigureServices((hostContext, services) =>
+                    {
+                        services.AddScoped<LoaderTool>();
+                        services.AddSingleton<IDataExporter<string, string>, JsonFileDataExporter>();
+                        services.AddSingleton(sp => CreateTopicLoaders(hostContext.Configuration));
+                        services.Configure<LoaderToolConfiguration>(hostContext.Configuration.GetSection(nameof(LoaderToolConfiguration)));
 
-                var logger = new LoggerConfiguration()
-                                 .ReadFrom.Configuration(hostContext.Configuration)
-                                 .CreateLogger();
+                        var logger = new LoggerConfiguration()
+                                         .ReadFrom.Configuration(hostContext.Configuration)
+                                         .CreateLogger();
 
-                services.AddLogging(x =>
+                        services.AddLogging(x =>
+                        {
+                            x.SetMinimumLevel(LogLevel.Information);
+                            x.AddSerilog(logger: logger, dispose: true);
+                        });
+                    });
+
+                var host = builder.Build();
+
+                using (var serviceScope = host.Services.CreateScope())
                 {
-                    x.SetMinimumLevel(LogLevel.Information);
-                    x.AddSerilog(logger: logger, dispose: true);
-                });
-            });
+                    var services = serviceScope.ServiceProvider;
 
-            var host = builder.Build();
-
-            using (var serviceScope = host.Services.CreateScope())
+                    var tool = services.GetRequiredService<LoaderTool>();
+                    await tool.ProcessAsync(CancellationToken.None);
+                }
+            }
+            catch (Exception ex)
             {
-                var services = serviceScope.ServiceProvider;
-
-                var tool = services.GetRequiredService<LoaderTool>();
-                await tool.ProcessAsync(CancellationToken.None);
+                Console.WriteLine($"Error {ex}");
             }
         }
 

@@ -8,7 +8,6 @@ namespace Export
 {
     public class JsonFileDataExporter : IDataExporter<string, string>
     {
-
         public async Task ExportAsync(IDictionary<string, string> data, string topic, CancellationToken ct)
         {
             var inner = string.Join(",\n", data.Values);
@@ -18,7 +17,8 @@ namespace Export
             sb.AppendLine(inner);
             sb.AppendLine("]");
             sb.AppendLine("}");
-            await File.WriteAllTextAsync(topic.Replace("-", "_"), sb.ToString(), ct).ConfigureAwait(false);
+            var path = topic.Replace("-", "_");
+            await File.WriteAllTextAsync($"{path}.txt", sb.ToString(), ct).ConfigureAwait(false);
         }
     }
 }

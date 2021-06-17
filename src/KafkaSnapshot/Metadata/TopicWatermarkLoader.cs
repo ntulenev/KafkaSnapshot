@@ -46,7 +46,7 @@ namespace KafkaSnapshot.Metadata
             _topicName = topicName;
         }
 
-        public IEnumerable<TopicPartition> SplitTopicOnPartitions()
+        private IEnumerable<TopicPartition> SplitTopicOnPartitions()
         {
             var topicMeta = _adminClient.GetMetadata(_topicName.Value, TimeSpan.FromSeconds(_intTimeoutSeconds));
 
@@ -64,6 +64,7 @@ namespace KafkaSnapshot.Metadata
             return new PartitionWatermark(_topicName, watermarkOffsets, topicPartition.Partition);
         }
 
+        /// <inheritdoc/>>
         public async Task<TopicWatermark> LoadWatermarksAsync<Key, Value>(Func<IConsumer<Key, Value>> consumerFactory, CancellationToken ct)
         {
             if (consumerFactory is null)

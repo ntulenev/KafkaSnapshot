@@ -11,9 +11,12 @@ using KafkaSnapshot.Watermarks;
 
 namespace KafkaSnapshot
 {
+    ///<inheritdoc/>
     public class SnapshotLoader<Key, Message> : ISnapshotLoader<Key, Message> where Key : notnull
     {
-
+        /// <summary>
+        /// Creates <see cref="SnapshotLoader{Key, Message}"/>.
+        /// </summary>
         public SnapshotLoader(Func<IConsumer<Key, Message>> consumerFactory,
                               ITopicWatermarkLoader topicWatermarkLoader
                              )
@@ -22,6 +25,7 @@ namespace KafkaSnapshot
             _consumerFactory = consumerFactory ?? throw new ArgumentNullException(nameof(consumerFactory));
         }
 
+        ///<inheritdoc/>
         public async Task<IDictionary<Key, Message>> LoadCompactSnapshotAsync(CancellationToken ct)
         {
             var topicWatermark = await _topicWatermarkLoader.LoadWatermarksAsync(_consumerFactory, ct).ConfigureAwait(false);

@@ -11,27 +11,26 @@ using KafkaSnapshot.Watermarks;
 
 namespace KafkaSnapshot
 {
-    public class SnapshotLoader<Message, Key, Value> where Key : notnull
+    public class SnapshotLoader<Key, Message> where Key : notnull
     {
 
-        public SnapshotLoader(Func<Message, (Key, Value)> deserializer,
-                              Func<IConsumer<Ignore, Message>> consumerFactory,
+        public SnapshotLoader(Func<IConsumer<Key, Message>> consumerFactory,
                               ITopicWatermarkLoader topicWatermarkLoader
                              )
         {
             _topicWatermarkLoader = topicWatermarkLoader ?? throw new ArgumentNullException(nameof(topicWatermarkLoader));
             _consumerFactory = consumerFactory ?? throw new ArgumentNullException(nameof(consumerFactory));
-            _deserializer = deserializer ?? throw new ArgumentNullException(nameof(deserializer));
         }
 
-        public async Task<IEnumerable<Value>> LoadCompactSnapshotAsync(CancellationToken ct)
+        public async Task<IDictionary<Key, Message>> LoadCompactSnapshotAsync(CancellationToken ct)
         {
             var topicWatermark = await _topicWatermarkLoader.LoadWatermarksAsync(_consumerFactory, ct);
             var initialState = await ConsumeInitialAsync(topicWatermark, ct);
-            return initialState.Select(x => x.Value).ToList();
+            var compactedState = CreateSnapshot(initialState);
+            return compactedState;
         }
 
-        private async Task<IEnumerable<KeyValuePair<Key, Value>>> ConsumeInitialAsync
+        private async Task<IEnumerable<KeyValuePair<Key, Message>>> ConsumeInitialAsync
            (TopicWatermark topicWatermark,
            CancellationToken ct)
         {
@@ -44,18 +43,17 @@ namespace KafkaSnapshot
             return consumedEntities.SelectMany(сonsumerResults => сonsumerResults);
         }
 
-        private IEnumerable<KeyValuePair<Key, Value>> ConsumeFromWatermark(PartitionWatermark watermark, CancellationToken ct)
+        private IEnumerable<KeyValuePair<Key, Message>> ConsumeFromWatermark(PartitionWatermark watermark, CancellationToken ct)
         {
             using var consumer = _consumerFactory();
             try
             {
                 watermark.AssingWithConsumer(consumer);
-                ConsumeResult<Ignore, Message> result = default!;
+                ConsumeResult<Key, Message> result = default!;
                 do
                 {
                     result = consumer.Consume(ct);
-                    var (key, value) = _deserializer(result.Message.Value);
-                    yield return new KeyValuePair<Key, Value>(key, value);
+                    yield return new KeyValuePair<Key, Message>(result.Message.Key, result.Message.Value);
 
                 } while (watermark.IsWatermarkAchievedBy(result));
             }
@@ -65,11 +63,10 @@ namespace KafkaSnapshot
             }
         }
 
-
-        private IDictionary<Key, Value> CreateSnapshot(IEnumerable<KeyValuePair<Key, Value>> items)
+        private static IDictionary<Key, Message> CreateSnapshot(IEnumerable<KeyValuePair<Key, Message>> items)
         {
             return items.Aggregate(
-                new Dictionary<Key, Value>(),
+                new Dictionary<Key, Message>(),
                 (d, e) =>
                 {
                     d[e.Key] = e.Value;
@@ -78,8 +75,7 @@ namespace KafkaSnapshot
         }
 
         private readonly ITopicWatermarkLoader _topicWatermarkLoader;
-        private readonly Func<IConsumer<Ignore, Message>> _consumerFactory;
-        private readonly Func<Message, (Key, Value)> _deserializer;
+        private readonly Func<IConsumer<Key, Message>> _consumerFactory;
     }
 }
 

@@ -46,7 +46,24 @@ namespace KafkaSnapshot.Metadata
             _topicName = topicName;
         }
 
-        /// <inheritdoc/>
+        public IEnumerable<TopicPartition> SplitTopicOnPartitions()
+        {
+            var topicMeta = _adminClient.GetMetadata(_topicName.Value, TimeSpan.FromSeconds(_intTimeoutSeconds));
+
+            var partitions = topicMeta.Topics.Single().Partitions;
+
+            return partitions.Select(partition => new TopicPartition(_topicName.Value, new Partition(partition.PartitionId)));
+        }
+
+        private PartitionWatermark CreatePartitionWatermark<Key, Value>(IConsumer<Key, Value> consumer, TopicPartition topicPartition)
+        {
+            var watermarkOffsets = consumer.QueryWatermarkOffsets(
+                                    topicPartition,
+                                    TimeSpan.FromSeconds(_intTimeoutSeconds));
+
+            return new PartitionWatermark(_topicName, watermarkOffsets, topicPartition.Partition);
+        }
+
         public async Task<TopicWatermark> LoadWatermarksAsync<Key, Value>(Func<IConsumer<Key, Value>> consumerFactory, CancellationToken ct)
         {
             if (consumerFactory is null)
@@ -71,29 +88,6 @@ namespace KafkaSnapshot.Metadata
             {
                 consumer.Close();
             }
-        }
-
-        public IEnumerable<TopicPartition> SplitTopicOnPartitions()
-        {
-            var topicMeta = _adminClient.GetMetadata(_topicName.Value, TimeSpan.FromSeconds(_intTimeoutSeconds));
-
-            var partitions = topicMeta.Topics.Single().Partitions;
-
-            return partitions.Select(partition => new TopicPartition(_topicName.Value, new Partition(partition.PartitionId)));
-        }
-
-        private PartitionWatermark CreatePartitionWatermark<Key, Value>(IConsumer<Key, Value> consumer, TopicPartition topicPartition)
-        {
-            var watermarkOffsets = consumer.QueryWatermarkOffsets(
-                                    topicPartition,
-                                    TimeSpan.FromSeconds(_intTimeoutSeconds));
-
-            return new PartitionWatermark(_topicName, watermarkOffsets, topicPartition.Partition);
-        }
-
-        Task<TopicWatermark> ITopicWatermarkLoader.LoadWatermarksAsync<Key, Value>(Func<IConsumer<Key, Value>> consumerFactory, CancellationToken ct)
-        {
-            throw new NotImplementedException();
         }
 
         private readonly TopicName _topicName;

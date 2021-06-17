@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 
 namespace ConsoleLoaderUtility.Export
 {
-    public interface IDataExporter<T>
+    public interface IDataExporter<Key, Message>
     {
-        public Task ExportAsync(IEnumerable<T> data, CancellationToken ct);
+        public Task ExportAsync(IDictionary<Key, Message> data, CancellationToken ct);
     }
 }

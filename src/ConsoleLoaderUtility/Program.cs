@@ -1,14 +1,15 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 
-using Confluent.Kafka;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
-using KafkaSnapshot;
-using KafkaSnapshot.Metadata;
+using Serilog;
 
-using ConsoleLoaderUtility.Export;
+using ConsoleLoaderUtility.Tool.Configuration;
+using ConsoleLoaderUtility.Tool;
 
 namespace ConsoleLoaderUtility
 {
@@ -16,54 +17,36 @@ namespace ConsoleLoaderUtility
     {
         static async Task Main(string[] args)
         {
-            int indexer = 0;
-
-            foreach (var topic in _topics)
+            var builder = new HostBuilder()
+            .ConfigureAppConfiguration((hostingContext, config) =>
             {
-                Console.WriteLine($"{++indexer}/{_topics.Count} Processing topic {topic}.");
+                config.AddJsonFile("appsettings.json", optional: true);
+            })
+            .ConfigureServices((hostContext, services) =>
+            {
+                services.AddScoped<LoaderTool>();
+                services.Configure<LoaderToolConfiguration>(hostContext.Configuration.GetSection(nameof(LoaderToolConfiguration)));
 
-                Func<IConsumer<string, string>> cFactory = () =>
+                var logger = new LoggerConfiguration()
+                                 .ReadFrom.Configuration(hostContext.Configuration)
+                                 .CreateLogger();
+
+                services.AddLogging(x =>
                 {
-                    var conf = new ConsumerConfig
-                    {
-                        BootstrapServers = GetServers(),
-                        AutoOffsetReset = AutoOffsetReset.Earliest,
-                        GroupId = Guid.NewGuid().ToString()
-                    };
+                    x.SetMinimumLevel(LogLevel.Information);
+                    x.AddSerilog(logger: logger, dispose: true);
+                });
+            });
 
-                    return new ConsumerBuilder<string, string>(conf).Build();
-                };
+            var host = builder.Build();
 
-                var timeout = 1000;
+            using (var serviceScope = host.Services.CreateScope())
+            {
+                var services = serviceScope.ServiceProvider;
 
-                var adminConfig = new AdminClientConfig()
-                {
-                    BootstrapServers = GetServers()
-                };
-
-                var adminClient = new AdminClientBuilder(adminConfig).Build();
-
-                var wLoader = new TopicWatermarkLoader(new TopicName(topic), adminClient, timeout);
-
-                var exporter = new JsonFileDataExporter($"{topic.Replace('-', '_')}.txt");
-                var loader = new SnapshotLoader<string, string>(cFactory, wLoader);
-                var dump = await loader.LoadCompactSnapshotAsync(CancellationToken.None);
-                await exporter.ExportAsync(dump, CancellationToken.None);
+                var tool = services.GetRequiredService<LoaderTool>();
+                await tool.ProcessAsync(CancellationToken.None);
             }
-
-            Console.WriteLine("Done.");
         }
-
-        private static string GetServers() => string.Join(",", _bootstrapServers);
-
-        private static readonly List<string> _bootstrapServers = new List<string>()
-        {
-
-        };
-
-        private static readonly List<string> _topics = new List<string>
-        {
-
-        };
     }
 }

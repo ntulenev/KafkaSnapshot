@@ -65,7 +65,8 @@ namespace KafkaSnapshot
 
         private static IDictionary<Key, Message> CreateSnapshot(IEnumerable<KeyValuePair<Key, Message>> items)
         {
-            return items.Aggregate(
+            var itemssss = items.ToList();
+            return items.Where(x => x.Key is not null).Aggregate(
                 new Dictionary<Key, Message>(),
                 (d, e) =>
                 {

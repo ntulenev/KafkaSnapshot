@@ -38,7 +38,7 @@ namespace ConsoleLoaderUtility
                     {
                         services.AddScoped(typeof(LoaderTool<,>));
                         services.AddSingleton(typeof(IDataExporter<,>), typeof(JsonFileDataExporter<,>));
-                        services.AddSingleton(sp => CreateTopicLoaders(hostContext.Configuration));
+                        services.AddSingleton(sp => CreateTopicLoaders(sp, hostContext.Configuration));
                         services.Configure<LoaderToolConfiguration>(hostContext.Configuration.GetSection(nameof(LoaderToolConfiguration)));
 
                         var logger = new LoggerConfiguration()
@@ -68,9 +68,9 @@ namespace ConsoleLoaderUtility
             }
         }
 
-        private static IDictionary<string, ISnapshotLoader<string, string>> CreateTopicLoaders(IConfiguration configuration)
+        private static ICollection<IProcessingUnit> CreateTopicLoaders(IServiceProvider sp, IConfiguration configuration)
         {
-            var dictionary = new Dictionary<string, ISnapshotLoader<string, string>>();
+            var list = new List<IProcessingUnit>();
 
             var section = configuration.GetSection(nameof(LoaderToolConfiguration));
 
@@ -103,10 +103,14 @@ namespace ConsoleLoaderUtility
                 var wLoader = new TopicWatermarkLoader(new TopicName(topic), adminClient, config.MetadataTimeout);
 
                 // TODO Add support different Key type + Add custom deserializer if any needed
-                dictionary.Add(topic, new SnapshotLoader<string, string>(createConsumer, wLoader));
+                list.Add(new ProcessingUnit<string, string>(topic,
+                                            new SnapshotLoader<string, string>(createConsumer, wLoader),
+                                            sp.GetRequiredService<IDataExporter<string, string>>()
+                                            )
+                        );
             }
 
-            return dictionary;
+            return list;
         }
     }
 }

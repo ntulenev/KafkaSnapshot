@@ -1,7 +1,7 @@
 # KafkaSnapshot
 Tool that allows to read current data snapshot from Apache Kafka topic with compacting.
 
-Current version is optimized for string and long keys and json messages and skips topics with NULL keys.
+Current version could work with string and long keys and json messages and skips topics with NULL keys.
 
 ![Details](Details.PNG)
 

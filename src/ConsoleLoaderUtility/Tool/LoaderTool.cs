@@ -11,9 +11,9 @@ using Export;
 
 namespace ConsoleLoaderUtility.Tool
 {
-    public class LoaderTool
+    public class LoaderTool<Key, Value> where Key : notnull
     {
-        public LoaderTool(IDictionary<string, ISnapshotLoader<string, string>> processors, IDataExporter<string, string> exporter)
+        public LoaderTool(IDictionary<string, ISnapshotLoader<Key, Value>> processors, IDataExporter<Key, Value> exporter)
         {
             if (processors is null)
             {
@@ -22,7 +22,7 @@ namespace ConsoleLoaderUtility.Tool
 
             if (!processors.Any())
             {
-                throw new ArgumentException("Processors for topics not set.", nameof(processors));
+                throw new ArgumentException("Processors for topics are not set.", nameof(processors));
             }
 
             _processors = processors;
@@ -45,7 +45,7 @@ namespace ConsoleLoaderUtility.Tool
             Console.WriteLine("Done.");
         }
 
-        private readonly IDictionary<string, ISnapshotLoader<string, string>> _processors;
-        private readonly IDataExporter<string, string> _exporter;
+        private readonly IDictionary<string, ISnapshotLoader<Key, Value>> _processors;
+        private readonly IDataExporter<Key, Value> _exporter;
     }
 }

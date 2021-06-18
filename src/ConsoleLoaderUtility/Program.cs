@@ -19,6 +19,7 @@ using Export;
 
 using KafkaSnapshot;
 using KafkaSnapshot.Metadata;
+using Export.File;
 
 namespace ConsoleLoaderUtility
 {
@@ -35,8 +36,8 @@ namespace ConsoleLoaderUtility
                     })
                     .ConfigureServices((hostContext, services) =>
                     {
-                        services.AddScoped<LoaderTool>();
-                        services.AddSingleton<IDataExporter<string, string>, JsonFileDataExporter>();
+                        services.AddScoped(typeof(LoaderTool<,>));
+                        services.AddSingleton(typeof(IDataExporter<,>), typeof(JsonFileDataExporter<,>));
                         services.AddSingleton(sp => CreateTopicLoaders(hostContext.Configuration));
                         services.Configure<LoaderToolConfiguration>(hostContext.Configuration.GetSection(nameof(LoaderToolConfiguration)));
 
@@ -57,7 +58,7 @@ namespace ConsoleLoaderUtility
                 {
                     var services = serviceScope.ServiceProvider;
 
-                    var tool = services.GetRequiredService<LoaderTool>();
+                    var tool = services.GetRequiredService<LoaderTool<string, string>>();
                     await tool.ProcessAsync(CancellationToken.None);
                 }
             }

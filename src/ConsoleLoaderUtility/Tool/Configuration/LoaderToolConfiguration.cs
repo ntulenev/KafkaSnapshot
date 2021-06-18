@@ -10,9 +10,14 @@ namespace ConsoleLoaderUtility.Tool.Configuration
         public List<string> BootstrapServers { get; set; } = default!;
 
         /// <summary>
-        /// List of reserved topics (Hided and unable to be deleted).
+        /// List of  topics with string Key.
         /// </summary>
-        public List<string> Topics { get; set; } = default!;
+        public List<string> StringKeyTopics { get; set; } = default!;
+
+        /// <summary>
+        /// List of  topics with long Key.
+        /// </summary>
+        public List<string> LongKeyTopics { get; set; } = default!;
 
         /// <summary>
         /// Timout for metadata request.

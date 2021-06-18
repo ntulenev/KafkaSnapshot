@@ -80,7 +80,7 @@ namespace ConsoleLoaderUtility
 
             var servers = string.Join(",", config.BootstrapServers);
 
-            IConsumer<string, string> createConsumer()
+            IConsumer<Key, string> createConsumer<Key>()
             {
                 var conf = new ConsumerConfig
                 {
@@ -89,10 +89,10 @@ namespace ConsoleLoaderUtility
                     GroupId = Guid.NewGuid().ToString(),
                 };
 
-                return new ConsumerBuilder<string, string>(conf).Build();
+                return new ConsumerBuilder<Key, string>(conf).Build();
             }
 
-            foreach (var topic in config.Topics)
+            void InitUnit<Key>(string topic) where Key : notnull
             {
                 var adminConfig = new AdminClientConfig()
                 {
@@ -102,12 +102,21 @@ namespace ConsoleLoaderUtility
                 var adminClient = new AdminClientBuilder(adminConfig).Build();
                 var wLoader = new TopicWatermarkLoader(new TopicName(topic), adminClient, config.MetadataTimeout);
 
-                // TODO Add support different Key type + Add custom deserializer if any needed
-                list.Add(new ProcessingUnit<string, string>(topic,
-                                            new SnapshotLoader<string, string>(createConsumer, wLoader),
-                                            sp.GetRequiredService<IDataExporter<string, string>>()
+                list.Add(new ProcessingUnit<Key, string>(topic,
+                                            new SnapshotLoader<Key, string>(createConsumer<Key>, wLoader),
+                                            sp.GetRequiredService<IDataExporter<Key, string>>()
                                             )
                         );
+            }
+
+            foreach (var topic in config.StringKeyTopics)
+            {
+                InitUnit<string>(topic);
+            }
+
+            foreach (var topic in config.LongKeyTopics)
+            {
+                InitUnit<long>(topic);
             }
 
             return list;

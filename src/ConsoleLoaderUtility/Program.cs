@@ -36,7 +36,7 @@ namespace ConsoleLoaderUtility
                     })
                     .ConfigureServices((hostContext, services) =>
                     {
-                        services.AddScoped(typeof(LoaderTool<,>));
+                        services.AddScoped(typeof(LoaderTool));
                         services.AddSingleton(typeof(IDataExporter<,>), typeof(JsonFileDataExporter<,>));
                         services.AddSingleton(sp => CreateTopicLoaders(sp, hostContext.Configuration));
                         services.Configure<LoaderToolConfiguration>(hostContext.Configuration.GetSection(nameof(LoaderToolConfiguration)));
@@ -58,7 +58,7 @@ namespace ConsoleLoaderUtility
                 {
                     var services = serviceScope.ServiceProvider;
 
-                    var tool = services.GetRequiredService<LoaderTool<string, string>>();
+                    var tool = services.GetRequiredService<LoaderTool>();
                     await tool.ProcessAsync(CancellationToken.None);
                 }
             }

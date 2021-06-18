@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace ConsoleLoaderUtility.Tool
 {
-    public class LoaderTool<Key, Value> where Key : notnull
+    public class LoaderTool
     {
         public LoaderTool(ICollection<IProcessingUnit> units)
         {

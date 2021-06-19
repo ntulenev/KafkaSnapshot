@@ -26,7 +26,7 @@ namespace KafkaSnapshot.Processing
 
                 try
                 {
-                    await unit.ProcessAsync(ct);
+                    await unit.ProcessAsync(ct).ConfigureAwait(false);
                 }
                 catch (OperationCanceledException)
                 {

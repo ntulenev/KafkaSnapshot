@@ -22,8 +22,8 @@ namespace KafkaSnapshot.Processing
         public async Task ProcessAsync(CancellationToken ct)
         {
 
-            var items = await _processor.LoadCompactSnapshotAsync(ct);
-            await _exporter.ExportAsync(items, new ExportedFileTopic(_topic.Name, _topic.ExportName), ct);
+            var items = await _processor.LoadCompactSnapshotAsync(ct).ConfigureAwait(false);
+            await _exporter.ExportAsync(items, new ExportedFileTopic(_topic.Name, _topic.ExportName), ct).ConfigureAwait(false);
         }
 
         public ProcessingTopic Topic => _topic;

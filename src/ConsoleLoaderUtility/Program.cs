@@ -37,7 +37,7 @@ namespace KafkaSnapshot.ConsoleLoaderUtility
                 var services = serviceScope.ServiceProvider;
                 var tool = services.GetRequiredService<LoaderTool>();
 
-                await tool.ProcessAsync(CancellationToken.None);
+                await tool.ProcessAsync(CancellationToken.None).ConfigureAwait(false);
             }
             catch (Exception ex)
             {

@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 
 using Confluent.Kafka;
 
-using KafkaSnapshot.Watermarks;
+using KafkaSnapshot.Import.Watermarks;
 
-namespace KafkaSnapshot.Metadata
+namespace KafkaSnapshot.Import.Metadata
 {
     /// <summary>
     /// Interface for service that loads <see cref="TopicWatermark"/>.

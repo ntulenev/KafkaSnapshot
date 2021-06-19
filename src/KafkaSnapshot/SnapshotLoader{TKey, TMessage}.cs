@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 using Confluent.Kafka;
 
-using KafkaSnapshot.Metadata;
-using KafkaSnapshot.Watermarks;
+using KafkaSnapshot.Import.Metadata;
+using KafkaSnapshot.Import.Watermarks;
 using KafkaSnapshot.Abstractions.Import;
 
-namespace KafkaSnapshot
+namespace KafkaSnapshot.Import
 {
     ///<inheritdoc/>
     public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage> where TKey : notnull

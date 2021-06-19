@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace KafkaSnapshot.Metadata
+namespace KafkaSnapshot.Import.Metadata
 {
     /// <summary>
     /// Represents kafka topic name

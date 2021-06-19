@@ -13,8 +13,8 @@ using Serilog;
 using KafkaSnapshot.Export;
 using KafkaSnapshot.Export.File;
 
-using KafkaSnapshot;
-using KafkaSnapshot.Metadata;
+using KafkaSnapshot.Import;
+using KafkaSnapshot.Import.Metadata;
 
 using Tool;
 using Tool.Configuration;

@@ -2,9 +2,9 @@
 
 using Confluent.Kafka;
 
-using KafkaSnapshot.Metadata;
+using KafkaSnapshot.Import.Metadata;
 
-namespace KafkaSnapshot.Watermarks
+namespace KafkaSnapshot.Import.Watermarks
 {
     /// <summary>
     /// Offset watermark for single partition in topic.

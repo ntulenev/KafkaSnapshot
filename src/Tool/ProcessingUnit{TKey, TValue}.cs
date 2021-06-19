@@ -2,9 +2,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-using Abstractions.Import;
-using Abstractions.Export;
-using Abstractions.Processing;
+using KafkaSnapshot.Abstractions.Import;
+using KafkaSnapshot.Abstractions.Export;
+using KafkaSnapshot.Abstractions.Processing;
 
 using Export;
 

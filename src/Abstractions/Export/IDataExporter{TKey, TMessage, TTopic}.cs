@@ -3,7 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Models.Export;
-namespace Abstractions.Export
+
+namespace KafkaSnapshot.Abstractions.Export
 {
     public interface IDataExporter<TKey, TMessage, TTopic> where TTopic : ExportedTopic
     {

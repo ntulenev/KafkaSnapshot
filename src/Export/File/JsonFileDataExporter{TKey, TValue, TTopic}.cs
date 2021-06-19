@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using Newtonsoft.Json.Linq;
 
-using Abstractions.Export;
+using KafkaSnapshot.Abstractions.Export;
 
 namespace Export.File
 {

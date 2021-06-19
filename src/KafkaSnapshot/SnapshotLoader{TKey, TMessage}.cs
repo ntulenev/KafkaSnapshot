@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Abstractions.Import;
+
 using Confluent.Kafka;
 
 using KafkaSnapshot.Metadata;
 using KafkaSnapshot.Watermarks;
+using KafkaSnapshot.Abstractions.Import;
 
 namespace KafkaSnapshot
 {

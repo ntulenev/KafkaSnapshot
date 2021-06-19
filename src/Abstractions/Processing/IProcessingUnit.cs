@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 using Models.Processing;
 
-namespace Abstractions.Processing
+namespace KafkaSnapshot.Abstractions.Processing
 {
     public interface IProcessingUnit
     {

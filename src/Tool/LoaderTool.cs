@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-using Abstractions.Processing;
+using KafkaSnapshot.Abstractions.Processing;
 
 namespace Tool
 {

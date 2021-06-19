@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Abstractions.Import
+namespace KafkaSnapshot.Abstractions.Import
 {
     /// <summary>
     /// Loader for Kafka topics. Loads topic as Dictionary with compacting per key.

@@ -6,7 +6,6 @@ using KafkaSnapshot.Abstractions.Import;
 using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Abstractions.Processing;
 using KafkaSnapshot.Export;
-
 using KafkaSnapshot.Models.Processing;
 
 namespace KafkaSnapshot.Processing

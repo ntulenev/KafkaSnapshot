@@ -8,13 +8,19 @@ Current version could work with string and long keys and json messages and skips
 Config with topics for export
 
 ```yaml
-  "LoaderToolConfiguration": {
-    "MetadataTimeout": 1000,
-    "BootstrapServers": [
-    ],
-    "LongKeyTopics": [
-    ],
-    "StringKeyTopics": [
-    ]
-  }
+"LoaderToolConfiguration": {
+  "MetadataTimeout": 1000,
+  "BootstrapServers": [
+  ],
+  "Topics": [
+    {
+      "Name": "test-string-topic",
+      "Type": "String"
+    },
+    {
+      "Name": "test-long-topic",
+      "Type": "Long"
+    }
+  ]
+}
 ```

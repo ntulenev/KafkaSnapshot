@@ -111,11 +111,11 @@ namespace ConsoleLoaderUtility
 
             foreach (var topic in config.Topics)
             {
-                switch (topic.Type)
+                switch (topic.KeyType)
                 {
                     case KeyType.String: InitUnit<string>(topic.Name); break;
                     case KeyType.Long: InitUnit<long>(topic.Name); break;
-                    default: throw new NotSupportedException($"Topic key type {topic.Type} not supported");
+                    default: throw new NotSupportedException($"Topic key type {topic.KeyType} not supported");
                 }
             }
 

@@ -4,6 +4,6 @@
     {
         public string Name { get; set; } = default!;
 
-        public KeyType Type { get; set; }
+        public KeyType KeyType { get; set; }
     }
 }

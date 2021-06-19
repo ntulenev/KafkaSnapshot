@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 
 namespace Export
 {
-    public interface IDataExporter<Key, Message>
+    public interface IDataExporter<Key, Message, TTopic> where TTopic : ExportedTopic
     {
-        public Task ExportAsync(IDictionary<Key, Message> data, string topic, CancellationToken ct);
+        public Task ExportAsync(IDictionary<Key, Message> data, TTopic topic, CancellationToken ct);
     }
 }

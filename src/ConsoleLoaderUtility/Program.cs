@@ -37,7 +37,7 @@ namespace ConsoleLoaderUtility
                     .ConfigureServices((hostContext, services) =>
                     {
                         services.AddScoped(typeof(LoaderTool));
-                        services.AddSingleton(typeof(IDataExporter<,>), typeof(JsonFileDataExporter<,>));
+                        services.AddSingleton(typeof(IDataExporter<,,>), typeof(JsonFileDataExporter<,,>));
                         services.AddSingleton(sp => CreateTopicLoaders(sp, hostContext.Configuration));
                         services.Configure<LoaderToolConfiguration>(hostContext.Configuration.GetSection(nameof(LoaderToolConfiguration)));
 
@@ -92,7 +92,7 @@ namespace ConsoleLoaderUtility
                 return new ConsumerBuilder<Key, string>(conf).Build();
             }
 
-            void InitUnit<Key>(string topic) where Key : notnull
+            void InitUnit<Key>(LoadedTopic topic) where Key : notnull
             {
                 var adminConfig = new AdminClientConfig()
                 {
@@ -100,11 +100,11 @@ namespace ConsoleLoaderUtility
                 };
 
                 var adminClient = new AdminClientBuilder(adminConfig).Build();
-                var wLoader = new TopicWatermarkLoader(new TopicName(topic), adminClient, config.MetadataTimeout);
+                var wLoader = new TopicWatermarkLoader(new TopicName(topic.Name), adminClient, config.MetadataTimeout);
 
                 list.Add(new ProcessingUnit<Key, string>(topic,
                                             new SnapshotLoader<Key, string>(createConsumer<Key>, wLoader),
-                                            sp.GetRequiredService<IDataExporter<Key, string>>()
+                                            sp.GetRequiredService<IDataExporter<Key, string, ExportedFileTopic>>()
                                             )
                         );
             }
@@ -113,8 +113,8 @@ namespace ConsoleLoaderUtility
             {
                 switch (topic.KeyType)
                 {
-                    case KeyType.String: InitUnit<string>(topic.Name); break;
-                    case KeyType.Long: InitUnit<long>(topic.Name); break;
+                    case KeyType.String: InitUnit<string>(topic); break;
+                    case KeyType.Long: InitUnit<long>(topic); break;
                     default: throw new NotSupportedException($"Topic key type {topic.KeyType} not supported");
                 }
             }

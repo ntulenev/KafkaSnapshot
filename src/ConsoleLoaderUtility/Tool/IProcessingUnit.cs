@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using ConsoleLoaderUtility.Tool.Configuration;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ConsoleLoaderUtility.Tool
@@ -7,6 +8,6 @@ namespace ConsoleLoaderUtility.Tool
     {
         public Task ProcessAsync(CancellationToken ct);
 
-        public string Topic { get; }
+        public LoadedTopic Topic { get; }
     }
 }

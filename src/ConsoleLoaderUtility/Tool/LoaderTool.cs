@@ -20,7 +20,7 @@ namespace ConsoleLoaderUtility.Tool
 
             foreach (var unit in _units)
             {
-                Console.WriteLine($"{++indexer}/{_units.Count} Processing topic {unit.Topic}.");
+                Console.WriteLine($"{++indexer}/{_units.Count} Processing topic {unit.Topic.Name}.");
 
                 try
                 {
@@ -33,7 +33,7 @@ namespace ConsoleLoaderUtility.Tool
                 catch
                 {
                     //TODO Add err logs.
-                    Console.WriteLine($"Unable to load data for topic {unit.Topic}");
+                    Console.WriteLine($"Unable to load data for topic {unit.Topic.Name}");
                 }
 
             }

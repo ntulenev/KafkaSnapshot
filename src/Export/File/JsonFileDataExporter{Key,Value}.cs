@@ -8,9 +8,9 @@ using Newtonsoft.Json.Linq;
 
 namespace Export.File
 {
-    public class JsonFileDataExporter<Key, Value> : IDataExporter<Key, Value>
+    public class JsonFileDataExporter<Key, Value, TTopic> : IDataExporter<Key, Value, TTopic> where TTopic : ExportedFileTopic
     {
-        public async Task ExportAsync(IDictionary<Key, Value> data, string topic, CancellationToken ct)
+        public async Task ExportAsync(IDictionary<Key, Value> data, TTopic topic, CancellationToken ct)
         {
             var inner = string.Join(",\n", data.Select(x => $"{{ \"key\":{x.Key}, \"value\":{x.Value}}}"));
 
@@ -21,11 +21,11 @@ namespace Export.File
             sb.AppendLine("]");
             sb.AppendLine("}");
 
-            var path = topic.Replace("-", "_");
+            var path = topic.FileName;
 
             JObject json = JObject.Parse(sb.ToString());
 
-            await System.IO.File.WriteAllTextAsync($"{path}.txt", json.ToString(), ct).ConfigureAwait(false);
+            await System.IO.File.WriteAllTextAsync($"{path}", json.ToString(), ct).ConfigureAwait(false);
         }
     }
 }

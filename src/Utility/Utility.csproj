@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -7,8 +7,8 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Platform>x64</Platform>
     <Platforms>x64</Platforms>
-    <AssemblyName>KafkaSnapshot.ConsoleLoaderUtility</AssemblyName>
-    <RootNamespace>KafkaSnapshot.ConsoleLoaderUtility</RootNamespace>
+    <AssemblyName>KafkaSnapshot.Utility</AssemblyName>
+    <RootNamespace>KafkaSnapshot.Utility</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,7 +30,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Export\Export.csproj" />
-    <ProjectReference Include="..\KafkaSnapshot\Import.csproj" />
+    <ProjectReference Include="..\Import\Import.csproj" />
     <ProjectReference Include="..\Tool\Processing.csproj" />
   </ItemGroup>
 

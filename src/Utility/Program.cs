@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 using KafkaSnapshot.Processing;
 
-namespace KafkaSnapshot.ConsoleLoaderUtility
+namespace KafkaSnapshot.Utility
 {
     class Program
     {

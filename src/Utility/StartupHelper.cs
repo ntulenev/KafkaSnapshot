@@ -20,7 +20,7 @@ using KafkaSnapshot.Abstractions.Processing;
 using KafkaSnapshot.Models.Processing;
 using KafkaSnapshot.Export.File.Json;
 
-namespace KafkaSnapshot.ConsoleLoaderUtility
+namespace KafkaSnapshot.Utility
 {
     public static class StartupHelper
     {

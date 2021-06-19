@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ConsoleLoaderUtility.Tool.Configuration
+namespace Tool.Configuration
 {
     public class LoaderToolConfiguration
     {

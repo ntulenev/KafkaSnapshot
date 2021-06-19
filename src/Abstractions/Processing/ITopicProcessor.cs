@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace ConsoleLoaderUtility.Tool
+namespace Abstractions.Processing
 {
     public interface ITopicProcessor
     {

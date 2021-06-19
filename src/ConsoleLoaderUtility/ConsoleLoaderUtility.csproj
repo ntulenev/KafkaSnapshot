@@ -29,6 +29,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Export\Export.csproj" />
     <ProjectReference Include="..\KafkaSnapshot\KafkaSnapshot.csproj" />
+    <ProjectReference Include="..\Tool\Tool.csproj" />
   </ItemGroup>
 
 </Project>

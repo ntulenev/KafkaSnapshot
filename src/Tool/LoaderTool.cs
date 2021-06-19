@@ -3,7 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace ConsoleLoaderUtility.Tool
+using Abstractions.Processing;
+
+namespace Tool
 {
     public class LoaderTool
     {

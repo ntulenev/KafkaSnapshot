@@ -1,4 +1,4 @@
-﻿namespace ConsoleLoaderUtility.Tool.Configuration
+﻿namespace Tool.Configuration
 {
     public class LoadedTopic
     {

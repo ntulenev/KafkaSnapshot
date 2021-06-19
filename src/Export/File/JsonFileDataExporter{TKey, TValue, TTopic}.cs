@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 
 using Newtonsoft.Json.Linq;
 
+using Abstractions.Export;
+
 namespace Export.File
 {
-    public class JsonFileDataExporter<Key, Value, TTopic> : IDataExporter<Key, Value, TTopic> where TTopic : ExportedFileTopic
+    public class JsonFileDataExporter<TKey, TValue, TTopic> : IDataExporter<TKey, TValue, TTopic> where TTopic : ExportedFileTopic
     {
-        public async Task ExportAsync(IDictionary<Key, Value> data, TTopic topic, CancellationToken ct)
+        public async Task ExportAsync(IDictionary<TKey, TValue> data, TTopic topic, CancellationToken ct)
         {
             var inner = string.Join(",\n", data.Select(x => $"{{ \"key\":{x.Key}, \"value\":{x.Value}}}"));
 

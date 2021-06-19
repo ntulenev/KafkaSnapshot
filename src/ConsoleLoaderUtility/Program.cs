@@ -12,14 +12,17 @@ using Confluent.Kafka;
 
 using Serilog;
 
-using ConsoleLoaderUtility.Tool.Configuration;
-using ConsoleLoaderUtility.Tool;
-
-using Export;
-
 using KafkaSnapshot;
 using KafkaSnapshot.Metadata;
+
+using Export;
 using Export.File;
+
+using Tool;
+using Tool.Configuration;
+
+using Abstractions.Export;
+using Abstractions.Processing;
 
 namespace ConsoleLoaderUtility
 {
@@ -102,7 +105,7 @@ namespace ConsoleLoaderUtility
                 var adminClient = new AdminClientBuilder(adminConfig).Build();
                 var wLoader = new TopicWatermarkLoader(new TopicName(topic.Name), adminClient, config.MetadataTimeout);
 
-                list.Add(new ProcessingUnit<Key, string>(topic,
+                list.Add(new ProcessingUnit<Key, string>(new ProcessingTopic(topic.Name, topic.ExportFileName),
                                             new SnapshotLoader<Key, string>(createConsumer<Key>, wLoader),
                                             sp.GetRequiredService<IDataExporter<Key, string, ExportedFileTopic>>()
                                             )

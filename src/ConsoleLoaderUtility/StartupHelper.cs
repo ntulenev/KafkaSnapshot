@@ -16,8 +16,8 @@ using KafkaSnapshot.Export.File;
 using KafkaSnapshot.Import;
 using KafkaSnapshot.Import.Metadata;
 
-using Tool;
-using Tool.Configuration;
+using KafkaSnapshot.Processing;
+using KafkaSnapshot.Processing.Configuration;
 
 using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Abstractions.Processing;

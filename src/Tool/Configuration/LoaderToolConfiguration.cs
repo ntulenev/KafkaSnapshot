@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Tool.Configuration
+namespace KafkaSnapshot.Processing.Configuration
 {
     public class LoaderToolConfiguration
     {

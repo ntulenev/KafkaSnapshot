@@ -9,7 +9,7 @@ using KafkaSnapshot.Export;
 
 using KafkaSnapshot.Models.Processing;
 
-namespace Tool
+namespace KafkaSnapshot.Processing
 {
     public class ProcessingUnit<TKey, TValue> : IProcessingUnit where TKey : notnull
     {

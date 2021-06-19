@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 using KafkaSnapshot.Abstractions.Processing;
 
-namespace Tool
+namespace KafkaSnapshot.Processing
 {
     public class LoaderTool
     {

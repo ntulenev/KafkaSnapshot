@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
-using Tool;
+using KafkaSnapshot.Processing;
 
 namespace KafkaSnapshot.ConsoleLoaderUtility
 {

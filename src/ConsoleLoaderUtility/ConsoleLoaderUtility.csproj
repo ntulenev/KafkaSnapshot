@@ -31,7 +31,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Export\Export.csproj" />
     <ProjectReference Include="..\KafkaSnapshot\Import.csproj" />
-    <ProjectReference Include="..\Tool\Tool.csproj" />
+    <ProjectReference Include="..\Tool\Processing.csproj" />
   </ItemGroup>
 
 </Project>

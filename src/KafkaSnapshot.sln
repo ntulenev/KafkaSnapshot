@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleLoaderUtility", "Con
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Export", "Export\Export.csproj", "{D3B7942C-FE76-446F-A962-29267D1241E5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tool", "Tool\Tool.csproj", "{6BF3408F-E65E-4937-8495-F99C1EAB4E4F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Processing", "Tool\Processing.csproj", "{6BF3408F-E65E-4937-8495-F99C1EAB4E4F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Abstractions", "Abstractions\Abstractions.csproj", "{E7CEA140-E534-4CDF-A524-4CB21CB1E791}"
 EndProject

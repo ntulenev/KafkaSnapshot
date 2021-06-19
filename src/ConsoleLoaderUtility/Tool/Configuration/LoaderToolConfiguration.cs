@@ -12,12 +12,7 @@ namespace ConsoleLoaderUtility.Tool.Configuration
         /// <summary>
         /// List of  topics with string Key.
         /// </summary>
-        public List<string> StringKeyTopics { get; set; } = default!;
-
-        /// <summary>
-        /// List of  topics with long Key.
-        /// </summary>
-        public List<string> LongKeyTopics { get; set; } = default!;
+        public List<LoadedTopic> Topics { get; set; } = default!;
 
         /// <summary>
         /// Timout for metadata request.

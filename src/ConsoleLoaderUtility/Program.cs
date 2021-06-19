@@ -109,14 +109,14 @@ namespace ConsoleLoaderUtility
                         );
             }
 
-            foreach (var topic in config.StringKeyTopics)
+            foreach (var topic in config.Topics)
             {
-                InitUnit<string>(topic);
-            }
-
-            foreach (var topic in config.LongKeyTopics)
-            {
-                InitUnit<long>(topic);
+                switch (topic.Type)
+                {
+                    case KeyType.String: InitUnit<string>(topic.Name); break;
+                    case KeyType.Long: InitUnit<long>(topic.Name); break;
+                    default: throw new NotSupportedException($"Topic key type {topic.Type} not supported");
+                }
             }
 
             return list;

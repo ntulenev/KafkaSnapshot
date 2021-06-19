@@ -1,7 +1,6 @@
-﻿using KafkaSnapshot.Abstractions.Export;
-using Models.Export;
+﻿using Models.Export;
 
-namespace Export
+namespace KafkaSnapshot.Export
 {
     public record ExportedFileTopic(string Name, string FileName) : ExportedTopic(Name);
 }

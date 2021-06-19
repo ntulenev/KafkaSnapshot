@@ -5,8 +5,7 @@ using System.Threading.Tasks;
 using KafkaSnapshot.Abstractions.Import;
 using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Abstractions.Processing;
-
-using Export;
+using KafkaSnapshot.Export;
 
 using Models.Processing;
 

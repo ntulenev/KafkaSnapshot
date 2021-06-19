@@ -10,8 +10,8 @@ using Confluent.Kafka;
 
 using Serilog;
 
-using Export;
-using Export.File;
+using KafkaSnapshot.Export;
+using KafkaSnapshot.Export.File;
 
 using KafkaSnapshot;
 using KafkaSnapshot.Metadata;

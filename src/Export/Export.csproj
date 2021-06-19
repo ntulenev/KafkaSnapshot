@@ -7,6 +7,8 @@
 	<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 	<Platform>x64</Platform>
 	<Platforms>x64</Platforms>
+	<AssemblyName>KafkaSnapshot.Export</AssemblyName>
+	<RootNamespace>KafkaSnapshot.Export</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

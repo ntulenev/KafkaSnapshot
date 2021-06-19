@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 
 using KafkaSnapshot.Abstractions.Export;
 
-namespace Export.File
+namespace KafkaSnapshot.Export.File
 {
     public class JsonFileDataExporter<TKey, TValue, TTopic> : IDataExporter<TKey, TValue, TTopic> where TTopic : ExportedFileTopic
     {

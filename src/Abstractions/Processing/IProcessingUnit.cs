@@ -1,6 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
+using Models.Processing;
+
 namespace Abstractions.Processing
 {
     public interface IProcessingUnit

@@ -22,6 +22,8 @@ using Tool.Configuration;
 using Abstractions.Export;
 using Abstractions.Processing;
 
+using Models.Processing;
+
 namespace ConsoleLoaderUtility
 {
     public static class StartupHelper

@@ -8,6 +8,8 @@ using Abstractions.Processing;
 
 using Export;
 
+using Models.Processing;
+
 namespace Tool
 {
     public class ProcessingUnit<TKey, TValue> : IProcessingUnit where TKey : notnull

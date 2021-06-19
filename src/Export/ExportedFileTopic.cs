@@ -1,4 +1,5 @@
 ﻿using Abstractions.Export;
+using Models.Export;
 
 namespace Export
 {

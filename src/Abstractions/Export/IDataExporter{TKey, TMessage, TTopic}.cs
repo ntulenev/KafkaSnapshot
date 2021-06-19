@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
+using Models.Export;
 namespace Abstractions.Export
 {
     public interface IDataExporter<TKey, TMessage, TTopic> where TTopic : ExportedTopic

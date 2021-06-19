@@ -1,4 +1,4 @@
-﻿namespace Abstractions.Export
+﻿namespace Models.Export
 {
     public record ExportedTopic(string Name);
 }

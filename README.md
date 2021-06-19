@@ -11,16 +11,17 @@ Config with topics for export
 "LoaderToolConfiguration": {
   "MetadataTimeout": 1000,
   "BootstrapServers": [
-    "kafka-0"
   ],
   "Topics": [
     {
       "Name": "test-string-topic",
-      "KeyType": "String"
+      "KeyType": "String",
+      "ExportFileName": "test_string_topic.json"
     },
     {
       "Name": "test-long-topic",
-      "KeyType": "Long"
+      "KeyType": "Long",
+      "ExportFileName": "test_long_topic.json"
     }
   ]
 }

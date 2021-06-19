@@ -7,7 +7,7 @@ using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Abstractions.Processing;
 using KafkaSnapshot.Export;
 
-using Models.Processing;
+using KafkaSnapshot.Models.Processing;
 
 namespace Tool
 {

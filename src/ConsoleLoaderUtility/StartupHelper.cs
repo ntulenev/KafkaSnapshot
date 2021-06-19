@@ -22,7 +22,7 @@ using Tool.Configuration;
 using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Abstractions.Processing;
 
-using Models.Processing;
+using KafkaSnapshot.Models.Processing;
 
 namespace KafkaSnapshot.ConsoleLoaderUtility
 {

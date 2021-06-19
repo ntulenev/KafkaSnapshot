@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-using Models.Processing;
+using KafkaSnapshot.Models.Processing;
 
 namespace KafkaSnapshot.Abstractions.Processing
 {

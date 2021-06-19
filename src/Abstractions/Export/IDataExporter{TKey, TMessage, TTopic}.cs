@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-using Models.Export;
+using KafkaSnapshot.Models.Export;
 
 namespace KafkaSnapshot.Abstractions.Export
 {

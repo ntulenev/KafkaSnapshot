@@ -1,4 +1,4 @@
-﻿using Models.Export;
+﻿using KafkaSnapshot.Models.Export;
 
 namespace KafkaSnapshot.Export
 {

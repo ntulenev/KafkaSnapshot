@@ -24,7 +24,7 @@ using KafkaSnapshot.Abstractions.Processing;
 
 using Models.Processing;
 
-namespace ConsoleLoaderUtility
+namespace KafkaSnapshot.ConsoleLoaderUtility
 {
     public static class StartupHelper
     {

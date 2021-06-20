@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 using Confluent.Kafka;
 
@@ -19,6 +21,8 @@ using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Abstractions.Processing;
 using KafkaSnapshot.Models.Processing;
 using KafkaSnapshot.Export.File.Json;
+using KafkaSnapshot.Processing.Configuration.Validation;
+
 
 namespace KafkaSnapshot.Utility
 {
@@ -33,6 +37,8 @@ namespace KafkaSnapshot.Utility
         {
             services.AddScoped(typeof(LoaderTool));
             services.Configure<LoaderToolConfiguration>(hostContext.Configuration.GetSection(nameof(LoaderToolConfiguration)));
+            services.AddSingleton<IValidateOptions<LoaderToolConfiguration>, LoaderToolConfigurationValidator>();
+
         }
 
         public static void AddExport(this IServiceCollection services)
@@ -66,7 +72,17 @@ namespace KafkaSnapshot.Utility
 
             var config = section.Get<LoaderToolConfiguration>();
 
-            // TODO Add config validation
+            Debug.Assert(config is not null);
+
+            var validator = sp.GetRequiredService<IValidateOptions<LoaderToolConfiguration>>();
+
+            // Crutch to use IValidateOptions in manual generation logic.
+            var validationResult = validator.Validate(string.Empty, config);
+            if (validationResult.Failed)
+            {
+                throw new OptionsValidationException
+                    (string.Empty, config.GetType(), new[] { validationResult.FailureMessage });
+            }
 
             var servers = string.Join(",", config.BootstrapServers);
 

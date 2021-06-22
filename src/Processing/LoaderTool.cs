@@ -3,6 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
+using Microsoft.Extensions.Logging;
+
 using KafkaSnapshot.Abstractions.Processing;
 
 namespace KafkaSnapshot.Processing
@@ -16,9 +18,12 @@ namespace KafkaSnapshot.Processing
         /// Creates <see cref="LoaderTool"/>.
         /// </summary>
         /// <param name="units">Processors for topics.</param>
-        public LoaderTool(ICollection<IProcessingUnit> units)
+        public LoaderTool(ILogger<LoaderTool> logger, ICollection<IProcessingUnit> units)
         {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _units = units ?? throw new ArgumentNullException(nameof(units));
+
+            _logger.LogDebug("Instance created for {count} unit(s).", _units.Count);
         }
 
         /// <summary>
@@ -33,19 +38,25 @@ namespace KafkaSnapshot.Processing
 
             foreach (var unit in _units)
             {
+                using var _ = _logger.BeginScope("topic {topic}", unit.Topic);
+
+                _logger.LogDebug("Start processing topic.");
+
                 Console.WriteLine($"{++indexer}/{_units.Count} Processing topic {unit.Topic.Name}.");
 
                 try
                 {
                     await unit.ProcessAsync(ct).ConfigureAwait(false);
+
+                    _logger.LogDebug("Finish processing topic.");
                 }
                 catch (OperationCanceledException)
                 {
 
                 }
-                catch
+                catch (Exception ex)
                 {
-                    //TODO Add err logs.
+                    _logger.LogError(ex, "Error on processing topic");
                     Console.WriteLine($"Unable to load data for topic {unit.Topic.Name}");
                 }
 
@@ -55,6 +66,7 @@ namespace KafkaSnapshot.Processing
         }
 
         private readonly ICollection<IProcessingUnit> _units;
+        private readonly ILogger<LoaderTool> _logger;
 
     }
 }

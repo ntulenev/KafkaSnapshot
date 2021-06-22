@@ -2,6 +2,9 @@
 
 namespace KafkaSnapshot.Processing.Configuration
 {
+    /// <summary>
+    /// Application configuration
+    /// </summary>
     public class LoaderToolConfiguration
     {
         /// <summary>

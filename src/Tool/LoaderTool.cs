@@ -7,13 +7,24 @@ using KafkaSnapshot.Abstractions.Processing;
 
 namespace KafkaSnapshot.Processing
 {
+    /// <summary>
+    /// Tool that process topics from Apache Kafka.
+    /// </summary>
     public class LoaderTool
     {
+        /// <summary>
+        /// Creates <see cref="LoaderTool"/>.
+        /// </summary>
+        /// <param name="units">Processors for topics.</param>
         public LoaderTool(ICollection<IProcessingUnit> units)
         {
             _units = units ?? throw new ArgumentNullException(nameof(units));
         }
 
+        /// <summary>
+        /// Runs processing of topics.
+        /// </summary>
+        /// <param name="ct">Token for cancelling.</param>
         public async Task ProcessAsync(CancellationToken ct)
         {
             Console.WriteLine("The utility starts loading Apache Kafka topics...");

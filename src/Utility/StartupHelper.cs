@@ -22,7 +22,7 @@ using KafkaSnapshot.Abstractions.Processing;
 using KafkaSnapshot.Models.Processing;
 using KafkaSnapshot.Export.File.Json;
 using KafkaSnapshot.Processing.Configuration.Validation;
-
+using KafkaSnapshot.Models.Export;
 
 namespace KafkaSnapshot.Utility
 {
@@ -43,7 +43,8 @@ namespace KafkaSnapshot.Utility
 
         public static void AddExport(this IServiceCollection services)
         {
-            services.AddSingleton(typeof(IDataExporter<,,>), typeof(JsonFileDataExporter<,,>));
+            services.AddSingleton<IDataExporter<long, string, ExportedFileTopic>, JsonLongKeyStringValueDataExporter>();
+            services.AddSingleton<IDataExporter<string, string, ExportedFileTopic>, JsonStringKeyStringValueDataExporter>();
         }
 
         public static void AddLogging(this IServiceCollection services, HostBuilderContext hostContext)

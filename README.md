@@ -1,7 +1,7 @@
 # KafkaSnapshot
 Tool that allows to read current data snapshot from Apache Kafka topic with compacting.
 
-Current version could work with string and long keys and json messages and skips topics with NULL keys.
+Current version could work with json and long keys and json messages and skips topics with NULL keys.
 
 ![Details](Details.PNG)
 
@@ -14,14 +14,14 @@ Config with topics for export
   ],
   "Topics": [
     {
-      "Name": "test-string-topic",
-      "KeyType": "String",
-      "ExportFileName": "test_string_topic.json"
+      "Name": "test-json-key-topic",
+      "KeyType": "Json",
+      "ExportFileName": "test_json_key_topic.json"
     },
     {
-      "Name": "test-long-topic",
+      "Name": "test-long-key-topic",
       "KeyType": "Long",
-      "ExportFileName": "test_long_topic.json"
+      "ExportFileName": "test_long_key_topic.json"
     }
   ]
 }

@@ -22,17 +22,25 @@ using KafkaSnapshot.Abstractions.Processing;
 using KafkaSnapshot.Models.Processing;
 using KafkaSnapshot.Export.File.Json;
 using KafkaSnapshot.Processing.Configuration.Validation;
-using KafkaSnapshot.Models.Export;
 
 namespace KafkaSnapshot.Utility
 {
+    /// <summary>
+    /// Helper utility class with services registration methods
+    /// </summary>
     public static class StartupHelper
     {
+        /// <summary>
+        /// Registers appsettings.
+        /// </summary>
         public static void RegisterApplicationSettings(this IConfigurationBuilder builder)
         {
             builder.AddJsonFile("appsettings.json", optional: true);
         }
 
+        /// <summary>
+        /// Registers configuration and entry point of application.
+        /// </summary>
         public static void AddTools(this IServiceCollection services, HostBuilderContext hostContext)
         {
             services.AddScoped(typeof(LoaderTool));
@@ -41,12 +49,18 @@ namespace KafkaSnapshot.Utility
 
         }
 
+        /// <summary>
+        /// Adds export providers.
+        /// </summary>
         public static void AddExport(this IServiceCollection services)
         {
             services.AddSingleton<IDataExporter<long, string, ExportedFileTopic>, JsonLongKeyStringValueDataExporter>();
             services.AddSingleton<IDataExporter<string, string, ExportedFileTopic>, JsonStringKeyStringValueDataExporter>();
         }
 
+        /// <summary>
+        /// Adds Serilog.
+        /// </summary>
         public static void AddLogging(this IServiceCollection services, HostBuilderContext hostContext)
         {
             var logger = new LoggerConfiguration()
@@ -60,11 +74,17 @@ namespace KafkaSnapshot.Utility
             });
         }
 
+        /// <summary>
+        /// Adds topic loaders.
+        /// </summary>
         public static void AddTopicLoaders(this IServiceCollection services, HostBuilderContext hostContext)
         {
             services.AddSingleton(sp => CreateTopicLoaders(sp, hostContext.Configuration));
         }
 
+        /// <summary>
+        /// Creates topic loaders from config
+        /// </summary>
         private static ICollection<IProcessingUnit> CreateTopicLoaders(IServiceProvider sp, IConfiguration configuration)
         {
             var list = new List<IProcessingUnit>();

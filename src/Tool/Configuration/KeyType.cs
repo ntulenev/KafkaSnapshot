@@ -2,7 +2,7 @@
 {
     public enum KeyType
     {
-        String,
+        Json,
         Long
     }
 }

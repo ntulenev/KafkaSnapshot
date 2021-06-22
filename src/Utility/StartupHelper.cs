@@ -140,7 +140,7 @@ namespace KafkaSnapshot.Utility
             {
                 switch (topic.KeyType)
                 {
-                    case KeyType.String: InitUnit<string>(topic); break;
+                    case KeyType.Json: InitUnit<string>(topic); break;
                     case KeyType.Long: InitUnit<long>(topic); break;
                     default: throw new NotSupportedException($"Topic key type {topic.KeyType} not supported");
                 }

@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 using KafkaSnapshot.Abstractions.Export;
-
 
 namespace KafkaSnapshot.Export.File.Json
 {
@@ -39,23 +36,12 @@ namespace KafkaSnapshot.Export.File.Json
 
             _logger.LogDebug("Starting saving data");
 
-            var inner = string.Join(",\n", data.Select(x => $"{{ \"key\":{x.Key}, \"value\":{x.Value}}}"));
-
-            var sb = new StringBuilder();
-            sb.AppendLine("{");
-            sb.AppendLine("\"messages\": [");
-            sb.AppendLine(inner);
-            sb.AppendLine("]");
-            sb.AppendLine("}");
-
-            var path = topic.FileName;
-
-            JObject json = JObject.Parse(sb.ToString());
-
-            await System.IO.File.WriteAllTextAsync($"{path}", json.ToString(), ct).ConfigureAwait(false);
+            await System.IO.File.WriteAllTextAsync($"{topic.FileName}", PrepareJson(data), ct).ConfigureAwait(false);
 
             _logger.LogDebug("Data saved successfully.");
         }
+
+        protected virtual string PrepareJson(IDictionary<TKey, TValue> data) => JsonConvert.SerializeObject(data, Formatting.Indented);
 
         private readonly ILogger<JsonFileDataExporter<TKey, TValue, TTopic>> _logger;
     }

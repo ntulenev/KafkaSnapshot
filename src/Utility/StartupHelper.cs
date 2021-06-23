@@ -127,10 +127,12 @@ namespace KafkaSnapshot.Utility
                 };
 
                 var adminClient = new AdminClientBuilder(adminConfig).Build();
+
                 var wLoader = new TopicWatermarkLoader(new TopicName(topic.Name), adminClient, config.MetadataTimeout);
 
-                list.Add(new ProcessingUnit<Key, string>(sp.GetRequiredService<ILogger<ProcessingUnit<Key, string>>>(), new ProcessingTopic(topic.Name, topic.ExportFileName),
-                                            new SnapshotLoader<Key, string>(createConsumer<Key>, wLoader),
+                list.Add(new ProcessingUnit<Key, string>(sp.GetRequiredService<ILogger<ProcessingUnit<Key, string>>>(),
+                                            new ProcessingTopic(topic.Name, topic.ExportFileName),
+                                            new SnapshotLoader<Key, string>(sp.GetRequiredService<ILogger<SnapshotLoader<Key, string>>>(), createConsumer<Key>, wLoader),
                                             sp.GetRequiredService<IDataExporter<Key, string, ExportedFileTopic>>()
                                             )
                         );

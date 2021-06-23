@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 using Confluent.Kafka;
 
+using Microsoft.Extensions.Logging;
+
 using KafkaSnapshot.Import.Metadata;
 using KafkaSnapshot.Import.Watermarks;
 using KafkaSnapshot.Abstractions.Import;
@@ -18,20 +20,30 @@ namespace KafkaSnapshot.Import
         /// <summary>
         /// Creates <see cref="SnapshotLoader{Key, Message}"/>.
         /// </summary>
-        public SnapshotLoader(Func<IConsumer<TKey, TMessage>> consumerFactory,
+        public SnapshotLoader(ILogger<SnapshotLoader<TKey, TMessage>> logger,
+                              Func<IConsumer<TKey, TMessage>> consumerFactory,
                               ITopicWatermarkLoader topicWatermarkLoader
                              )
         {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _topicWatermarkLoader = topicWatermarkLoader ?? throw new ArgumentNullException(nameof(topicWatermarkLoader));
             _consumerFactory = consumerFactory ?? throw new ArgumentNullException(nameof(consumerFactory));
+
+            _logger.LogDebug("Instance created.");
         }
 
         ///<inheritdoc/>
         public async Task<IDictionary<TKey, TMessage>> LoadCompactSnapshotAsync(CancellationToken ct)
         {
+            _logger.LogDebug("Loading topic watermark.");
             var topicWatermark = await _topicWatermarkLoader.LoadWatermarksAsync(_consumerFactory, ct).ConfigureAwait(false);
+
+            _logger.LogDebug("Loading initial state.");
             var initialState = await ConsumeInitialAsync(topicWatermark, ct).ConfigureAwait(false);
+
+            _logger.LogDebug("Creating compacting state.");
             var compactedState = CreateSnapshot(initialState);
+
             return compactedState;
         }
 
@@ -58,7 +70,9 @@ namespace KafkaSnapshot.Import
                 do
                 {
                     result = consumer.Consume(ct);
-                    // TODO Add Desirializer for result.Message.Value depend on topic
+
+                    _logger.LogTrace("Loading {Key} - {Value}", result.Message.Key, result.Message.Value);
+
                     yield return new KeyValuePair<TKey, TMessage>(result.Message.Key, result.Message.Value);
 
                 } while (watermark.IsWatermarkAchievedBy(result));
@@ -83,6 +97,7 @@ namespace KafkaSnapshot.Import
 
         private readonly ITopicWatermarkLoader _topicWatermarkLoader;
         private readonly Func<IConsumer<TKey, TMessage>> _consumerFactory;
+        private readonly ILogger<SnapshotLoader<TKey, TMessage>> _logger;
     }
 }
 

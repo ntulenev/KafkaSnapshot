@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 using KafkaSnapshot.Abstractions.Export;
+using KafkaSnapshot.Models.Export;
 
 namespace KafkaSnapshot.Export.File.Json
 {
@@ -17,7 +18,7 @@ namespace KafkaSnapshot.Export.File.Json
     /// <typeparam name="TKey">Message Key</typeparam>
     /// <typeparam name="TValue">Message Value</typeparam>
     /// <typeparam name="TTopic">Topic object</typeparam>
-    public class JsonFileDataExporter<TKey, TValue, TTopic> : IDataExporter<TKey, TValue, TTopic> where TTopic : ExportedFileTopic
+    public class JsonFileDataExporter<TKey, TValue, TTopic> : IDataExporter<TKey, TValue, TTopic> where TTopic : ExportedTopic
     {
         /// <summary>
         /// Creates <see cref="JsonFileDataExporter{TKey, TValue, TTopic}"/>.
@@ -43,11 +44,11 @@ namespace KafkaSnapshot.Export.File.Json
                 throw new ArgumentNullException(nameof(topic));
             }
 
-            using var _ = _logger.BeginScope("Data from topic {topic} to File {file} with {items} item(s)", topic.Name, topic.FileName, data.Count);
+            using var _ = _logger.BeginScope("Data from topic {topic} to File {file} with {items} item(s)", topic.Name, topic.ExportName, data.Count);
 
             _logger.LogDebug("Starting saving data");
 
-            await System.IO.File.WriteAllTextAsync($"{topic.FileName}", PrepareJson(data), ct).ConfigureAwait(false);
+            await System.IO.File.WriteAllTextAsync($"{topic.ExportName}", PrepareJson(data), ct).ConfigureAwait(false);
 
             _logger.LogDebug("Data saved successfully.");
         }

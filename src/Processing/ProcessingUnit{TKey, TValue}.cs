@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 using KafkaSnapshot.Abstractions.Import;
 using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Abstractions.Processing;
-using KafkaSnapshot.Export;
 using KafkaSnapshot.Models.Processing;
+using KafkaSnapshot.Models.Export;
+
 using Microsoft.Extensions.Logging;
 
 namespace KafkaSnapshot.Processing
@@ -27,8 +28,7 @@ namespace KafkaSnapshot.Processing
         public ProcessingUnit(ILogger<ProcessingUnit<TKey, TValue>> logger,
                               ProcessingTopic topic,
                               ISnapshotLoader<TKey, TValue> kafkaLoader,
-                              IDataExporter<TKey, TValue,
-                              ExportedFileTopic> exporter)
+                              IDataExporter<TKey, TValue, ExportedTopic> exporter)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _topic = topic ?? throw new ArgumentNullException(nameof(topic));
@@ -45,14 +45,14 @@ namespace KafkaSnapshot.Processing
             var items = await _kafkaLoader.LoadCompactSnapshotAsync(ct).ConfigureAwait(false);
 
             _logger.LogDebug("Start exporting data to file.");
-            await _exporter.ExportAsync(items, new ExportedFileTopic(_topic.Name, _topic.ExportName), ct).ConfigureAwait(false);
+            await _exporter.ExportAsync(items, new ExportedTopic(_topic.Name, _topic.ExportName), ct).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
         public ProcessingTopic Topic => _topic;
 
         private readonly ISnapshotLoader<TKey, TValue> _kafkaLoader;
-        private readonly IDataExporter<TKey, TValue, ExportedFileTopic> _exporter;
+        private readonly IDataExporter<TKey, TValue, ExportedTopic> _exporter;
         private readonly ProcessingTopic _topic;
         private readonly ILogger<ProcessingUnit<TKey, TValue>> _logger;
     }

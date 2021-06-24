@@ -6,12 +6,14 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
+using KafkaSnapshot.Models.Export;
+
 namespace KafkaSnapshot.Export.File.Json
 {
     /// <summary>
     /// <see cref="JsonFileDataExporter{TKey, TValue, TTopic}"/> for string json key and string json value
     /// </summary>
-    public class JsonStringKeyStringValueDataExporter : JsonFileDataExporter<string, string, ExportedFileTopic>
+    public class JsonStringKeyStringValueDataExporter : JsonFileDataExporter<string, string, ExportedTopic>
     {
         /// <summary>
         /// Creates <see cref="JsonStringKeyStringValueDataExporter"/>.

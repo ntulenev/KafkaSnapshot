@@ -12,7 +12,6 @@ using Confluent.Kafka;
 
 using Serilog;
 
-using KafkaSnapshot.Export;
 using KafkaSnapshot.Import;
 using KafkaSnapshot.Import.Metadata;
 using KafkaSnapshot.Processing;
@@ -22,6 +21,7 @@ using KafkaSnapshot.Abstractions.Processing;
 using KafkaSnapshot.Models.Processing;
 using KafkaSnapshot.Export.File.Json;
 using KafkaSnapshot.Processing.Configuration.Validation;
+using KafkaSnapshot.Models.Export;
 
 namespace KafkaSnapshot.Utility
 {
@@ -54,8 +54,8 @@ namespace KafkaSnapshot.Utility
         /// </summary>
         public static void AddExport(this IServiceCollection services)
         {
-            services.AddSingleton<IDataExporter<long, string, ExportedFileTopic>, JsonLongKeyStringValueDataExporter>();
-            services.AddSingleton<IDataExporter<string, string, ExportedFileTopic>, JsonStringKeyStringValueDataExporter>();
+            services.AddSingleton<IDataExporter<long, string, ExportedTopic>, JsonLongKeyStringValueDataExporter>();
+            services.AddSingleton<IDataExporter<string, string, ExportedTopic>, JsonStringKeyStringValueDataExporter>();
         }
 
         /// <summary>
@@ -133,7 +133,7 @@ namespace KafkaSnapshot.Utility
                 list.Add(new ProcessingUnit<Key, string>(sp.GetRequiredService<ILogger<ProcessingUnit<Key, string>>>(),
                                             new ProcessingTopic(topic.Name, topic.ExportFileName),
                                             new SnapshotLoader<Key, string>(sp.GetRequiredService<ILogger<SnapshotLoader<Key, string>>>(), createConsumer<Key>, wLoader),
-                                            sp.GetRequiredService<IDataExporter<Key, string, ExportedFileTopic>>()
+                                            sp.GetRequiredService<IDataExporter<Key, string, ExportedTopic>>()
                                             )
                         );
             }
@@ -144,7 +144,7 @@ namespace KafkaSnapshot.Utility
                 {
                     case KeyType.Json: InitUnit<string>(topic); break;
                     case KeyType.Long: InitUnit<long>(topic); break;
-                    default: throw new NotSupportedException($"Topic key type {topic.KeyType} not supported");
+                    default: throw new NotSupportedException($"Topic key type {topic.KeyType} not supported.");
                 }
             }
 

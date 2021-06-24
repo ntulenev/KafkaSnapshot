@@ -146,7 +146,7 @@ namespace KafkaSnapshot.Utility
                 {
                     case KeyType.Json: InitUnit<string>(topic); break;
                     case KeyType.Long: InitUnit<long>(topic); break;
-                    default: throw new NotSupportedException($"Topic key type {topic.KeyType} not supported.");
+                    default: throw new InvalidOperationException($"Invalid Key type {topic.KeyType} for processing.");
                 }
             }
 

@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using KafkaSnapshot.Models.Export;
+using KafkaSnapshot.Abstractions.Export;
 
 namespace KafkaSnapshot.Export.File.Json
 {
@@ -19,7 +20,8 @@ namespace KafkaSnapshot.Export.File.Json
         /// Creates <see cref="JsonLongKeyStringValueDataExporter"/>.
         /// </summary>
         /// <param name="logger">Logger for <see cref="JsonLongKeyStringValueDataExporter"/>.</param>
-        public JsonLongKeyStringValueDataExporter(ILogger<JsonLongKeyStringValueDataExporter> logger) : base(logger)
+        /// <param name="fileSaver">Utility that saves content to file.</param>
+        public JsonLongKeyStringValueDataExporter(ILogger<JsonLongKeyStringValueDataExporter> logger, IFileSaver fileSaver) : base(logger, fileSaver)
         {
         }
 
@@ -31,6 +33,7 @@ namespace KafkaSnapshot.Export.File.Json
                 x.Key,
                 Value = JToken.Parse(x.Value)
             });
+
             return JsonConvert.SerializeObject(items, Formatting.Indented);
         }
     }

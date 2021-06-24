@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 
 using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Models.Export;
+using KafkaSnapshot.Export.File.Common;
 
 namespace KafkaSnapshot.Export.File.Json
 {
@@ -24,9 +25,11 @@ namespace KafkaSnapshot.Export.File.Json
         /// Creates <see cref="JsonFileDataExporter{TKey, TValue, TTopic}"/>.
         /// </summary>
         /// <param name="logger">Logger for <see cref="JsonFileDataExporter{TKey, TValue, TTopic}"/>.</param>
-        public JsonFileDataExporter(ILogger<JsonFileDataExporter<TKey, TValue, TTopic>> logger)
+        /// <param name="fileSaver">Utility that saves content to file.</param>
+        public JsonFileDataExporter(ILogger<JsonFileDataExporter<TKey, TValue, TTopic>> logger, IFileSaver fileSaver)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _fileSaver = fileSaver ?? throw new ArgumentNullException(nameof(_fileSaver));
 
             _logger.LogDebug("Instance created.");
         }
@@ -48,7 +51,7 @@ namespace KafkaSnapshot.Export.File.Json
 
             _logger.LogDebug("Starting saving data");
 
-            await System.IO.File.WriteAllTextAsync($"{topic.ExportName}", PrepareJson(data), ct).ConfigureAwait(false);
+            await _fileSaver.SaveAsync($"{topic.ExportName}", PrepareJson(data), ct).ConfigureAwait(false);
 
             _logger.LogDebug("Data saved successfully.");
         }
@@ -61,5 +64,6 @@ namespace KafkaSnapshot.Export.File.Json
         protected virtual string PrepareJson(IDictionary<TKey, TValue> data) => JsonConvert.SerializeObject(data, Formatting.Indented);
 
         private readonly ILogger<JsonFileDataExporter<TKey, TValue, TTopic>> _logger;
+        private readonly IFileSaver _fileSaver;
     }
 }

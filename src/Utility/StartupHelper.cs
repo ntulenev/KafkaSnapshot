@@ -22,6 +22,7 @@ using KafkaSnapshot.Models.Processing;
 using KafkaSnapshot.Export.File.Json;
 using KafkaSnapshot.Processing.Configuration.Validation;
 using KafkaSnapshot.Models.Export;
+using KafkaSnapshot.Export.File.Common;
 
 namespace KafkaSnapshot.Utility
 {
@@ -56,6 +57,7 @@ namespace KafkaSnapshot.Utility
         {
             services.AddSingleton<IDataExporter<long, string, ExportedTopic>, JsonLongKeyStringValueDataExporter>();
             services.AddSingleton<IDataExporter<string, string, ExportedTopic>, JsonStringKeyStringValueDataExporter>();
+            services.AddSingleton<IFileSaver, FileSaver>();
         }
 
         /// <summary>

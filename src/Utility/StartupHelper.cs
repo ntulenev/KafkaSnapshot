@@ -132,6 +132,9 @@ namespace KafkaSnapshot.Utility
 
                 var wLoader = new TopicWatermarkLoader(new TopicName(topic.Name), adminClient, config.MetadataTimeout);
 
+
+                //TODO Add serializer depend on type to switch string and json
+
                 list.Add(new ProcessingUnit<Key, string>(sp.GetRequiredService<ILogger<ProcessingUnit<Key, string>>>(),
                                             new ProcessingTopic(topic.Name, topic.ExportFileName),
                                             new SnapshotLoader<Key, string>(sp.GetRequiredService<ILogger<SnapshotLoader<Key, string>>>(), createConsumer<Key>, wLoader),

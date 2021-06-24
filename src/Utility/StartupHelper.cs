@@ -27,7 +27,7 @@ using KafkaSnapshot.Export.File.Common;
 namespace KafkaSnapshot.Utility
 {
     /// <summary>
-    /// Helper utility class with services registration methods
+    /// Helper utility class with services registration methods.
     /// </summary>
     public static class StartupHelper
     {

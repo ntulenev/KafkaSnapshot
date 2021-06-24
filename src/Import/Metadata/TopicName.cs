@@ -5,17 +5,17 @@ using System.Text.RegularExpressions;
 namespace KafkaSnapshot.Import.Metadata
 {
     /// <summary>
-    /// Represents kafka topic name
+    /// Represents kafka topic name.
     /// </summary>
     public class TopicName
     {
         /// <summary>
-        /// Validated tipic name
+        /// Validated tipic name.
         /// </summary>
         public string Value { get; }
 
         /// <summary>
-        /// Creates topic name
+        /// Creates topic name.
         /// </summary>
         public TopicName(string name)
         {

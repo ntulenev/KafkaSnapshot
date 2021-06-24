@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 namespace KafkaSnapshot.Processing.Configuration.Validation
 {
     /// <summary>
-    /// Validator for <see cref="LoaderToolConfiguration"/>
+    /// Validator for <see cref="LoaderToolConfiguration"/>.
     /// </summary>
     public class LoaderToolConfigurationValidator : IValidateOptions<LoaderToolConfiguration>
     {

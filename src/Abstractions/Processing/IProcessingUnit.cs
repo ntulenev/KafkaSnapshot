@@ -6,7 +6,7 @@ using KafkaSnapshot.Models.Processing;
 namespace KafkaSnapshot.Abstractions.Processing
 {
     /// <summary>
-    /// Single topic processor that loads data from Apache Kafka and exports to file
+    /// Single topic processor that loads data from Apache Kafka and exports to file.
     /// </summary>
     public interface IProcessingUnit
     {

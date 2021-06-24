@@ -3,12 +3,12 @@
 namespace KafkaSnapshot.Processing.Configuration
 {
     /// <summary>
-    /// Application configuration
+    /// Application configuration.
     /// </summary>
     public class LoaderToolConfiguration
     {
         /// <summary>
-        /// List of bootstrap servers
+        /// List of bootstrap servers.
         /// </summary>
         public List<string> BootstrapServers { get; set; } = default!;
 

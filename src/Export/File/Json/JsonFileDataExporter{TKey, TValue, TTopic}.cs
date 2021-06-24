@@ -9,16 +9,15 @@ using Newtonsoft.Json;
 
 using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Models.Export;
-using KafkaSnapshot.Export.File.Common;
 
 namespace KafkaSnapshot.Export.File.Json
 {
     /// <summary>
-    /// Default Json File exporter
+    /// Default Json File exporter.
     /// </summary>
-    /// <typeparam name="TKey">Message Key</typeparam>
-    /// <typeparam name="TValue">Message Value</typeparam>
-    /// <typeparam name="TTopic">Topic object</typeparam>
+    /// <typeparam name="TKey">Message Key.</typeparam>
+    /// <typeparam name="TValue">Message Value.</typeparam>
+    /// <typeparam name="TTopic">Topic object.</typeparam>
     public class JsonFileDataExporter<TKey, TValue, TTopic> : IDataExporter<TKey, TValue, TTopic> where TTopic : ExportedTopic
     {
         /// <summary>
@@ -29,7 +28,7 @@ namespace KafkaSnapshot.Export.File.Json
         public JsonFileDataExporter(ILogger<JsonFileDataExporter<TKey, TValue, TTopic>> logger, IFileSaver fileSaver)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _fileSaver = fileSaver ?? throw new ArgumentNullException(nameof(_fileSaver));
+            _fileSaver = fileSaver ?? throw new ArgumentNullException(nameof(fileSaver));
 
             _logger.LogDebug("Instance created.");
         }

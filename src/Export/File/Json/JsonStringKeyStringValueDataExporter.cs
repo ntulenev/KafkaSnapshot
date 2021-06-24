@@ -12,7 +12,7 @@ using KafkaSnapshot.Abstractions.Export;
 namespace KafkaSnapshot.Export.File.Json
 {
     /// <summary>
-    /// <see cref="JsonFileDataExporter{TKey, TValue, TTopic}"/> for string json key and string json value
+    /// <see cref="JsonFileDataExporter{TKey, TValue, TTopic}"/> for string json key and string json value.
     /// </summary>
     public class JsonStringKeyStringValueDataExporter : JsonFileDataExporter<string, string, ExportedTopic>
     {

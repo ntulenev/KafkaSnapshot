@@ -3,6 +3,7 @@
     public enum KeyType
     {
         Json,
+        String,
         Long
     }
 }

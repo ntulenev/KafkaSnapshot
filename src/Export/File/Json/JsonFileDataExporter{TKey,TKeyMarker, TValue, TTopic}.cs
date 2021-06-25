@@ -16,16 +16,19 @@ namespace KafkaSnapshot.Export.File.Json
     /// Default Json File exporter.
     /// </summary>
     /// <typeparam name="TKey">Message Key.</typeparam>
+    /// <typeparam name="TKeyMarker">Key marker.</typeparam>
     /// <typeparam name="TValue">Message Value.</typeparam>
     /// <typeparam name="TTopic">Topic object.</typeparam>
-    public class JsonFileDataExporter<TKey, TValue, TTopic> : IDataExporter<TKey, TValue, TTopic> where TTopic : ExportedTopic
+    public class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> : IDataExporter<TKey, TKeyMarker, TValue, TTopic>
+                        where TTopic : ExportedTopic
+                        where TKeyMarker : IKeyRepresentationMarker
     {
         /// <summary>
-        /// Creates <see cref="JsonFileDataExporter{TKey, TValue, TTopic}"/>.
+        /// Creates <see cref="JsonFileDataExporter{TKey, TKeyMarker, TValue, TTopic}"/>.
         /// </summary>
-        /// <param name="logger">Logger for <see cref="JsonFileDataExporter{TKey, TValue, TTopic}"/>.</param>
+        /// <param name="logger">Logger for <see cref="JsonFileDataExporter{TKey, TKeyMarker, TValue, TTopic}"/>.</param>
         /// <param name="fileSaver">Utility that saves content to file.</param>
-        public JsonFileDataExporter(ILogger<JsonFileDataExporter<TKey, TValue, TTopic>> logger, IFileSaver fileSaver)
+        public JsonFileDataExporter(ILogger<JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic>> logger, IFileSaver fileSaver)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _fileSaver = fileSaver ?? throw new ArgumentNullException(nameof(fileSaver));
@@ -62,7 +65,7 @@ namespace KafkaSnapshot.Export.File.Json
         /// <returns>Json string.</returns>
         protected virtual string PrepareJson(IDictionary<TKey, TValue> data) => JsonConvert.SerializeObject(data, Formatting.Indented);
 
-        private readonly ILogger<JsonFileDataExporter<TKey, TValue, TTopic>> _logger;
+        private readonly ILogger<JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic>> _logger;
         private readonly IFileSaver _fileSaver;
     }
 }

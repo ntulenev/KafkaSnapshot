@@ -8,29 +8,30 @@ using Newtonsoft.Json.Linq;
 
 using KafkaSnapshot.Models.Export;
 using KafkaSnapshot.Abstractions.Export;
+using KafkaSnapshot.Export.Markers;
 
 namespace KafkaSnapshot.Export.File.Json
 {
     /// <summary>
-    /// <see cref="JsonFileDataExporter{TKey, TValue, TTopic}"/> for string long key and string json value.
+    /// <see cref="JsonFileDataExporter{TKey, TKeyMarker, TValue, TTopic}"/> for string json key and string json value.
     /// </summary>
-    public class JsonLongKeyStringValueDataExporter : JsonFileDataExporter<long, string, ExportedTopic>
+    public class JsonKeyJsonValueDataExporter : JsonFileDataExporter<string, JsonKeyMarker, string, ExportedTopic>
     {
         /// <summary>
-        /// Creates <see cref="JsonLongKeyStringValueDataExporter"/>.
+        /// Creates <see cref="JsonKeyJsonValueDataExporter"/>.
         /// </summary>
-        /// <param name="logger">Logger for <see cref="JsonLongKeyStringValueDataExporter"/>.</param>
+        /// <param name="logger">Logger for <see cref="JsonKeyJsonValueDataExporter"/>.</param>
         /// <param name="fileSaver">Utility that saves content to file.</param>
-        public JsonLongKeyStringValueDataExporter(ILogger<JsonLongKeyStringValueDataExporter> logger, IFileSaver fileSaver) : base(logger, fileSaver)
+        public JsonKeyJsonValueDataExporter(ILogger<JsonKeyJsonValueDataExporter> logger, IFileSaver fileSaver) : base(logger, fileSaver)
         {
         }
 
         /// <inheritdoc/>
-        protected override string PrepareJson(IDictionary<long, string> data)
+        protected override string PrepareJson(IDictionary<string, string> data)
         {
             var items = data.Select(x => new
             {
-                x.Key,
+                Key = JToken.Parse(x.Key),
                 Value = JToken.Parse(x.Value)
             });
 

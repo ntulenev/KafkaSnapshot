@@ -23,6 +23,7 @@ using KafkaSnapshot.Export.File.Json;
 using KafkaSnapshot.Processing.Configuration.Validation;
 using KafkaSnapshot.Models.Export;
 using KafkaSnapshot.Export.File.Common;
+using KafkaSnapshot.Export.Markers;
 
 namespace KafkaSnapshot.Utility
 {
@@ -55,8 +56,9 @@ namespace KafkaSnapshot.Utility
         /// </summary>
         public static void AddExport(this IServiceCollection services)
         {
-            services.AddSingleton<IDataExporter<long, string, ExportedTopic>, JsonLongKeyStringValueDataExporter>();
-            services.AddSingleton<IDataExporter<string, string, ExportedTopic>, JsonStringKeyStringValueDataExporter>();
+            services.AddSingleton<IDataExporter<long, OriginalKeyMarker, string, ExportedTopic>, OriginalKeyJsonValueDataExporter<long>>();
+            services.AddSingleton<IDataExporter<string, OriginalKeyMarker, string, ExportedTopic>, OriginalKeyJsonValueDataExporter<string>>();
+            services.AddSingleton<IDataExporter<string, JsonKeyMarker, string, ExportedTopic>, JsonKeyJsonValueDataExporter>();
             services.AddSingleton<IFileSaver, FileSaver>();
         }
 
@@ -121,7 +123,7 @@ namespace KafkaSnapshot.Utility
                 return new ConsumerBuilder<Key, string>(conf).Build();
             }
 
-            void InitUnit<Key>(LoadedTopic topic) where Key : notnull
+            void InitUnit<TKey, TMarker>(LoadedTopic topic) where TKey : notnull where TMarker : IKeyRepresentationMarker
             {
                 var adminConfig = new AdminClientConfig()
                 {
@@ -132,13 +134,10 @@ namespace KafkaSnapshot.Utility
 
                 var wLoader = new TopicWatermarkLoader(new TopicName(topic.Name), adminClient, config.MetadataTimeout);
 
-
-                //TODO Add serializer depend on type to switch string and json
-
-                list.Add(new ProcessingUnit<Key, string>(sp.GetRequiredService<ILogger<ProcessingUnit<Key, string>>>(),
+                list.Add(new ProcessingUnit<TKey, TMarker, string>(sp.GetRequiredService<ILogger<ProcessingUnit<TKey, TMarker, string>>>(),
                                             new ProcessingTopic(topic.Name, topic.ExportFileName),
-                                            new SnapshotLoader<Key, string>(sp.GetRequiredService<ILogger<SnapshotLoader<Key, string>>>(), createConsumer<Key>, wLoader),
-                                            sp.GetRequiredService<IDataExporter<Key, string, ExportedTopic>>()
+                                            new SnapshotLoader<TKey, string>(sp.GetRequiredService<ILogger<SnapshotLoader<TKey, string>>>(), createConsumer<TKey>, wLoader),
+                                            sp.GetRequiredService<IDataExporter<TKey, TMarker, string, ExportedTopic>>()
                                             )
                         );
             }
@@ -147,8 +146,9 @@ namespace KafkaSnapshot.Utility
             {
                 switch (topic.KeyType)
                 {
-                    case KeyType.Json: InitUnit<string>(topic); break;
-                    case KeyType.Long: InitUnit<long>(topic); break;
+                    case KeyType.Json: InitUnit<string, JsonKeyMarker>(topic); break;
+                    case KeyType.String: InitUnit<string, OriginalKeyMarker>(topic); break;
+                    case KeyType.Long: InitUnit<long, OriginalKeyMarker>(topic); break;
                     default: throw new InvalidOperationException($"Invalid Key type {topic.KeyType} for processing.");
                 }
             }

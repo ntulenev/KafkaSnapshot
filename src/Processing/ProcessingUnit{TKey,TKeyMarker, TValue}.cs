@@ -16,19 +16,22 @@ namespace KafkaSnapshot.Processing
     /// Single topic processor that loads data from Apache Kafka and exports to file.
     /// </summary>
     /// <typeparam name="TKey">Message Key.</typeparam>
+    /// <typeparam name="TKeyMarker">Message Key marker.</typeparam>
     /// <typeparam name="TValue">Message Value.</typeparam>
-    public class ProcessingUnit<TKey, TValue> : IProcessingUnit where TKey : notnull
+    public class ProcessingUnit<TKey, TKeyMarker, TValue> : IProcessingUnit where TKey : notnull
+                                                                                          where TKeyMarker : IKeyRepresentationMarker
     {
         /// <summary>
-        /// Creates <see cref="ProcessingUnit{TKey, TValue}"/>.
+        /// Creates <see cref="ProcessingUnit{TKey,TKeyMarker, TValue}"/>.
         /// </summary>
+        /// <param name="logger">Creates logger for <see cref="ProcessingUnit{TKey, TKeyMarker, TValue}"/>.</param>
         /// <param name="topic">Apahe Kafka topic.</param>
         /// <param name="kafkaLoader">Kafka topic loader.</param>
         /// <param name="exporter">Data exporter.</param>
-        public ProcessingUnit(ILogger<ProcessingUnit<TKey, TValue>> logger,
+        public ProcessingUnit(ILogger<ProcessingUnit<TKey, TKeyMarker, TValue>> logger,
                               ProcessingTopic topic,
                               ISnapshotLoader<TKey, TValue> kafkaLoader,
-                              IDataExporter<TKey, TValue, ExportedTopic> exporter)
+                              IDataExporter<TKey, TKeyMarker, TValue, ExportedTopic> exporter)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _topic = topic ?? throw new ArgumentNullException(nameof(topic));
@@ -52,8 +55,8 @@ namespace KafkaSnapshot.Processing
         public ProcessingTopic Topic => _topic;
 
         private readonly ISnapshotLoader<TKey, TValue> _kafkaLoader;
-        private readonly IDataExporter<TKey, TValue, ExportedTopic> _exporter;
+        private readonly IDataExporter<TKey, TKeyMarker, TValue, ExportedTopic> _exporter;
         private readonly ProcessingTopic _topic;
-        private readonly ILogger<ProcessingUnit<TKey, TValue>> _logger;
+        private readonly ILogger<ProcessingUnit<TKey, TKeyMarker, TValue>> _logger;
     }
 }

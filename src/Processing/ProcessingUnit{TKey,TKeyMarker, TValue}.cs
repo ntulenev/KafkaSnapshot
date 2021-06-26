@@ -45,6 +45,8 @@ namespace KafkaSnapshot.Processing
         public async Task ProcessAsync(CancellationToken ct)
         {
             _logger.LogDebug("Start loading data from Kafka.");
+
+            // TODO Add compacting
             var items = await _kafkaLoader.LoadCompactSnapshotAsync(ct).ConfigureAwait(false);
 
             _logger.LogDebug("Start exporting data to file.");

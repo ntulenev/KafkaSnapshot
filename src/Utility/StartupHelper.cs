@@ -135,7 +135,7 @@ namespace KafkaSnapshot.Utility
                 var wLoader = new TopicWatermarkLoader(new TopicName(topic.Name), adminClient, config.MetadataTimeout);
 
                 list.Add(new ProcessingUnit<TKey, TMarker, string>(sp.GetRequiredService<ILogger<ProcessingUnit<TKey, TMarker, string>>>(),
-                                            new ProcessingTopic(topic.Name, topic.ExportFileName),
+                                            new ProcessingTopic(topic.Name, topic.ExportFileName, topic.Compacting == CompactingMode.On),
                                             new SnapshotLoader<TKey, string>(sp.GetRequiredService<ILogger<SnapshotLoader<TKey, string>>>(), createConsumer<TKey>, wLoader),
                                             sp.GetRequiredService<IDataExporter<TKey, TMarker, string, ExportedTopic>>()
                                             )

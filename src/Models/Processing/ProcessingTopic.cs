@@ -3,5 +3,5 @@
     /// <summary>
     /// Topic that could be processed.
     /// </summary>
-    public record ProcessingTopic(string Name, string ExportName);
+    public record ProcessingTopic(string Name, string ExportName, bool LoadWithCompacting);
 }

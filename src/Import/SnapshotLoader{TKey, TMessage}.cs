@@ -33,7 +33,7 @@ namespace KafkaSnapshot.Import
         }
 
         ///<inheritdoc/>
-        public async Task<IDictionary<TKey, TMessage>> LoadCompactSnapshotAsync(CancellationToken ct)
+        public async Task<IEnumerable<KeyValuePair<TKey, TMessage>>> LoadCompactSnapshotAsync(bool withCompacting, CancellationToken ct)
         {
             _logger.LogDebug("Loading topic watermark.");
             var topicWatermark = await _topicWatermarkLoader.LoadWatermarksAsync(_consumerFactory, ct).ConfigureAwait(false);
@@ -42,7 +42,7 @@ namespace KafkaSnapshot.Import
             var initialState = await ConsumeInitialAsync(topicWatermark, ct).ConfigureAwait(false);
 
             _logger.LogDebug("Creating compacting state.");
-            var compactedState = CreateSnapshot(initialState);
+            var compactedState = CreateSnapshot(initialState, withCompacting);
 
             return compactedState;
         }
@@ -83,16 +83,24 @@ namespace KafkaSnapshot.Import
             }
         }
 
-        private static IDictionary<TKey, TMessage> CreateSnapshot(IEnumerable<KeyValuePair<TKey, TMessage>> items)
+        private IEnumerable<KeyValuePair<TKey, TMessage>> CreateSnapshot(IEnumerable<KeyValuePair<TKey, TMessage>> items, bool withCompacting)
         {
-            var itemssss = items.ToList();
-            return items.Where(x => x.Key is not null).Aggregate(
-                new Dictionary<TKey, TMessage>(),
-                (d, e) =>
-                {
-                    d[e.Key] = e.Value;
-                    return d;
-                });
+            if (withCompacting)
+            {
+                _logger.LogDebug("Compacting data.");
+
+                return items.Where(x => x.Key is not null).Aggregate(
+                    new Dictionary<TKey, TMessage>(),
+                    (d, e) =>
+                    {
+                        d[e.Key] = e.Value;
+                        return d;
+                    });
+            }
+            else
+            {
+                return items.ToList();
+            }
         }
 
         private readonly ITopicWatermarkLoader _topicWatermarkLoader;

@@ -28,7 +28,7 @@ namespace KafkaSnapshot.Export.File.Json
         }
 
         /// <inheritdoc/>
-        protected override string PrepareJson(IDictionary<TKey, string> data)
+        protected override string PrepareJson(IEnumerable<KeyValuePair<TKey, string>> data)
         {
             var items = data.Select(x => new
             {

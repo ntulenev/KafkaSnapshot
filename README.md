@@ -10,7 +10,7 @@ Config with topics for export:
 
 ```yaml
 "LoaderToolConfiguration": {
-  "MetadataTimeout": 1000,
+  "MetadataTimeout": "00:00:05",
   "BootstrapServers": [
   ],
   "Topics": [
@@ -38,7 +38,7 @@ Config with topics for export:
 
 | Parameter name | Description   |
 | -------------- | ------------- |
-| MetadataTimeout | Cluster metadata loading timeout in seconds  |
+| MetadataTimeout | Cluster metadata loading timeout |
 | BootstrapServers | List of kafka cluster servers, like "kafka-test:9092"  |
 | Name           | Apache Kafka topic name |
 | KeyType        | Apache Kafka topic key representation (Json,String,Long) |

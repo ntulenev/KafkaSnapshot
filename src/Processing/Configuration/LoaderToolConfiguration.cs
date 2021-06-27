@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace KafkaSnapshot.Processing.Configuration
 {
@@ -20,6 +21,6 @@ namespace KafkaSnapshot.Processing.Configuration
         /// <summary>
         /// Timout for metadata request.
         /// </summary>
-        public int MetadataTimeout { get; set; }
+        public TimeSpan MetadataTimeout { get; set; }
     }
 }

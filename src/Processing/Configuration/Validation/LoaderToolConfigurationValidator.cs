@@ -21,7 +21,7 @@ namespace KafkaSnapshot.Processing.Configuration.Validation
                 return ValidateOptionsResult.Fail("Configuration object is null.");
             }
 
-            if (options.MetadataTimeout <= 0)
+            if (options.MetadataTimeout <= TimeSpan.Zero)
             {
                 return ValidateOptionsResult.Fail("MetadataTimeout should be positive.");
             }

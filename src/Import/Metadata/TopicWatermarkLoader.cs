@@ -23,7 +23,7 @@ namespace KafkaSnapshot.Import.Metadata
         /// <param name="intTimeoutSeconds">Timeout in seconds for loading watermarks.</param>
         public TopicWatermarkLoader(TopicName topicName,
                                     IAdminClient adminClient,
-                                    int intTimeoutSeconds)
+                                    TimeSpan metaTimeout)
         {
             if (topicName is null)
             {
@@ -35,20 +35,20 @@ namespace KafkaSnapshot.Import.Metadata
                 throw new ArgumentNullException(nameof(adminClient));
             }
 
-            if (intTimeoutSeconds <= 0)
+            if (metaTimeout <= TimeSpan.Zero)
             {
                 throw new ArgumentException(
-                    "The watermark timeout should be positive.", nameof(intTimeoutSeconds));
+                    "The watermark timeout should be positive.", nameof(metaTimeout));
             }
 
-            _intTimeoutSeconds = intTimeoutSeconds;
+            _metaTimeout = metaTimeout;
             _adminClient = adminClient;
             _topicName = topicName;
         }
 
         private IEnumerable<TopicPartition> SplitTopicOnPartitions()
         {
-            var topicMeta = _adminClient.GetMetadata(_topicName.Value, TimeSpan.FromSeconds(_intTimeoutSeconds));
+            var topicMeta = _adminClient.GetMetadata(_topicName.Value, _metaTimeout);
 
             var partitions = topicMeta.Topics.Single().Partitions;
 
@@ -59,7 +59,7 @@ namespace KafkaSnapshot.Import.Metadata
         {
             var watermarkOffsets = consumer.QueryWatermarkOffsets(
                                     topicPartition,
-                                    TimeSpan.FromSeconds(_intTimeoutSeconds));
+                                    _metaTimeout);
 
             return new PartitionWatermark(_topicName, watermarkOffsets, topicPartition.Partition);
         }
@@ -93,6 +93,6 @@ namespace KafkaSnapshot.Import.Metadata
 
         private readonly TopicName _topicName;
         private readonly IAdminClient _adminClient;
-        private readonly int _intTimeoutSeconds;
+        private readonly TimeSpan _metaTimeout;
     }
 }

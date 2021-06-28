@@ -85,6 +85,8 @@ namespace KafkaSnapshot.Utility
         /// </summary>
         public static void AddTopicLoaders(this IServiceCollection services, HostBuilderContext hostContext)
         {
+            services.AddSingleton<IKeyFiltersFactory<long>, NaiveKeyFiltersFactory<long>>();
+            services.AddSingleton<IKeyFiltersFactory<string>, NaiveKeyFiltersFactory<string>>();
             services.AddSingleton(sp => CreateTopicLoaders(sp, hostContext.Configuration));
         }
 
@@ -125,7 +127,7 @@ namespace KafkaSnapshot.Utility
                 return new ConsumerBuilder<Key, string>(conf).Build();
             }
 
-            void InitUnit<TKey, TMarker>(LoadedTopic topic, IKeyFilter<TKey> filter) where TKey : notnull where TMarker : IKeyRepresentationMarker
+            void InitUnit<TKey, TMarker>(LoadedTopic topic, FilterType filterType, TKey filterSample) where TKey : notnull where TMarker : IKeyRepresentationMarker
             {
                 var adminConfig = new AdminClientConfig()
                 {
@@ -138,11 +140,13 @@ namespace KafkaSnapshot.Utility
 
                 var pTopic = new ProcessingTopic(topic.Name, topic.ExportFileName, topic.Compacting == CompactingMode.On);
 
+                var filterFactory = sp.GetRequiredService<IKeyFiltersFactory<TKey>>();
+
                 var loader = new SnapshotLoader<TKey, string>(
                         sp.GetRequiredService<ILogger<SnapshotLoader<TKey, string>>>(),
                         createConsumer<TKey>,
                         wLoader,
-                        filter);
+                        filterFactory.Create(filterType, filterSample));
 
                 list.Add(new ProcessingUnit<TKey, TMarker, string>(sp.GetRequiredService<ILogger<ProcessingUnit<TKey, TMarker, string>>>(),
                                             pTopic,
@@ -156,9 +160,9 @@ namespace KafkaSnapshot.Utility
             {
                 switch (topic.KeyType)
                 {
-                    case KeyType.Json: InitUnit<string, JsonKeyMarker>(topic, new DefaultFilter<string>()); break;
-                    case KeyType.String: InitUnit<string, OriginalKeyMarker>(topic, new DefaultFilter<string>()); break;
-                    case KeyType.Long: InitUnit<long, OriginalKeyMarker>(topic, new DefaultFilter<long>()); break;
+                    case KeyType.Json: InitUnit<string, JsonKeyMarker>(topic, FilterType.Default, default!); break;
+                    case KeyType.String: InitUnit<string, OriginalKeyMarker>(topic, FilterType.Default, default!); break;
+                    case KeyType.Long: InitUnit<long, OriginalKeyMarker>(topic, FilterType.Default, default); break;
                     default: throw new InvalidOperationException($"Invalid Key type {topic.KeyType} for processing.");
                 }
             }

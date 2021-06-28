@@ -5,19 +5,14 @@ using KafkaSnapshot.Abstractions.Filters;
 namespace KafkaSnapshot.Import.Filters
 {
     /// <summary>
-    /// Simple factory for primitive types.
+    /// Simple factory filter factory.
     /// </summary>
     /// <typeparam name="TKey">Message key type.</typeparam>
-    class NaiveKeyFiltersFactory<TKey> : IKeyFiltersFactory<TKey> where TKey : notnull
+    public class NaiveKeyFiltersFactory<TKey> : IKeyFiltersFactory<TKey> where TKey : notnull
     {
         /// <inheritdoc/>
         public IKeyFilter<TKey> Create(FilterType type, TKey sample)
         {
-            if (sample is null)
-            {
-                throw new ArgumentNullException(nameof(sample));
-            }
-
             return type switch
             {
                 FilterType.Default => _default,

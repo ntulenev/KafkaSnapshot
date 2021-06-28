@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 
 using KafkaSnapshot.Import.Metadata;
 using KafkaSnapshot.Import.Watermarks;
+using KafkaSnapshot.Abstractions.Filters;
 using KafkaSnapshot.Abstractions.Import;
 
 namespace KafkaSnapshot.Import

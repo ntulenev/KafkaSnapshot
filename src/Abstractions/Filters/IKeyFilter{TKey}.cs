@@ -1,4 +1,4 @@
-﻿namespace KafkaSnapshot.Abstractions.Import
+﻿namespace KafkaSnapshot.Abstractions.Filters
 {
     /// <summary>
     /// Filter for loading data from Kafka.

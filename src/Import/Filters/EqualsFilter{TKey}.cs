@@ -1,6 +1,6 @@
 ﻿using System;
 
-using KafkaSnapshot.Abstractions.Import;
+using KafkaSnapshot.Abstractions.Filters;
 
 namespace KafkaSnapshot.Import.Filters
 {

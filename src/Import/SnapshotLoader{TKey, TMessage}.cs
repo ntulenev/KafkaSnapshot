@@ -22,12 +22,14 @@ namespace KafkaSnapshot.Import
         /// </summary>
         public SnapshotLoader(ILogger<SnapshotLoader<TKey, TMessage>> logger,
                               Func<IConsumer<TKey, TMessage>> consumerFactory,
-                              ITopicWatermarkLoader topicWatermarkLoader
+                              ITopicWatermarkLoader topicWatermarkLoader,
+                              IKeyFilter<TKey> filter
                              )
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _topicWatermarkLoader = topicWatermarkLoader ?? throw new ArgumentNullException(nameof(topicWatermarkLoader));
             _consumerFactory = consumerFactory ?? throw new ArgumentNullException(nameof(consumerFactory));
+            _filter = filter ?? throw new ArgumentNullException(nameof(filter));
 
             _logger.LogDebug("Instance created.");
         }
@@ -43,6 +45,8 @@ namespace KafkaSnapshot.Import
 
             _logger.LogDebug("Creating compacting state.");
             var compactedState = CreateSnapshot(initialState, withCompacting);
+
+            _logger.LogDebug("Created compacting state for {items} item(s).", compactedState.Count());
 
             return compactedState;
         }
@@ -73,7 +77,10 @@ namespace KafkaSnapshot.Import
 
                     _logger.LogTrace("Loading {Key} - {Value}", result.Message.Key, result.Message.Value);
 
-                    yield return new KeyValuePair<TKey, TMessage>(result.Message.Key, result.Message.Value);
+                    if (_filter.IsMatch(result.Message.Key))
+                    {
+                        yield return new KeyValuePair<TKey, TMessage>(result.Message.Key, result.Message.Value);
+                    }
 
                 } while (watermark.IsWatermarkAchievedBy(result));
             }
@@ -106,6 +113,7 @@ namespace KafkaSnapshot.Import
         private readonly ITopicWatermarkLoader _topicWatermarkLoader;
         private readonly Func<IConsumer<TKey, TMessage>> _consumerFactory;
         private readonly ILogger<SnapshotLoader<TKey, TMessage>> _logger;
+        private readonly IKeyFilter<TKey> _filter;
     }
 }
 

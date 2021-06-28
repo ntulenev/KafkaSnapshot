@@ -24,6 +24,8 @@ using KafkaSnapshot.Processing.Configuration.Validation;
 using KafkaSnapshot.Models.Export;
 using KafkaSnapshot.Export.File.Common;
 using KafkaSnapshot.Export.Markers;
+using KafkaSnapshot.Import.Filters;
+using KafkaSnapshot.Abstractions.Import;
 
 namespace KafkaSnapshot.Utility
 {
@@ -123,7 +125,7 @@ namespace KafkaSnapshot.Utility
                 return new ConsumerBuilder<Key, string>(conf).Build();
             }
 
-            void InitUnit<TKey, TMarker>(LoadedTopic topic) where TKey : notnull where TMarker : IKeyRepresentationMarker
+            void InitUnit<TKey, TMarker>(LoadedTopic topic, IKeyFilter<TKey> filter) where TKey : notnull where TMarker : IKeyRepresentationMarker
             {
                 var adminConfig = new AdminClientConfig()
                 {
@@ -134,9 +136,17 @@ namespace KafkaSnapshot.Utility
 
                 var wLoader = new TopicWatermarkLoader(new TopicName(topic.Name), adminClient, config.MetadataTimeout);
 
+                var pTopic = new ProcessingTopic(topic.Name, topic.ExportFileName, topic.Compacting == CompactingMode.On);
+
+                var loader = new SnapshotLoader<TKey, string>(
+                        sp.GetRequiredService<ILogger<SnapshotLoader<TKey, string>>>(),
+                        createConsumer<TKey>,
+                        wLoader,
+                        filter);
+
                 list.Add(new ProcessingUnit<TKey, TMarker, string>(sp.GetRequiredService<ILogger<ProcessingUnit<TKey, TMarker, string>>>(),
-                                            new ProcessingTopic(topic.Name, topic.ExportFileName, topic.Compacting == CompactingMode.On),
-                                            new SnapshotLoader<TKey, string>(sp.GetRequiredService<ILogger<SnapshotLoader<TKey, string>>>(), createConsumer<TKey>, wLoader),
+                                            pTopic,
+                                            loader,
                                             sp.GetRequiredService<IDataExporter<TKey, TMarker, string, ExportedTopic>>()
                                             )
                         );
@@ -146,9 +156,9 @@ namespace KafkaSnapshot.Utility
             {
                 switch (topic.KeyType)
                 {
-                    case KeyType.Json: InitUnit<string, JsonKeyMarker>(topic); break;
-                    case KeyType.String: InitUnit<string, OriginalKeyMarker>(topic); break;
-                    case KeyType.Long: InitUnit<long, OriginalKeyMarker>(topic); break;
+                    case KeyType.Json: InitUnit<string, JsonKeyMarker>(topic, new DefaultFilter<string>()); break;
+                    case KeyType.String: InitUnit<string, OriginalKeyMarker>(topic, new DefaultFilter<string>()); break;
+                    case KeyType.Long: InitUnit<long, OriginalKeyMarker>(topic, new DefaultFilter<long>()); break;
                     default: throw new InvalidOperationException($"Invalid Key type {topic.KeyType} for processing.");
                 }
             }

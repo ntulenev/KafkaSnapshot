@@ -34,7 +34,7 @@ Config with topics for export:
         "Compacting": "On",
         "ExportFileName": "topic3.json",
         "FilterType": "Equals",
-        "FilterValue": "42"
+        "FilterValue": 42
       }
   ]
 }
@@ -49,4 +49,4 @@ Config with topics for export:
 | Compacting     | Use compacting by key or not (On,Off) |
 | ExportFileName | File name for exported data  |
 | FilterType | Equals or None (optional)  |
-| FilterValue | String representation of filtering sample  |
+| FilterValue | Sample value for filtering |

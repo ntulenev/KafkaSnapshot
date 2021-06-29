@@ -2,7 +2,7 @@
 Tool that allows to read current data snapshot from Apache Kafka topic with compacting.
 
 Application supports Apache Kafka topics with string keys (optionally as json) and long keys. Topics with NULL keys will be skipped.
-Topics could be filtered by key value (current version for long keys).
+Topics could be filtered by key value (only for long keys in current version).
 
 Messages should contains JSON data.
 

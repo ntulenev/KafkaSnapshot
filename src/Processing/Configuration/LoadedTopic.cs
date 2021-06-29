@@ -35,6 +35,6 @@ namespace KafkaSnapshot.Processing.Configuration
         /// <summary>
         /// Optional filter value
         /// </summary>
-        public string? FilterValue { get; set; }
+        public object? FilterValue { get; set; }
     }
 }

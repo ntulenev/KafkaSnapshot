@@ -2,7 +2,7 @@
 {
     public enum FilterType
     {
-        Default,
+        None,
         Equals
     }
 }

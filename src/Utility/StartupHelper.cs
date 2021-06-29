@@ -127,7 +127,7 @@ namespace KafkaSnapshot.Utility
                 return new ConsumerBuilder<Key, string>(conf).Build();
             }
 
-            void InitUnit<TKey, TMarker>(LoadedTopic topic, FilterType filterType, TKey filterSample) where TKey : notnull where TMarker : IKeyRepresentationMarker
+            void InitUnit<TKey, TMarker>(LoadedTopic topic) where TKey : notnull where TMarker : IKeyRepresentationMarker
             {
                 var adminConfig = new AdminClientConfig()
                 {
@@ -142,11 +142,16 @@ namespace KafkaSnapshot.Utility
 
                 var filterFactory = sp.GetRequiredService<IKeyFiltersFactory<TKey>>();
 
+                var typedFilterValue = topic.FilterValue is not null ?
+                                        (TKey)Convert.ChangeType(topic.FilterValue, typeof(TKey))
+                                        :
+                                        default;
+
                 var loader = new SnapshotLoader<TKey, string>(
                         sp.GetRequiredService<ILogger<SnapshotLoader<TKey, string>>>(),
                         createConsumer<TKey>,
                         wLoader,
-                        filterFactory.Create(filterType, filterSample));
+                        filterFactory.Create(topic.FilterType, typedFilterValue!));
 
                 list.Add(new ProcessingUnit<TKey, TMarker, string>(sp.GetRequiredService<ILogger<ProcessingUnit<TKey, TMarker, string>>>(),
                                             pTopic,
@@ -160,9 +165,9 @@ namespace KafkaSnapshot.Utility
             {
                 switch (topic.KeyType)
                 {
-                    case KeyType.Json: InitUnit<string, JsonKeyMarker>(topic, FilterType.Default, default!); break;
-                    case KeyType.String: InitUnit<string, OriginalKeyMarker>(topic, FilterType.Default, default!); break;
-                    case KeyType.Long: InitUnit<long, OriginalKeyMarker>(topic, FilterType.Default, default); break;
+                    case KeyType.Json: InitUnit<string, JsonKeyMarker>(topic); break;
+                    case KeyType.String: InitUnit<string, OriginalKeyMarker>(topic); break;
+                    case KeyType.Long: InitUnit<long, OriginalKeyMarker>(topic); break;
                     default: throw new InvalidOperationException($"Invalid Key type {topic.KeyType} for processing.");
                 }
             }

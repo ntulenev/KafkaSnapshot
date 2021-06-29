@@ -1,4 +1,6 @@
-﻿namespace KafkaSnapshot.Processing.Configuration
+﻿using KafkaSnapshot.Abstractions.Filters;
+
+namespace KafkaSnapshot.Processing.Configuration
 {
     /// <summary>
     /// Topic representatin in configuration <see cref="LoaderToolConfiguration"/>.
@@ -24,5 +26,15 @@
         /// Exported file name for topic data.
         /// </summary>
         public string ExportFileName { get; set; } = default!;
+
+        /// <summary>
+        /// Topic filter type
+        /// </summary>
+        public FilterType FilterType { get; set; } = FilterType.None;
+
+        /// <summary>
+        /// Optional filter value
+        /// </summary>
+        public string? FilterValue { get; set; }
     }
 }

@@ -15,7 +15,7 @@ namespace KafkaSnapshot.Import.Filters
         {
             return type switch
             {
-                FilterType.Default => _default,
+                FilterType.None => _default,
                 FilterType.Equals => new EqualsFilter<TKey>(sample),
                 _ => throw new ArgumentException($"Invalid filter type {type}", nameof(type)),
             };

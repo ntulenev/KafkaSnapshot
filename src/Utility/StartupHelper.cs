@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -90,15 +91,9 @@ namespace KafkaSnapshot.Utility
             services.AddSingleton(sp => CreateTopicLoaders(sp, hostContext.Configuration));
         }
 
-        /// <summary>
-        /// Creates topic loaders from config
-        /// </summary>
-        private static ICollection<IProcessingUnit> CreateTopicLoaders(IServiceProvider sp, IConfiguration configuration)
+        private static LoaderToolConfiguration GetConfig(IServiceProvider sp, IConfiguration configuration)
         {
-            var list = new List<IProcessingUnit>();
-
             var section = configuration.GetSection(nameof(LoaderToolConfiguration));
-
             var config = section.Get<LoaderToolConfiguration>();
 
             Debug.Assert(config is not null);
@@ -113,6 +108,31 @@ namespace KafkaSnapshot.Utility
                     (string.Empty, config.GetType(), new[] { validationResult.FailureMessage });
             }
 
+            return config;
+        }
+
+        /// <summary>
+        /// Creates topic loaders from config
+        /// </summary>
+        private static ICollection<IProcessingUnit> CreateTopicLoaders(IServiceProvider sp, IConfiguration configuration)
+        {
+            var config = GetConfig(sp, configuration);
+            return config.Topics.Select(topic => topic.KeyType switch
+            {
+                KeyType.Json => InitUnit<string, JsonKeyMarker>(topic, sp, config),
+                KeyType.String => InitUnit<string, OriginalKeyMarker>(topic, sp, config),
+                KeyType.Long => InitUnit<long, OriginalKeyMarker>(topic, sp, config),
+                _ => throw new InvalidOperationException($"Invalid Key type {topic.KeyType} for processing.")
+            }).ToList();
+        }
+
+        /// <summary>
+        /// Create single loader
+        /// </summary>
+        private static IProcessingUnit InitUnit<TKey, TMarker>
+                                (LoadedTopic topic, IServiceProvider provider, LoaderToolConfiguration config)
+                                where TKey : notnull where TMarker : IKeyRepresentationMarker
+        {
             var servers = string.Join(",", config.BootstrapServers);
 
             IConsumer<Key, string> createConsumer<Key>()
@@ -127,52 +147,38 @@ namespace KafkaSnapshot.Utility
                 return new ConsumerBuilder<Key, string>(conf).Build();
             }
 
-            void InitUnit<TKey, TMarker>(LoadedTopic topic) where TKey : notnull where TMarker : IKeyRepresentationMarker
+            var list = new List<ProcessingUnit<TKey, TMarker, string>>();
+
+            var adminConfig = new AdminClientConfig()
             {
-                var adminConfig = new AdminClientConfig()
-                {
-                    BootstrapServers = servers
-                };
+                BootstrapServers = servers
+            };
 
-                var adminClient = new AdminClientBuilder(adminConfig).Build();
+            var adminClient = new AdminClientBuilder(adminConfig).Build();
 
-                var wLoader = new TopicWatermarkLoader(new TopicName(topic.Name), adminClient, config.MetadataTimeout);
+            var wLoader = new TopicWatermarkLoader(new TopicName(topic.Name), adminClient, config.MetadataTimeout);
 
-                var pTopic = new ProcessingTopic(topic.Name, topic.ExportFileName, topic.Compacting == CompactingMode.On);
+            var pTopic = new ProcessingTopic(topic.Name, topic.ExportFileName, topic.Compacting == CompactingMode.On);
 
-                var filterFactory = sp.GetRequiredService<IKeyFiltersFactory<TKey>>();
+            var filterFactory = provider.GetRequiredService<IKeyFiltersFactory<TKey>>();
 
-                var typedFilterValue = topic.FilterValue is not null ?
-                                        (TKey)Convert.ChangeType(topic.FilterValue, typeof(TKey))
-                                        :
-                                        default;
+            var typedFilterValue = topic.FilterValue is not null ?
+                                    (TKey)Convert.ChangeType(topic.FilterValue, typeof(TKey))
+                                    :
+                                    default;
 
-                var loader = new SnapshotLoader<TKey, string>(
-                        sp.GetRequiredService<ILogger<SnapshotLoader<TKey, string>>>(),
-                        createConsumer<TKey>,
-                        wLoader,
-                        filterFactory.Create(topic.FilterType, typedFilterValue!));
+            var loader = new SnapshotLoader<TKey, string>(
+                    provider.GetRequiredService<ILogger<SnapshotLoader<TKey, string>>>(),
+                    createConsumer<TKey>,
+                    wLoader,
+                    filterFactory.Create(topic.FilterType, typedFilterValue!));
 
-                list.Add(new ProcessingUnit<TKey, TMarker, string>(sp.GetRequiredService<ILogger<ProcessingUnit<TKey, TMarker, string>>>(),
-                                            pTopic,
-                                            loader,
-                                            sp.GetRequiredService<IDataExporter<TKey, TMarker, string, ExportedTopic>>()
-                                            )
-                        );
-            }
-
-            foreach (var topic in config.Topics)
-            {
-                switch (topic.KeyType)
-                {
-                    case KeyType.Json: InitUnit<string, JsonKeyMarker>(topic); break;
-                    case KeyType.String: InitUnit<string, OriginalKeyMarker>(topic); break;
-                    case KeyType.Long: InitUnit<long, OriginalKeyMarker>(topic); break;
-                    default: throw new InvalidOperationException($"Invalid Key type {topic.KeyType} for processing.");
-                }
-            }
-
-            return list;
+            return new ProcessingUnit<TKey, TMarker, string>(
+                                        provider.GetRequiredService<ILogger<ProcessingUnit<TKey, TMarker, string>>>(),
+                                        pTopic,
+                                        loader,
+                                        provider.GetRequiredService<IDataExporter<TKey, TMarker, string, ExportedTopic>>()
+                                        );
         }
     }
 }

@@ -111,9 +111,6 @@ namespace KafkaSnapshot.Utility
             return config;
         }
 
-        /// <summary>
-        /// Creates topic loaders from config
-        /// </summary>
         private static ICollection<IProcessingUnit> CreateTopicLoaders(IServiceProvider sp, IConfiguration configuration)
         {
             var config = GetConfig(sp, configuration);
@@ -126,9 +123,6 @@ namespace KafkaSnapshot.Utility
             }).ToList();
         }
 
-        /// <summary>
-        /// Create single loader
-        /// </summary>
         private static IProcessingUnit InitUnit<TKey, TMarker>
                                 (LoadedTopic topic, IServiceProvider provider, LoaderToolConfiguration config)
                                 where TKey : notnull where TMarker : IKeyRepresentationMarker

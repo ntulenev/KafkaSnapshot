@@ -1,8 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-using KafkaSnapshot.Models.Processing;
-
 namespace KafkaSnapshot.Abstractions.Processing
 {
     /// <summary>
@@ -19,6 +17,6 @@ namespace KafkaSnapshot.Abstractions.Processing
         /// <summary>
         /// Processing topic information.
         /// </summary>
-        public string Topic { get; }
+        public string TopicName { get; }
     }
 }

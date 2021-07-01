@@ -1,5 +1,4 @@
-﻿using KafkaSnapshot.Abstractions.Filters;
-using KafkaSnapshot.Models.Filters;
+﻿using KafkaSnapshot.Models.Filters;
 
 namespace KafkaSnapshot.Processing.Configuration
 {

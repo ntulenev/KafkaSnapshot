@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Confluent.Kafka;
+
 using KafkaSnapshot.Import.Configuration;
 using KafkaSnapshot.Import.Watermarks;
 using KafkaSnapshot.Models.Import;

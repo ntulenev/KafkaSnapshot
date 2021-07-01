@@ -101,7 +101,7 @@ namespace KafkaSnapshot.Utility
             {
                 var adminConfig = new AdminClientConfig()
                 {
-                    BootstrapServers = string.Join(",", config.BootstrapServers)
+                    BootstrapServers = string.Join(",", config.BootstrapServers)  // TODO Add Validation.
                 };
                 return new AdminClientBuilder(adminConfig).Build();
             });
@@ -145,6 +145,9 @@ namespace KafkaSnapshot.Utility
                                 (LoadedTopic topic, IServiceProvider provider, LoaderToolConfiguration config)
                                 where TKey : notnull where TMarker : IKeyRepresentationMarker
         {
+
+            // TODO: Recator method for nice DI.
+
             var servers = string.Join(",", config.BootstrapServers);
 
             IConsumer<Key, string> createConsumer<Key>()

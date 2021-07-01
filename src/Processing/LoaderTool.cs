@@ -38,11 +38,11 @@ namespace KafkaSnapshot.Processing
 
             foreach (var unit in _units)
             {
-                using var _ = _logger.BeginScope("topic {topic}", unit.Topic);
+                using var _ = _logger.BeginScope("topic {topic}", unit.TopicName);
 
                 _logger.LogDebug("Start processing topic.");
 
-                Console.WriteLine($"{++indexer}/{_units.Count} Processing topic {unit.Topic}.");
+                Console.WriteLine($"{++indexer}/{_units.Count} Processing topic {unit.TopicName}.");
 
                 try
                 {
@@ -57,7 +57,7 @@ namespace KafkaSnapshot.Processing
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Error on processing topic");
-                    Console.WriteLine($"Unable to load data for topic {unit.Topic}");
+                    Console.WriteLine($"Unable to load data for topic {unit.TopicName}");
                 }
 
             }

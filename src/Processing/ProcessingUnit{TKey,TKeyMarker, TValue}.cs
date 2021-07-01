@@ -67,7 +67,7 @@ namespace KafkaSnapshot.Processing
         }
 
         /// <inheritdoc/>
-        public string Topic => _topic.Name;
+        public string TopicName => _topic.Name;
 
         private readonly ISnapshotLoader<TKey, TValue> _kafkaLoader;
         private readonly IDataExporter<TKey, TKeyMarker, TValue, ExportedTopic> _exporter;

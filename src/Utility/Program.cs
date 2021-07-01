@@ -21,6 +21,7 @@ namespace KafkaSnapshot.Utility
                    .ConfigureServices((hostContext, services) =>
                    {
                        services.AddTools(hostContext);
+                       services.AddImport(hostContext);
                        services.AddExport();
                        services.AddTopicLoaders(hostContext);
                        services.AddLogging(hostContext);

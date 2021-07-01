@@ -1,4 +1,4 @@
-﻿namespace KafkaSnapshot.Abstractions.Filters
+﻿namespace KafkaSnapshot.Models.Filters
 {
     public enum FilterType
     {

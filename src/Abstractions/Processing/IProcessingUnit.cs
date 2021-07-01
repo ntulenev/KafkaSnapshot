@@ -19,6 +19,6 @@ namespace KafkaSnapshot.Abstractions.Processing
         /// <summary>
         /// Processing topic information.
         /// </summary>
-        public ProcessingTopic Topic { get; }
+        public string Topic { get; }
     }
 }

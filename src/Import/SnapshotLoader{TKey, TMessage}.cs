@@ -24,31 +24,38 @@ namespace KafkaSnapshot.Import
         /// </summary>
         public SnapshotLoader(ILogger<SnapshotLoader<TKey, TMessage>> logger,
                               Func<IConsumer<TKey, TMessage>> consumerFactory,
-                              ITopicWatermarkLoader topicWatermarkLoader,
-                              IKeyFilter<TKey> filter
+                              ITopicWatermarkLoader topicWatermarkLoader
                              )
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _topicWatermarkLoader = topicWatermarkLoader ?? throw new ArgumentNullException(nameof(topicWatermarkLoader));
             _consumerFactory = consumerFactory ?? throw new ArgumentNullException(nameof(consumerFactory));
-            _filter = filter ?? throw new ArgumentNullException(nameof(filter));
 
             _logger.LogDebug("Instance created.");
         }
 
         ///<inheritdoc/>
-        public async Task<IEnumerable<KeyValuePair<TKey, TMessage>>> LoadCompactSnapshotAsync(bool withCompacting, TopicName topicName, CancellationToken ct)
+        public async Task<IEnumerable<KeyValuePair<TKey, TMessage>>> LoadCompactSnapshotAsync(
+            bool withCompacting,
+            TopicName topicName,
+            IKeyFilter<TKey> filter,
+            CancellationToken ct)
         {
             if (topicName is null)
             {
                 throw new ArgumentNullException(nameof(topicName));
             }
 
+            if (filter is null)
+            {
+                throw new ArgumentNullException(nameof(filter));
+            }
+
             _logger.LogDebug("Loading topic watermark.");
             var topicWatermark = await _topicWatermarkLoader.LoadWatermarksAsync(_consumerFactory, topicName, ct).ConfigureAwait(false);
 
             _logger.LogDebug("Loading initial state.");
-            var initialState = await ConsumeInitialAsync(topicWatermark, ct).ConfigureAwait(false);
+            var initialState = await ConsumeInitialAsync(topicWatermark, filter, ct).ConfigureAwait(false);
 
             _logger.LogDebug("Creating compacting state.");
             var compactedState = CreateSnapshot(initialState, withCompacting);
@@ -60,18 +67,22 @@ namespace KafkaSnapshot.Import
 
         private async Task<IEnumerable<KeyValuePair<TKey, TMessage>>> ConsumeInitialAsync
            (TopicWatermark topicWatermark,
-           CancellationToken ct)
+            IKeyFilter<TKey> filter,
+            CancellationToken ct)
         {
             var consumedEntities = await Task.WhenAll(topicWatermark.Watermarks
                 .Select(watermark =>
-                            Task.Run(() => ConsumeFromWatermark(watermark, ct))
+                            Task.Run(() => ConsumeFromWatermark(watermark, filter, ct))
                        )
                 ).ConfigureAwait(false);
 
             return consumedEntities.SelectMany(сonsumerResults => сonsumerResults);
         }
 
-        private IEnumerable<KeyValuePair<TKey, TMessage>> ConsumeFromWatermark(PartitionWatermark watermark, CancellationToken ct)
+        private IEnumerable<KeyValuePair<TKey, TMessage>> ConsumeFromWatermark(
+            PartitionWatermark watermark,
+            IKeyFilter<TKey> filter,
+            CancellationToken ct)
         {
             using var consumer = _consumerFactory();
             try
@@ -84,7 +95,7 @@ namespace KafkaSnapshot.Import
 
                     _logger.LogTrace("Loading {Key} - {Value}", result.Message.Key, result.Message.Value);
 
-                    if (_filter.IsMatch(result.Message.Key))
+                    if (filter.IsMatch(result.Message.Key))
                     {
                         yield return new KeyValuePair<TKey, TMessage>(result.Message.Key, result.Message.Value);
                     }
@@ -120,7 +131,6 @@ namespace KafkaSnapshot.Import
         private readonly ITopicWatermarkLoader _topicWatermarkLoader;
         private readonly Func<IConsumer<TKey, TMessage>> _consumerFactory;
         private readonly ILogger<SnapshotLoader<TKey, TMessage>> _logger;
-        private readonly IKeyFilter<TKey> _filter;
     }
 }
 

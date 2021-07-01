@@ -5,9 +5,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Confluent.Kafka;
-
+using KafkaSnapshot.Import.Configuration;
 using KafkaSnapshot.Import.Watermarks;
 using KafkaSnapshot.Models.Import;
+using Microsoft.Extensions.Options;
 
 namespace KafkaSnapshot.Import.Metadata
 {
@@ -22,20 +23,24 @@ namespace KafkaSnapshot.Import.Metadata
         /// <param name="adminClient">Kafla admin client.</param>
         /// <param name="intTimeoutSeconds">Timeout in seconds for loading watermarks.</param>
         public TopicWatermarkLoader(IAdminClient adminClient,
-                                    TimeSpan metaTimeout)
+                                    IOptions<TopicWatermarkLoaderConfiguration> options)
         {
             if (adminClient is null)
             {
                 throw new ArgumentNullException(nameof(adminClient));
             }
 
-            if (metaTimeout <= TimeSpan.Zero)
+            if (options is null)
             {
-                throw new ArgumentException(
-                    "The watermark timeout should be positive.", nameof(metaTimeout));
+                throw new ArgumentNullException(nameof(options));
             }
 
-            _metaTimeout = metaTimeout;
+            if (options.Value is null)
+            {
+                throw new ArgumentException("Options value is not set", nameof(options));
+            }
+
+            _metaTimeout = options.Value.AdminClientTimeout;
             _adminClient = adminClient;
         }
 

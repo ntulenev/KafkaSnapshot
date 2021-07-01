@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
+using KafkaSnapshot.Abstractions.Filters;
 using KafkaSnapshot.Models.Import;
 
 namespace KafkaSnapshot.Abstractions.Import
@@ -16,6 +17,10 @@ namespace KafkaSnapshot.Abstractions.Import
         /// <summary>
         /// Loads topic as Dictionary with compacting per key.
         /// </summary>
-        public Task<IEnumerable<KeyValuePair<TKey, TMessage>>> LoadCompactSnapshotAsync(bool withCompacting, TopicName topicName, CancellationToken ct);
+        public Task<IEnumerable<KeyValuePair<TKey, TMessage>>> LoadCompactSnapshotAsync(
+            bool withCompacting,
+            TopicName topicName,
+            IKeyFilter<TKey> filter,
+            CancellationToken ct);
     }
 }

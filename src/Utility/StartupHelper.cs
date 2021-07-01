@@ -27,6 +27,7 @@ using KafkaSnapshot.Export.File.Common;
 using KafkaSnapshot.Export.Markers;
 using KafkaSnapshot.Import.Filters;
 using KafkaSnapshot.Abstractions.Filters;
+using KafkaSnapshot.Import.Configuration;
 
 namespace KafkaSnapshot.Utility
 {
@@ -50,6 +51,7 @@ namespace KafkaSnapshot.Utility
         {
             services.AddScoped(typeof(LoaderTool));
             services.Configure<LoaderToolConfiguration>(hostContext.Configuration.GetSection(nameof(LoaderToolConfiguration)));
+            services.Configure<TopicWatermarkLoaderConfiguration>(hostContext.Configuration.GetSection(nameof(TopicWatermarkLoaderConfiguration)));
             services.AddSingleton<IValidateOptions<LoaderToolConfiguration>, LoaderToolConfigurationValidator>();
 
         }
@@ -89,6 +91,21 @@ namespace KafkaSnapshot.Utility
             services.AddSingleton<IKeyFiltersFactory<long>, NaiveKeyFiltersFactory<long>>();
             services.AddSingleton<IKeyFiltersFactory<string>, NaiveKeyFiltersFactory<string>>();
             services.AddSingleton(sp => CreateTopicLoaders(sp, hostContext.Configuration));
+        }
+
+        public static void AddImport(this IServiceCollection services, HostBuilderContext hostContext)
+        {
+            var section = hostContext.Configuration.GetSection(nameof(LoaderToolConfiguration));
+            var config = section.Get<LoaderToolConfiguration>();
+            services.AddSingleton(sp =>
+            {
+                var adminConfig = new AdminClientConfig()
+                {
+                    BootstrapServers = string.Join(",", config.BootstrapServers)
+                };
+                return new AdminClientBuilder(adminConfig).Build();
+            });
+            services.AddSingleton<ITopicWatermarkLoader, TopicWatermarkLoader>();
         }
 
         private static LoaderToolConfiguration GetConfig(IServiceProvider sp, IConfiguration configuration)
@@ -144,35 +161,29 @@ namespace KafkaSnapshot.Utility
 
             var list = new List<ProcessingUnit<TKey, TMarker, string>>();
 
-            var adminConfig = new AdminClientConfig()
-            {
-                BootstrapServers = servers
-            };
-
-            var adminClient = new AdminClientBuilder(adminConfig).Build();
-
-            var wLoader = new TopicWatermarkLoader(adminClient, config.MetadataTimeout);
-
-            var pTopic = new ProcessingTopic(topic.Name, topic.ExportFileName, topic.Compacting == CompactingMode.On);
-
-            var filterFactory = provider.GetRequiredService<IKeyFiltersFactory<TKey>>();
-
             var typedFilterValue = topic.FilterValue is not null ?
-                                    (TKey)Convert.ChangeType(topic.FilterValue, typeof(TKey))
-                                    :
-                                    default;
+                                   (TKey)Convert.ChangeType(topic.FilterValue, typeof(TKey))
+                                   :
+                                   default;
+
+            var pTopic = new ProcessingTopic<TKey>(topic.Name,
+                                             topic.ExportFileName,
+                                             topic.Compacting == CompactingMode.On,
+                                             topic.FilterType,
+                                             typedFilterValue!);
 
             var loader = new SnapshotLoader<TKey, string>(
                     provider.GetRequiredService<ILogger<SnapshotLoader<TKey, string>>>(),
                     createConsumer<TKey>,
-                    wLoader,
-                    filterFactory.Create(topic.FilterType, typedFilterValue!));
+                    provider.GetRequiredService<ITopicWatermarkLoader>()
+                    );
 
             return new ProcessingUnit<TKey, TMarker, string>(
                                         provider.GetRequiredService<ILogger<ProcessingUnit<TKey, TMarker, string>>>(),
                                         pTopic,
                                         loader,
-                                        provider.GetRequiredService<IDataExporter<TKey, TMarker, string, ExportedTopic>>()
+                                        provider.GetRequiredService<IDataExporter<TKey, TMarker, string, ExportedTopic>>(),
+                                        provider.GetRequiredService<IKeyFiltersFactory<TKey>>()
                                         );
         }
     }

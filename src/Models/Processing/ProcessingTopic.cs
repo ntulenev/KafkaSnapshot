@@ -1,7 +1,13 @@
-﻿namespace KafkaSnapshot.Models.Processing
+﻿using KafkaSnapshot.Models.Filters;
+
+namespace KafkaSnapshot.Models.Processing
 {
     /// <summary>
     /// Topic that could be processed.
     /// </summary>
-    public record ProcessingTopic(string Name, string ExportName, bool LoadWithCompacting);
+    public record ProcessingTopic<TKey>(string Name, 
+                                        string ExportName, 
+                                        bool LoadWithCompacting, 
+                                        FilterType FilterType, 
+                                        TKey FilterValue);
 }

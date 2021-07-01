@@ -42,7 +42,7 @@ namespace KafkaSnapshot.Processing
 
                 _logger.LogDebug("Start processing topic.");
 
-                Console.WriteLine($"{++indexer}/{_units.Count} Processing topic {unit.Topic.Name}.");
+                Console.WriteLine($"{++indexer}/{_units.Count} Processing topic {unit.Topic}.");
 
                 try
                 {
@@ -57,7 +57,7 @@ namespace KafkaSnapshot.Processing
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Error on processing topic");
-                    Console.WriteLine($"Unable to load data for topic {unit.Topic.Name}");
+                    Console.WriteLine($"Unable to load data for topic {unit.Topic}");
                 }
 
             }

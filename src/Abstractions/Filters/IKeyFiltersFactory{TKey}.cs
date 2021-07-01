@@ -1,4 +1,6 @@
-﻿namespace KafkaSnapshot.Abstractions.Filters
+﻿using KafkaSnapshot.Models.Filters;
+
+namespace KafkaSnapshot.Abstractions.Filters
 {
     /// <summary>
     /// Creates KeyFilter by condition.

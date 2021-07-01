@@ -21,30 +21,25 @@ namespace KafkaSnapshot.Processing.Configuration.Validation
                 return ValidateOptionsResult.Fail("Configuration object is null.");
             }
 
-            if (options.MetadataTimeout <= TimeSpan.Zero)
-            {
-                return ValidateOptionsResult.Fail("MetadataTimeout should be positive.");
-            }
+            //if (options.BootstrapServers is null)
+            //{
+            //    return ValidateOptionsResult.Fail("BootstrapServers section is not set.");
+            //}
 
-            if (options.BootstrapServers is null)
-            {
-                return ValidateOptionsResult.Fail("BootstrapServers section is not set.");
-            }
+            //if (!options.BootstrapServers.Any())
+            //{
+            //    return ValidateOptionsResult.Fail("BootstrapServers section is empty.");
+            //}
 
-            if (!options.BootstrapServers.Any())
-            {
-                return ValidateOptionsResult.Fail("BootstrapServers section is empty.");
-            }
+            //if (options.BootstrapServers.Any(x => String.IsNullOrEmpty(x)))
+            //{
+            //    return ValidateOptionsResult.Fail("BootstrapServers section contains empty string.");
+            //}
 
-            if (options.BootstrapServers.Any(x => String.IsNullOrEmpty(x)))
-            {
-                return ValidateOptionsResult.Fail("BootstrapServers section contains empty string.");
-            }
-
-            if (options.BootstrapServers.Any(x => String.IsNullOrWhiteSpace(x)))
-            {
-                return ValidateOptionsResult.Fail("BootstrapServers section contains empty string of whitespaces.");
-            }
+            //if (options.BootstrapServers.Any(x => String.IsNullOrWhiteSpace(x)))
+            //{
+            //    return ValidateOptionsResult.Fail("BootstrapServers section contains empty string of whitespaces.");
+            //}
 
             if (options.Topics is null)
             {

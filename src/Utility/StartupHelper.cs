@@ -19,7 +19,6 @@ using KafkaSnapshot.Processing;
 using KafkaSnapshot.Processing.Configuration;
 using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Abstractions.Processing;
-using KafkaSnapshot.Models.Processing;
 using KafkaSnapshot.Export.File.Json;
 using KafkaSnapshot.Processing.Configuration.Validation;
 using KafkaSnapshot.Models.Export;
@@ -28,6 +27,7 @@ using KafkaSnapshot.Export.Markers;
 using KafkaSnapshot.Import.Filters;
 using KafkaSnapshot.Abstractions.Filters;
 using KafkaSnapshot.Import.Configuration;
+using KafkaSnapshot.Abstractions.Import;
 
 namespace KafkaSnapshot.Utility
 {
@@ -95,17 +95,36 @@ namespace KafkaSnapshot.Utility
 
         public static void AddImport(this IServiceCollection services, HostBuilderContext hostContext)
         {
-            var section = hostContext.Configuration.GetSection(nameof(LoaderToolConfiguration));
-            var config = section.Get<LoaderToolConfiguration>();
+            var section = hostContext.Configuration.GetSection(nameof(BootstrapServersConfiguration));
+            var config = section.Get<BootstrapServersConfiguration>();
+            var servers = string.Join(",", config.BootstrapServers);  // TODO Add Validation.
+
             services.AddSingleton(sp =>
             {
                 var adminConfig = new AdminClientConfig()
                 {
-                    BootstrapServers = string.Join(",", config.BootstrapServers)  // TODO Add Validation.
+                    BootstrapServers = servers
                 };
                 return new AdminClientBuilder(adminConfig).Build();
             });
             services.AddSingleton<ITopicWatermarkLoader, TopicWatermarkLoader>();
+
+            IConsumer<Key, string> createConsumer<Key>()
+            {
+                var conf = new ConsumerConfig
+                {
+                    BootstrapServers = servers,
+                    AutoOffsetReset = AutoOffsetReset.Earliest,
+                    GroupId = Guid.NewGuid().ToString(),
+                };
+
+                return new ConsumerBuilder<Key, string>(conf).Build();
+            }
+
+            services.AddSingleton<Func<IConsumer<string, string>>>(createConsumer<string>);
+            services.AddSingleton<Func<IConsumer<long, string>>>(createConsumer<long>);
+
+            services.AddSingleton(typeof(ISnapshotLoader<,>), typeof(SnapshotLoader<,>));
         }
 
         private static LoaderToolConfiguration GetConfig(IServiceProvider sp, IConfiguration configuration)
@@ -134,57 +153,23 @@ namespace KafkaSnapshot.Utility
 
             return config.Topics.Select(topic => topic.KeyType switch
             {
-                KeyType.Json => InitUnit<string, JsonKeyMarker>(topic, sp, config),
-                KeyType.String => InitUnit<string, OriginalKeyMarker>(topic, sp, config),
-                KeyType.Long => InitUnit<long, OriginalKeyMarker>(topic, sp, config),
+                KeyType.Json => InitUnit<string, JsonKeyMarker>(topic, sp),
+                KeyType.String => InitUnit<string, OriginalKeyMarker>(topic, sp),
+                KeyType.Long => InitUnit<long, OriginalKeyMarker>(topic, sp),
                 _ => throw new InvalidOperationException($"Invalid Key type {topic.KeyType} for processing.")
             }).ToList();
         }
 
-        private static IProcessingUnit InitUnit<TKey, TMarker>
-                                (LoadedTopic topic, IServiceProvider provider, LoaderToolConfiguration config)
+        private static IProcessingUnit InitUnit<TKey, TMarker>(
+                                LoadedTopic topic,
+                                IServiceProvider provider)
                                 where TKey : notnull where TMarker : IKeyRepresentationMarker
         {
-
             // TODO: Recator method for nice DI.
-
-            var servers = string.Join(",", config.BootstrapServers);
-
-            IConsumer<Key, string> createConsumer<Key>()
-            {
-                var conf = new ConsumerConfig
-                {
-                    BootstrapServers = servers,
-                    AutoOffsetReset = AutoOffsetReset.Earliest,
-                    GroupId = Guid.NewGuid().ToString(),
-                };
-
-                return new ConsumerBuilder<Key, string>(conf).Build();
-            }
-
-            var list = new List<ProcessingUnit<TKey, TMarker, string>>();
-
-            var typedFilterValue = topic.FilterValue is not null ?
-                                   (TKey)Convert.ChangeType(topic.FilterValue, typeof(TKey))
-                                   :
-                                   default;
-
-            var pTopic = new ProcessingTopic<TKey>(topic.Name,
-                                             topic.ExportFileName,
-                                             topic.Compacting == CompactingMode.On,
-                                             topic.FilterType,
-                                             typedFilterValue!);
-
-            var loader = new SnapshotLoader<TKey, string>(
-                    provider.GetRequiredService<ILogger<SnapshotLoader<TKey, string>>>(),
-                    createConsumer<TKey>,
-                    provider.GetRequiredService<ITopicWatermarkLoader>()
-                    );
-
             return new ProcessingUnit<TKey, TMarker, string>(
                                         provider.GetRequiredService<ILogger<ProcessingUnit<TKey, TMarker, string>>>(),
-                                        pTopic,
-                                        loader,
+                                        topic.ConvertToProcess<TKey>(),
+                                        provider.GetRequiredService<ISnapshotLoader<TKey, string>>(),
                                         provider.GetRequiredService<IDataExporter<TKey, TMarker, string, ExportedTopic>>(),
                                         provider.GetRequiredService<IKeyFiltersFactory<TKey>>()
                                         );

@@ -1,4 +1,7 @@
-﻿using KafkaSnapshot.Models.Filters;
+﻿using System;
+
+using KafkaSnapshot.Models.Filters;
+using KafkaSnapshot.Models.Processing;
 
 namespace KafkaSnapshot.Processing.Configuration
 {
@@ -36,5 +39,19 @@ namespace KafkaSnapshot.Processing.Configuration
         /// Optional filter value
         /// </summary>
         public object? FilterValue { get; set; }
+
+        public ProcessingTopic<TKey> ConvertToProcess<TKey>()
+        {
+            var typedFilterValue = FilterValue is not null ?
+                                  (TKey)Convert.ChangeType(FilterValue, typeof(TKey))
+                                  :
+                                  default;
+
+            return new ProcessingTopic<TKey>(Name,
+                                              ExportFileName,
+                                              Compacting == CompactingMode.On,
+                                              FilterType,
+                                              typedFilterValue!);
+        }
     }
 }

@@ -11,11 +11,15 @@ Messages should contains JSON data.
 Config with topics for export:
 
 ```yaml
-"LoaderToolConfiguration": {
-  "MetadataTimeout": "00:00:05",
-  "BootstrapServers": [
-  ],
-  "Topics": [
+  "BootstrapServersConfiguration": {
+    "BootstrapServers": [
+    ]
+  },
+  "TopicWatermarkLoaderConfiguration": {
+    "AdminClientTimeout": "00:00:05"
+  },
+  "LoaderToolConfiguration": {
+    "Topics": [
       {
         "Name": "topic1",
         "KeyType": "Json",
@@ -36,13 +40,13 @@ Config with topics for export:
         "FilterType": "Equals",
         "FilterValue": 42
       }
-  ]
-}
+    ]
+  }
 ```
 
 | Parameter name | Description   |
 | -------------- | ------------- |
-| MetadataTimeout | Cluster metadata loading timeout |
+| AdminClientTimeout | Cluster metadata loading timeout |
 | BootstrapServers | List of kafka cluster servers, like "kafka-test:9092"  |
 | Name           | Apache Kafka topic name |
 | KeyType        | Apache Kafka topic key representation (Json,String,Long) |

@@ -12,6 +12,7 @@ using KafkaSnapshot.Import.Metadata;
 using KafkaSnapshot.Import.Watermarks;
 using KafkaSnapshot.Abstractions.Filters;
 using KafkaSnapshot.Abstractions.Import;
+using KafkaSnapshot.Models.Import;
 
 namespace KafkaSnapshot.Import
 {
@@ -36,10 +37,15 @@ namespace KafkaSnapshot.Import
         }
 
         ///<inheritdoc/>
-        public async Task<IEnumerable<KeyValuePair<TKey, TMessage>>> LoadCompactSnapshotAsync(bool withCompacting, CancellationToken ct)
+        public async Task<IEnumerable<KeyValuePair<TKey, TMessage>>> LoadCompactSnapshotAsync(bool withCompacting, TopicName topicName, CancellationToken ct)
         {
+            if (topicName is null)
+            {
+                throw new ArgumentNullException(nameof(topicName));
+            }
+
             _logger.LogDebug("Loading topic watermark.");
-            var topicWatermark = await _topicWatermarkLoader.LoadWatermarksAsync(_consumerFactory, ct).ConfigureAwait(false);
+            var topicWatermark = await _topicWatermarkLoader.LoadWatermarksAsync(_consumerFactory, topicName, ct).ConfigureAwait(false);
 
             _logger.LogDebug("Loading initial state.");
             var initialState = await ConsumeInitialAsync(topicWatermark, ct).ConfigureAwait(false);

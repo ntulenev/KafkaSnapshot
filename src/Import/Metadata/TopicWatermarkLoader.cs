@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Confluent.Kafka;
 
 using KafkaSnapshot.Import.Watermarks;
+using KafkaSnapshot.Models.Import;
 
 namespace KafkaSnapshot.Import.Metadata
 {
@@ -18,18 +19,11 @@ namespace KafkaSnapshot.Import.Metadata
         /// <summary>
         /// Creates <see cref="TopicWatermarkLoader"/>.
         /// </summary>
-        /// <param name="topicName">Topic name.</param>
         /// <param name="adminClient">Kafla admin client.</param>
         /// <param name="intTimeoutSeconds">Timeout in seconds for loading watermarks.</param>
-        public TopicWatermarkLoader(TopicName topicName,
-                                    IAdminClient adminClient,
+        public TopicWatermarkLoader(IAdminClient adminClient,
                                     TimeSpan metaTimeout)
         {
-            if (topicName is null)
-            {
-                throw new ArgumentNullException(nameof(topicName));
-            }
-
             if (adminClient is null)
             {
                 throw new ArgumentNullException(nameof(adminClient));
@@ -43,44 +37,55 @@ namespace KafkaSnapshot.Import.Metadata
 
             _metaTimeout = metaTimeout;
             _adminClient = adminClient;
-            _topicName = topicName;
         }
 
-        private IEnumerable<TopicPartition> SplitTopicOnPartitions()
+        private IEnumerable<TopicPartition> SplitTopicOnPartitions(TopicName topicName)
         {
-            var topicMeta = _adminClient.GetMetadata(_topicName.Value, _metaTimeout);
+            var topicMeta = _adminClient.GetMetadata(topicName.Value, _metaTimeout);
 
             var partitions = topicMeta.Topics.Single().Partitions;
 
-            return partitions.Select(partition => new TopicPartition(_topicName.Value, new Partition(partition.PartitionId)));
+            return partitions.Select(partition => new TopicPartition(topicName.Value, new Partition(partition.PartitionId)));
         }
 
-        private PartitionWatermark CreatePartitionWatermark<Key, Value>(IConsumer<Key, Value> consumer, TopicPartition topicPartition)
+        private PartitionWatermark CreatePartitionWatermark<Key, Value>
+            (IConsumer<Key, Value> consumer,
+            TopicName topicName,
+            TopicPartition topicPartition)
         {
             var watermarkOffsets = consumer.QueryWatermarkOffsets(
                                     topicPartition,
                                     _metaTimeout);
 
-            return new PartitionWatermark(_topicName, watermarkOffsets, topicPartition.Partition);
+            return new PartitionWatermark(topicName, watermarkOffsets, topicPartition.Partition);
         }
 
         /// <inheritdoc/>>
-        public async Task<TopicWatermark> LoadWatermarksAsync<Key, Value>(Func<IConsumer<Key, Value>> consumerFactory, CancellationToken ct)
+        public async Task<TopicWatermark> LoadWatermarksAsync<Key, Value>(
+                            Func<IConsumer<Key, Value>> consumerFactory,
+                            TopicName topicName,
+                            CancellationToken ct
+                            )
         {
             if (consumerFactory is null)
             {
                 throw new ArgumentNullException(nameof(consumerFactory));
             }
 
+            if (topicName is null)
+            {
+                throw new ArgumentNullException(nameof(topicName));
+            }
+
             using var consumer = consumerFactory();
 
             try
             {
-                var partitions = SplitTopicOnPartitions();
+                var partitions = SplitTopicOnPartitions(topicName);
 
                 var partitionWatermarks = await Task.WhenAll(partitions.Select(
                             topicPartition => Task.Run(() =>
-                            CreatePartitionWatermark(consumer, topicPartition), ct)
+                            CreatePartitionWatermark(consumer, topicName, topicPartition), ct)
                                                        )).ConfigureAwait(false);
 
                 return new TopicWatermark(partitionWatermarks.Where(item => item.IsReadyToRead()));
@@ -91,7 +96,6 @@ namespace KafkaSnapshot.Import.Metadata
             }
         }
 
-        private readonly TopicName _topicName;
         private readonly IAdminClient _adminClient;
         private readonly TimeSpan _metaTimeout;
     }

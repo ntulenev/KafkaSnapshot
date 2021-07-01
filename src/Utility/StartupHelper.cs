@@ -114,6 +114,7 @@ namespace KafkaSnapshot.Utility
         private static ICollection<IProcessingUnit> CreateTopicLoaders(IServiceProvider sp, IConfiguration configuration)
         {
             var config = GetConfig(sp, configuration);
+
             return config.Topics.Select(topic => topic.KeyType switch
             {
                 KeyType.Json => InitUnit<string, JsonKeyMarker>(topic, sp, config),
@@ -150,7 +151,7 @@ namespace KafkaSnapshot.Utility
 
             var adminClient = new AdminClientBuilder(adminConfig).Build();
 
-            var wLoader = new TopicWatermarkLoader(new TopicName(topic.Name), adminClient, config.MetadataTimeout);
+            var wLoader = new TopicWatermarkLoader(adminClient, config.MetadataTimeout);
 
             var pTopic = new ProcessingTopic(topic.Name, topic.ExportFileName, topic.Compacting == CompactingMode.On);
 

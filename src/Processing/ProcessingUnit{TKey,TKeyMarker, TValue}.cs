@@ -2,13 +2,14 @@
 using System.Threading;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Logging;
+
 using KafkaSnapshot.Abstractions.Import;
 using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Abstractions.Processing;
 using KafkaSnapshot.Models.Processing;
 using KafkaSnapshot.Models.Export;
-
-using Microsoft.Extensions.Logging;
+using KafkaSnapshot.Models.Import;
 
 namespace KafkaSnapshot.Processing
 {
@@ -45,7 +46,7 @@ namespace KafkaSnapshot.Processing
         public async Task ProcessAsync(CancellationToken ct)
         {
             _logger.LogDebug("Start loading data from Kafka.");
-            var items = await _kafkaLoader.LoadCompactSnapshotAsync(_topic.LoadWithCompacting, ct).ConfigureAwait(false);
+            var items = await _kafkaLoader.LoadCompactSnapshotAsync(_topic.LoadWithCompacting, new TopicName(_topic.Name), ct).ConfigureAwait(false);
 
             _logger.LogDebug("Start exporting data to file.");
             await _exporter.ExportAsync(items, new ExportedTopic(_topic.Name, _topic.ExportName), ct).ConfigureAwait(false);

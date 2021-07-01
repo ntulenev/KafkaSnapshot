@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Confluent.Kafka;
 
 using KafkaSnapshot.Import.Watermarks;
+using KafkaSnapshot.Models.Import;
 
 namespace KafkaSnapshot.Import.Metadata
 {
@@ -19,7 +20,11 @@ namespace KafkaSnapshot.Import.Metadata
         /// <typeparam name="Key">Message key.</typeparam>
         /// <typeparam name="Value">Message value.</typeparam>
         /// <param name="consumerFactory">Factory delegate for creating consumer.</param>
+        /// <param name="topicName">Kafka topic name.</param>
         /// <param name="ct">Cancellation token.</param>
-        public Task<TopicWatermark> LoadWatermarksAsync<Key, Value>(Func<IConsumer<Key, Value>> consumerFactory, CancellationToken ct);
+        public Task<TopicWatermark> LoadWatermarksAsync<Key, Value>(
+            Func<IConsumer<Key, Value>> consumerFactory,
+            TopicName topicName,
+            CancellationToken ct);
     }
 }

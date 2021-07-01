@@ -3,6 +3,7 @@
 using Confluent.Kafka;
 
 using KafkaSnapshot.Import.Metadata;
+using KafkaSnapshot.Models.Import;
 
 namespace KafkaSnapshot.Import.Watermarks
 {

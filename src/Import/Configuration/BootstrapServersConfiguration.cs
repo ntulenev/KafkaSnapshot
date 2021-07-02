@@ -2,6 +2,9 @@
 
 namespace KafkaSnapshot.Import.Configuration
 {
+    /// <summary>
+    /// Bootstrap servers configuration.
+    /// </summary>
     public class BootstrapServersConfiguration
     {
         /// <summary>

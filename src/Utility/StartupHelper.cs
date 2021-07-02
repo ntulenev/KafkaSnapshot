@@ -28,6 +28,7 @@ using KafkaSnapshot.Import.Filters;
 using KafkaSnapshot.Abstractions.Filters;
 using KafkaSnapshot.Import.Configuration;
 using KafkaSnapshot.Abstractions.Import;
+using KafkaSnapshot.Import.Configuration.Validation;
 
 namespace KafkaSnapshot.Utility
 {
@@ -93,14 +94,34 @@ namespace KafkaSnapshot.Utility
             services.AddSingleton(sp => CreateTopicLoaders(sp, hostContext.Configuration));
         }
 
+        private static BootstrapServersConfiguration GetBootstrapConfig(this IServiceProvider sp, IConfiguration configuration)
+        {
+            var section = configuration.GetSection(nameof(BootstrapServersConfiguration));
+            var config = section.Get<BootstrapServersConfiguration>();
+
+            Debug.Assert(config is not null);
+
+            var validator = sp.GetRequiredService<IValidateOptions<BootstrapServersConfiguration>>();
+
+            // Crutch to use IValidateOptions in manual generation logic.
+            var validationResult = validator.Validate(string.Empty, config);
+            if (validationResult.Failed)
+            {
+                throw new OptionsValidationException
+                    (string.Empty, typeof(BootstrapServersConfiguration), new[] { validationResult.FailureMessage });
+            }
+
+            return config;
+        }
+
         public static void AddImport(this IServiceCollection services, HostBuilderContext hostContext)
         {
-            var section = hostContext.Configuration.GetSection(nameof(BootstrapServersConfiguration));
-            var config = section.Get<BootstrapServersConfiguration>();
-            var servers = string.Join(",", config.BootstrapServers);  // TODO Add Validation.
+            services.AddSingleton<IValidateOptions<BootstrapServersConfiguration>, BootstrapServersConfigurationValidator>();
 
             services.AddSingleton(sp =>
             {
+                var config = sp.GetBootstrapConfig(hostContext.Configuration);
+                var servers = string.Join(",", config.BootstrapServers);
                 var adminConfig = new AdminClientConfig()
                 {
                     BootstrapServers = servers
@@ -109,8 +130,10 @@ namespace KafkaSnapshot.Utility
             });
             services.AddSingleton<ITopicWatermarkLoader, TopicWatermarkLoader>();
 
-            IConsumer<Key, string> createConsumer<Key>()
+            IConsumer<Key, string> createConsumer<Key>(IServiceProvider sp)
             {
+                var config = sp.GetBootstrapConfig(hostContext.Configuration);
+                var servers = string.Join(",", config.BootstrapServers);
                 var conf = new ConsumerConfig
                 {
                     BootstrapServers = servers,
@@ -121,13 +144,12 @@ namespace KafkaSnapshot.Utility
                 return new ConsumerBuilder<Key, string>(conf).Build();
             }
 
-            services.AddSingleton<Func<IConsumer<string, string>>>(createConsumer<string>);
-            services.AddSingleton<Func<IConsumer<long, string>>>(createConsumer<long>);
-
+            services.AddSingleton<Func<IConsumer<string, string>>>(sp => () => createConsumer<string>(sp));
+            services.AddSingleton<Func<IConsumer<long, string>>>(sp => () => createConsumer<long>(sp));
             services.AddSingleton(typeof(ISnapshotLoader<,>), typeof(SnapshotLoader<,>));
         }
 
-        private static LoaderToolConfiguration GetConfig(IServiceProvider sp, IConfiguration configuration)
+        private static LoaderToolConfiguration GetLoaderConfig(IServiceProvider sp, IConfiguration configuration)
         {
             var section = configuration.GetSection(nameof(LoaderToolConfiguration));
             var config = section.Get<LoaderToolConfiguration>();
@@ -141,7 +163,7 @@ namespace KafkaSnapshot.Utility
             if (validationResult.Failed)
             {
                 throw new OptionsValidationException
-                    (string.Empty, config.GetType(), new[] { validationResult.FailureMessage });
+                    (string.Empty, typeof(LoaderToolConfiguration), new[] { validationResult.FailureMessage });
             }
 
             return config;
@@ -149,7 +171,7 @@ namespace KafkaSnapshot.Utility
 
         private static ICollection<IProcessingUnit> CreateTopicLoaders(IServiceProvider sp, IConfiguration configuration)
         {
-            var config = GetConfig(sp, configuration);
+            var config = GetLoaderConfig(sp, configuration);
 
             return config.Topics.Select(topic => topic.KeyType switch
             {

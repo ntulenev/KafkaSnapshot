@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 using Confluent.Kafka;
 
@@ -19,15 +18,12 @@ using KafkaSnapshot.Processing.Configuration;
 using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Abstractions.Processing;
 using KafkaSnapshot.Export.File.Json;
-using KafkaSnapshot.Processing.Configuration.Validation;
 using KafkaSnapshot.Models.Export;
 using KafkaSnapshot.Export.File.Common;
 using KafkaSnapshot.Export.Markers;
 using KafkaSnapshot.Import.Filters;
 using KafkaSnapshot.Abstractions.Filters;
-using KafkaSnapshot.Import.Configuration;
 using KafkaSnapshot.Abstractions.Import;
-using KafkaSnapshot.Import.Configuration.Validation;
 
 namespace KafkaSnapshot.Utility
 {
@@ -37,23 +33,12 @@ namespace KafkaSnapshot.Utility
     public static class StartupHelper
     {
         /// <summary>
-        /// Registers appsettings.
-        /// </summary>
-        public static void RegisterApplicationSettings(this IConfigurationBuilder builder)
-        {
-            builder.AddJsonFile("appsettings.json", optional: true);
-        }
-
-        /// <summary>
         /// Registers configuration and entry point of application.
         /// </summary>
         public static void AddTools(this IServiceCollection services, HostBuilderContext hostContext)
         {
             services.AddScoped(typeof(LoaderTool));
-            services.Configure<LoaderToolConfiguration>(hostContext.Configuration.GetSection(nameof(LoaderToolConfiguration)));
-            services.Configure<TopicWatermarkLoaderConfiguration>(hostContext.Configuration.GetSection(nameof(TopicWatermarkLoaderConfiguration)));
-            services.AddSingleton<IValidateOptions<LoaderToolConfiguration>, LoaderToolConfigurationValidator>();
-
+            services.ConfigureLoaderTool(hostContext);
         }
 
         /// <summary>
@@ -98,8 +83,7 @@ namespace KafkaSnapshot.Utility
         /// </summary>
         public static void AddImport(this IServiceCollection services, HostBuilderContext hostContext)
         {
-            services.AddSingleton<IValidateOptions<BootstrapServersConfiguration>, BootstrapServersConfigurationValidator>();
-            services.AddSingleton<IValidateOptions<TopicWatermarkLoaderConfiguration>, TopicWatermarkLoaderConfigurationValidator>();
+            services.ConfigureImport(hostContext);
 
             services.AddSingleton(sp =>
             {
@@ -111,6 +95,7 @@ namespace KafkaSnapshot.Utility
                 };
                 return new AdminClientBuilder(adminConfig).Build();
             });
+
             services.AddSingleton<ITopicWatermarkLoader, TopicWatermarkLoader>();
 
             IConsumer<Key, string> createConsumer<Key>(IServiceProvider sp)

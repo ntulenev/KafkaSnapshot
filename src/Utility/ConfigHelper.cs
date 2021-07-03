@@ -4,16 +4,19 @@ using System.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Hosting;
 
 using KafkaSnapshot.Import.Configuration;
 using KafkaSnapshot.Processing.Configuration;
+using KafkaSnapshot.Processing.Configuration.Validation;
+using KafkaSnapshot.Import.Configuration.Validation;
 
 namespace KafkaSnapshot.Utility
 {
     /// <summary>
     /// Helpers for common config data.
     /// </summary>
-    public static class ConfigHelpers
+    public static class ConfigHelper
     {
         /// <summary>
         /// Gets configuration for Kafka servers.
@@ -59,6 +62,35 @@ namespace KafkaSnapshot.Utility
             }
 
             return config;
+        }
+
+        /// <summary>
+        /// Confugures <see cref="LoaderToolConfiguration"/>
+        /// </summary>
+        public static IServiceCollection ConfigureLoaderTool(this IServiceCollection services, HostBuilderContext hostContext)
+        {
+            services.Configure<LoaderToolConfiguration>(hostContext.Configuration.GetSection(nameof(LoaderToolConfiguration)));
+            services.AddSingleton<IValidateOptions<LoaderToolConfiguration>, LoaderToolConfigurationValidator>();
+            return services;
+        }
+
+        /// <summary>
+        /// Configures Kafka import settings.
+        /// </summary>
+        public static IServiceCollection ConfigureImport(this IServiceCollection services, HostBuilderContext hostContext)
+        {
+            services.Configure<TopicWatermarkLoaderConfiguration>(hostContext.Configuration.GetSection(nameof(TopicWatermarkLoaderConfiguration)));
+            services.AddSingleton<IValidateOptions<BootstrapServersConfiguration>, BootstrapServersConfigurationValidator>();
+            services.AddSingleton<IValidateOptions<TopicWatermarkLoaderConfiguration>, TopicWatermarkLoaderConfigurationValidator>();
+            return services;
+        }
+
+        /// <summary>
+        /// Registers appsettings.
+        /// </summary>
+        public static void RegisterApplicationSettings(this IConfigurationBuilder builder)
+        {
+            builder.AddJsonFile("appsettings.json", optional: true);
         }
     }
 }

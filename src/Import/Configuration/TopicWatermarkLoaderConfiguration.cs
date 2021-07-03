@@ -2,8 +2,9 @@
 
 namespace KafkaSnapshot.Import.Configuration
 {
-    // TODO: Add validation
-
+    /// <summary>
+    /// Kafka Admin Client Configuration.
+    /// </summary>
     public class TopicWatermarkLoaderConfiguration
     {
         /// <summary>

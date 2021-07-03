@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 using Microsoft.Extensions.Configuration;
@@ -94,29 +93,13 @@ namespace KafkaSnapshot.Utility
             services.AddSingleton(sp => CreateTopicLoaders(sp, hostContext.Configuration));
         }
 
-        private static BootstrapServersConfiguration GetBootstrapConfig(this IServiceProvider sp, IConfiguration configuration)
-        {
-            var section = configuration.GetSection(nameof(BootstrapServersConfiguration));
-            var config = section.Get<BootstrapServersConfiguration>();
-
-            Debug.Assert(config is not null);
-
-            var validator = sp.GetRequiredService<IValidateOptions<BootstrapServersConfiguration>>();
-
-            // Crutch to use IValidateOptions in manual generation logic.
-            var validationResult = validator.Validate(string.Empty, config);
-            if (validationResult.Failed)
-            {
-                throw new OptionsValidationException
-                    (string.Empty, typeof(BootstrapServersConfiguration), new[] { validationResult.FailureMessage });
-            }
-
-            return config;
-        }
-
+        /// <summary>
+        /// Add Kafka importers. 
+        /// </summary>
         public static void AddImport(this IServiceCollection services, HostBuilderContext hostContext)
         {
             services.AddSingleton<IValidateOptions<BootstrapServersConfiguration>, BootstrapServersConfigurationValidator>();
+            services.AddSingleton<IValidateOptions<TopicWatermarkLoaderConfiguration>, TopicWatermarkLoaderConfigurationValidator>();
 
             services.AddSingleton(sp =>
             {
@@ -149,29 +132,9 @@ namespace KafkaSnapshot.Utility
             services.AddSingleton(typeof(ISnapshotLoader<,>), typeof(SnapshotLoader<,>));
         }
 
-        private static LoaderToolConfiguration GetLoaderConfig(IServiceProvider sp, IConfiguration configuration)
-        {
-            var section = configuration.GetSection(nameof(LoaderToolConfiguration));
-            var config = section.Get<LoaderToolConfiguration>();
-
-            Debug.Assert(config is not null);
-
-            var validator = sp.GetRequiredService<IValidateOptions<LoaderToolConfiguration>>();
-
-            // Crutch to use IValidateOptions in manual generation logic.
-            var validationResult = validator.Validate(string.Empty, config);
-            if (validationResult.Failed)
-            {
-                throw new OptionsValidationException
-                    (string.Empty, typeof(LoaderToolConfiguration), new[] { validationResult.FailureMessage });
-            }
-
-            return config;
-        }
-
         private static ICollection<IProcessingUnit> CreateTopicLoaders(IServiceProvider sp, IConfiguration configuration)
         {
-            var config = GetLoaderConfig(sp, configuration);
+            var config = sp.GetLoaderConfig(configuration);
 
             return config.Topics.Select(topic => topic.KeyType switch
             {

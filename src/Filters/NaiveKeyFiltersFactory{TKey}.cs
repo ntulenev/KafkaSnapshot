@@ -3,7 +3,7 @@
 using KafkaSnapshot.Abstractions.Filters;
 using KafkaSnapshot.Models.Filters;
 
-namespace KafkaSnapshot.Import.Filters
+namespace KafkaSnapshot.Filters
 {
     /// <summary>
     /// Simple factory filter factory.

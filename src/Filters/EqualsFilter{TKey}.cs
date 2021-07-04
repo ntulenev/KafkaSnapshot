@@ -2,7 +2,7 @@
 
 using KafkaSnapshot.Abstractions.Filters;
 
-namespace KafkaSnapshot.Import.Filters
+namespace KafkaSnapshot.Filters
 {
     /// <summary>
     /// Check key on equality with sample.

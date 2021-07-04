@@ -1,6 +1,6 @@
 ﻿using KafkaSnapshot.Abstractions.Filters;
 
-namespace KafkaSnapshot.Import.Filters
+namespace KafkaSnapshot.Filters
 {
     /// <summary>
     /// Default filter for message (match for any key).

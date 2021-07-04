@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Export\Export.csproj" />
+    <ProjectReference Include="..\Filters\Filters.csproj" />
     <ProjectReference Include="..\Import\Import.csproj" />
     <ProjectReference Include="..\Processing\Processing.csproj" />
   </ItemGroup>

@@ -21,9 +21,9 @@ using KafkaSnapshot.Export.File.Json;
 using KafkaSnapshot.Models.Export;
 using KafkaSnapshot.Export.File.Common;
 using KafkaSnapshot.Export.Markers;
-using KafkaSnapshot.Import.Filters;
 using KafkaSnapshot.Abstractions.Filters;
 using KafkaSnapshot.Abstractions.Import;
+using KafkaSnapshot.Filters;
 
 namespace KafkaSnapshot.Utility
 {

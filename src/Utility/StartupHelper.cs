@@ -135,7 +135,6 @@ namespace KafkaSnapshot.Utility
                                 IServiceProvider provider)
                                 where TKey : notnull where TMarker : IKeyRepresentationMarker
         {
-            // TODO: Recator method for nice DI.
             return new ProcessingUnit<TKey, TMarker, string>(
                                         provider.GetRequiredService<ILogger<ProcessingUnit<TKey, TMarker, string>>>(),
                                         topic.ConvertToProcess<TKey>(),

@@ -1,4 +1,4 @@
-﻿namespace KafkaSnapshot.Processing.Configuration
+﻿namespace KafkaSnapshot.Models.Filters
 {
     public enum KeyType
     {

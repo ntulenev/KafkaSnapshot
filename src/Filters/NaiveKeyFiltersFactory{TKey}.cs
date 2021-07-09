@@ -6,18 +6,19 @@ using KafkaSnapshot.Models.Filters;
 namespace KafkaSnapshot.Filters
 {
     /// <summary>
-    /// Simple factory filter factory.
+    /// Simple filter factory.
     /// </summary>
     /// <typeparam name="TKey">Message key type.</typeparam>
     public class NaiveKeyFiltersFactory<TKey> : IKeyFiltersFactory<TKey> where TKey : notnull
     {
         /// <inheritdoc/>
-        public IKeyFilter<TKey> Create(FilterType type, TKey sample)
+        public IKeyFilter<TKey> Create(FilterType type, KeyType keyType, TKey sample)
         {
-            return type switch
+            return (type, keyType) switch
             {
-                FilterType.None => _default,
-                FilterType.Equals => new EqualsFilter<TKey>(sample),
+                (FilterType.None, _) => _default,
+                (FilterType.Equals, KeyType.Long or KeyType.String) => new EqualsFilter<TKey>(sample),
+                (FilterType.Equals, KeyType.Json) => throw new NotImplementedException("Json filter not implemented yet."),
                 _ => throw new ArgumentException($"Invalid filter type {type}", nameof(type)),
             };
         }

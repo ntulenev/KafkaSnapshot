@@ -51,6 +51,7 @@ namespace KafkaSnapshot.Processing.Configuration
                                               ExportFileName,
                                               Compacting == CompactingMode.On,
                                               FilterType,
+                                              KeyType,
                                               typedFilterValue!);
         }
     }

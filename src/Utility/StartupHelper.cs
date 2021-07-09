@@ -24,6 +24,7 @@ using KafkaSnapshot.Export.Markers;
 using KafkaSnapshot.Abstractions.Filters;
 using KafkaSnapshot.Abstractions.Import;
 using KafkaSnapshot.Filters;
+using KafkaSnapshot.Models.Filters;
 
 namespace KafkaSnapshot.Utility
 {

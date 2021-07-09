@@ -8,6 +8,7 @@ namespace KafkaSnapshot.Models.Processing
     public record ProcessingTopic<TKey>(string Name, 
                                         string ExportName, 
                                         bool LoadWithCompacting, 
-                                        FilterType FilterType, 
+                                        FilterType FilterType,
+                                        KeyType KeyType,
                                         TKey FilterValue);
 }

@@ -47,7 +47,7 @@ namespace KafkaSnapshot.Processing
                 throw new ArgumentNullException(nameof(filterFactory));
             }
 
-            _filter = filterFactory.Create(topic.FilterType, topic.FilterValue);
+            _filter = filterFactory.Create(topic.FilterType, topic.KeyType, topic.FilterValue);
 
             _logger.LogDebug("Instance created for topic {topic}.", _topic);
         }

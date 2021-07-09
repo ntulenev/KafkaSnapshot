@@ -12,14 +12,14 @@ namespace KafkaSnapshot.Filters
     public class NaiveKeyFiltersFactory<TKey> : IKeyFiltersFactory<TKey> where TKey : notnull
     {
         /// <inheritdoc/>
-        public IKeyFilter<TKey> Create(FilterType type, KeyType keyType, TKey sample)
+        public IKeyFilter<TKey> Create(FilterType filterType, KeyType keyType, TKey sample)
         {
-            return (type, keyType) switch
+            return (filterType, keyType, sample) switch
             {
-                (FilterType.None, _) => _default,
-                (FilterType.Equals, KeyType.Long or KeyType.String) => new EqualsFilter<TKey>(sample),
-                (FilterType.Equals, KeyType.Json) => throw new NotImplementedException("Json filter not implemented yet."),
-                _ => throw new ArgumentException($"Invalid filter type {type}", nameof(type)),
+                (FilterType.None, _, _) => _default,
+                (FilterType.Equals, KeyType.Long or KeyType.String, _) => new EqualsFilter<TKey>(sample),
+                (FilterType.Equals, KeyType.Json, string _) => throw new NotImplementedException("Json filter not implemented yet."),
+                _ => throw new ArgumentException($"Invalid filter type {filterType}", nameof(filterType)),
             };
         }
 

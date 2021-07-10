@@ -1,3 +1,4 @@
+![KafkaSnapshot](logo.png)
 # KafkaSnapshot
 Tool that allows to read current data snapshot from Apache Kafka topic with compacting.
 

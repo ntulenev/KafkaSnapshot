@@ -32,7 +32,33 @@ namespace KafkaSnapshot.Processing
         /// <param name="ct">Token for cancelling.</param>
         public async Task ProcessAsync(CancellationToken ct)
         {
-            Console.WriteLine("The utility starts loading Apache Kafka topics...");
+            Console.WriteLine($"The utility starts loading {_units.Count} Apache Kafka topics...");
+
+            // TODO: Add Parallel switcher in config.
+
+            //await Task.WhenAll(_units.Select(async unit =>
+            //{
+            //    using var _ = _logger.BeginScope("topic {topic}", unit.TopicName);
+
+            //    _logger.LogDebug("Start processing topic.");
+
+            //    try
+            //    {
+            //        await unit.ProcessAsync(ct).ConfigureAwait(false);
+
+            //        _logger.LogDebug("Finish processing topic.");
+            //    }
+            //    catch (OperationCanceledException)
+            //    {
+
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        _logger.LogError(ex, "Error on processing topic");
+            //        Console.WriteLine($"Unable to load data for topic {unit.TopicName}");
+            //    }
+
+            //}));
 
             int indexer = 0;
 

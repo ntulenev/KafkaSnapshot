@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Linq;
 
 using Microsoft.Extensions.Logging;
 
@@ -10,15 +11,15 @@ using KafkaSnapshot.Abstractions.Processing;
 namespace KafkaSnapshot.Processing
 {
     /// <summary>
-    /// Tool that process topics from Apache Kafka.
+    /// Tool that process topics from Apache Kafka (in parallel).
     /// </summary>
-    public class LoaderTool
+    public class LoaderParallelTool
     {
         /// <summary>
-        /// Creates <see cref="LoaderTool"/>.
+        /// Creates <see cref="LoaderParallelTool"/>.
         /// </summary>
         /// <param name="units">Processors for topics.</param>
-        public LoaderTool(ILogger<LoaderTool> logger, ICollection<IProcessingUnit> units)
+        public LoaderParallelTool(ILogger<LoaderParallelTool> logger, ICollection<IProcessingUnit> units)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _units = units ?? throw new ArgumentNullException(nameof(units));
@@ -34,15 +35,11 @@ namespace KafkaSnapshot.Processing
         {
             Console.WriteLine($"The utility starts loading {_units.Count} Apache Kafka topics...");
 
-            int indexer = 0;
-
-            foreach (var unit in _units)
+            await Task.WhenAll(_units.Select(async unit =>
             {
                 using var _ = _logger.BeginScope("topic {topic}", unit.TopicName);
 
                 _logger.LogDebug("Start processing topic.");
-
-                Console.WriteLine($"{++indexer}/{_units.Count} Processing topic {unit.TopicName}.");
 
                 try
                 {
@@ -60,13 +57,13 @@ namespace KafkaSnapshot.Processing
                     Console.WriteLine($"Unable to load data for topic {unit.TopicName}");
                 }
 
-            }
+            }));
 
             Console.WriteLine("Done.");
         }
 
         private readonly ICollection<IProcessingUnit> _units;
-        private readonly ILogger<LoaderTool> _logger;
+        private readonly ILogger<LoaderParallelTool> _logger;
 
     }
 }

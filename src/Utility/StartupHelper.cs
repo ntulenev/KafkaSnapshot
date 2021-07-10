@@ -38,8 +38,9 @@ namespace KafkaSnapshot.Utility
         /// </summary>
         public static void AddTools(this IServiceCollection services, HostBuilderContext hostContext)
         {
-            services.AddScoped(typeof(LoaderTool));
             services.ConfigureLoaderTool(hostContext);
+            services.AddScoped(typeof(LoaderTool));
+            //services.AddScoped(typeof(LoaderParallelTool)); //Parallel topic processing.
         }
 
         /// <summary>

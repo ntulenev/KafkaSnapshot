@@ -56,4 +56,4 @@ Config with topics for export:
 | Compacting     | Use compacting by key or not (On,Off) |
 | ExportFileName | File name for exported data  |
 | FilterType | Equals or None (optional)  |
-| FilterValue | Sample value for filtering |
+| FilterValue | Sample value for filtering (if FilterType sets as 'Equals') |

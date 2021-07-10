@@ -23,19 +23,21 @@ Config with topics for export:
       {
         "Name": "topic1",
         "KeyType": "Json",
-        "Compacting": "Off",
-        "ExportFileName": "topic1.json"
+        "Compacting": "On",
+        "ExportFileName": "topic1.json",
+        "FilterType": "Equals",
+        "FilterValue": "{\"value\": 1 }"
       },
       {
         "Name": "topic2",
         "KeyType": "String",
-        "Compacting": "On",
+        "Compacting": "Off",
         "ExportFileName": "topic2.json"
       },
       {
         "Name": "topic3",
         "KeyType": "Long",
-        "Compacting": "On",
+        "Compacting": "Off",
         "ExportFileName": "topic3.json",
         "FilterType": "Equals",
         "FilterValue": 42

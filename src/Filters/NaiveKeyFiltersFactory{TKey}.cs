@@ -14,14 +14,11 @@ namespace KafkaSnapshot.Filters
         /// <inheritdoc/>
         public IKeyFilter<TKey> Create(FilterType filterType, KeyType keyType, TKey sample)
         {
-            keyType = KeyType.Json;
-            sample = default!;
-
             return (filterType, keyType, sample) switch
             {
                 (FilterType.None, _, _) => _default,
                 (FilterType.Equals, KeyType.Long or KeyType.String, _) => new EqualsFilter<TKey>(sample),
-                (FilterType.Equals, KeyType.Json, string _) => throw new NotImplementedException("Json filter not implemented yet."),
+                (FilterType.Equals, KeyType.Json, string json) => (IKeyFilter<TKey>)new JsonEqualsFilter(json),
                 _ => throw new ArgumentException($"Invalid filter type {filterType} for key type {keyType} with sample type {typeof(TKey).Name}.", nameof(filterType)),
             };
         }

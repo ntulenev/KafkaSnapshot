@@ -7,7 +7,7 @@ Topics could be filtered by key.
 
 Messages should contains JSON data.
 
-![Details](Details.PNG)
+![Details](Case1.PNG)
 
 Config with topics for export:
 

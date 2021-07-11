@@ -11,15 +11,15 @@ using KafkaSnapshot.Abstractions.Processing;
 namespace KafkaSnapshot.Processing
 {
     /// <summary>
-    /// Tool that process topics from Apache Kafka (in parallel).
+    /// Tool that process topics from Apache Kafka (in concurrent mode).
     /// </summary>
-    public class LoaderParallelTool
+    public class LoaderConcurrentTool : ILoaderTool
     {
         /// <summary>
-        /// Creates <see cref="LoaderParallelTool"/>.
+        /// Creates <see cref="LoaderConcurrentTool"/>.
         /// </summary>
         /// <param name="units">Processors for topics.</param>
-        public LoaderParallelTool(ILogger<LoaderParallelTool> logger, ICollection<IProcessingUnit> units)
+        public LoaderConcurrentTool(ILogger<LoaderConcurrentTool> logger, ICollection<IProcessingUnit> units)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _units = units ?? throw new ArgumentNullException(nameof(units));
@@ -33,7 +33,7 @@ namespace KafkaSnapshot.Processing
         /// <param name="ct">Token for cancelling.</param>
         public async Task ProcessAsync(CancellationToken ct)
         {
-            Console.WriteLine($"The utility starts loading {_units.Count} Apache Kafka topics...");
+            Console.WriteLine($"The utility starts loading {_units.Count} Apache Kafka topics concurrently...");
 
             await Task.WhenAll(_units.Select(async unit =>
             {
@@ -63,7 +63,7 @@ namespace KafkaSnapshot.Processing
         }
 
         private readonly ICollection<IProcessingUnit> _units;
-        private readonly ILogger<LoaderParallelTool> _logger;
+        private readonly ILogger<LoaderConcurrentTool> _logger;
 
     }
 }

@@ -39,8 +39,20 @@ namespace KafkaSnapshot.Utility
         public static void AddTools(this IServiceCollection services, HostBuilderContext hostContext)
         {
             services.ConfigureLoaderTool(hostContext);
-            services.AddScoped(typeof(LoaderTool));
-            //services.AddScoped(typeof(LoaderParallelTool)); //Parallel topic processing.
+            services.AddScoped<LoaderTool>();
+            services.AddScoped<LoaderConcurrentTool>();
+            services.AddScoped<ILoaderTool>(sp =>
+            {
+                var config = sp.GetLoaderConfig(hostContext.Configuration);
+                if (config.UseConcurrentLoad)
+                {
+                    return sp.GetRequiredService<LoaderConcurrentTool>();
+                }
+                else
+                {
+                    return sp.GetRequiredService<LoaderTool>();
+                }
+            });
         }
 
         /// <summary>

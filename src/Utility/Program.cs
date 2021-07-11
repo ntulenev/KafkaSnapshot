@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
-using KafkaSnapshot.Processing;
+using KafkaSnapshot.Abstractions.Processing;
 
 namespace KafkaSnapshot.Utility
 {
@@ -36,7 +36,7 @@ namespace KafkaSnapshot.Utility
             {
                 using var serviceScope = CreateHost().Services.CreateScope();
                 var services = serviceScope.ServiceProvider;
-                var tool = services.GetRequiredService<LoaderTool>();
+                var tool = services.GetRequiredService<ILoaderTool>();
 
                 await tool.ProcessAsync(CancellationToken.None).ConfigureAwait(false);
             }

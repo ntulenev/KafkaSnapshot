@@ -12,7 +12,7 @@ namespace KafkaSnapshot.Processing
     /// <summary>
     /// Tool that process topics from Apache Kafka.
     /// </summary>
-    public class LoaderTool
+    public class LoaderTool : ILoaderTool
     {
         /// <summary>
         /// Creates <see cref="LoaderTool"/>.

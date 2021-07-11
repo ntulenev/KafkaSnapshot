@@ -20,6 +20,7 @@ Config with topics for export:
     "AdminClientTimeout": "00:00:05"
   },
   "LoaderToolConfiguration": {
+    "UseConcurrentLoad": true,
     "Topics": [
       {
         "Name": "topic1",
@@ -51,6 +52,7 @@ Config with topics for export:
 | -------------- | ------------- |
 | AdminClientTimeout | Cluster metadata loading timeout |
 | BootstrapServers | List of kafka cluster servers, like "kafka-test:9092"  |
+| UseConcurrentLoad | Loads data in concurrent mode or one by one |
 | Name           | Apache Kafka topic name |
 | KeyType        | Apache Kafka topic key representation (Json,String,Long) |
 | Compacting     | Use compacting by key or not (On,Off) |

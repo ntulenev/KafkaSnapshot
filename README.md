@@ -1,9 +1,12 @@
 ![KafkaSnapshot](logo_s.png)
 # KafkaSnapshot
-Tool that allows to read current data snapshot from Apache Kafka topic with compacting.
+Tool that allows to read current data snapshot from Apache Kafka topic to the file.
 
-Application supports Apache Kafka topics with string keys (optionally as json) and long keys. Topics with NULL keys will be skipped.
-Topics could be filtered by key.
+Supports:
+* Compacting
+* Key filtering
+* String keys (optionally as json) and long keys
+* Multi-partition topics
 
 Messages should contains JSON data.
 

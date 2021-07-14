@@ -121,6 +121,7 @@ namespace KafkaSnapshot.Utility
                     BootstrapServers = servers,
                     AutoOffsetReset = AutoOffsetReset.Earliest,
                     GroupId = Guid.NewGuid().ToString(),
+                    EnableAutoCommit = false
                 };
 
                 return new ConsumerBuilder<Key, string>(conf).Build();

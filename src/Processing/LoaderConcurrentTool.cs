@@ -39,6 +39,8 @@ namespace KafkaSnapshot.Processing
             {
                 using var _ = _logger.BeginScope("topic {topic}", unit.TopicName);
 
+                Console.WriteLine($"Start processing topic { unit.TopicName}");
+
                 _logger.LogDebug("Start processing topic.");
 
                 try

@@ -149,14 +149,7 @@ namespace KafkaSnapshot.Utility
                                 LoadedTopic topic,
                                 IServiceProvider provider)
                                 where TKey : notnull where TMarker : IKeyRepresentationMarker
-        {
-            return new ProcessingUnit<TKey, TMarker, string>(
-                                        provider.GetRequiredService<ILogger<ProcessingUnit<TKey, TMarker, string>>>(),
-                                        topic.ConvertToProcess<TKey>(),
-                                        provider.GetRequiredService<ISnapshotLoader<TKey, string>>(),
-                                        provider.GetRequiredService<IDataExporter<TKey, TMarker, string, ExportedTopic>>(),
-                                        provider.GetRequiredService<IKeyFiltersFactory<TKey>>()
-                                        );
-        }
+           => ActivatorUtilities.CreateInstance<ProcessingUnit<TKey, TMarker, string>>(provider, topic.ConvertToProcess<TKey>());
+
     }
 }

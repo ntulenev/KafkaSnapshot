@@ -32,18 +32,10 @@ namespace KafkaSnapshot.Utility
 
         static async Task Main(string[] args)
         {
-            try
-            {
-                using var serviceScope = CreateHost().Services.CreateScope();
-                var services = serviceScope.ServiceProvider;
-                var tool = services.GetRequiredService<ILoaderTool>();
-
-                await tool.ProcessAsync(CancellationToken.None).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error {ex}");
-            }
+            using var serviceScope = CreateHost().Services.CreateScope();
+            var services = serviceScope.ServiceProvider;
+            var tool = services.GetRequiredService<ILoaderTool>();
+            await tool.ProcessAsync(CancellationToken.None).ConfigureAwait(false);
         }
     }
 }

@@ -33,21 +33,19 @@ namespace KafkaSnapshot.Processing
         /// <param name="ct">Token for cancelling.</param>
         public async Task ProcessAsync(CancellationToken ct)
         {
-            Console.WriteLine($"The utility starts loading {_units.Count} Apache Kafka topics concurrently...");
+            _logger.LogInformation("The utility starts loading {count} Apache Kafka topics concurrently...", _units.Count);
 
             await Task.WhenAll(_units.Select(async unit =>
             {
-                using var _ = _logger.BeginScope("topic {topic}", unit.TopicName);
+                using var _ = _logger.BeginScope("Topic {topic}", unit.TopicName);
 
-                Console.WriteLine($"Start processing topic { unit.TopicName}");
-
-                _logger.LogDebug("Start processing topic.");
+                _logger.LogInformation("Start processing topic.");
 
                 try
                 {
                     await unit.ProcessAsync(ct).ConfigureAwait(false);
 
-                    _logger.LogDebug("Finish processing topic.");
+                    _logger.LogInformation("Finish processing topic.");
                 }
                 catch (OperationCanceledException)
                 {
@@ -56,12 +54,11 @@ namespace KafkaSnapshot.Processing
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Error on processing topic");
-                    Console.WriteLine($"Unable to load data for topic {unit.TopicName}");
                 }
 
             }));
 
-            Console.WriteLine("Done.");
+            _logger.LogInformation("Done.");
         }
 
         private readonly ICollection<IProcessingUnit> _units;

@@ -18,7 +18,7 @@ using KafkaSnapshot.Models.Message;
 namespace KafkaSnapshot.Import
 {
     ///<inheritdoc/>
-    public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey,TMessage>
+    public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
         where TKey : notnull
         where TMessage : notnull
     {
@@ -55,7 +55,9 @@ namespace KafkaSnapshot.Import
             }
 
             _logger.LogDebug("Loading topic watermark.");
-            var topicWatermark = await _topicWatermarkLoader.LoadWatermarksAsync(_consumerFactory, topicName, ct).ConfigureAwait(false);
+            var topicWatermark = await _topicWatermarkLoader
+                                        .LoadWatermarksAsync(_consumerFactory, topicName, ct)
+                                        .ConfigureAwait(false);
 
             _logger.LogDebug("Loading initial state.");
             var initialState = await ConsumeInitialAsync(topicWatermark, filter, ct).ConfigureAwait(false);

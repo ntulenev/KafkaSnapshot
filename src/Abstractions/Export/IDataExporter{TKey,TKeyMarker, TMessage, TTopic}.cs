@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using KafkaSnapshot.Models.Export;
+using KafkaSnapshot.Models.Message;
 
 namespace KafkaSnapshot.Abstractions.Export
 {
@@ -14,7 +15,8 @@ namespace KafkaSnapshot.Abstractions.Export
     /// <typeparam name="TValue">Message Value</typeparam>
     /// <typeparam name="TTopic">Topic object</typeparam>
     public interface IDataExporter<TKey, TKeyMarker, TMessage, TTopic> where TTopic : ExportedTopic
-                                                                                     where TKeyMarker : IKeyRepresentationMarker
+                                                                       where TKeyMarker : IKeyRepresentationMarker
+                                                                       where TMessage : notnull
     {
         /// <summary>
         /// Exports <paramref name="data"/> to file.
@@ -23,6 +25,6 @@ namespace KafkaSnapshot.Abstractions.Export
         /// <param name="topic">topic description.</param>
         /// <param name="ct">Token for cancelling operation.</param>
         /// <returns></returns>
-        public Task ExportAsync(IEnumerable<KeyValuePair<TKey, TMessage>> data, TTopic topic, CancellationToken ct);
+        public Task ExportAsync(IEnumerable<KeyValuePair<TKey, DatedMessage<TMessage>>> data, TTopic topic, CancellationToken ct);
     }
 }

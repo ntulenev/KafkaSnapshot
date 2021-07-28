@@ -22,6 +22,7 @@ namespace KafkaSnapshot.Processing
     /// <typeparam name="TValue">Message Value.</typeparam>
     public class ProcessingUnit<TKey, TKeyMarker, TValue> : IProcessingUnit where TKey : notnull
                                                                             where TKeyMarker : IKeyRepresentationMarker
+                                                                            where TValue : notnull
     {
         /// <summary>
         /// Creates <see cref="ProcessingUnit{TKey,TKeyMarker, TValue}"/>.

@@ -13,11 +13,14 @@ using KafkaSnapshot.Import.Watermarks;
 using KafkaSnapshot.Abstractions.Filters;
 using KafkaSnapshot.Abstractions.Import;
 using KafkaSnapshot.Models.Import;
+using KafkaSnapshot.Models.Message;
 
 namespace KafkaSnapshot.Import
 {
     ///<inheritdoc/>
-    public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage> where TKey : notnull
+    public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey,TMessage>
+        where TKey : notnull
+        where TMessage : notnull
     {
         /// <summary>
         /// Creates <see cref="SnapshotLoader{Key, Message}"/>.
@@ -35,7 +38,7 @@ namespace KafkaSnapshot.Import
         }
 
         ///<inheritdoc/>
-        public async Task<IEnumerable<KeyValuePair<TKey, TMessage>>> LoadCompactSnapshotAsync(
+        public async Task<IEnumerable<KeyValuePair<TKey, DatedMessage<TMessage>>>> LoadCompactSnapshotAsync(
             bool withCompacting,
             TopicName topicName,
             IKeyFilter<TKey> filter,
@@ -65,7 +68,7 @@ namespace KafkaSnapshot.Import
             return compactedState;
         }
 
-        private async Task<IEnumerable<KeyValuePair<TKey, TMessage>>> ConsumeInitialAsync
+        private async Task<IEnumerable<KeyValuePair<TKey, DatedMessage<TMessage>>>> ConsumeInitialAsync
            (TopicWatermark topicWatermark,
             IKeyFilter<TKey> filter,
             CancellationToken ct)
@@ -79,7 +82,7 @@ namespace KafkaSnapshot.Import
             return consumedEntities.SelectMany(сonsumerResults => сonsumerResults);
         }
 
-        private IEnumerable<KeyValuePair<TKey, TMessage>> ConsumeFromWatermark(
+        private IEnumerable<KeyValuePair<TKey, DatedMessage<TMessage>>> ConsumeFromWatermark(
             PartitionWatermark watermark,
             IKeyFilter<TKey> filter,
             CancellationToken ct)
@@ -97,7 +100,8 @@ namespace KafkaSnapshot.Import
 
                     if (filter.IsMatch(result.Message.Key))
                     {
-                        yield return new KeyValuePair<TKey, TMessage>(result.Message.Key, result.Message.Value);
+                        var message = new DatedMessage<TMessage>(result.Message.Value, result.Message.Timestamp.UtcDateTime);
+                        yield return new KeyValuePair<TKey, DatedMessage<TMessage>>(result.Message.Key, message);
                     }
 
                 } while (watermark.IsWatermarkAchievedBy(result));
@@ -108,14 +112,14 @@ namespace KafkaSnapshot.Import
             }
         }
 
-        private IEnumerable<KeyValuePair<TKey, TMessage>> CreateSnapshot(IEnumerable<KeyValuePair<TKey, TMessage>> items, bool withCompacting)
+        private IEnumerable<KeyValuePair<TKey, DatedMessage<TMessage>>> CreateSnapshot(IEnumerable<KeyValuePair<TKey, DatedMessage<TMessage>>> items, bool withCompacting)
         {
             if (withCompacting)
             {
                 _logger.LogDebug("Compacting data.");
 
                 return items.Where(x => x.Key is not null).Aggregate(
-                    new Dictionary<TKey, TMessage>(),
+                    new Dictionary<TKey, DatedMessage<TMessage>>(),
                     (d, e) =>
                     {
                         d[e.Key] = e.Value;

@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using KafkaSnapshot.Models.Export;
 using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Export.Markers;
+using KafkaSnapshot.Models.Message;
 
 namespace KafkaSnapshot.Export.File.Json
 {
@@ -27,12 +28,13 @@ namespace KafkaSnapshot.Export.File.Json
         }
 
         /// <inheritdoc/>
-        protected override string PrepareJson(IEnumerable<KeyValuePair<string, string>> data)
+        protected override string PrepareJson(IEnumerable<KeyValuePair<string, DatedMessage<string>>> data)
         {
             var items = data.Select(x => new
             {
                 Key = JToken.Parse(x.Key),
-                Value = JToken.Parse(x.Value)
+                Value = JToken.Parse(x.Value.Message),
+                x.Value.Timestamp
             });
 
             return JsonConvert.SerializeObject(items, Formatting.Indented);

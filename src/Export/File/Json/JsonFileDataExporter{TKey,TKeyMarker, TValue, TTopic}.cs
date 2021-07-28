@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Models.Export;
-using System.Linq;
+using KafkaSnapshot.Models.Message;
 
 namespace KafkaSnapshot.Export.File.Json
 {
@@ -23,6 +23,7 @@ namespace KafkaSnapshot.Export.File.Json
     public class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> : IDataExporter<TKey, TKeyMarker, TValue, TTopic>
                         where TTopic : ExportedTopic
                         where TKeyMarker : IKeyRepresentationMarker
+                        where TValue : notnull
     {
         /// <summary>
         /// Creates <see cref="JsonFileDataExporter{TKey, TKeyMarker, TValue, TTopic}"/>.
@@ -38,7 +39,7 @@ namespace KafkaSnapshot.Export.File.Json
         }
 
         /// <inheritdoc/>
-        public async Task ExportAsync(IEnumerable<KeyValuePair<TKey, TValue>> data, TTopic topic, CancellationToken ct)
+        public async Task ExportAsync(IEnumerable<KeyValuePair<TKey, DatedMessage<TValue>>> data, TTopic topic, CancellationToken ct)
         {
             if (data is null)
             {
@@ -64,7 +65,7 @@ namespace KafkaSnapshot.Export.File.Json
         /// </summary>
         /// <param name="data">input data.</param>
         /// <returns>Json string.</returns>
-        protected virtual string PrepareJson(IEnumerable<KeyValuePair<TKey, TValue>> data) => JsonConvert.SerializeObject(data, Formatting.Indented);
+        protected virtual string PrepareJson(IEnumerable<KeyValuePair<TKey, DatedMessage<TValue>>> data) => JsonConvert.SerializeObject(data, Formatting.Indented);
 
         private readonly ILogger<JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic>> _logger;
         private readonly IFileSaver _fileSaver;

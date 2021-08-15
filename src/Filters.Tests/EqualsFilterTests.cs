@@ -36,7 +36,7 @@ namespace KafkaSnapshot.Filters.Tests
             exception.Should().BeNull();
         }
 
-        [Fact(DisplayName = "Equals filter cant match with null.")]
+        [Fact(DisplayName = "Equals filter can't match with null.")]
         [Trait("Category", "Unit")]
         public void EqualsFilterCantMatchWithNull()
         {

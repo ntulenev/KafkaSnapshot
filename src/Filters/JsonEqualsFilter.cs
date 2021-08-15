@@ -21,6 +21,7 @@ namespace KafkaSnapshot.Filters
             {
                 throw new ArgumentNullException(nameof(sample));
             }
+
             _sample = JObject.Parse(sample);
         }
 

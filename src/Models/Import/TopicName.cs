@@ -73,7 +73,7 @@ namespace KafkaSnapshot.Models.Import
             }
         }
 
-        private static readonly Regex _topicNameCharacters = new Regex(
+        private static readonly Regex _topicNameCharacters = new(
            "^[a-zA-Z0-9\\-]*$",
            RegexOptions.Compiled);
 

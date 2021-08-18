@@ -12,12 +12,18 @@ namespace KafkaSnapshot.Export.File.Common
         /// <inheritdoc/>
         public async Task SaveAsync(string fileName, string content, CancellationToken ct)
         {
-            if (string.IsNullOrEmpty(fileName))
+            if (fileName is null)
             {
                 throw new ArgumentNullException(nameof(fileName));
             }
 
-            if (string.IsNullOrEmpty(content))
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                throw new ArgumentException(
+                    "File name cannot be empty or consist of whitespaces.", nameof(fileName));
+            }
+
+            if (content is null)
             {
                 throw new ArgumentNullException(nameof(content));
             }

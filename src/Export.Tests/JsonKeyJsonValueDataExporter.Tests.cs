@@ -12,6 +12,8 @@ using Xunit;
 
 using FluentAssertions;
 
+using Newtonsoft.Json;
+
 using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Export.File.Json;
 using KafkaSnapshot.Models.Export;
@@ -109,6 +111,55 @@ namespace KafkaSnapshot.Export.Tests
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
         }
 
+
+        [Fact(DisplayName = "JsonKeyJsonValueDataExporter can't export non json value data.")]
+        [Trait("Category", "Unit")]
+        public async Task JsonKeyJsonValueDataExporterCantExportNonJsonValueData()
+        {
+            // Arrange
+            var logger = new Mock<ILogger<JsonKeyJsonValueDataExporter>>();
+            var fileSaver = new Mock<IFileSaver>();
+            var exporter = new JsonKeyJsonValueDataExporter(logger.Object, fileSaver.Object);
+            var topic = new ExportedTopic("name", "filename");
+            var data = new KeyValuePair<string, DatedMessage<string>>[]
+            {
+                new KeyValuePair<string, DatedMessage<string>>("{\"id\": 1 }",new DatedMessage<string>("test", DateTime.UtcNow))
+            };
+            var token = CancellationToken.None;
+
+            // Act
+            var exception = await Record.ExceptionAsync(async () =>
+            await exporter.ExportAsync(data, topic, token)
+                );
+
+            // Assert
+            exception.Should().NotBeNull().And.BeOfType<JsonReaderException>();
+        }
+
+        [Fact(DisplayName = "JsonKeyJsonValueDataExporter can't export non json key data.")]
+        [Trait("Category", "Unit")]
+        public async Task JsonKeyJsonValueDataExporterCantExportNonJsonKeyData()
+        {
+            // Arrange
+            var logger = new Mock<ILogger<JsonKeyJsonValueDataExporter>>();
+            var fileSaver = new Mock<IFileSaver>();
+            var exporter = new JsonKeyJsonValueDataExporter(logger.Object, fileSaver.Object);
+            var topic = new ExportedTopic("name", "filename");
+            var data = new KeyValuePair<string, DatedMessage<string>>[]
+            {
+                new KeyValuePair<string, DatedMessage<string>>("test",new DatedMessage<string>("{\"value\": 1 }", DateTime.UtcNow))
+            };
+            var token = CancellationToken.None;
+
+            // Act
+            var exception = await Record.ExceptionAsync(async () =>
+            await exporter.ExportAsync(data, topic, token)
+                );
+
+            // Assert
+            exception.Should().NotBeNull().And.BeOfType<JsonReaderException>();
+        }
+
         [Fact(DisplayName = "JsonKeyJsonValueDataExporter can export data.")]
         [Trait("Category", "Unit")]
         public async Task JsonKeyJsonValueDataExporterCanExportData()
@@ -122,8 +173,8 @@ namespace KafkaSnapshot.Export.Tests
             {
                 new KeyValuePair<string, DatedMessage<string>>("{\"id\": 1 }",new DatedMessage<string>("{\"value\": 1 }", DateTime.UtcNow))
             };
-
             var token = CancellationToken.None;
+
             // Act
             var exception = await Record.ExceptionAsync(async () =>
             await exporter.ExportAsync(data, topic, token)

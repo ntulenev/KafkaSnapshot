@@ -55,7 +55,7 @@ namespace KafkaSnapshot.Export.File.Json
 
             _logger.LogDebug("Starting saving data");
 
-            await _fileSaver.SaveAsync($"{topic.ExportName}", PrepareJson(data), ct).ConfigureAwait(false);
+            await _fileSaver.SaveAsync(topic.ExportName, PrepareJson(data), ct).ConfigureAwait(false);
 
             _logger.LogDebug("Data saved successfully.");
         }

@@ -27,4 +27,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Import\Import.csproj" />
+  </ItemGroup>
+
 </Project>

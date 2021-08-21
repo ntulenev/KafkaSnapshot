@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Threading;
+using System.Linq;
 
 using Microsoft.Extensions.Options;
 
@@ -14,8 +16,6 @@ using Xunit;
 using KafkaSnapshot.Import.Configuration;
 using KafkaSnapshot.Import.Metadata;
 using KafkaSnapshot.Models.Import;
-using System.Threading;
-using System.Linq;
 using KafkaSnapshot.Import.Watermarks;
 
 namespace KafkaAsTable.Tests

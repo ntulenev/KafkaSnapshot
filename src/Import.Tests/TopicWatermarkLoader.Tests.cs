@@ -14,6 +14,9 @@ using Xunit;
 using KafkaSnapshot.Import.Configuration;
 using KafkaSnapshot.Import.Metadata;
 using KafkaSnapshot.Models.Import;
+using System.Threading;
+using System.Linq;
+using KafkaSnapshot.Import.Watermarks;
 
 namespace KafkaAsTable.Tests
 {
@@ -109,7 +112,7 @@ namespace KafkaAsTable.Tests
 
             // Act
             var exception = await Record.ExceptionAsync(async () =>
-            await loader.LoadWatermarksAsync(consumerFactory, topicName, System.Threading.CancellationToken.None)
+            await loader.LoadWatermarksAsync(consumerFactory, topicName, CancellationToken.None)
             );
 
             // Assert
@@ -139,6 +142,76 @@ namespace KafkaAsTable.Tests
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
+        }
+
+        [Fact(DisplayName = "TopicWatermarkLoader can load watermarks with valid params.")]
+        [Trait("Category", "Unit")]
+        public async Task CanLoadWatermarksWithValidParamsAsync()
+        {
+
+            var topic = new TopicName("test");
+            var clientMock = new Mock<IAdminClient>();
+            var client = clientMock.Object;
+            var timeout = 1;
+            var options = (new Mock<IOptions<TopicWatermarkLoaderConfiguration>>());
+            options.Setup(x => x.Value).Returns(new TopicWatermarkLoaderConfiguration
+            {
+                AdminClientTimeout = TimeSpan.FromSeconds(timeout)
+            });
+            var loader = new TopicWatermarkLoader(client, options.Object);
+
+            var consumerMock = new Mock<IConsumer<object, object>>();
+
+            IConsumer<object, object> consumerFactory() => consumerMock!.Object;
+
+            var adminClientPartition = new TopicPartition(topic.Value, new Partition(1));
+
+            var adminParitions = new[] { adminClientPartition };
+
+            var borkerMeta = new BrokerMetadata(1, "testHost", 1000);
+
+            var partitionMeta = new PartitionMetadata(1, 1, new[] { 1 }, new[] { 1 }, null);
+
+            var topicMeta = new TopicMetadata(topic.Value, new[] { partitionMeta }.ToList(), null);
+
+            var meta = new Confluent.Kafka.Metadata(
+                    new[] { borkerMeta }.ToList(),
+                    new[] { topicMeta }.ToList(), 1, "test"
+                    );
+
+            clientMock.Setup(c => c.GetMetadata(topic.Value, TimeSpan.FromSeconds(timeout))).Returns(meta);
+
+            var offets = new WatermarkOffsets(new Offset(1), new Offset(2));
+
+            consumerMock.Setup(x => x.QueryWatermarkOffsets(adminClientPartition, TimeSpan.FromSeconds(timeout))).Returns(offets);
+
+            TopicWatermark result = null!;
+
+            // Act
+            var exception = await Record.ExceptionAsync(async () => result = await loader.LoadWatermarksAsync(consumerFactory, topic, CancellationToken.None));
+
+            // Assert
+            exception.Should().BeNull();
+
+            consumerMock.Verify(x => x.Close(), Times.Once);
+
+            consumerMock.Verify(x => x.Dispose(), Times.Once);
+
+            result.Should().NotBeNull();
+
+            var watermarks = result.Watermarks.ToList();
+
+            watermarks.Should().ContainSingle();
+
+            clientMock.Verify(c => c.GetMetadata(topic.Value, TimeSpan.FromSeconds(timeout)), Times.Once);
+
+            consumerMock.Verify(x => x.QueryWatermarkOffsets(adminClientPartition, TimeSpan.FromSeconds(timeout)), Times.Once);
+
+            watermarks.Single().TopicName.Should().Be(topic);
+
+            watermarks.Single().Partition.Value.Should().Be(partitionMeta.PartitionId);
+
+            watermarks.Single().Offset.Should().Be(offets);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace KafkaAsTable.Tests
 {
     public class PartitionWatermarkTests
     {
-        [Fact(DisplayName = "PartitionWatermark can't create with null name.")]
+        [Fact(DisplayName = "PartitionWatermark can't be created with null name.")]
         [Trait("Category", "Unit")]
         public void CantCreatePartitionWatermarkWithNullName()
         {
@@ -32,7 +32,7 @@ namespace KafkaAsTable.Tests
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
         }
 
-        [Fact(DisplayName = "PartitionWatermark can't create with null offets.")]
+        [Fact(DisplayName = "PartitionWatermark can't be created with null offets.")]
         [Trait("Category", "Unit")]
         public void CantCreatePartitionWatermarkWithNullWatermarkOffsets()
         {
@@ -117,7 +117,7 @@ namespace KafkaAsTable.Tests
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
         }
 
-        [Fact(DisplayName = "IsWatermarkAchievedBy reacts on end offset.")]
+        [Fact(DisplayName = "IsWatermarkAchievedBy reacts on offset's end.")]
         [Trait("Category", "Unit")]
         public void IsWatermarkAchievedByReatcsOnRightOffset()
         {
@@ -143,7 +143,7 @@ namespace KafkaAsTable.Tests
             status.Should().BeTrue();
         }
 
-        [Fact(DisplayName = "IsWatermarkAchievedBy reacts on non end offset.")]
+        [Fact(DisplayName = "IsWatermarkAchievedBy reacts if offset is not reached.")]
         [Trait("Category", "Unit")]
         public void IsWatermarkAchievedByReatcsOnNotRightOffset()
         {

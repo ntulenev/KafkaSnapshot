@@ -13,7 +13,7 @@ namespace KafkaAsTable.Tests
 {
     public class TopicWatermarkTests
     {
-        [Fact(DisplayName = "TopicWatermark can't create with null partitions")]
+        [Fact(DisplayName = "TopicWatermark can't be created with null partitions")]
         [Trait("Category", "Unit")]
         public void CantCreateTopicWatermarkWithInvalidParams()
         {

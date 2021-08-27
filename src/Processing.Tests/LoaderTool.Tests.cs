@@ -1,13 +1,15 @@
-﻿using FluentAssertions;
-using KafkaSnapshot.Abstractions.Processing;
-using Microsoft.Extensions.Logging;
-using Moq;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using FluentAssertions;
+
+using Microsoft.Extensions.Logging;
+
+using Moq;
+
 using Xunit;
+
+using KafkaSnapshot.Abstractions.Processing;
 
 namespace KafkaSnapshot.Processing.Tests
 {

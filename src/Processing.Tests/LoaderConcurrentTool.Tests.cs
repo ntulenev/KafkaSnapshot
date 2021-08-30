@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Threading;
 
 using FluentAssertions;
 
@@ -33,7 +35,7 @@ namespace KafkaSnapshot.Processing.Tests
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
         }
 
-        [Fact(DisplayName = "LoaderConcurrentTool can't be created without unit collestion.")]
+        [Fact(DisplayName = "LoaderConcurrentTool can't be created without unit collection.")]
         [Trait("Category", "Unit")]
         public void LoaderConcurrentToolCantBeCreatedWithoutNullCollection()
         {
@@ -66,6 +68,30 @@ namespace KafkaSnapshot.Processing.Tests
 
             // Assert
             exception.Should().BeNull();
+        }
+
+        [Fact(DisplayName = "LoaderConcurrentTool can process units.")]
+        [Trait("Category", "Unit")]
+        public async Task LoaderConcurrentToolProcessUnitsAsync()
+        {
+            // Arrange
+            var loggerMock = new Mock<ILogger<LoaderTool>>();
+            var logger = loggerMock.Object;
+            var unit1 = new Mock<IProcessingUnit>();
+            var unit2 = new Mock<IProcessingUnit>();
+            var items = new[]
+            {
+                unit1.Object,unit2.Object
+            };
+            var tool = new LoaderTool(logger, items);
+
+            // Act
+            var exception = await Record.ExceptionAsync(async () => await tool.ProcessAsync(CancellationToken.None));
+
+            // Assert
+            exception.Should().BeNull();
+            unit1.Verify(x => x.ProcessAsync(CancellationToken.None), Times.Once);
+            unit2.Verify(x => x.ProcessAsync(CancellationToken.None), Times.Once);
         }
     }
 }

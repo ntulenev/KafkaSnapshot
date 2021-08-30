@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Threading;
 
 using FluentAssertions;
 
@@ -66,6 +68,55 @@ namespace KafkaSnapshot.Processing.Tests
 
             // Assert
             exception.Should().BeNull();
+        }
+
+        [Fact(DisplayName = "LoaderTool can process units.")]
+        [Trait("Category", "Unit")]
+        public async Task LoaderToolProcessUnitsAsync()
+        {
+            // Arrange
+            var loggerMock = new Mock<ILogger<LoaderTool>>();
+            var logger = loggerMock.Object;
+            var unit1 = new Mock<IProcessingUnit>();
+            var unit2 = new Mock<IProcessingUnit>();
+            var items = new[]
+            {
+                unit1.Object,unit2.Object
+            };
+            var tool = new LoaderTool(logger, items);
+
+            // Act
+            var exception = await Record.ExceptionAsync(async () => await tool.ProcessAsync(CancellationToken.None));
+
+            // Assert
+            exception.Should().BeNull();
+            unit1.Verify(x => x.ProcessAsync(CancellationToken.None), Times.Once);
+            unit2.Verify(x => x.ProcessAsync(CancellationToken.None), Times.Once);
+        }
+
+        [Fact(DisplayName = "LoaderTool can process units if error.")]
+        [Trait("Category", "Unit")]
+        public async Task LoaderToolProcessUnitsIfErrorAsync()
+        {
+            // Arrange
+            var loggerMock = new Mock<ILogger<LoaderTool>>();
+            var logger = loggerMock.Object;
+            var unit1 = new Mock<IProcessingUnit>();
+            unit1.Setup(x => x.ProcessAsync(CancellationToken.None)).Throws(new Exception());
+            var unit2 = new Mock<IProcessingUnit>();
+            var items = new[]
+            {
+                unit1.Object,unit2.Object
+            };
+            var tool = new LoaderTool(logger, items);
+
+            // Act
+            var exception = await Record.ExceptionAsync(async () => await tool.ProcessAsync(CancellationToken.None));
+
+            // Assert
+            exception.Should().BeNull();
+            unit1.Verify(x => x.ProcessAsync(CancellationToken.None), Times.Once);
+            unit2.Verify(x => x.ProcessAsync(CancellationToken.None), Times.Once);
         }
     }
 }

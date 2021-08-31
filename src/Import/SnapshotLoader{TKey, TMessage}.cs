@@ -77,14 +77,14 @@ namespace KafkaSnapshot.Import
         {
             var consumedEntities = await Task.WhenAll(topicWatermark.Watermarks
                 .Select(watermark =>
-                            Task.Run(() => ConsumeFromWatermark(watermark, filter, ct))
+                            Task.Run(() => ConsumeToWatermark(watermark, filter, ct))
                        )
                 ).ConfigureAwait(false);
 
             return consumedEntities.SelectMany(сonsumerResults => сonsumerResults);
         }
 
-        private IEnumerable<KeyValuePair<TKey, DatedMessage<TMessage>>> ConsumeFromWatermark(
+        private IEnumerable<KeyValuePair<TKey, DatedMessage<TMessage>>> ConsumeToWatermark(
             PartitionWatermark watermark,
             IKeyFilter<TKey> filter,
             CancellationToken ct)

@@ -66,18 +66,12 @@ namespace KafkaSnapshot.Import.Watermarks
         }
 
         /// <summary>
-        /// Creates single-partition topic for assigning with current offset.
-        /// </summary>
-        public TopicPartitionOffset CreateTopicPartitionWithHighOffset() =>
-            new TopicPartitionOffset(new TopicPartition(_topicName.Value, _partition), _offset.High);
-
-        /// <summary>
         /// Assing consumer to a partition as topic.
         /// </summary>
         /// <typeparam name="K">Message key.</typeparam>
         /// <typeparam name="V">Message value.</typeparam>
         /// <param name="consumer">Consumer.</param>
-        public void AssingWithConsumer<K, V>(IConsumer<K, V> consumer)
+        public void AssingWithConsumer<K, V>(IConsumer<K, V> consumer) 
         {
             if (consumer is null)
             {
@@ -85,6 +79,7 @@ namespace KafkaSnapshot.Import.Watermarks
             }
 
             consumer.Assign(new TopicPartition(_topicName.Value, _partition));
+
         }
 
         private readonly Partition _partition;

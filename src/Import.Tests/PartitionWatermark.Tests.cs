@@ -169,30 +169,6 @@ namespace KafkaAsTable.Tests
             status.Should().BeFalse();
         }
 
-        [Fact(DisplayName = "TopicPartitionOffset could be created from PartitionWatermark.")]
-        [Trait("Category", "Unit")]
-        public void TopicPartitionOffsetCreatesCorrectly()
-        {
-
-            // Arrange
-            var topicName = new TopicName("Test");
-            var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
-            var partition = new Partition(1);
-            var pw = new PartitionWatermark(topicName, offsets, partition);
-
-            TopicPartitionOffset res = null!;
-
-            // Act
-            var exception = Record.Exception(() => res = pw.CreateTopicPartitionWithHighOffset());
-
-            // Assert
-            exception.Should().BeNull();
-            res.Offset.Should().Be(offsets.High);
-            res.Topic.Should().Be(topicName.Value);
-            res.TopicPartition.Partition.Should().Be(partition);
-            res.TopicPartition.Topic.Should().Be(topicName.Value);
-        }
-
         [Fact(DisplayName = "AssingWithConsumer fails on null consumer.")]
         [Trait("Category", "Unit")]
         public void AssingWithConsumerFailsOnNullConsumer()

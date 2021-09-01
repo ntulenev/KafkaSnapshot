@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 using Confluent.Kafka;
 
@@ -71,7 +72,7 @@ namespace KafkaSnapshot.Import.Watermarks
         /// <typeparam name="K">Message key.</typeparam>
         /// <typeparam name="V">Message value.</typeparam>
         /// <param name="consumer">Consumer.</param>
-        public void AssingWithConsumer<K, V>(IConsumer<K, V> consumer) 
+        public void AssingWithConsumer<K, V>(IConsumer<K, V> consumer)
         {
             if (consumer is null)
             {
@@ -80,6 +81,32 @@ namespace KafkaSnapshot.Import.Watermarks
 
             consumer.Assign(new TopicPartition(_topicName.Value, _partition));
 
+        }
+
+        /// <summary>
+        ///  Assing consumer to a partition as topic with offset started from <paramref name="startDate"/>.
+        /// </summary>
+        /// <typeparam name="K">Message key.</typeparam>
+        /// <typeparam name="V">Message value.</typeparam>
+        /// <param name="consumer">Consumer.</param>
+        /// <param name="startDate">Start date for offset</param>
+        /// <param name="timeout">Timeout for offset searching</param>
+        public void AssingWithConsumer<K, V>(IConsumer<K, V> consumer, DateTime startDate, TimeSpan timeout)
+        {
+            if (consumer is null)
+            {
+                throw new ArgumentNullException(nameof(consumer));
+            }
+
+            var topicPartition = new TopicPartition(_topicName.Value, _partition);
+
+            var partitionTimestamp = new TopicPartitionTimestamp(topicPartition, new Timestamp(startDate));
+
+            var offsets = consumer.OffsetsForTimes(new[] { partitionTimestamp }, timeout);
+
+            var singleOffset = offsets.Single();
+
+            consumer.Assign(singleOffset);
         }
 
         private readonly Partition _partition;

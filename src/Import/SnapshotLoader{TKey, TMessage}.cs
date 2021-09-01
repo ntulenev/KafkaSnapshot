@@ -92,7 +92,13 @@ namespace KafkaSnapshot.Import
             using var consumer = _consumerFactory();
             try
             {
+
+
                 watermark.AssingWithConsumer(consumer);
+
+                //TODO add extra logic with topic date filtering.
+                //watermark.AssingWithConsumer(consumer,DateTime.Now.AddDays(-1),TimeSpan.FromSeconds(10));
+
                 ConsumeResult<TKey, TMessage> result = default!;
                 do
                 {

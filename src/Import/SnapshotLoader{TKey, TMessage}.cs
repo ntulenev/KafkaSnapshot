@@ -111,7 +111,7 @@ namespace KafkaSnapshot.Import
 
                 if (topicParams.HasOffsetDate)
                 {
-                    watermark.AssingWithConsumer(consumer, topicParams.OffsetDate, _config.DateOssetTimeout);
+                    watermark.AssingWithConsumer(consumer, topicParams.OffsetDate, _config.DateOffsetTimeout);
                 }
                 else
                 {

@@ -11,6 +11,6 @@ namespace KafkaSnapshot.Import.Configuration
         /// <summary>
         /// Timout for searching date offset.
         /// </summary>
-        public TimeSpan DateOssetTimeout { get; set; }
+        public TimeSpan DateOffsetTimeout { get; set; }
     }
 }

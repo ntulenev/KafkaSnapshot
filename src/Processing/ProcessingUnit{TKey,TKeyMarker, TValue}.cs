@@ -39,9 +39,13 @@ namespace KafkaSnapshot.Processing
                               )
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _topic = topic ?? throw new ArgumentNullException(nameof(topic));
             _kafkaLoader = kafkaLoader ?? throw new ArgumentNullException(nameof(kafkaLoader));
             _exporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
+
+            if (topic is null)
+            {
+                throw new ArgumentNullException(nameof(topic));
+            }
 
             if (filterFactory is null)
             {
@@ -50,7 +54,20 @@ namespace KafkaSnapshot.Processing
 
             _filter = filterFactory.Create(topic.FilterType, topic.KeyType, topic.FilterValue);
 
-            _logger.LogDebug("Instance created for topic {topic}.", _topic);
+            _logger.LogDebug("Instance created for topic {topic}.", topic);
+
+            if (topic.StartingDate.HasValue)
+            {
+                _topicParams = new LoadTopicParams(topic.Name, topic.LoadWithCompacting, topic.StartingDate.Value);
+            }
+            else
+            {
+                _topicParams = new LoadTopicParams(topic.Name, topic.LoadWithCompacting);
+            }
+
+            _exportedTopic = new ExportedTopic(topic.Name, topic.ExportName);
+
+            _logger.LogDebug("Instance created for topic {topic}.", topic);
         }
 
         /// <inheritdoc/>
@@ -58,22 +75,22 @@ namespace KafkaSnapshot.Processing
         {
             _logger.LogDebug("Start loading data from Kafka.");
             var items = await _kafkaLoader.LoadCompactSnapshotAsync(
-                _topic.LoadWithCompacting,
-                new TopicName(_topic.Name),
+                _topicParams,
                 _filter,
                 ct).ConfigureAwait(false);
 
             _logger.LogDebug("Start exporting data to file.");
-            await _exporter.ExportAsync(items, new ExportedTopic(_topic.Name, _topic.ExportName), ct).ConfigureAwait(false);
+            await _exporter.ExportAsync(items, _exportedTopic, ct).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
-        public string TopicName => _topic.Name;
+        public string TopicName => _topicParams.Value;
 
         private readonly ISnapshotLoader<TKey, TValue> _kafkaLoader;
         private readonly IDataExporter<TKey, TKeyMarker, TValue, ExportedTopic> _exporter;
-        private readonly ProcessingTopic<TKey> _topic;
         private readonly ILogger<ProcessingUnit<TKey, TKeyMarker, TValue>> _logger;
         private readonly IKeyFilter<TKey> _filter;
+        private readonly LoadTopicParams _topicParams;
+        private readonly ExportedTopic _exportedTopic;
     }
 }

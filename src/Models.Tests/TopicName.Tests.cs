@@ -19,7 +19,7 @@ namespace KafkaSnapshot.Models.Tests
             string name = null!;
 
             // Act
-            var exception = Record.Exception(() => new TopicName(name));
+            var exception = Record.Exception(() => new LoadTopicParams(name));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -34,7 +34,7 @@ namespace KafkaSnapshot.Models.Tests
             var name = string.Empty;
 
             // Act
-            var exception = Record.Exception(() => new TopicName(name));
+            var exception = Record.Exception(() => new LoadTopicParams(name));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -49,7 +49,7 @@ namespace KafkaSnapshot.Models.Tests
             var name = "     ";
 
             // Act
-            var exception = Record.Exception(() => new TopicName(name));
+            var exception = Record.Exception(() => new LoadTopicParams(name));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -64,7 +64,7 @@ namespace KafkaSnapshot.Models.Tests
             var name = "topic name";
 
             // Act
-            var exception = Record.Exception(() => new TopicName(name));
+            var exception = Record.Exception(() => new LoadTopicParams(name));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -79,7 +79,7 @@ namespace KafkaSnapshot.Models.Tests
             var name = new string('x', 250);
 
             // Act
-            var exception = Record.Exception(() => new TopicName(name));
+            var exception = Record.Exception(() => new LoadTopicParams(name));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -94,7 +94,7 @@ namespace KafkaSnapshot.Models.Tests
             var name = "ы?:%";
 
             // Act
-            var exception = Record.Exception(() => new TopicName(name));
+            var exception = Record.Exception(() => new LoadTopicParams(name));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -106,8 +106,8 @@ namespace KafkaSnapshot.Models.Tests
         {
 
             // Arrange
-            var t1 = new TopicName("Topic1");
-            var t2 = new TopicName("Topic1");
+            var t1 = new LoadTopicParams("Topic1");
+            var t2 = new LoadTopicParams("Topic1");
             var result = false;
 
             // Act
@@ -127,8 +127,8 @@ namespace KafkaSnapshot.Models.Tests
         {
 
             // Arrange
-            var t1 = new TopicName("Topic1");
-            var t2 = new TopicName("Topic2");
+            var t1 = new LoadTopicParams("Topic1");
+            var t2 = new LoadTopicParams("Topic2");
             var result = false;
 
             // Act
@@ -148,8 +148,8 @@ namespace KafkaSnapshot.Models.Tests
         {
 
             // Arrange
-            var t1 = new TopicName("Topic1");
-            var t2 = new TopicName("Topic1");
+            var t1 = new LoadTopicParams("Topic1");
+            var t2 = new LoadTopicParams("Topic1");
             var result = false;
 
             // Act
@@ -169,8 +169,8 @@ namespace KafkaSnapshot.Models.Tests
         {
 
             // Arrange
-            var t1 = new TopicName("Topic1");
-            var t2 = new TopicName("Topic2");
+            var t1 = new LoadTopicParams("Topic1");
+            var t2 = new LoadTopicParams("Topic2");
             var result = false;
 
             // Act

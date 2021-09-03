@@ -110,7 +110,7 @@ namespace KafkaSnapshot.Import.Tests
             var topicLoader = topicLoaderMock.Object;
             var loader = new SnapshotLoader<object, object>(logger, consumerFactory, topicLoader);
             bool withCompacting = true;
-            var topicName = (TopicName)null!;
+            var topicName = (LoadTopicParams)null!;
             var filterMock = new Mock<IKeyFilter<object>>();
             var filter = filterMock.Object;
             // Act
@@ -135,7 +135,7 @@ namespace KafkaSnapshot.Import.Tests
             var topicLoader = topicLoaderMock.Object;
             var loader = new SnapshotLoader<object, object>(logger, consumerFactory, topicLoader);
             bool withCompacting = true;
-            var topicName = new TopicName("test");
+            var topicName = new LoadTopicParams("test");
             var filter = (IKeyFilter<object>)null!;
             // Act
             var exception = await Record.ExceptionAsync(
@@ -161,7 +161,7 @@ namespace KafkaSnapshot.Import.Tests
             var topicLoader = topicLoaderMock.Object;
             var loader = new SnapshotLoader<object, object>(logger, consumerFactory, topicLoader);
             bool withCompacting = false;
-            var topicName = new TopicName("test");
+            var topicName = new LoadTopicParams("test");
             var filterMock = new Mock<IKeyFilter<object>>();
             filterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
 
@@ -244,7 +244,7 @@ namespace KafkaSnapshot.Import.Tests
             var topicLoader = topicLoaderMock.Object;
             var loader = new SnapshotLoader<object, object>(logger, consumerFactory, topicLoader);
             bool withCompacting = true;
-            var topicName = new TopicName("test");
+            var topicName = new LoadTopicParams("test");
             var filterMock = new Mock<IKeyFilter<object>>();
             filterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
 

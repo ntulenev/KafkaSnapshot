@@ -36,6 +36,11 @@ namespace KafkaSnapshot.Processing.Configuration
         public FilterType FilterType { get; set; } = FilterType.None;
 
         /// <summary>
+        /// Date and time for starting offset
+        /// </summary>
+        public DateTime? OffsetStartDate { get; set; }
+
+        /// <summary>
         /// Optional filter value
         /// </summary>
         public object? FilterValue { get; set; }
@@ -52,7 +57,7 @@ namespace KafkaSnapshot.Processing.Configuration
                                               Compacting == CompactingMode.On,
                                               FilterType,
                                               KeyType,
-                                              typedFilterValue!);
+                                              typedFilterValue!, OffsetStartDate);
         }
     }
 }

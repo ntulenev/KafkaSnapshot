@@ -39,14 +39,13 @@ namespace KafkaSnapshot.Import
 
         ///<inheritdoc/>
         public async Task<IEnumerable<KeyValuePair<TKey, DatedMessage<TMessage>>>> LoadCompactSnapshotAsync(
-            bool withCompacting,
-            TopicName topicName,
+            LoadTopicParams topicParams,
             IKeyFilter<TKey> filter,
             CancellationToken ct)
         {
-            if (topicName is null)
+            if (topicParams is null)
             {
-                throw new ArgumentNullException(nameof(topicName));
+                throw new ArgumentNullException(nameof(topicParams));
             }
 
             if (filter is null)
@@ -56,14 +55,14 @@ namespace KafkaSnapshot.Import
 
             _logger.LogDebug("Loading topic watermark.");
             var topicWatermark = await _topicWatermarkLoader
-                                        .LoadWatermarksAsync(_consumerFactory, topicName, ct)
+                                        .LoadWatermarksAsync(_consumerFactory, topicParams, ct)
                                         .ConfigureAwait(false);
 
             _logger.LogDebug("Loading initial state.");
-            var initialState = await ConsumeInitialAsync(topicWatermark, filter, ct).ConfigureAwait(false);
+            var initialState = await ConsumeInitialAsync(topicWatermark, topicParams, filter, ct).ConfigureAwait(false);
 
             _logger.LogDebug("Creating compacting state.");
-            var compactedState = CreateSnapshot(initialState, withCompacting);
+            var compactedState = CreateSnapshot(initialState, topicParams.LoadWithCompacting);
 
             _logger.LogDebug("Created compacting state for {items} item(s).", compactedState.Count());
 
@@ -72,12 +71,13 @@ namespace KafkaSnapshot.Import
 
         private async Task<IEnumerable<KeyValuePair<TKey, DatedMessage<TMessage>>>> ConsumeInitialAsync
            (TopicWatermark topicWatermark,
+            LoadTopicParams topicParams,
             IKeyFilter<TKey> filter,
             CancellationToken ct)
         {
             var consumedEntities = await Task.WhenAll(topicWatermark.Watermarks
                 .Select(watermark =>
-                            Task.Run(() => ConsumeToWatermark(watermark, filter, ct))
+                            Task.Run(() => ConsumeToWatermark(watermark, topicParams, filter, ct))
                        )
                 ).ConfigureAwait(false);
 
@@ -86,6 +86,7 @@ namespace KafkaSnapshot.Import
 
         private IEnumerable<KeyValuePair<TKey, DatedMessage<TMessage>>> ConsumeToWatermark(
             PartitionWatermark watermark,
+            LoadTopicParams topicParams,
             IKeyFilter<TKey> filter,
             CancellationToken ct)
         {
@@ -93,21 +94,23 @@ namespace KafkaSnapshot.Import
             try
             {
 
+                if (topicParams.HasOffsetDate)
+                {
+                    watermark.AssingWithConsumer(consumer, topicParams.OffsetDate, /*Add to config*/ TimeSpan.FromSeconds(10));
+                }
+                else
+                {
+                    watermark.AssingWithConsumer(consumer);
+                }
 
-                watermark.AssingWithConsumer(consumer);
-
-                //TODO add extra logic with topic date filtering.
-                //watermark.AssingWithConsumer(consumer,DateTime.Now.AddDays(-1),TimeSpan.FromSeconds(10));
-
-                ConsumeResult<TKey, TMessage> result = default!;
+                ConsumeResult<TKey, TMessage> result;
                 do
                 {
                     result = consumer.Consume(ct);
 
-                    _logger.LogTrace("Loading {Key} - {Value}", result.Message.Key, result.Message.Value);
-
                     if (filter.IsMatch(result.Message.Key))
                     {
+                        _logger.LogTrace("Loading {Key} - {Value}", result.Message.Key, result.Message.Value);
                         var message = new DatedMessage<TMessage>(result.Message.Value, result.Message.Timestamp.UtcDateTime);
                         yield return new KeyValuePair<TKey, DatedMessage<TMessage>>(result.Message.Key, message);
                     }

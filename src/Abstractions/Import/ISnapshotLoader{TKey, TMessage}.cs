@@ -20,8 +20,7 @@ namespace KafkaSnapshot.Abstractions.Import
         /// Loads topic as Dictionary with compacting per key.
         /// </summary>
         public Task<IEnumerable<KeyValuePair<TKey, DatedMessage<TMessage>>>> LoadCompactSnapshotAsync(
-            bool withCompacting,
-            TopicName topicName,
+            LoadTopicParams topicName,
             IKeyFilter<TKey> filter,
             CancellationToken ct);
     }

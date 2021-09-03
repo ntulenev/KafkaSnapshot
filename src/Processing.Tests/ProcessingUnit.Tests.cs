@@ -204,7 +204,7 @@ namespace KafkaSnapshot.Processing.Tests
             factoryMock.Setup(x => x.Create(topic.FilterType, topic.KeyType, topic.FilterValue)).Returns(filter);
             loaderMock.Setup(x => x.LoadCompactSnapshotAsync(
                         topic.LoadWithCompacting,
-                        It.Is<LoadTopicParams>(n => n.Value == topic.Name),
+                        It.Is<LoadingTopic>(n => n.Value == topic.Name),
                         filter, CancellationToken.None)).Returns(Task.FromResult(snapshot));
             var factory = factoryMock.Object;
             var loader = loaderMock.Object;

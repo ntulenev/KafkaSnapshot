@@ -16,7 +16,7 @@ namespace KafkaSnapshot.Import.Watermarks
 
         public WatermarkOffsets Offset => _offset;
 
-        public LoadTopicParams TopicName => _topicName;
+        public LoadingTopic TopicName => _topicName;
 
         /// <summary>
         /// Creates partition offset watermark.
@@ -24,7 +24,7 @@ namespace KafkaSnapshot.Import.Watermarks
         /// <param name="topicName">Name of the topic.</param>
         /// <param name="offset">Raw kafka offset representation.</param>
         /// <param name="partition">Raw kafka partition representation.</param>
-        public PartitionWatermark(LoadTopicParams topicName,
+        public PartitionWatermark(LoadingTopic topicName,
                                   WatermarkOffsets offset,
                                   Partition partition)
         {
@@ -111,7 +111,7 @@ namespace KafkaSnapshot.Import.Watermarks
 
         private readonly Partition _partition;
         private readonly WatermarkOffsets _offset;
-        private readonly LoadTopicParams _topicName;
+        private readonly LoadingTopic _topicName;
 
     }
 }

@@ -110,7 +110,7 @@ namespace KafkaSnapshot.Import.Tests
             var topicLoader = topicLoaderMock.Object;
             var loader = new SnapshotLoader<object, object>(logger, consumerFactory, topicLoader);
             bool withCompacting = true;
-            var topicName = (LoadTopicParams)null!;
+            var topicName = (LoadingTopic)null!;
             var filterMock = new Mock<IKeyFilter<object>>();
             var filter = filterMock.Object;
             // Act

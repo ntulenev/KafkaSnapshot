@@ -7,7 +7,7 @@ namespace KafkaSnapshot.Models.Import
     /// <summary>
     /// Represents kafka topic name.
     /// </summary>
-    public class LoadTopicParams
+    public class LoadingTopic
     {
         /// <summary>
         /// Validated topic name.
@@ -27,14 +27,14 @@ namespace KafkaSnapshot.Models.Import
         /// <summary>
         /// Creates topic name.
         /// </summary>
-        public LoadTopicParams(string name, bool loadWithCompacting)
+        public LoadingTopic(string name, bool loadWithCompacting)
         {
             ValidateTopicName(name);
             Value = name;
             LoadWithCompacting = loadWithCompacting;
         }
 
-        public LoadTopicParams(string name, bool loadWithCompacting, DateTime offsetDate) : this(name, loadWithCompacting)
+        public LoadingTopic(string name, bool loadWithCompacting, DateTime offsetDate) : this(name, loadWithCompacting)
         {
             _offsetDate = offsetDate;
         }

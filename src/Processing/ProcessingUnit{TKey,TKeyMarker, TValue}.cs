@@ -58,11 +58,11 @@ namespace KafkaSnapshot.Processing
 
             if (topic.StartingDate.HasValue)
             {
-                _topicParams = new LoadTopicParams(topic.Name, topic.LoadWithCompacting, topic.StartingDate.Value);
+                _topicParams = new LoadingTopic(topic.Name, topic.LoadWithCompacting, topic.StartingDate.Value);
             }
             else
             {
-                _topicParams = new LoadTopicParams(topic.Name, topic.LoadWithCompacting);
+                _topicParams = new LoadingTopic(topic.Name, topic.LoadWithCompacting);
             }
 
             _exportedTopic = new ExportedTopic(topic.Name, topic.ExportName);
@@ -90,7 +90,7 @@ namespace KafkaSnapshot.Processing
         private readonly IDataExporter<TKey, TKeyMarker, TValue, ExportedTopic> _exporter;
         private readonly ILogger<ProcessingUnit<TKey, TKeyMarker, TValue>> _logger;
         private readonly IKeyFilter<TKey> _filter;
-        private readonly LoadTopicParams _topicParams;
+        private readonly LoadingTopic _topicParams;
         private readonly ExportedTopic _exportedTopic;
     }
 }

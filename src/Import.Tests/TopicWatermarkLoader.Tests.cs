@@ -133,7 +133,7 @@ namespace KafkaAsTable.Tests
             });
             var loader = new TopicWatermarkLoader(client, options.Object);
             static IConsumer<string, string> consumerFactory() => null!;
-            var topicName = (LoadTopicParams)null!;
+            var topicName = (LoadingTopic)null!;
 
             // Act
             var exception = await Record.ExceptionAsync(async () =>

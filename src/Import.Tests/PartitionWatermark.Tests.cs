@@ -21,7 +21,7 @@ namespace KafkaAsTable.Tests
         {
 
             // Arrange
-            LoadTopicParams topicName = null!;
+            LoadingTopic topicName = null!;
             var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
             var partition = new Partition(1);
 

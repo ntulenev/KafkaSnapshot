@@ -14,6 +14,8 @@ using KafkaSnapshot.Abstractions.Filters;
 using KafkaSnapshot.Abstractions.Import;
 using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Message;
+using KafkaSnapshot.Import.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace KafkaSnapshot.Import
 {
@@ -26,6 +28,7 @@ namespace KafkaSnapshot.Import
         /// Creates <see cref="SnapshotLoader{Key, Message}"/>.
         /// </summary>
         public SnapshotLoader(ILogger<SnapshotLoader<TKey, TMessage>> logger,
+                              IOptions<SnapshotLoaderConfiguration> config,
                               Func<IConsumer<TKey, TMessage>> consumerFactory,
                               ITopicWatermarkLoader topicWatermarkLoader
                              )
@@ -34,12 +37,24 @@ namespace KafkaSnapshot.Import
             _topicWatermarkLoader = topicWatermarkLoader ?? throw new ArgumentNullException(nameof(topicWatermarkLoader));
             _consumerFactory = consumerFactory ?? throw new ArgumentNullException(nameof(consumerFactory));
 
+            if (config is null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            if (config.Value is null)
+            {
+                throw new ArgumentException("Config is not set.", nameof(config));
+            }
+
+            _config = config.Value;
+
             _logger.LogDebug("Instance created.");
         }
 
         ///<inheritdoc/>
         public async Task<IEnumerable<KeyValuePair<TKey, DatedMessage<TMessage>>>> LoadCompactSnapshotAsync(
-            LoadTopicParams topicParams,
+            LoadingTopic topicParams,
             IKeyFilter<TKey> filter,
             CancellationToken ct)
         {
@@ -71,7 +86,7 @@ namespace KafkaSnapshot.Import
 
         private async Task<IEnumerable<KeyValuePair<TKey, DatedMessage<TMessage>>>> ConsumeInitialAsync
            (TopicWatermark topicWatermark,
-            LoadTopicParams topicParams,
+            LoadingTopic topicParams,
             IKeyFilter<TKey> filter,
             CancellationToken ct)
         {
@@ -86,7 +101,7 @@ namespace KafkaSnapshot.Import
 
         private IEnumerable<KeyValuePair<TKey, DatedMessage<TMessage>>> ConsumeToWatermark(
             PartitionWatermark watermark,
-            LoadTopicParams topicParams,
+            LoadingTopic topicParams,
             IKeyFilter<TKey> filter,
             CancellationToken ct)
         {
@@ -96,7 +111,7 @@ namespace KafkaSnapshot.Import
 
                 if (topicParams.HasOffsetDate)
                 {
-                    watermark.AssingWithConsumer(consumer, topicParams.OffsetDate, /*Add to config*/ TimeSpan.FromSeconds(10));
+                    watermark.AssingWithConsumer(consumer, topicParams.OffsetDate, _config.DateOssetTimeout);
                 }
                 else
                 {
@@ -143,6 +158,7 @@ namespace KafkaSnapshot.Import
             }
         }
 
+        private readonly SnapshotLoaderConfiguration _config;
         private readonly ITopicWatermarkLoader _topicWatermarkLoader;
         private readonly Func<IConsumer<TKey, TMessage>> _consumerFactory;
         private readonly ILogger<SnapshotLoader<TKey, TMessage>> _logger;

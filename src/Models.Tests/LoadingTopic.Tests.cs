@@ -8,7 +8,7 @@ using KafkaSnapshot.Models.Import;
 
 namespace KafkaSnapshot.Models.Tests
 {
-    public class TopicNameTests
+    public class LoadingTopicTests
     {
         [Fact(DisplayName = "Topic name can't be null.")]
         [Trait("Category", "Unit")]

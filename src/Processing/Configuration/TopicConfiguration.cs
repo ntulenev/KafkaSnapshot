@@ -8,7 +8,7 @@ namespace KafkaSnapshot.Processing.Configuration
     /// <summary>
     /// Topic representatin in configuration <see cref="LoaderToolConfiguration"/>.
     /// </summary>
-    public class LoadedTopic
+    public class TopicConfiguration
     {
         /// <summary>
         /// Topic name in Apache Kafka.

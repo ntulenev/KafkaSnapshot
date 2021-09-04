@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 namespace KafkaSnapshot.Models.Import
 {
     /// <summary>
-    /// Represents kafka topic name.
+    /// Represents Kafka topics attributes.
     /// </summary>
     public class LoadingTopic
     {
@@ -15,18 +15,26 @@ namespace KafkaSnapshot.Models.Import
         public string Value { get; }
 
         /// <summary>
-        /// Compact topic results.
+        /// Need to compact results by key.
         /// </summary>
         public bool LoadWithCompacting { get; }
 
+        /// <summary>
+        /// Date and time of staring offset.
+        /// </summary>
         public DateTime OffsetDate => _offsetDate.HasValue ? _offsetDate!.Value :
             throw new InvalidOperationException("Topic params does not have date offset.");
 
+        /// <summary>
+        /// Read from Dated offset.
+        /// </summary>
         public bool HasOffsetDate => _offsetDate.HasValue;
 
         /// <summary>
-        /// Creates topic name.
+        /// Creates <see cref="LoadingTopic"/>.
         /// </summary>
+        /// <param name="name">topic name.</param>
+        /// <param name="loadWithCompacting">Flag for compacting.</param>
         public LoadingTopic(string name, bool loadWithCompacting)
         {
             ValidateTopicName(name);
@@ -34,6 +42,12 @@ namespace KafkaSnapshot.Models.Import
             LoadWithCompacting = loadWithCompacting;
         }
 
+        /// <summary>
+        /// Creates <see cref="LoadingTopic"/>.
+        /// </summary>
+        /// <param name="name">topic name.</param>
+        /// <param name="loadWithCompacting">Flag for compacting.</param>
+        /// <param name="offsetDate">date for initial offset.</param>
         public LoadingTopic(string name, bool loadWithCompacting, DateTime offsetDate) : this(name, loadWithCompacting)
         {
             _offsetDate = offsetDate;

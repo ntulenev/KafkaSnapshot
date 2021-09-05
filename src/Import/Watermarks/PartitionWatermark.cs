@@ -16,7 +16,7 @@ namespace KafkaSnapshot.Import.Watermarks
 
         public WatermarkOffsets Offset => _offset;
 
-        public TopicName TopicName => _topicName;
+        public LoadingTopic TopicName => _topicName;
 
         /// <summary>
         /// Creates partition offset watermark.
@@ -24,7 +24,7 @@ namespace KafkaSnapshot.Import.Watermarks
         /// <param name="topicName">Name of the topic.</param>
         /// <param name="offset">Raw kafka offset representation.</param>
         /// <param name="partition">Raw kafka partition representation.</param>
-        public PartitionWatermark(TopicName topicName,
+        public PartitionWatermark(LoadingTopic topicName,
                                   WatermarkOffsets offset,
                                   Partition partition)
         {
@@ -91,7 +91,7 @@ namespace KafkaSnapshot.Import.Watermarks
         /// <param name="consumer">Consumer.</param>
         /// <param name="startDate">Start date for offset</param>
         /// <param name="timeout">Timeout for offset searching</param>
-        public void AssingWithConsumer<K, V>(IConsumer<K, V> consumer, DateTime startDate, TimeSpan timeout)
+        public bool AssingWithConsumer<K, V>(IConsumer<K, V> consumer, DateTime startDate, TimeSpan timeout)
         {
             if (consumer is null)
             {
@@ -106,12 +106,19 @@ namespace KafkaSnapshot.Import.Watermarks
 
             var singleOffset = offsets.Single();
 
+            if (singleOffset.Offset.IsSpecial && singleOffset.Offset.Value == Confluent.Kafka.Offset.End)
+            {
+                return false;
+            }
+
             consumer.Assign(singleOffset);
+
+            return true;
         }
 
         private readonly Partition _partition;
         private readonly WatermarkOffsets _offset;
-        private readonly TopicName _topicName;
+        private readonly LoadingTopic _topicName;
 
     }
 }

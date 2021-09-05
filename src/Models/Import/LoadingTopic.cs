@@ -5,37 +5,53 @@ using System.Text.RegularExpressions;
 namespace KafkaSnapshot.Models.Import
 {
     /// <summary>
-    /// Represents kafka topic name.
+    /// Represents Kafka topics attributes.
     /// </summary>
-    public class TopicName
+    public class LoadingTopic
     {
         /// <summary>
-        /// Validated tipic name.
+        /// Validated topic name.
         /// </summary>
         public string Value { get; }
 
         /// <summary>
-        /// Creates topic name.
+        /// Need to compact results by key.
         /// </summary>
-        public TopicName(string name)
+        public bool LoadWithCompacting { get; }
+
+        /// <summary>
+        /// Date and time of staring offset.
+        /// </summary>
+        public DateTime OffsetDate => _offsetDate.HasValue ? _offsetDate!.Value :
+            throw new InvalidOperationException("Topic params does not have date offset.");
+
+        /// <summary>
+        /// Read from Dated offset.
+        /// </summary>
+        public bool HasOffsetDate => _offsetDate.HasValue;
+
+        /// <summary>
+        /// Creates <see cref="LoadingTopic"/>.
+        /// </summary>
+        /// <param name="name">topic name.</param>
+        /// <param name="loadWithCompacting">Flag for compacting.</param>
+        public LoadingTopic(string name, bool loadWithCompacting)
         {
             ValidateTopicName(name);
             Value = name;
+            LoadWithCompacting = loadWithCompacting;
         }
 
-        /// <inheritdoc/>
-        public override bool Equals(object? obj)
+        /// <summary>
+        /// Creates <see cref="LoadingTopic"/>.
+        /// </summary>
+        /// <param name="name">topic name.</param>
+        /// <param name="loadWithCompacting">Flag for compacting.</param>
+        /// <param name="offsetDate">date for initial offset.</param>
+        public LoadingTopic(string name, bool loadWithCompacting, DateTime offsetDate) : this(name, loadWithCompacting)
         {
-            if (obj is TopicName tName)
-            {
-                return Value.Equals(tName.Value);
-            }
-
-            return false;
+            _offsetDate = offsetDate;
         }
-
-        /// <inheritdoc/>
-        public override int GetHashCode() => HashCode.Combine(Value);
 
         /// <summary>
         /// Validates topic name.
@@ -72,6 +88,8 @@ namespace KafkaSnapshot.Models.Import
                     "The topic name may consist of characters 'a' to 'z', 'A' to 'Z', digits, and minus signs.", nameof(topicName));
             }
         }
+
+        private readonly DateTime? _offsetDate;
 
         private static readonly Regex _topicNameCharacters = new(
            "^[a-zA-Z0-9\\-]*$",

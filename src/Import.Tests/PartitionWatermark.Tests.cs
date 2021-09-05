@@ -21,7 +21,7 @@ namespace KafkaAsTable.Tests
         {
 
             // Arrange
-            TopicName topicName = null!;
+            LoadingTopic topicName = null!;
             var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
             var partition = new Partition(1);
 
@@ -38,7 +38,7 @@ namespace KafkaAsTable.Tests
         {
 
             // Arrange
-            var topicName = new TopicName("Test");
+            var topicName = new LoadingTopic("Test", true);
             WatermarkOffsets offsets = null!;
             var partition = new Partition(1);
 
@@ -55,7 +55,7 @@ namespace KafkaAsTable.Tests
         {
 
             // Arrange
-            var topicName = new TopicName("Test");
+            var topicName = new LoadingTopic("Test", true);
             var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
             var partition = new Partition(1);
 
@@ -80,7 +80,7 @@ namespace KafkaAsTable.Tests
         {
 
             // Arrange
-            var topicName = new TopicName("Test");
+            var topicName = new LoadingTopic("Test", true);
             var offsets = new WatermarkOffsets(new Offset(startOffset), new Offset(endOffset));
             var partition = new Partition(1);
 
@@ -102,7 +102,7 @@ namespace KafkaAsTable.Tests
         {
 
             // Arrange
-            var topicName = new TopicName("Test");
+            var topicName = new LoadingTopic("Test", true);
             var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
             var partition = new Partition(1);
 
@@ -123,7 +123,7 @@ namespace KafkaAsTable.Tests
         {
 
             // Arrange
-            var topicName = new TopicName("Test");
+            var topicName = new LoadingTopic("Test", true);
             var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
             var partition = new Partition(1);
 
@@ -149,7 +149,7 @@ namespace KafkaAsTable.Tests
         {
 
             // Arrange
-            var topicName = new TopicName("Test");
+            var topicName = new LoadingTopic("Test", true);
             var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
             var partition = new Partition(1);
 
@@ -175,7 +175,7 @@ namespace KafkaAsTable.Tests
         {
 
             // Arrange
-            var topicName = new TopicName("Test");
+            var topicName = new LoadingTopic("Test", true);
             var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
             var partition = new Partition(1);
             var pw = new PartitionWatermark(topicName, offsets, partition);
@@ -194,7 +194,7 @@ namespace KafkaAsTable.Tests
         {
 
             // Arrange
-            var topicName = new TopicName("Test");
+            var topicName = new LoadingTopic("Test", true);
             var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
             var partition = new Partition(1);
             var pw = new PartitionWatermark(topicName, offsets, partition);

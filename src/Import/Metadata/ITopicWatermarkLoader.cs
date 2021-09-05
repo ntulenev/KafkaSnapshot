@@ -24,7 +24,7 @@ namespace KafkaSnapshot.Import.Metadata
         /// <param name="ct">Cancellation token.</param>
         public Task<TopicWatermark> LoadWatermarksAsync<Key, Value>(
             Func<IConsumer<Key, Value>> consumerFactory,
-            TopicName topicName,
+            LoadingTopic topicName,
             CancellationToken ct);
     }
 }

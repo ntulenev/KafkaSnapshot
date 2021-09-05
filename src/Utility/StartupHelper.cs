@@ -146,7 +146,7 @@ namespace KafkaSnapshot.Utility
         }
 
         private static IProcessingUnit InitUnit<TKey, TMarker>(
-                                LoadedTopic topic,
+                                TopicConfiguration topic,
                                 IServiceProvider provider)
                                 where TKey : notnull where TMarker : IKeyRepresentationMarker
            => ActivatorUtilities.CreateInstance<ProcessingUnit<TKey, TMarker, string>>(provider, topic.ConvertToProcess<TKey>());

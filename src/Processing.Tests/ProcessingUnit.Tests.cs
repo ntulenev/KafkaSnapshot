@@ -33,7 +33,7 @@ namespace KafkaSnapshot.Processing.Tests
             // Arrange
             var logger = (ILogger<ProcessingUnit<object, IKeyRepresentationMarker, object>>)null!;
             var topic = new ProcessingTopic<object>
-                                ("test", "test", true, Models.Filters.FilterType.None, Models.Filters.KeyType.String, null!);
+                                ("test", "test", true, Models.Filters.FilterType.None, Models.Filters.KeyType.String, null!, null!);
             var loaderMock = new Mock<ISnapshotLoader<object, object>>();
             var loader = loaderMock.Object;
             var exporterMock = new Mock<IDataExporter<object, IKeyRepresentationMarker, object, ExportedTopic>>();
@@ -86,7 +86,7 @@ namespace KafkaSnapshot.Processing.Tests
             var loggerMock = new Mock<ILogger<ProcessingUnit<object, IKeyRepresentationMarker, object>>>();
             var logger = loggerMock.Object;
             var topic = new ProcessingTopic<object>
-                                ("test", "test", true, Models.Filters.FilterType.None, Models.Filters.KeyType.String, null!);
+                                ("test", "test", true, Models.Filters.FilterType.None, Models.Filters.KeyType.String, null!, null!);
             var loader = (ISnapshotLoader<object, object>)null!;
             var exporterMock = new Mock<IDataExporter<object, IKeyRepresentationMarker, object, ExportedTopic>>();
             var exporter = exporterMock.Object;
@@ -112,7 +112,7 @@ namespace KafkaSnapshot.Processing.Tests
             var loggerMock = new Mock<ILogger<ProcessingUnit<object, IKeyRepresentationMarker, object>>>();
             var logger = loggerMock.Object;
             var topic = new ProcessingTopic<object>
-                                ("test", "test", true, Models.Filters.FilterType.None, Models.Filters.KeyType.String, null!);
+                                ("test", "test", true, Models.Filters.FilterType.None, Models.Filters.KeyType.String, null!, null!);
             var loaderMock = new Mock<ISnapshotLoader<object, object>>();
             var loader = loaderMock.Object;
             var exporter = (IDataExporter<object, IKeyRepresentationMarker, object, ExportedTopic>)null!;
@@ -138,7 +138,7 @@ namespace KafkaSnapshot.Processing.Tests
             var loggerMock = new Mock<ILogger<ProcessingUnit<object, IKeyRepresentationMarker, object>>>();
             var logger = loggerMock.Object;
             var topic = new ProcessingTopic<object>
-                                ("test", "test", true, Models.Filters.FilterType.None, Models.Filters.KeyType.String, null!);
+                                ("test", "test", true, Models.Filters.FilterType.None, Models.Filters.KeyType.String, null!, null!);
             var loaderMock = new Mock<ISnapshotLoader<object, object>>();
             var loader = loaderMock.Object;
             var exporterMock = new Mock<IDataExporter<object, IKeyRepresentationMarker, object, ExportedTopic>>();
@@ -164,7 +164,7 @@ namespace KafkaSnapshot.Processing.Tests
             var loggerMock = new Mock<ILogger<ProcessingUnit<object, IKeyRepresentationMarker, object>>>();
             var logger = loggerMock.Object;
             var topic = new ProcessingTopic<object>
-                                ("test", "test", true, Models.Filters.FilterType.None, Models.Filters.KeyType.String, null!);
+                                ("test", "test", true, Models.Filters.FilterType.None, Models.Filters.KeyType.String, null!, null!);
             var loaderMock = new Mock<ISnapshotLoader<object, object>>();
             var loader = loaderMock.Object;
             var exporterMock = new Mock<IDataExporter<object, IKeyRepresentationMarker, object, ExportedTopic>>();
@@ -192,7 +192,7 @@ namespace KafkaSnapshot.Processing.Tests
             var logger = loggerMock.Object;
             var valueObj = "test value";
             var topic = new ProcessingTopic<object>
-                                ("test", "exportTest", true, Models.Filters.FilterType.None, Models.Filters.KeyType.String, valueObj);
+                                ("test", "exportTest", true, Models.Filters.FilterType.None, Models.Filters.KeyType.String, valueObj, null!);
             var loaderMock = new Mock<ISnapshotLoader<object, object>>();
             var exporterMock = new Mock<IDataExporter<object, IKeyRepresentationMarker, object, ExportedTopic>>();
             var exporter = exporterMock.Object;
@@ -203,8 +203,7 @@ namespace KafkaSnapshot.Processing.Tests
             var snapshot = snapshotMock.Object;
             factoryMock.Setup(x => x.Create(topic.FilterType, topic.KeyType, topic.FilterValue)).Returns(filter);
             loaderMock.Setup(x => x.LoadCompactSnapshotAsync(
-                        topic.LoadWithCompacting,
-                        It.Is<TopicName>(n => n.Value == topic.Name),
+                        It.Is<LoadingTopic>(n => n.Value == topic.Name),
                         filter, CancellationToken.None)).Returns(Task.FromResult(snapshot));
             var factory = factoryMock.Object;
             var loader = loaderMock.Object;

@@ -82,6 +82,7 @@ namespace KafkaSnapshot.Utility
             services.Configure<TopicWatermarkLoaderConfiguration>(hostContext.Configuration.GetSection(nameof(TopicWatermarkLoaderConfiguration)));
             services.AddSingleton<IValidateOptions<BootstrapServersConfiguration>, BootstrapServersConfigurationValidator>();
             services.AddSingleton<IValidateOptions<TopicWatermarkLoaderConfiguration>, TopicWatermarkLoaderConfigurationValidator>();
+            services.Configure<SnapshotLoaderConfiguration>(hostContext.Configuration.GetSection(nameof(SnapshotLoaderConfiguration)));
             return services;
         }
 

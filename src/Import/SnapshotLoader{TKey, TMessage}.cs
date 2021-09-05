@@ -44,12 +44,12 @@ namespace KafkaSnapshot.Import
 
             if (config.Value is null)
             {
-                throw new ArgumentException("Config is not set.", nameof(config));
+                throw new ArgumentException("Config is not set", nameof(config));
             }
 
             _config = config.Value;
 
-            _logger.LogDebug("Instance created.");
+            _logger.LogDebug("Instance created");
         }
 
         ///<inheritdoc/>
@@ -68,18 +68,18 @@ namespace KafkaSnapshot.Import
                 throw new ArgumentNullException(nameof(filter));
             }
 
-            _logger.LogDebug("Loading topic watermark.");
+            _logger.LogDebug("Loading topic watermark");
             var topicWatermark = await _topicWatermarkLoader
                                         .LoadWatermarksAsync(_consumerFactory, topicParams, ct)
                                         .ConfigureAwait(false);
 
-            _logger.LogDebug("Loading initial state.");
+            _logger.LogDebug("Loading initial state");
             var initialState = await ConsumeInitialAsync(topicWatermark, topicParams, filter, ct).ConfigureAwait(false);
 
-            _logger.LogDebug("Creating compacting state.");
+            _logger.LogDebug("Creating compacting state");
             var compactedState = CreateSnapshot(initialState, topicParams.LoadWithCompacting);
 
-            _logger.LogDebug("Created compacting state for {items} item(s).", compactedState.Count());
+            _logger.LogDebug("Created compacting state for {items} item(s)", compactedState.Count());
 
             return compactedState;
         }
@@ -111,7 +111,13 @@ namespace KafkaSnapshot.Import
 
                 if (topicParams.HasOffsetDate)
                 {
-                    watermark.AssingWithConsumer(consumer, topicParams.OffsetDate, _config.DateOffsetTimeout);
+                    _logger.LogInformation("Searching for messages after date {Date}", topicParams.OffsetDate);
+
+                    if (!watermark.AssingWithConsumer(consumer, topicParams.OffsetDate, _config.DateOffsetTimeout))
+                    {
+                        _logger.LogWarning("No actual offset for date {Date}", topicParams.OffsetDate);
+                        yield break;
+                    }
                 }
                 else
                 {
@@ -121,7 +127,7 @@ namespace KafkaSnapshot.Import
                 ConsumeResult<TKey, TMessage> result;
                 do
                 {
-                    result = consumer.Consume(ct);
+                    result = consumer.Consume(ct); //TODO Add timeout return for empty topics
 
                     if (filter.IsMatch(result.Message.Key))
                     {
@@ -142,7 +148,7 @@ namespace KafkaSnapshot.Import
         {
             if (withCompacting)
             {
-                _logger.LogDebug("Compacting data.");
+                _logger.LogDebug("Compacting data");
 
                 return items.Where(x => x.Key is not null).Aggregate(
                     new Dictionary<TKey, DatedMessage<TMessage>>(),

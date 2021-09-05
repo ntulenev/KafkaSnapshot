@@ -91,7 +91,7 @@ namespace KafkaSnapshot.Import.Watermarks
         /// <param name="consumer">Consumer.</param>
         /// <param name="startDate">Start date for offset</param>
         /// <param name="timeout">Timeout for offset searching</param>
-        public void AssingWithConsumer<K, V>(IConsumer<K, V> consumer, DateTime startDate, TimeSpan timeout)
+        public bool AssingWithConsumer<K, V>(IConsumer<K, V> consumer, DateTime startDate, TimeSpan timeout)
         {
             if (consumer is null)
             {
@@ -106,7 +106,14 @@ namespace KafkaSnapshot.Import.Watermarks
 
             var singleOffset = offsets.Single();
 
+            if (singleOffset.Offset.IsSpecial && singleOffset.Offset.Value == Confluent.Kafka.Offset.End)
+            {
+                return false;
+            }
+
             consumer.Assign(singleOffset);
+
+            return true;
         }
 
         private readonly Partition _partition;

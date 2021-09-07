@@ -5,6 +5,7 @@ Tool that allows to read current data snapshot from Apache Kafka topic to the fi
 Supports:
 * Compacting
 * Key filtering
+* Searching start offset for the given date and time
 * String keys (optionally as json) and long keys
 * Multi-partition topics
 
@@ -31,7 +32,8 @@ Config with topics for export:
         "Compacting": "On",
         "ExportFileName": "topic1.json",
         "FilterType": "Equals",
-        "FilterValue": "{\"value\": 1 }"
+        "FilterValue": "{\"value\": 1 }",
+        "OffsetStartDate": "09.01.2021 12:12:12"
       },
       {
         "Name": "topic2",
@@ -62,3 +64,4 @@ Config with topics for export:
 | ExportFileName | File name for exported data  |
 | FilterType | Equals or None (optional)  |
 | FilterValue | Sample value for filtering (if FilterType sets as 'Equals') |
+| OffsetStartDate | First message date (optional). Use to skip old messages in large topics.|

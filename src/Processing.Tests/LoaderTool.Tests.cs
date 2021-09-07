@@ -35,7 +35,7 @@ namespace KafkaSnapshot.Processing.Tests
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
         }
 
-        [Fact(DisplayName = "LoaderTool can't be created without unit collestion.")]
+        [Fact(DisplayName = "LoaderTool can't be created without unit collection.")]
         [Trait("Category", "Unit")]
         public void LoaderToolCantBeCreatedWithoutNullCollection()
         {

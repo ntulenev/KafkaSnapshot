@@ -209,5 +209,7 @@ namespace KafkaAsTable.Tests
             exception.Should().BeNull();
             consumerMock.Verify(x => x.Assign(It.Is<TopicPartition>(a => a.Topic == topicName.Value && a.Partition == partition)), Times.Once);
         }
+
+        // TODO AssingWithConsumer on Date test
     }
 }

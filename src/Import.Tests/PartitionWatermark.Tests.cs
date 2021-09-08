@@ -10,6 +10,7 @@ using Xunit;
 
 using KafkaSnapshot.Import.Watermarks;
 using KafkaSnapshot.Models.Import;
+using System.Collections.Generic;
 
 namespace KafkaAsTable.Tests
 {
@@ -210,6 +211,63 @@ namespace KafkaAsTable.Tests
             consumerMock.Verify(x => x.Assign(It.Is<TopicPartition>(a => a.Topic == topicName.Value && a.Partition == partition)), Times.Once);
         }
 
-        // TODO AssingWithConsumer on Date test
+
+        [Fact(DisplayName = "PartitionWatermark could be assing to consumer with date.")]
+        [Trait("Category", "Unit")]
+        public void PartitionWatermarkCouldBeAssingToConsumerWithDate()
+        {
+
+            // Arrange
+            var date = DateTime.UtcNow;
+            var timeout = TimeSpan.FromSeconds(10);
+            var topicName = new LoadingTopic("Test", true, date);
+            var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
+            var partition = new Partition(1);
+            var pw = new PartitionWatermark(topicName, offsets, partition);
+            var consumerMock = new Mock<IConsumer<object, object>>();
+            var topicWithOffset = new TopicPartitionOffset(new TopicPartition(topicName.Value, new Partition()), new Offset(1));
+            consumerMock.Setup(x => x.OffsetsForTimes(It.IsAny<IEnumerable<TopicPartitionTimestamp>>(), timeout)).Returns(new List<TopicPartitionOffset>
+            {
+               topicWithOffset
+            });
+            var consumer = consumerMock.Object;
+            bool result = false;
+            // Act
+            var exception = Record.Exception(() => result = pw.AssingWithConsumer(consumer, date, timeout));
+
+            // Assert
+            exception.Should().BeNull();
+            result.Should().BeTrue();
+            consumerMock.Verify(x => x.Assign(It.Is<TopicPartitionOffset>(a => a.Topic == topicName.Value && a.Partition == topicWithOffset.Partition)), Times.Once);
+        }
+
+        [Fact(DisplayName = "PartitionWatermark could be assing to consumer with date but too big.")]
+        [Trait("Category", "Unit")]
+        public void PartitionWatermarkCouldBeAssingToConsumerWithDateTooBig()
+        {
+
+            // Arrange
+            var date = DateTime.UtcNow;
+            var timeout = TimeSpan.FromSeconds(10);
+            var topicName = new LoadingTopic("Test", true, date);
+            var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
+            var partition = new Partition(1);
+            var pw = new PartitionWatermark(topicName, offsets, partition);
+            var consumerMock = new Mock<IConsumer<object, object>>();
+            var topicWithOffset = new TopicPartitionOffset(new TopicPartition(topicName.Value, new Partition()), new Offset(Offset.End));
+            consumerMock.Setup(x => x.OffsetsForTimes(It.IsAny<IEnumerable<TopicPartitionTimestamp>>(), timeout)).Returns(new List<TopicPartitionOffset>
+            {
+               topicWithOffset
+            });
+            var consumer = consumerMock.Object;
+            bool result = true;
+            // Act
+            var exception = Record.Exception(() => result = pw.AssingWithConsumer(consumer, date, timeout));
+
+            // Assert
+            exception.Should().BeNull();
+            result.Should().BeFalse();
+            consumerMock.Verify(x => x.Assign(It.Is<TopicPartitionOffset>(a => a.Topic == topicName.Value && a.Partition == topicWithOffset.Partition)), Times.Never);
+        }
     }
 }

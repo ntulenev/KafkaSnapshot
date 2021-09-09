@@ -23,6 +23,9 @@ Config with topics for export:
   "TopicWatermarkLoaderConfiguration": {
     "AdminClientTimeout": "00:00:05"
   },
+  "SnapshotLoaderConfiguration": {
+    "DateOffsetTimeout": "00:00:05"
+  },
   "LoaderToolConfiguration": {
     "UseConcurrentLoad": true,
     "Topics": [
@@ -57,6 +60,7 @@ Config with topics for export:
 | Parameter name | Description   |
 | -------------- | ------------- |
 | AdminClientTimeout | Cluster metadata loading timeout |
+| DateOffsetTimeout | Searching offset by date timeout |
 | BootstrapServers | List of kafka cluster servers, like "kafka-test:9092"  |
 | UseConcurrentLoad | Loads data in concurrent mode or one by one |
 | Name           | Apache Kafka topic name |

@@ -9,7 +9,7 @@ Supports:
 * String keys (optionally as json) and long keys
 * Multi-partition topics
 
-Messages should contains JSON data.
+By default messages should contains JSON data. Simple strings also supported (see ExportRawMessage parameter).
 
 ![Details](Case1.PNG)
 

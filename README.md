@@ -33,7 +33,8 @@ Config with topics for export:
         "ExportFileName": "topic1.json",
         "FilterType": "Equals",
         "FilterValue": "{\"value\": 1 }",
-        "OffsetStartDate": "09.01.2021 12:12:12"
+        "OffsetStartDate": "09.01.2021 12:12:12",
+        "ExportRawMessage": true
       },
       {
         "Name": "topic2",
@@ -65,3 +66,4 @@ Config with topics for export:
 | FilterType | Equals or None (optional)  |
 | FilterValue | Sample value for filtering (if FilterType sets as 'Equals') |
 | OffsetStartDate | First message date (optional). Use to skip old messages in large topics.|
+| ExportRawMessage | If true - export will write message as raw string without converting to formatted json (optional).|

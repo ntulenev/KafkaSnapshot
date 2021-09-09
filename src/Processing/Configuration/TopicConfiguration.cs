@@ -41,6 +41,11 @@ namespace KafkaSnapshot.Processing.Configuration
         public DateTime? OffsetStartDate { get; set; }
 
         /// <summary>
+        /// Message format in export JSON 
+        /// </summary>
+        public bool ExportRawMessage { get; set; }
+
+        /// <summary>
         /// Optional filter value
         /// </summary>
         public object? FilterValue { get; set; }
@@ -57,7 +62,7 @@ namespace KafkaSnapshot.Processing.Configuration
                                               Compacting == CompactingMode.On,
                                               FilterType,
                                               KeyType,
-                                              typedFilterValue!, OffsetStartDate);
+                                              typedFilterValue!, OffsetStartDate, ExportRawMessage);
         }
     }
 }

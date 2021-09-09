@@ -28,12 +28,12 @@ namespace KafkaSnapshot.Export.Tests
         public void JsonKeyJsonValueDataExporterCantBeCreatedWithoutLogger()
         {
             // Arrange
-            var logger = (ILogger<JsonKeyJsonValueDataExporter>)null!;
+            var logger = (ILogger<JsonKeyDataExporter>)null!;
             var fileSaver = new Mock<IFileSaver>();
 
             // Act
             var exception = Record.Exception(() =>
-            _ = new JsonKeyJsonValueDataExporter(logger, fileSaver.Object));
+            _ = new JsonKeyDataExporter(logger, fileSaver.Object));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -44,12 +44,12 @@ namespace KafkaSnapshot.Export.Tests
         public void JsonKeyJsonValueDataExporterCantBeCreatedWithoutSaver()
         {
             // Arrange
-            var logger = new Mock<ILogger<JsonKeyJsonValueDataExporter>>();
+            var logger = new Mock<ILogger<JsonKeyDataExporter>>();
             var fileSaver = (IFileSaver)null!;
 
             // Act
             var exception = Record.Exception(() =>
-            _ = new JsonKeyJsonValueDataExporter(logger.Object, fileSaver));
+            _ = new JsonKeyDataExporter(logger.Object, fileSaver));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -60,12 +60,12 @@ namespace KafkaSnapshot.Export.Tests
         public void JsonKeyJsonValueDataExporterCanBeCreated()
         {
             // Arrange
-            var logger = new Mock<ILogger<JsonKeyJsonValueDataExporter>>();
+            var logger = new Mock<ILogger<JsonKeyDataExporter>>();
             var fileSaver = new Mock<IFileSaver>();
 
             // Act
             var exception = Record.Exception(() =>
-            _ = new JsonKeyJsonValueDataExporter(logger.Object, fileSaver.Object));
+            _ = new JsonKeyDataExporter(logger.Object, fileSaver.Object));
 
             // Assert
             exception.Should().BeNull();
@@ -76,10 +76,10 @@ namespace KafkaSnapshot.Export.Tests
         public async Task JsonKeyJsonValueDataExporterCanExportNullDataAsync()
         {
             // Arrange
-            var logger = new Mock<ILogger<JsonKeyJsonValueDataExporter>>();
+            var logger = new Mock<ILogger<JsonKeyDataExporter>>();
             var fileSaver = new Mock<IFileSaver>();
-            var exporter = new JsonKeyJsonValueDataExporter(logger.Object, fileSaver.Object);
-            var topic = new ExportedTopic("name", "filename");
+            var exporter = new JsonKeyDataExporter(logger.Object, fileSaver.Object);
+            var topic = new ExportedTopic("name", "filename", true);
             var data = (IEnumerable<KeyValuePair<string, DatedMessage<string>>>)null!;
 
             // Act
@@ -96,9 +96,9 @@ namespace KafkaSnapshot.Export.Tests
         public async Task JsonKeyJsonValueDataExporterCanExportNullTopic()
         {
             // Arrange
-            var logger = new Mock<ILogger<JsonKeyJsonValueDataExporter>>();
+            var logger = new Mock<ILogger<JsonKeyDataExporter>>();
             var fileSaver = new Mock<IFileSaver>();
-            var exporter = new JsonKeyJsonValueDataExporter(logger.Object, fileSaver.Object);
+            var exporter = new JsonKeyDataExporter(logger.Object, fileSaver.Object);
             var topic = (ExportedTopic)null!;
             var data = Enumerable.Empty<KeyValuePair<string, DatedMessage<string>>>();
 
@@ -117,10 +117,10 @@ namespace KafkaSnapshot.Export.Tests
         public async Task JsonKeyJsonValueDataExporterCantExportNonJsonValueData()
         {
             // Arrange
-            var logger = new Mock<ILogger<JsonKeyJsonValueDataExporter>>();
+            var logger = new Mock<ILogger<JsonKeyDataExporter>>();
             var fileSaver = new Mock<IFileSaver>();
-            var exporter = new JsonKeyJsonValueDataExporter(logger.Object, fileSaver.Object);
-            var topic = new ExportedTopic("name", "filename");
+            var exporter = new JsonKeyDataExporter(logger.Object, fileSaver.Object);
+            var topic = new ExportedTopic("name", "filename", false);
             var data = new KeyValuePair<string, DatedMessage<string>>[]
             {
                 new KeyValuePair<string, DatedMessage<string>>("{\"id\": 1 }",new DatedMessage<string>("test", DateTime.UtcNow))
@@ -141,10 +141,10 @@ namespace KafkaSnapshot.Export.Tests
         public async Task JsonKeyJsonValueDataExporterCantExportNonJsonKeyData()
         {
             // Arrange
-            var logger = new Mock<ILogger<JsonKeyJsonValueDataExporter>>();
+            var logger = new Mock<ILogger<JsonKeyDataExporter>>();
             var fileSaver = new Mock<IFileSaver>();
-            var exporter = new JsonKeyJsonValueDataExporter(logger.Object, fileSaver.Object);
-            var topic = new ExportedTopic("name", "filename");
+            var exporter = new JsonKeyDataExporter(logger.Object, fileSaver.Object);
+            var topic = new ExportedTopic("name", "filename", true);
             var data = new KeyValuePair<string, DatedMessage<string>>[]
             {
                 new KeyValuePair<string, DatedMessage<string>>("test",new DatedMessage<string>("{\"value\": 1 }", DateTime.UtcNow))
@@ -165,10 +165,10 @@ namespace KafkaSnapshot.Export.Tests
         public async Task JsonKeyJsonValueDataExporterCanExportData()
         {
             // Arrange
-            var logger = new Mock<ILogger<JsonKeyJsonValueDataExporter>>();
+            var logger = new Mock<ILogger<JsonKeyDataExporter>>();
             var fileSaver = new Mock<IFileSaver>();
-            var exporter = new JsonKeyJsonValueDataExporter(logger.Object, fileSaver.Object);
-            var topic = new ExportedTopic("name", "filename");
+            var exporter = new JsonKeyDataExporter(logger.Object, fileSaver.Object);
+            var topic = new ExportedTopic("name", "filename", true);
             var data = new KeyValuePair<string, DatedMessage<string>>[]
             {
                 new KeyValuePair<string, DatedMessage<string>>("{\"id\": 1 }",new DatedMessage<string>("{\"value\": 1 }", DateTime.UtcNow))

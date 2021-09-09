@@ -65,7 +65,7 @@ namespace KafkaSnapshot.Processing
                 _topicParams = new LoadingTopic(topic.Name, topic.LoadWithCompacting);
             }
 
-            _exportedTopic = new ExportedTopic(topic.Name, topic.ExportName);
+            _exportedTopic = new ExportedTopic(topic.Name, topic.ExportName,topic.ExportRawMessage);
 
             _logger.LogDebug("Instance created for topic {topic}.", topic);
         }

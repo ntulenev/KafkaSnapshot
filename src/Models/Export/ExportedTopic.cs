@@ -3,5 +3,5 @@
     /// <summary>
     /// Topic that could be exported.
     /// </summary>
-    public record ExportedTopic(string Name, string ExportName);
+    public record ExportedTopic(string Name, string ExportName, bool ExportRawMessage);
 }

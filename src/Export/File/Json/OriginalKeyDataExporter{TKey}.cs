@@ -17,24 +17,24 @@ namespace KafkaSnapshot.Export.File.Json
     /// <see cref="JsonFileDataExporter{TKey, TKeyMarker, TValue, TTopic}"/> for key <see cref="TKey"/> and string json value.
     /// </summary>
     /// <typeparam name="TKey">Message key type.</typeparam>
-    public class OriginalKeyJsonValueDataExporter<TKey> : JsonFileDataExporter<TKey, OriginalKeyMarker, string, ExportedTopic>
+    public class OriginalKeyDataExporter<TKey> : JsonFileDataExporter<TKey, OriginalKeyMarker, string, ExportedTopic>
     {
         /// <summary>
         /// Creates <see cref="OriginalKeyJsonValueDataExporter"/>.
         /// </summary>
-        /// <param name="logger">Logger for <see cref="OriginalKeyJsonValueDataExporter{TKey}"/>.</param>
+        /// <param name="logger">Logger for <see cref="OriginalKeyDataExporter{TKey}"/>.</param>
         /// <param name="fileSaver">Utility that saves content to file.</param>
-        public OriginalKeyJsonValueDataExporter(ILogger<OriginalKeyJsonValueDataExporter<TKey>> logger, IFileSaver fileSaver) : base(logger, fileSaver)
+        public OriginalKeyDataExporter(ILogger<OriginalKeyDataExporter<TKey>> logger, IFileSaver fileSaver) : base(logger, fileSaver)
         {
         }
 
         /// <inheritdoc/>
-        protected override string PrepareJson(IEnumerable<KeyValuePair<TKey, DatedMessage<string>>> data)
+        protected override string PrepareJson(IEnumerable<KeyValuePair<TKey, DatedMessage<string>>> data, bool exportRawMessage)
         {
             var items = data.Select(x => new
             {
                 x.Key,
-                Value = JToken.Parse(x.Value.Message),
+                Value = exportRawMessage ? x.Value.Message : JToken.Parse(x.Value.Message),
                 x.Value.Timestamp
             });
 

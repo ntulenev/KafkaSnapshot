@@ -80,7 +80,7 @@ namespace KafkaSnapshot.Export.Tests
             var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>>>();
             var fileSaver = new Mock<IFileSaver>();
             var exporter = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(logger.Object, fileSaver.Object);
-            var topic = new ExportedTopic("name", "filename");
+            var topic = new ExportedTopic("name", "filename", true);
             var data = (IEnumerable<KeyValuePair<object, DatedMessage<object>>>)null!;
 
             // Act
@@ -120,7 +120,7 @@ namespace KafkaSnapshot.Export.Tests
             var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>>>();
             var fileSaver = new Mock<IFileSaver>();
             var exporter = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(logger.Object, fileSaver.Object);
-            var topic = new ExportedTopic("name", "filename");
+            var topic = new ExportedTopic("name", "filename", true);
             var data = new KeyValuePair<object, DatedMessage<object>>[]
             {
                 new KeyValuePair<object, DatedMessage<object>>("test",new DatedMessage<object>("value", DateTime.UtcNow))

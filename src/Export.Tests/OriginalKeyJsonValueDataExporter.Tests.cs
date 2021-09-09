@@ -28,12 +28,12 @@ namespace KafkaSnapshot.Export.Tests
         public void OriginalKeyJsonValueDataExporterCantBeCreatedWithoutLogger()
         {
             // Arrange
-            var logger = (ILogger<OriginalKeyJsonValueDataExporter<string>>)null!;
+            var logger = (ILogger<OriginalKeyDataExporter<string>>)null!;
             var fileSaver = new Mock<IFileSaver>();
 
             // Act
             var exception = Record.Exception(() =>
-            _ = new OriginalKeyJsonValueDataExporter<string>(logger, fileSaver.Object));
+            _ = new OriginalKeyDataExporter<string>(logger, fileSaver.Object));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -44,12 +44,12 @@ namespace KafkaSnapshot.Export.Tests
         public void OriginalKeyJsonValueDataExporterCantBeCreatedWithoutSaver()
         {
             // Arrange
-            var logger = new Mock<ILogger<OriginalKeyJsonValueDataExporter<string>>>();
+            var logger = new Mock<ILogger<OriginalKeyDataExporter<string>>>();
             var fileSaver = (IFileSaver)null!;
 
             // Act
             var exception = Record.Exception(() =>
-            _ = new OriginalKeyJsonValueDataExporter<string>(logger.Object, fileSaver));
+            _ = new OriginalKeyDataExporter<string>(logger.Object, fileSaver));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -60,12 +60,12 @@ namespace KafkaSnapshot.Export.Tests
         public void OriginalKeyJsonValueDataExporterCanBeCreated()
         {
             // Arrange
-            var logger = new Mock<ILogger<OriginalKeyJsonValueDataExporter<string>>>();
+            var logger = new Mock<ILogger<OriginalKeyDataExporter<string>>>();
             var fileSaver = new Mock<IFileSaver>();
 
             // Act
             var exception = Record.Exception(() =>
-            _ = new OriginalKeyJsonValueDataExporter<string>(logger.Object, fileSaver.Object));
+            _ = new OriginalKeyDataExporter<string>(logger.Object, fileSaver.Object));
 
             // Assert
             exception.Should().BeNull();
@@ -76,10 +76,10 @@ namespace KafkaSnapshot.Export.Tests
         public async Task OriginalKeyJsonValueDataExporterCanExportNullDataAsync()
         {
             // Arrange
-            var logger = new Mock<ILogger<OriginalKeyJsonValueDataExporter<string>>>();
+            var logger = new Mock<ILogger<OriginalKeyDataExporter<string>>>();
             var fileSaver = new Mock<IFileSaver>();
-            var exporter = new OriginalKeyJsonValueDataExporter<string>(logger.Object, fileSaver.Object);
-            var topic = new ExportedTopic("name", "filename");
+            var exporter = new OriginalKeyDataExporter<string>(logger.Object, fileSaver.Object);
+            var topic = new ExportedTopic("name", "filename", true);
             var data = (IEnumerable<KeyValuePair<string, DatedMessage<string>>>)null!;
 
             // Act
@@ -96,9 +96,9 @@ namespace KafkaSnapshot.Export.Tests
         public async Task OriginalKeyJsonValueDataExporterCanExportNullTopic()
         {
             // Arrange
-            var logger = new Mock<ILogger<OriginalKeyJsonValueDataExporter<string>>>();
+            var logger = new Mock<ILogger<OriginalKeyDataExporter<string>>>();
             var fileSaver = new Mock<IFileSaver>();
-            var exporter = new OriginalKeyJsonValueDataExporter<string>(logger.Object, fileSaver.Object);
+            var exporter = new OriginalKeyDataExporter<string>(logger.Object, fileSaver.Object);
             var topic = (ExportedTopic)null!;
             var data = Enumerable.Empty<KeyValuePair<string, DatedMessage<string>>>();
 
@@ -116,10 +116,10 @@ namespace KafkaSnapshot.Export.Tests
         public async Task OriginalKeyJsonValueDataExporterCantExportNonJsonValueData()
         {
             // Arrange
-            var logger = new Mock<ILogger<OriginalKeyJsonValueDataExporter<string>>>();
+            var logger = new Mock<ILogger<OriginalKeyDataExporter<string>>>();
             var fileSaver = new Mock<IFileSaver>();
-            var exporter = new OriginalKeyJsonValueDataExporter<string>(logger.Object, fileSaver.Object);
-            var topic = new ExportedTopic("name", "filename");
+            var exporter = new OriginalKeyDataExporter<string>(logger.Object, fileSaver.Object);
+            var topic = new ExportedTopic("name", "filename", false);
             var data = new KeyValuePair<string, DatedMessage<string>>[]
             {
                 new KeyValuePair<string, DatedMessage<string>>("test",new DatedMessage<string>("value", DateTime.UtcNow))
@@ -140,10 +140,10 @@ namespace KafkaSnapshot.Export.Tests
         public async Task OriginalKeyJsonValueDataExporterCanExportData()
         {
             // Arrange
-            var logger = new Mock<ILogger<OriginalKeyJsonValueDataExporter<string>>>();
+            var logger = new Mock<ILogger<OriginalKeyDataExporter<string>>>();
             var fileSaver = new Mock<IFileSaver>();
-            var exporter = new OriginalKeyJsonValueDataExporter<string>(logger.Object, fileSaver.Object);
-            var topic = new ExportedTopic("name", "filename");
+            var exporter = new OriginalKeyDataExporter<string>(logger.Object, fileSaver.Object);
+            var topic = new ExportedTopic("name", "filename", true);
             var data = new KeyValuePair<string, DatedMessage<string>>[]
             {
                 new KeyValuePair<string, DatedMessage<string>>("test",new DatedMessage<string>("{\"value\": 1 }", DateTime.UtcNow))

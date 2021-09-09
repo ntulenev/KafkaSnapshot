@@ -55,7 +55,7 @@ namespace KafkaSnapshot.Export.File.Json
 
             _logger.LogDebug("Starting saving data");
 
-            await _fileSaver.SaveAsync(topic.ExportName, PrepareJson(data), ct).ConfigureAwait(false);
+            await _fileSaver.SaveAsync(topic.ExportName, PrepareJson(data, topic.ExportRawMessage), ct).ConfigureAwait(false);
 
             _logger.LogDebug("Data saved successfully.");
         }
@@ -65,7 +65,7 @@ namespace KafkaSnapshot.Export.File.Json
         /// </summary>
         /// <param name="data">input data.</param>
         /// <returns>Json string.</returns>
-        protected virtual string PrepareJson(IEnumerable<KeyValuePair<TKey, DatedMessage<TValue>>> data) => JsonConvert.SerializeObject(data, Formatting.Indented);
+        protected virtual string PrepareJson(IEnumerable<KeyValuePair<TKey, DatedMessage<TValue>>> data, bool exportRawMessage) => JsonConvert.SerializeObject(data, Formatting.Indented);
 
         private readonly ILogger<JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic>> _logger;
         private readonly IFileSaver _fileSaver;

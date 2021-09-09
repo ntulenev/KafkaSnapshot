@@ -12,5 +12,6 @@ namespace KafkaSnapshot.Models.Processing
                                         FilterType FilterType,
                                         KeyType KeyType,
                                         TKey FilterValue,
-                                        DateTime? StartingDate);
+                                        DateTime? StartingDate,
+                                        bool ExportRawMessage);
 }

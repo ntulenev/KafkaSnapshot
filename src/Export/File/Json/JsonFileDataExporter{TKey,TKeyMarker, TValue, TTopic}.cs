@@ -64,6 +64,7 @@ namespace KafkaSnapshot.Export.File.Json
         /// Converts data as json string.
         /// </summary>
         /// <param name="data">input data.</param>
+        /// <param name="exportRawMessage">process message as raw text of json.</param>
         /// <returns>Json string.</returns>
         protected virtual string PrepareJson(IEnumerable<KeyValuePair<TKey, DatedMessage<TValue>>> data, bool exportRawMessage) => JsonConvert.SerializeObject(data, Formatting.Indented);
 

@@ -21,11 +21,11 @@ using KafkaSnapshot.Models.Message;
 
 namespace KafkaSnapshot.Export.Tests
 {
-    public class OriginalKeyJsonValueDataExporterTests
+    public class OriginalKeyDataExporterTests
     {
-        [Fact(DisplayName = "OriginalKeyJsonValueDataExporter can't be created without logger.")]
+        [Fact(DisplayName = "OriginalKeyDataExporter can't be created without logger.")]
         [Trait("Category", "Unit")]
-        public void OriginalKeyJsonValueDataExporterCantBeCreatedWithoutLogger()
+        public void OriginalKeyDataExporterCantBeCreatedWithoutLogger()
         {
             // Arrange
             var logger = (ILogger<OriginalKeyDataExporter<string>>)null!;
@@ -39,9 +39,9 @@ namespace KafkaSnapshot.Export.Tests
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
         }
 
-        [Fact(DisplayName = "OriginalKeyJsonValueDataExporter can't be created without fileSaver.")]
+        [Fact(DisplayName = "OriginalKeyDataExporter can't be created without fileSaver.")]
         [Trait("Category", "Unit")]
-        public void OriginalKeyJsonValueDataExporterCantBeCreatedWithoutSaver()
+        public void OriginalKeyDataExporterCantBeCreatedWithoutSaver()
         {
             // Arrange
             var logger = new Mock<ILogger<OriginalKeyDataExporter<string>>>();
@@ -55,9 +55,9 @@ namespace KafkaSnapshot.Export.Tests
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
         }
 
-        [Fact(DisplayName = "OriginalKeyJsonValueDataExporter could be creates with valid params.")]
+        [Fact(DisplayName = "OriginalKeyDataExporter could be creates with valid params.")]
         [Trait("Category", "Unit")]
-        public void OriginalKeyJsonValueDataExporterCanBeCreated()
+        public void OriginalKeyDataExporterCanBeCreated()
         {
             // Arrange
             var logger = new Mock<ILogger<OriginalKeyDataExporter<string>>>();
@@ -71,9 +71,9 @@ namespace KafkaSnapshot.Export.Tests
             exception.Should().BeNull();
         }
 
-        [Fact(DisplayName = "OriginalKeyJsonValueDataExporter can't export null data.")]
+        [Fact(DisplayName = "OriginalKeyDataExporter can't export null data.")]
         [Trait("Category", "Unit")]
-        public async Task OriginalKeyJsonValueDataExporterCanExportNullDataAsync()
+        public async Task OriginalKeyDataExporterCanExportNullDataAsync()
         {
             // Arrange
             var logger = new Mock<ILogger<OriginalKeyDataExporter<string>>>();
@@ -91,9 +91,9 @@ namespace KafkaSnapshot.Export.Tests
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
         }
 
-        [Fact(DisplayName = "OriginalKeyJsonValueDataExporter can't export for null topic.")]
+        [Fact(DisplayName = "OriginalKeyDataExporter can't export for null topic.")]
         [Trait("Category", "Unit")]
-        public async Task OriginalKeyJsonValueDataExporterCanExportNullTopic()
+        public async Task OriginalKeyDataExporterCanExportNullTopic()
         {
             // Arrange
             var logger = new Mock<ILogger<OriginalKeyDataExporter<string>>>();
@@ -111,9 +111,9 @@ namespace KafkaSnapshot.Export.Tests
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
         }
 
-        [Fact(DisplayName = "OriginalKeyJsonValueDataExporter can't export non json value data.")]
+        [Fact(DisplayName = "OriginalKeyDataExporter can't export non json value data.")]
         [Trait("Category", "Unit")]
-        public async Task OriginalKeyJsonValueDataExporterCantExportNonJsonValueData()
+        public async Task OriginalKeyDataExporterCantExportNonData()
         {
             // Arrange
             var logger = new Mock<ILogger<OriginalKeyDataExporter<string>>>();
@@ -135,9 +135,9 @@ namespace KafkaSnapshot.Export.Tests
             exception.Should().NotBeNull().And.BeOfType<JsonReaderException>();
         }
 
-        [Fact(DisplayName = "OriginalKeyJsonValueDataExporter can export data.")]
+        [Fact(DisplayName = "OriginalKeyDataExporter can export data.")]
         [Trait("Category", "Unit")]
-        public async Task OriginalKeyJsonValueDataExporterCanExportData()
+        public async Task OriginalKeyDataExporterCanExportData()
         {
             // Arrange
             var logger = new Mock<ILogger<OriginalKeyDataExporter<string>>>();

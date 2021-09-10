@@ -58,11 +58,11 @@ namespace KafkaSnapshot.Processing.Configuration
                                   default;
 
             return new ProcessingTopic<TKey>(Name,
-                                              ExportFileName,
-                                              Compacting == CompactingMode.On,
-                                              FilterType,
-                                              KeyType,
-                                              typedFilterValue!, OffsetStartDate, ExportRawMessage);
+                                             ExportFileName,
+                                             Compacting == CompactingMode.On,
+                                             FilterType,
+                                             KeyType,
+                                             typedFilterValue!, OffsetStartDate, ExportRawMessage);
         }
     }
 }

@@ -21,11 +21,11 @@ using KafkaSnapshot.Models.Message;
 
 namespace KafkaSnapshot.Export.Tests
 {
-    public class JsonKeyJsonValueDataExporterTests
+    public class JsonKeyDataExporterTests
     {
-        [Fact(DisplayName = "JsonKeyJsonValueDataExporter can't be created without logger.")]
+        [Fact(DisplayName = "JsonKeyDataExporter can't be created without logger.")]
         [Trait("Category", "Unit")]
-        public void JsonKeyJsonValueDataExporterCantBeCreatedWithoutLogger()
+        public void JsonKeyDataExporterCantBeCreatedWithoutLogger()
         {
             // Arrange
             var logger = (ILogger<JsonKeyDataExporter>)null!;
@@ -39,9 +39,9 @@ namespace KafkaSnapshot.Export.Tests
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
         }
 
-        [Fact(DisplayName = "JsonKeyJsonValueDataExporter can't be created without fileSaver.")]
+        [Fact(DisplayName = "JsonKeyDataExporter can't be created without fileSaver.")]
         [Trait("Category", "Unit")]
-        public void JsonKeyJsonValueDataExporterCantBeCreatedWithoutSaver()
+        public void JsonKeyDataExporterCantBeCreatedWithoutSaver()
         {
             // Arrange
             var logger = new Mock<ILogger<JsonKeyDataExporter>>();
@@ -55,9 +55,9 @@ namespace KafkaSnapshot.Export.Tests
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
         }
 
-        [Fact(DisplayName = "JsonKeyJsonValueDataExporter could be creates with valid params.")]
+        [Fact(DisplayName = "JsonKeyDataExporter could be creates with valid params.")]
         [Trait("Category", "Unit")]
-        public void JsonKeyJsonValueDataExporterCanBeCreated()
+        public void JsonKeyDataExporterCanBeCreated()
         {
             // Arrange
             var logger = new Mock<ILogger<JsonKeyDataExporter>>();
@@ -71,9 +71,9 @@ namespace KafkaSnapshot.Export.Tests
             exception.Should().BeNull();
         }
 
-        [Fact(DisplayName = "JsonKeyJsonValueDataExporter can't export null data.")]
+        [Fact(DisplayName = "JsonKeyDataExporter can't export null data.")]
         [Trait("Category", "Unit")]
-        public async Task JsonKeyJsonValueDataExporterCanExportNullDataAsync()
+        public async Task JsonKeyDataExporterCanExportNullDataAsync()
         {
             // Arrange
             var logger = new Mock<ILogger<JsonKeyDataExporter>>();
@@ -91,9 +91,9 @@ namespace KafkaSnapshot.Export.Tests
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
         }
 
-        [Fact(DisplayName = "JsonKeyJsonValueDataExporter can't export for null topic.")]
+        [Fact(DisplayName = "JsonKeyDataExporter can't export for null topic.")]
         [Trait("Category", "Unit")]
-        public async Task JsonKeyJsonValueDataExporterCanExportNullTopic()
+        public async Task JsonKeyDataExporterCanExportNullTopic()
         {
             // Arrange
             var logger = new Mock<ILogger<JsonKeyDataExporter>>();
@@ -112,9 +112,9 @@ namespace KafkaSnapshot.Export.Tests
         }
 
 
-        [Fact(DisplayName = "JsonKeyJsonValueDataExporter can't export non json value data.")]
+        [Fact(DisplayName = "JsonKeyDataExporter can't export non json value data.")]
         [Trait("Category", "Unit")]
-        public async Task JsonKeyJsonValueDataExporterCantExportNonJsonValueData()
+        public async Task JsonKeyDataExporterCantExportNonData()
         {
             // Arrange
             var logger = new Mock<ILogger<JsonKeyDataExporter>>();
@@ -136,9 +136,9 @@ namespace KafkaSnapshot.Export.Tests
             exception.Should().NotBeNull().And.BeOfType<JsonReaderException>();
         }
 
-        [Fact(DisplayName = "JsonKeyJsonValueDataExporter can't export non json key data.")]
+        [Fact(DisplayName = "JsonKeyDataExporter can't export non json key data.")]
         [Trait("Category", "Unit")]
-        public async Task JsonKeyJsonValueDataExporterCantExportNonJsonKeyData()
+        public async Task JsonKeyDataExporterCantExportNonJsonKeyData()
         {
             // Arrange
             var logger = new Mock<ILogger<JsonKeyDataExporter>>();
@@ -160,9 +160,9 @@ namespace KafkaSnapshot.Export.Tests
             exception.Should().NotBeNull().And.BeOfType<JsonReaderException>();
         }
 
-        [Fact(DisplayName = "JsonKeyJsonValueDataExporter can export data.")]
+        [Fact(DisplayName = "JsonKeyDataExporter can export data.")]
         [Trait("Category", "Unit")]
-        public async Task JsonKeyJsonValueDataExporterCanExportData()
+        public async Task JsonKeyDataExporterCanExportData()
         {
             // Arrange
             var logger = new Mock<ILogger<JsonKeyDataExporter>>();

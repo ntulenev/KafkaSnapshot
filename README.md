@@ -9,7 +9,7 @@ Supports:
 * String keys (optionally as json) and long keys
 * Multi-partition topics
 
-Messages should contains JSON data.
+By default messages should contains JSON data. Simple strings also supported (see ExportRawMessage parameter).
 
 ![Details](Case1.PNG)
 
@@ -23,6 +23,9 @@ Config with topics for export:
   "TopicWatermarkLoaderConfiguration": {
     "AdminClientTimeout": "00:00:05"
   },
+  "SnapshotLoaderConfiguration": {
+    "DateOffsetTimeout": "00:00:05"
+  },
   "LoaderToolConfiguration": {
     "UseConcurrentLoad": true,
     "Topics": [
@@ -33,7 +36,8 @@ Config with topics for export:
         "ExportFileName": "topic1.json",
         "FilterType": "Equals",
         "FilterValue": "{\"value\": 1 }",
-        "OffsetStartDate": "09.01.2021 12:12:12"
+        "OffsetStartDate": "09.01.2021 12:12:12",
+        "ExportRawMessage": true
       },
       {
         "Name": "topic2",
@@ -56,6 +60,7 @@ Config with topics for export:
 | Parameter name | Description   |
 | -------------- | ------------- |
 | AdminClientTimeout | Cluster metadata loading timeout |
+| DateOffsetTimeout | Searching offset by date timeout |
 | BootstrapServers | List of kafka cluster servers, like "kafka-test:9092"  |
 | UseConcurrentLoad | Loads data in concurrent mode or one by one |
 | Name           | Apache Kafka topic name |
@@ -65,3 +70,4 @@ Config with topics for export:
 | FilterType | Equals or None (optional)  |
 | FilterValue | Sample value for filtering (if FilterType sets as 'Equals') |
 | OffsetStartDate | First message date (optional). Use to skip old messages in large topics.|
+| ExportRawMessage | If true - export will write message as raw string without converting to formatted json (optional).|

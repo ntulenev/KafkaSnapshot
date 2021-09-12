@@ -112,15 +112,17 @@ namespace KafkaSnapshot.Export.Tests
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
         }
 
-        [Fact(DisplayName = "JsonFileDataExporter can export data.")]
+        [Theory(DisplayName = "JsonFileDataExporter can export data for any mode.")]
         [Trait("Category", "Unit")]
-        public async Task JsonFileDataExporterCanExportData()
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task JsonFileDataExporterCanExportData(bool isRawMessage)
         {
             // Arrange
             var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>>>();
             var fileSaver = new Mock<IFileSaver>();
             var exporter = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(logger.Object, fileSaver.Object);
-            var topic = new ExportedTopic("name", "filename", true);
+            var topic = new ExportedTopic("name", "filename", isRawMessage);
             var data = new KeyValuePair<object, DatedMessage<object>>[]
             {
                 new KeyValuePair<object, DatedMessage<object>>("test",new DatedMessage<object>("value", DateTime.UtcNow))

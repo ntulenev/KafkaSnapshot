@@ -112,9 +112,9 @@ namespace KafkaSnapshot.Export.Tests
         }
 
 
-        [Fact(DisplayName = "JsonKeyDataExporter can't export non json value data.")]
+        [Fact(DisplayName = "JsonKeyDataExporter can't export non json value data if not raw mode.")]
         [Trait("Category", "Unit")]
-        public async Task JsonKeyDataExporterCantExportNonData()
+        public async Task JsonKeyDataExporterCantExportNonDataIfNoRawMode()
         {
             // Arrange
             var logger = new Mock<ILogger<JsonKeyDataExporter>>();
@@ -134,6 +134,31 @@ namespace KafkaSnapshot.Export.Tests
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<JsonReaderException>();
+        }
+
+        [Fact(DisplayName = "JsonKeyDataExporter can export non json value data if raw mode.")]
+        [Trait("Category", "Unit")]
+        public async Task JsonKeyDataExporterCanExportNonDataInRawMode()
+        {
+            // Arrange
+            var logger = new Mock<ILogger<JsonKeyDataExporter>>();
+            var fileSaver = new Mock<IFileSaver>();
+            var exporter = new JsonKeyDataExporter(logger.Object, fileSaver.Object);
+            var topic = new ExportedTopic("name", "filename", true);
+            var data = new KeyValuePair<string, DatedMessage<string>>[]
+            {
+                new KeyValuePair<string, DatedMessage<string>>("{\"id\": 1 }",new DatedMessage<string>("test", DateTime.UtcNow))
+            };
+            var token = CancellationToken.None;
+
+            // Act
+            var exception = await Record.ExceptionAsync(async () =>
+            await exporter.ExportAsync(data, topic, token)
+                );
+
+            // Assert
+            exception.Should().BeNull();
+            fileSaver.Verify(x => x.SaveAsync(topic.ExportName, It.IsAny<string>(), token), Times.Once);
         }
 
         [Fact(DisplayName = "JsonKeyDataExporter can't export non json key data.")]
@@ -160,15 +185,17 @@ namespace KafkaSnapshot.Export.Tests
             exception.Should().NotBeNull().And.BeOfType<JsonReaderException>();
         }
 
-        [Fact(DisplayName = "JsonKeyDataExporter can export data.")]
+        [Theory(DisplayName = "JsonKeyDataExporter can export json data for any mode.")]
         [Trait("Category", "Unit")]
-        public async Task JsonKeyDataExporterCanExportData()
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task JsonKeyDataExporterCanExportData(bool isRawMessage)
         {
             // Arrange
             var logger = new Mock<ILogger<JsonKeyDataExporter>>();
             var fileSaver = new Mock<IFileSaver>();
             var exporter = new JsonKeyDataExporter(logger.Object, fileSaver.Object);
-            var topic = new ExportedTopic("name", "filename", true);
+            var topic = new ExportedTopic("name", "filename", isRawMessage);
             var data = new KeyValuePair<string, DatedMessage<string>>[]
             {
                 new KeyValuePair<string, DatedMessage<string>>("{\"id\": 1 }",new DatedMessage<string>("{\"value\": 1 }", DateTime.UtcNow))

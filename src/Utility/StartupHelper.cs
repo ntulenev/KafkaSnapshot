@@ -138,9 +138,6 @@ namespace KafkaSnapshot.Utility
 
             return config.Topics.Select(topic => topic.KeyType switch
             {
-
-                // TODO Add raw value exporter support
-
                 KeyType.Json => InitUnit<string, JsonKeyMarker>(topic, sp),
                 KeyType.String => InitUnit<string, OriginalKeyMarker>(topic, sp),
                 KeyType.Long => InitUnit<long, OriginalKeyMarker>(topic, sp),

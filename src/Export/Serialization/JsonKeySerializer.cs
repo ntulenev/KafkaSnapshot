@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using KafkaSnapshot.Abstractions.Export;
+using KafkaSnapshot.Export.Markers;
 using KafkaSnapshot.Models.Message;
 
 using Newtonsoft.Json;
@@ -13,7 +14,7 @@ namespace KafkaSnapshot.Export.Serialization
     /// <summary>
     /// Serializer for data with json keys.
     /// </summary>
-    class JsonKeySerializer : ISerializer<string>
+    public class JsonKeySerializer : ISerializer<string, string, JsonKeyMarker>
     {
         /// <inheritdoc/>
         public string Serialize(IEnumerable<KeyValuePair<string, DatedMessage<string>>> data, bool exportRawMessage)

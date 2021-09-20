@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 
 using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Models.Message;
+using KafkaSnapshot.Export.Markers;
 
 namespace KafkaSnapshot.Export.Serialization
 {
@@ -14,7 +15,7 @@ namespace KafkaSnapshot.Export.Serialization
     /// Serializer for data with keys of <typeparamref name="TKey"/> type.
     /// </summary>
     /// <typeparam name="TKey">Data key type.</typeparam>
-    class OriginalKeySerializer<TKey> : ISerializer<TKey>
+    public class OriginalKeySerializer<TKey> : ISerializer<TKey, string, OriginalKeyMarker>
     {
         /// <inheritdoc/>
         public string Serialize(IEnumerable<KeyValuePair<TKey, DatedMessage<string>>> data, bool exportRawMessage)

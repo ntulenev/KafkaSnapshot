@@ -5,8 +5,6 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
-using Newtonsoft.Json;
-
 using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Models.Export;
 using KafkaSnapshot.Models.Message;
@@ -30,10 +28,14 @@ namespace KafkaSnapshot.Export.File.Output
         /// </summary>
         /// <param name="logger">Logger for <see cref="JsonFileDataExporter{TKey, TKeyMarker, TValue, TTopic}"/>.</param>
         /// <param name="fileSaver">Utility that saves content to file.</param>
-        public JsonFileDataExporter(ILogger<JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic>> logger, IFileSaver fileSaver)
+        public JsonFileDataExporter(ILogger<JsonFileDataExporter<TKey, TKeyMarker,
+                                    TValue, TTopic>> logger,
+                                    IFileSaver fileSaver,
+                                    ISerializer<TKey, TValue, TKeyMarker> serializer)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _fileSaver = fileSaver ?? throw new ArgumentNullException(nameof(fileSaver));
+            _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
 
             _logger.LogDebug("Instance created.");
         }
@@ -55,20 +57,13 @@ namespace KafkaSnapshot.Export.File.Output
 
             _logger.LogDebug("Starting saving data");
 
-            await _fileSaver.SaveAsync(topic.ExportName, PrepareJson(data, topic.ExportRawMessage), ct).ConfigureAwait(false);
+            await _fileSaver.SaveAsync(topic.ExportName, _serializer.Serialize(data, topic.ExportRawMessage), ct).ConfigureAwait(false);
 
             _logger.LogDebug("Data saved successfully.");
         }
 
-        /// <summary>
-        /// Converts data as json string.
-        /// </summary>
-        /// <param name="data">input data.</param>
-        /// <param name="exportRawMessage">process message as raw text of json.</param>
-        /// <returns>Json string.</returns>
-        protected virtual string PrepareJson(IEnumerable<KeyValuePair<TKey, DatedMessage<TValue>>> data, bool exportRawMessage) => JsonConvert.SerializeObject(data, Formatting.Indented);
-
         private readonly ILogger<JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic>> _logger;
         private readonly IFileSaver _fileSaver;
+        private readonly ISerializer<TKey, TValue, TKeyMarker> _serializer;
     }
 }

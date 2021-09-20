@@ -25,6 +25,7 @@ using KafkaSnapshot.Abstractions.Filters;
 using KafkaSnapshot.Abstractions.Import;
 using KafkaSnapshot.Filters;
 using KafkaSnapshot.Models.Filters;
+using KafkaSnapshot.Export.Serialization;
 
 namespace KafkaSnapshot.Utility
 {
@@ -60,9 +61,12 @@ namespace KafkaSnapshot.Utility
         /// </summary>
         public static void AddExport(this IServiceCollection services)
         {
-            services.AddSingleton<IDataExporter<long, OriginalKeyMarker, string, ExportedTopic>, OriginalKeyDataExporter<long>>();
-            services.AddSingleton<IDataExporter<string, OriginalKeyMarker, string, ExportedTopic>, OriginalKeyDataExporter<string>>();
-            services.AddSingleton<IDataExporter<string, JsonKeyMarker, string, ExportedTopic>, JsonKeyDataExporter>();
+            services.AddSingleton<ISerializer<string, string, JsonKeyMarker>, JsonKeySerializer>();
+            services.AddSingleton<ISerializer<string, string, OriginalKeyMarker>, OriginalKeySerializer<string>>();
+            services.AddSingleton<ISerializer<long, string, OriginalKeyMarker>, OriginalKeySerializer<long>>();
+
+            services.AddSingleton(typeof(IDataExporter<,,,>), typeof(JsonFileDataExporter<,,,>));
+
             services.AddSingleton<IFileSaver, FileSaver>();
         }
 

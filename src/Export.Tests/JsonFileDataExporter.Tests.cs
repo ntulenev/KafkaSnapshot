@@ -15,7 +15,7 @@ using FluentAssertions;
 using Newtonsoft.Json;
 
 using KafkaSnapshot.Abstractions.Export;
-using KafkaSnapshot.Export.File.Json;
+using KafkaSnapshot.Export.File.Output;
 using KafkaSnapshot.Export.Markers;
 using KafkaSnapshot.Models.Export;
 using KafkaSnapshot.Models.Message;

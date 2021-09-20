@@ -11,7 +11,7 @@ using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Models.Export;
 using KafkaSnapshot.Models.Message;
 
-namespace KafkaSnapshot.Export.File.Json
+namespace KafkaSnapshot.Export.File.Output
 {
     /// <summary>
     /// Default Json File exporter.

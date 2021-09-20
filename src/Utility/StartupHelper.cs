@@ -17,7 +17,7 @@ using KafkaSnapshot.Processing;
 using KafkaSnapshot.Processing.Configuration;
 using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Abstractions.Processing;
-using KafkaSnapshot.Export.File.Json;
+using KafkaSnapshot.Export.File.Output;
 using KafkaSnapshot.Models.Export;
 using KafkaSnapshot.Export.File.Common;
 using KafkaSnapshot.Export.Markers;

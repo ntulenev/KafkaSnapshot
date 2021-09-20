@@ -11,28 +11,29 @@ using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Export.Markers;
 using KafkaSnapshot.Models.Message;
 
-namespace KafkaSnapshot.Export.File.Json
+namespace KafkaSnapshot.Export.File.Output
 {
     /// <summary>
-    /// <see cref="JsonFileDataExporter{TKey, TKeyMarker, TValue, TTopic}"/> for string json key and string json value.
+    /// <see cref="JsonFileDataExporter{TKey, TKeyMarker, TValue, TTopic}"/> for key <see cref="TKey"/> and string json value.
     /// </summary>
-    public class JsonKeyDataExporter : JsonFileDataExporter<string, JsonKeyMarker, string, ExportedTopic>
+    /// <typeparam name="TKey">Message key type.</typeparam>
+    public class OriginalKeyDataExporter<TKey> : JsonFileDataExporter<TKey, OriginalKeyMarker, string, ExportedTopic>
     {
         /// <summary>
-        /// Creates <see cref="JsonKeyDataExporter"/>.
+        /// Creates <see cref="OriginalKeyJsonValueDataExporter"/>.
         /// </summary>
-        /// <param name="logger">Logger for <see cref="JsonKeyDataExporter"/>.</param>
+        /// <param name="logger">Logger for <see cref="OriginalKeyDataExporter{TKey}"/>.</param>
         /// <param name="fileSaver">Utility that saves content to file.</param>
-        public JsonKeyDataExporter(ILogger<JsonKeyDataExporter> logger, IFileSaver fileSaver) : base(logger, fileSaver)
+        public OriginalKeyDataExporter(ILogger<OriginalKeyDataExporter<TKey>> logger, IFileSaver fileSaver) : base(logger, fileSaver)
         {
         }
 
         /// <inheritdoc/>
-        protected override string PrepareJson(IEnumerable<KeyValuePair<string, DatedMessage<string>>> data, bool exportRawMessage)
+        protected override string PrepareJson(IEnumerable<KeyValuePair<TKey, DatedMessage<string>>> data, bool exportRawMessage)
         {
             var items = data.Select(x => new
             {
-                Key = JToken.Parse(x.Key),
+                x.Key,
                 Value = exportRawMessage ? x.Value.Message : JToken.Parse(x.Value.Message),
                 x.Value.Timestamp
             });

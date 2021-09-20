@@ -10,7 +10,7 @@ namespace KafkaSnapshot.Abstractions.Export
     public interface ISerializer<TKey>
     {
         /// <summary>
-        /// Serualizes data as string.
+        /// Serializes data as string.
         /// </summary>
         /// <param name="data">Data for serialization.</param>
         /// <param name="exportRawMessage">Rule for message serialization.</param>

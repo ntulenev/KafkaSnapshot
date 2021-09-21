@@ -6,7 +6,6 @@ using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Export.Markers;
 using KafkaSnapshot.Models.Message;
 
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace KafkaSnapshot.Export.Serialization
@@ -14,7 +13,7 @@ namespace KafkaSnapshot.Export.Serialization
     /// <summary>
     /// Serializer for data with json keys.
     /// </summary>
-    public class JsonKeySerializer : ISerializer<string, string, JsonKeyMarker>
+    public class JsonKeySerializer : JsonSerializerBase, ISerializer<string, string, JsonKeyMarker>
     {
         /// <inheritdoc/>
         public string Serialize(IEnumerable<KeyValuePair<string, DatedMessage<string>>> data, bool exportRawMessage)
@@ -31,7 +30,7 @@ namespace KafkaSnapshot.Export.Serialization
                 x.Value.Timestamp
             });
 
-            return JsonConvert.SerializeObject(items, Formatting.Indented);
+            return SerializeData(items);
         }
     }
 }

@@ -12,8 +12,6 @@ using Xunit;
 
 using FluentAssertions;
 
-using Newtonsoft.Json;
-
 using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Export.File.Output;
 using KafkaSnapshot.Export.Markers;

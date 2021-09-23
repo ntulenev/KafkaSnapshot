@@ -39,5 +39,91 @@ namespace KafkaSnapshot.Export.Tests
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
         }
+
+        [Fact(DisplayName = "JsonKeySerializer can serialize data.")]
+        [Trait("Category", "Unit")]
+        public void JsonKeySerializerCanSerializeData()
+        {
+            // Arrange
+            var serializer = new JsonKeySerializer();
+            var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+            bool isRaw = false;
+            var data = new[]
+            {
+                new KeyValuePair<string, DatedMessage<string>>("{\"A\": 42}",new DatedMessage<string>("{\"Test\":42}",dateTime))
+            };
+            string result = null!;
+
+            // Act
+            var exception = Record.Exception(() => result = serializer.Serialize(data, isRaw));
+
+            // Assert
+            exception.Should().BeNull();
+            result.Should().Be("[\r\n  {\r\n    \"Key\": {\r\n      \"A\": 42\r\n    },\r\n    \"Value\": {\r\n      \"Test\": 42\r\n    },\r\n    \"Timestamp\": \"2020-12-12T01:02:03\"\r\n  }\r\n]");
+        }
+
+        [Fact(DisplayName = "JsonKeySerializer cant serialize non json data.")]
+        [Trait("Category", "Unit")]
+        public void JsonKeySerializerCantSerializeNonJsonData()
+        {
+            // Arrange
+            var serializer = new JsonKeySerializer();
+            var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+            bool isRaw = false;
+            var data = new[]
+            {
+                new KeyValuePair<string, DatedMessage<string>>("{\"A\": 42}",new DatedMessage<string>("Test",dateTime))
+            };
+            string result = null!;
+
+            // Act
+            var exception = Record.Exception(() => result = serializer.Serialize(data, isRaw));
+
+            // Assert
+            exception.Should().NotBeNull().And.BeOfType<Newtonsoft.Json.JsonReaderException>();
+        }
+
+        [Fact(DisplayName = "JsonKeySerializer cant serialize non json key.")]
+        [Trait("Category", "Unit")]
+        public void JsonKeySerializerCantSerializeNonJsonKey()
+        {
+            // Arrange
+            var serializer = new JsonKeySerializer();
+            var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+            bool isRaw = false;
+            var data = new[]
+            {
+                new KeyValuePair<string, DatedMessage<string>>("Test",new DatedMessage<string>("{\"Test\":42}",dateTime))
+            };
+            string result = null!;
+
+            // Act
+            var exception = Record.Exception(() => result = serializer.Serialize(data, isRaw));
+
+            // Assert
+            exception.Should().NotBeNull().And.BeOfType<Newtonsoft.Json.JsonReaderException>();
+        }
+
+        [Fact(DisplayName = "JsonKeySerializer cant serialize raw data.")]
+        [Trait("Category", "Unit")]
+        public void JsonKeySerializerCantSerializeRawData()
+        {
+            // Arrange
+            var serializer = new JsonKeySerializer();
+            var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+            bool isRaw = true;
+            var data = new[]
+            {
+                new KeyValuePair<string, DatedMessage<string>>("{\"A\": 42}",new DatedMessage<string>("Test",dateTime))
+            };
+            string result = null!;
+
+            // Act
+            var exception = Record.Exception(() => result = serializer.Serialize(data, isRaw));
+
+            // Assert
+            exception.Should().BeNull();
+            result.Should().Be("[\r\n  {\r\n    \"Key\": {\r\n      \"A\": 42\r\n    },\r\n    \"Value\": \"Test\",\r\n    \"Timestamp\": \"2020-12-12T01:02:03\"\r\n  }\r\n]");
+        }
     }
 }

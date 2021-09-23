@@ -3,6 +3,9 @@
 using Xunit;
 
 using KafkaSnapshot.Export.Serialization;
+using KafkaSnapshot.Models.Message;
+using System.Collections.Generic;
+using System;
 
 namespace KafkaSnapshot.Export.Tests
 {
@@ -17,6 +20,23 @@ namespace KafkaSnapshot.Export.Tests
 
             // Assert
             exception.Should().BeNull();
+        }
+
+        [Theory(DisplayName = "SimpleJsonSerializer can't serialize null data.")]
+        [Trait("Category", "Unit")]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void SimpleJsonSerializerCantSerializeNullData(bool isRawData)
+        {
+            // Arrange
+            var serializer = new SimpleJsonSerializer<object, object>();
+            var data = (IEnumerable<KeyValuePair<object, DatedMessage<object>>>)null!;
+
+            // Act
+            var exception = Record.Exception(() => _ = serializer.Serialize(data, isRawData));
+
+            // Assert
+            exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
         }
     }
 }

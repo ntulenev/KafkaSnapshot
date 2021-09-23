@@ -1,11 +1,12 @@
-﻿using FluentAssertions;
+﻿using System.Collections.Generic;
+using System;
+
+using FluentAssertions;
 
 using Xunit;
 
 using KafkaSnapshot.Export.Serialization;
 using KafkaSnapshot.Models.Message;
-using System.Collections.Generic;
-using System;
 
 namespace KafkaSnapshot.Export.Tests
 {

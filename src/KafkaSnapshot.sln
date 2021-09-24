@@ -25,7 +25,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Export.Tests", "Export.Test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Import.Tests", "Import.Tests\Import.Tests.csproj", "{BDA8A265-EAC8-4E81-9E0F-861142E96ECC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Processing.Tests", "Processing.Tests\Processing.Tests.csproj", "{F03EBEE9-CEBB-4103-A1A3-E4675EBC581F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Processing.Tests", "Processing.Tests\Processing.Tests.csproj", "{F03EBEE9-CEBB-4103-A1A3-E4675EBC581F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utility.Tests", "Utility.Tests\Utility.Tests.csproj", "{50D23E3B-C620-4008-82CB-C46EBF207E06}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -102,13 +104,19 @@ Global
 		{BDA8A265-EAC8-4E81-9E0F-861142E96ECC}.Release|x64.ActiveCfg = Release|x64
 		{BDA8A265-EAC8-4E81-9E0F-861142E96ECC}.Release|x64.Build.0 = Release|x64
 		{F03EBEE9-CEBB-4103-A1A3-E4675EBC581F}.Debug|x64.ActiveCfg = Debug|x64
-		{F03EBEE9-CEBB-4103-A1A3-E4675EBC581F}.Debug|x64.Build.0 = Debug|x64
 		{F03EBEE9-CEBB-4103-A1A3-E4675EBC581F}.Debug|x64.ActiveCfg = Debug|x64
 		{F03EBEE9-CEBB-4103-A1A3-E4675EBC581F}.Debug|x64.Build.0 = Debug|x64
 		{F03EBEE9-CEBB-4103-A1A3-E4675EBC581F}.Release|x64.ActiveCfg = Release|x64
-		{F03EBEE9-CEBB-4103-A1A3-E4675EBC581F}.Release|x64.Build.0 = Release|x64
 		{F03EBEE9-CEBB-4103-A1A3-E4675EBC581F}.Release|x64.ActiveCfg = Release|x64
 		{F03EBEE9-CEBB-4103-A1A3-E4675EBC581F}.Release|x64.Build.0 = Release|x64
+		{50D23E3B-C620-4008-82CB-C46EBF207E06}.Debug|x64.ActiveCfg = Debug|x64
+		{50D23E3B-C620-4008-82CB-C46EBF207E06}.Debug|x64.Build.0 = Debug|x64
+		{50D23E3B-C620-4008-82CB-C46EBF207E06}.Debug|x64.ActiveCfg = Debug|x64
+		{50D23E3B-C620-4008-82CB-C46EBF207E06}.Debug|x64.Build.0 = Debug|x64
+		{50D23E3B-C620-4008-82CB-C46EBF207E06}.Release|x64.ActiveCfg = Release|x64
+		{50D23E3B-C620-4008-82CB-C46EBF207E06}.Release|x64.Build.0 = Release|x64
+		{50D23E3B-C620-4008-82CB-C46EBF207E06}.Release|x64.ActiveCfg = Release|x64
+		{50D23E3B-C620-4008-82CB-C46EBF207E06}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

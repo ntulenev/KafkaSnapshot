@@ -127,7 +127,7 @@ namespace KafkaSnapshot.Import
                 ConsumeResult<TKey, TMessage> result;
                 do
                 {
-                    result = consumer.Consume(ct); //TODO Add timeout return for empty topics
+                    result = consumer.Consume(ct);
 
                     if (filter.IsMatch(result.Message.Key))
                     {

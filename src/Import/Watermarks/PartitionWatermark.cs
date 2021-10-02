@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 
 using Confluent.Kafka;
@@ -53,10 +53,10 @@ namespace KafkaSnapshot.Import.Watermarks
         /// <summary>
         /// Checks that end of the partition is achieved by consumer.
         /// </summary>
-        /// <typeparam name="K">Message key.</typeparam>
-        /// <typeparam name="V">Message value.</typeparam>
+        /// <typeparam name="TKey">Message key.</typeparam>
+        /// <typeparam name="TValue">Message value.</typeparam>
         /// <param name="consumeResult">Consumer result.</param>
-        public bool IsWatermarkAchievedBy<K, V>(ConsumeResult<K, V> consumeResult)
+        public bool IsWatermarkAchievedBy<TKey, TValue>(ConsumeResult<TKey, TValue> consumeResult)
         {
             if (consumeResult is null)
             {
@@ -69,10 +69,10 @@ namespace KafkaSnapshot.Import.Watermarks
         /// <summary>
         /// Assing consumer to a partition as topic.
         /// </summary>
-        /// <typeparam name="K">Message key.</typeparam>
-        /// <typeparam name="V">Message value.</typeparam>
+        /// <typeparam name="TKey">Message key.</typeparam>
+        /// <typeparam name="TValue">Message value.</typeparam>
         /// <param name="consumer">Consumer.</param>
-        public void AssingWithConsumer<K, V>(IConsumer<K, V> consumer)
+        public void AssingWithConsumer<TKey, TValue>(IConsumer<TKey, TValue> consumer)
         {
             if (consumer is null)
             {
@@ -86,12 +86,12 @@ namespace KafkaSnapshot.Import.Watermarks
         /// <summary>
         ///  Assing consumer to a partition as topic with offset started from <paramref name="startDate"/>.
         /// </summary>
-        /// <typeparam name="K">Message key.</typeparam>
-        /// <typeparam name="V">Message value.</typeparam>
+        /// <typeparam name="TKey">Message key.</typeparam>
+        /// <typeparam name="TValue">Message value.</typeparam>
         /// <param name="consumer">Consumer.</param>
         /// <param name="startDate">Start date for offset</param>
         /// <param name="timeout">Timeout for offset searching</param>
-        public bool AssingWithConsumer<K, V>(IConsumer<K, V> consumer, DateTime startDate, TimeSpan timeout)
+        public bool AssingWithConsumer<TKey, TValue>(IConsumer<TKey, TValue> consumer, DateTime startDate, TimeSpan timeout)
         {
             if (consumer is null)
             {

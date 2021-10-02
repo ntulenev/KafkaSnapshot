@@ -1,5 +1,6 @@
-﻿using FluentAssertions;
 using Xunit;
+
+using FluentAssertions;
 
 namespace KafkaSnapshot.Filters.Tests
 {
@@ -13,7 +14,7 @@ namespace KafkaSnapshot.Filters.Tests
             // Arrange
             object value = null!;
             var filter = new DefaultFilter<object>();
-            bool result = false;
+            var result = false;
 
             // Act
             var exception = Record.Exception(() => result = filter.IsMatch(value));

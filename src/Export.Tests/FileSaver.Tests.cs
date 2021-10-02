@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using System.Threading;
 using System;
 
@@ -33,7 +33,7 @@ namespace KafkaSnapshot.Export.Tests
             var content = "123";
 
             // Act
-            var exception = await Record.ExceptionAsync(async () => await fileSaver.SaveAsync(fileName, content, CancellationToken.None));
+            var exception = await Record.ExceptionAsync(async () => await fileSaver.SaveAsync(fileName, content, CancellationToken.None).ConfigureAwait(false));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -49,7 +49,7 @@ namespace KafkaSnapshot.Export.Tests
             var content = "123";
 
             // Act
-            var exception = await Record.ExceptionAsync(async () => await fileSaver.SaveAsync(fileName, content, CancellationToken.None));
+            var exception = await Record.ExceptionAsync(async () => await fileSaver.SaveAsync(fileName, content, CancellationToken.None).ConfigureAwait(false));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -65,7 +65,7 @@ namespace KafkaSnapshot.Export.Tests
             var content = "123";
 
             // Act
-            var exception = await Record.ExceptionAsync(async () => await fileSaver.SaveAsync(fileName, content, CancellationToken.None));
+            var exception = await Record.ExceptionAsync(async () => await fileSaver.SaveAsync(fileName, content, CancellationToken.None).ConfigureAwait(false));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -81,7 +81,7 @@ namespace KafkaSnapshot.Export.Tests
             var content = (string)null!;
 
             // Act
-            var exception = await Record.ExceptionAsync(async () => await fileSaver.SaveAsync(fileName, content, CancellationToken.None));
+            var exception = await Record.ExceptionAsync(async () => await fileSaver.SaveAsync(fileName, content, CancellationToken.None)).ConfigureAwait(false);
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();

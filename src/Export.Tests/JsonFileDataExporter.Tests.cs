@@ -104,7 +104,7 @@ namespace KafkaSnapshot.Export.Tests
 
             // Act
             var exception = await Record.ExceptionAsync(async () =>
-            await exporter.ExportAsync(data, topic, CancellationToken.None)
+            await exporter.ExportAsync(data, topic, CancellationToken.None).ConfigureAwait(false)
                 );
 
             // Assert
@@ -125,7 +125,7 @@ namespace KafkaSnapshot.Export.Tests
 
             // Act
             var exception = await Record.ExceptionAsync(async () =>
-            await exporter.ExportAsync(data, topic, CancellationToken.None)
+            await exporter.ExportAsync(data, topic, CancellationToken.None).ConfigureAwait(false)
                 );
 
             // Assert
@@ -154,7 +154,7 @@ namespace KafkaSnapshot.Export.Tests
 
             // Act
             var exception = await Record.ExceptionAsync(async () =>
-            await exporter.ExportAsync(data, topic, token)
+            await exporter.ExportAsync(data, topic, token).ConfigureAwait(false)
                 );
 
             // Assert

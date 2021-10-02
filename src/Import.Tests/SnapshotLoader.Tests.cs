@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
@@ -131,7 +131,7 @@ namespace KafkaSnapshot.Import.Tests
             var filter = filterMock.Object;
             // Act
             var exception = await Record.ExceptionAsync(
-                async () => _ = await loader.LoadCompactSnapshotAsync(topicName, filter, CancellationToken.None));
+                async () => _ = await loader.LoadCompactSnapshotAsync(topicName, filter, CancellationToken.None).ConfigureAwait(false));
 
 
             // Assert
@@ -153,12 +153,12 @@ namespace KafkaSnapshot.Import.Tests
             optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
             var options = optionsMock.Object;
             var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader);
-            bool withCompacting = true;
+            var withCompacting = true;
             var topicParams = new LoadingTopic("test", withCompacting);
             var filter = (IKeyFilter<object>)null!;
             // Act
             var exception = await Record.ExceptionAsync(
-                async () => _ = await loader.LoadCompactSnapshotAsync(topicParams, filter, CancellationToken.None));
+                async () => _ = await loader.LoadCompactSnapshotAsync(topicParams, filter, CancellationToken.None).ConfigureAwait(false));
 
 
             // Assert
@@ -182,7 +182,7 @@ namespace KafkaSnapshot.Import.Tests
             optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
             var options = optionsMock.Object;
             var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader);
-            bool withCompacting = false;
+            var withCompacting = false;
             var topicName = new LoadingTopic("test", withCompacting);
             var filterMock = new Mock<IKeyFilter<object>>();
             filterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
@@ -198,7 +198,7 @@ namespace KafkaSnapshot.Import.Tests
             topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, object>(consumerFactory, topicName, CancellationToken.None))
                 .Returns(Task.FromResult(topicWatermark));
 
-            int indexer = 0;
+            var indexer = 0;
             var consumerData = new[]
             {
                 new ConsumeResult<object, object>
@@ -233,7 +233,7 @@ namespace KafkaSnapshot.Import.Tests
                 }
             };
 
-            IEnumerable<KeyValuePair<object, DatedMessage<object>>> exceptedData = consumerData.Select(x =>
+            var exceptedData = consumerData.Select(x =>
 
             new KeyValuePair<object, DatedMessage<object>>(x.Message.Key, new DatedMessage<object>(x.Message.Value, x.Message.Timestamp.UtcDateTime)));
 
@@ -244,7 +244,7 @@ namespace KafkaSnapshot.Import.Tests
 
             // Act
             var exception = await Record.ExceptionAsync(
-                async () => result = await loader.LoadCompactSnapshotAsync(topicName, filter, CancellationToken.None));
+                async () => result = await loader.LoadCompactSnapshotAsync(topicName, filter, CancellationToken.None).ConfigureAwait(false));
 
             // Assert
             exception.Should().BeNull();
@@ -267,7 +267,7 @@ namespace KafkaSnapshot.Import.Tests
             optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
             var options = optionsMock.Object;
             var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader);
-            bool withCompacting = false;
+            var withCompacting = false;
             var testDate = DateTime.UtcNow;
             var topicName = new LoadingTopic("test", withCompacting, testDate);
             var filterMock = new Mock<IKeyFilter<object>>();
@@ -294,7 +294,7 @@ namespace KafkaSnapshot.Import.Tests
             topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, object>(consumerFactory, topicName, CancellationToken.None))
                 .Returns(Task.FromResult(topicWatermark));
 
-            int indexer = 0;
+            var indexer = 0;
             var consumerData = new[]
             {
                 new ConsumeResult<object, object>
@@ -329,9 +329,8 @@ namespace KafkaSnapshot.Import.Tests
                 }
             };
 
-            IEnumerable<KeyValuePair<object, DatedMessage<object>>> exceptedData = consumerData.Select(x =>
-
-            new KeyValuePair<object, DatedMessage<object>>(x.Message.Key, new DatedMessage<object>(x.Message.Value, x.Message.Timestamp.UtcDateTime)));
+            var exceptedData = consumerData.Select(x =>
+                            new KeyValuePair<object, DatedMessage<object>>(x.Message.Key, new DatedMessage<object>(x.Message.Value, x.Message.Timestamp.UtcDateTime)));
 
             consumerMock.Setup(x => x.Consume(CancellationToken.None)).Returns(() =>
             {
@@ -340,7 +339,7 @@ namespace KafkaSnapshot.Import.Tests
 
             // Act
             var exception = await Record.ExceptionAsync(
-                async () => result = await loader.LoadCompactSnapshotAsync(topicName, filter, CancellationToken.None));
+                async () => result = await loader.LoadCompactSnapshotAsync(topicName, filter, CancellationToken.None).ConfigureAwait(false));
 
             // Assert
             exception.Should().BeNull();
@@ -365,7 +364,7 @@ namespace KafkaSnapshot.Import.Tests
             optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
             var options = optionsMock.Object;
             var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader);
-            bool withCompacting = compacting;
+            var withCompacting = compacting;
             var testDate = DateTime.UtcNow;
             var topicName = new LoadingTopic("test", withCompacting, testDate);
             var filterMock = new Mock<IKeyFilter<object>>();
@@ -394,7 +393,7 @@ namespace KafkaSnapshot.Import.Tests
 
             // Act
             var exception = await Record.ExceptionAsync(
-                async () => result = await loader.LoadCompactSnapshotAsync(topicName, filter, CancellationToken.None));
+                async () => result = await loader.LoadCompactSnapshotAsync(topicName, filter, CancellationToken.None).ConfigureAwait(false));
 
             // Assert
             exception.Should().BeNull();
@@ -417,7 +416,7 @@ namespace KafkaSnapshot.Import.Tests
             optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
             var options = optionsMock.Object;
             var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader);
-            bool withCompacting = true;
+            var withCompacting = true;
             var topicName = new LoadingTopic("test", withCompacting);
             var filterMock = new Mock<IKeyFilter<object>>();
             filterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
@@ -433,7 +432,7 @@ namespace KafkaSnapshot.Import.Tests
             topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, object>(consumerFactory, topicName, CancellationToken.None))
                 .Returns(Task.FromResult(topicWatermark));
 
-            int indexer = 0;
+            var indexer = 0;
             var consumerData = new[]
             {
                 new ConsumeResult<object, object>
@@ -482,7 +481,7 @@ namespace KafkaSnapshot.Import.Tests
 
             // Act
             var exception = await Record.ExceptionAsync(
-                async () => result = await loader.LoadCompactSnapshotAsync(topicName, filter, CancellationToken.None));
+                async () => result = await loader.LoadCompactSnapshotAsync(topicName, filter, CancellationToken.None).ConfigureAwait(false));
 
             // Assert
             exception.Should().BeNull();
@@ -505,7 +504,7 @@ namespace KafkaSnapshot.Import.Tests
             optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
             var options = optionsMock.Object;
             var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader);
-            bool withCompacting = true;
+            var withCompacting = true;
             var topicName = new LoadingTopic("test", withCompacting);
             var filterMock = new Mock<IKeyFilter<object>>();
             filterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
@@ -531,7 +530,7 @@ namespace KafkaSnapshot.Import.Tests
             topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, object>(consumerFactory, topicName, CancellationToken.None))
                 .Returns(Task.FromResult(topicWatermark));
 
-            int indexer = 0;
+            var indexer = 0;
             var consumerData = new[]
             {
                 new ConsumeResult<object, object>
@@ -580,7 +579,7 @@ namespace KafkaSnapshot.Import.Tests
 
             // Act
             var exception = await Record.ExceptionAsync(
-                async () => result = await loader.LoadCompactSnapshotAsync(topicName, filter, CancellationToken.None));
+                async () => result = await loader.LoadCompactSnapshotAsync(topicName, filter, CancellationToken.None).ConfigureAwait(false));
 
             // Assert
             exception.Should().BeNull();

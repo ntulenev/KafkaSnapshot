@@ -211,7 +211,7 @@ namespace KafkaSnapshot.Processing.Tests
 
             // Act
             var exception = await Record.ExceptionAsync(async () =>
-                await unit.ProcessAsync(CancellationToken.None));
+                await unit.ProcessAsync(CancellationToken.None)).ConfigureAwait(false);
 
             // Assert
             exception.Should().BeNull();

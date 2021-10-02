@@ -86,7 +86,7 @@ namespace KafkaSnapshot.Processing.Tests
             var tool = new LoaderTool(logger, items);
 
             // Act
-            var exception = await Record.ExceptionAsync(async () => await tool.ProcessAsync(CancellationToken.None));
+            var exception = await Record.ExceptionAsync(async () => await tool.ProcessAsync(CancellationToken.None).ConfigureAwait(false));
 
             // Assert
             exception.Should().BeNull();
@@ -111,7 +111,7 @@ namespace KafkaSnapshot.Processing.Tests
             var tool = new LoaderTool(logger, items);
 
             // Act
-            var exception = await Record.ExceptionAsync(async () => await tool.ProcessAsync(CancellationToken.None));
+            var exception = await Record.ExceptionAsync(async () => await tool.ProcessAsync(CancellationToken.None).ConfigureAwait(false));
 
             // Assert
             exception.Should().BeNull();

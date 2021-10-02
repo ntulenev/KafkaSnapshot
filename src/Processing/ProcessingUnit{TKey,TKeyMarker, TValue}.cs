@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -56,16 +56,11 @@ namespace KafkaSnapshot.Processing
 
             _logger.LogDebug("Instance created for topic {topic}.", topic);
 
-            if (topic.StartingDate.HasValue)
-            {
-                _topicParams = new LoadingTopic(topic.Name, topic.LoadWithCompacting, topic.StartingDate.Value);
-            }
-            else
-            {
-                _topicParams = new LoadingTopic(topic.Name, topic.LoadWithCompacting);
-            }
+            _topicParams = topic.StartingDate.HasValue
+                ? new LoadingTopic(topic.Name, topic.LoadWithCompacting, topic.StartingDate.Value)
+                : new LoadingTopic(topic.Name, topic.LoadWithCompacting);
 
-            _exportedTopic = new ExportedTopic(topic.Name, topic.ExportName,topic.ExportRawMessage);
+            _exportedTopic = new ExportedTopic(topic.Name, topic.ExportName, topic.ExportRawMessage);
 
             _logger.LogDebug("Instance created for topic {topic}.", topic);
         }

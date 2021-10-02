@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 using Confluent.Kafka;
 
@@ -231,7 +231,7 @@ namespace KafkaAsTable.Tests
                topicWithOffset
             });
             var consumer = consumerMock.Object;
-            bool result = false;
+            var result = false;
             // Act
             var exception = Record.Exception(() => result = pw.AssingWithConsumer(consumer, date, timeout));
 
@@ -260,7 +260,7 @@ namespace KafkaAsTable.Tests
                topicWithOffset
             });
             var consumer = consumerMock.Object;
-            bool result = true;
+            var result = true;
             // Act
             var exception = Record.Exception(() => result = pw.AssingWithConsumer(consumer, date, timeout));
 

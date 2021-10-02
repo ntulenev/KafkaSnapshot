@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System;
 
 using FluentAssertions;
@@ -47,7 +47,7 @@ namespace KafkaSnapshot.Export.Tests
             // Arrange
             var serializer = new OriginalKeySerializer<object>();
             var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
-            bool isRaw = false;
+            var isRaw = false;
             var data = new[]
             {
                 new KeyValuePair<object, DatedMessage<string>>(1,new DatedMessage<string>("{\"Test\":42}",dateTime))
@@ -69,7 +69,7 @@ namespace KafkaSnapshot.Export.Tests
             // Arrange
             var serializer = new OriginalKeySerializer<object>();
             var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
-            bool isRaw = false;
+            var isRaw = false;
             var data = new[]
             {
                 new KeyValuePair<object, DatedMessage<string>>(1,new DatedMessage<string>("Test",dateTime))
@@ -90,7 +90,7 @@ namespace KafkaSnapshot.Export.Tests
             // Arrange
             var serializer = new OriginalKeySerializer<object>();
             var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
-            bool isRaw = true;
+            var isRaw = true;
             var data = new[]
             {
                 new KeyValuePair<object, DatedMessage<string>>(1,new DatedMessage<string>("Test",dateTime))

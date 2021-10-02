@@ -1,5 +1,6 @@
-﻿using KafkaSnapshot.Models.Filters;
 using System;
+
+using KafkaSnapshot.Models.Filters;
 
 namespace KafkaSnapshot.Models.Processing
 {

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,13 +17,13 @@ namespace KafkaSnapshot.Import.Metadata
         /// <summary>
         /// Loads <see cref="TopicWatermark"/> from Kafka.
         /// </summary>
-        /// <typeparam name="Key">Message key.</typeparam>
-        /// <typeparam name="Value">Message value.</typeparam>
+        /// <typeparam name="TKey">Message key.</typeparam>
+        /// <typeparam name="TValue">Message value.</typeparam>
         /// <param name="consumerFactory">Factory delegate for creating consumer.</param>
         /// <param name="topicName">Kafka topic name.</param>
         /// <param name="ct">Cancellation token.</param>
-        public Task<TopicWatermark> LoadWatermarksAsync<Key, Value>(
-            Func<IConsumer<Key, Value>> consumerFactory,
+        public Task<TopicWatermark> LoadWatermarksAsync<TKey, TValue>(
+            Func<IConsumer<TKey, TValue>> consumerFactory,
             LoadingTopic topicName,
             CancellationToken ct);
     }

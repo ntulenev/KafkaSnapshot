@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,7 +18,6 @@ using KafkaSnapshot.Processing.Configuration;
 using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Abstractions.Processing;
 using KafkaSnapshot.Export.File.Output;
-using KafkaSnapshot.Models.Export;
 using KafkaSnapshot.Export.File.Common;
 using KafkaSnapshot.Export.Markers;
 using KafkaSnapshot.Abstractions.Filters;

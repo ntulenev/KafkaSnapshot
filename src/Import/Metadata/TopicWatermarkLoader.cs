@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -9,6 +9,7 @@ using Confluent.Kafka;
 using KafkaSnapshot.Import.Configuration;
 using KafkaSnapshot.Import.Watermarks;
 using KafkaSnapshot.Models.Import;
+
 using Microsoft.Extensions.Options;
 
 namespace KafkaSnapshot.Import.Metadata
@@ -67,8 +68,8 @@ namespace KafkaSnapshot.Import.Metadata
         }
 
         /// <inheritdoc/>>
-        public async Task<TopicWatermark> LoadWatermarksAsync<Key, Value>(
-                            Func<IConsumer<Key, Value>> consumerFactory,
+        public async Task<TopicWatermark> LoadWatermarksAsync<TKey, TValue>(
+                            Func<IConsumer<TKey, TValue>> consumerFactory,
                             LoadingTopic topicName,
                             CancellationToken ct
                             )

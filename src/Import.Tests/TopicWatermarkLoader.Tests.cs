@@ -112,7 +112,7 @@ namespace KafkaAsTable.Tests
 
             // Act
             var exception = await Record.ExceptionAsync(async () =>
-            await loader.LoadWatermarksAsync(consumerFactory, topicName, CancellationToken.None)
+            await loader.LoadWatermarksAsync(consumerFactory, topicName, CancellationToken.None).ConfigureAwait(false)
             );
 
             // Assert
@@ -137,7 +137,7 @@ namespace KafkaAsTable.Tests
 
             // Act
             var exception = await Record.ExceptionAsync(async () =>
-            await loader.LoadWatermarksAsync(consumerFactory, topicName, System.Threading.CancellationToken.None)
+            await loader.LoadWatermarksAsync(consumerFactory, topicName, System.Threading.CancellationToken.None).ConfigureAwait(false)
             );
 
             // Assert
@@ -188,7 +188,7 @@ namespace KafkaAsTable.Tests
             TopicWatermark result = null!;
 
             // Act
-            var exception = await Record.ExceptionAsync(async () => result = await loader.LoadWatermarksAsync(consumerFactory, topic, CancellationToken.None));
+            var exception = await Record.ExceptionAsync(async () => result = await loader.LoadWatermarksAsync(consumerFactory, topic, CancellationToken.None).ConfigureAwait(false));
 
             // Assert
             exception.Should().BeNull();

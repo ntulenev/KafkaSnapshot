@@ -72,7 +72,7 @@ namespace KafkaSnapshot.Processing.Tests
 
         [Fact(DisplayName = "LoaderTool can process units.")]
         [Trait("Category", "Unit")]
-        public async Task LoaderToolProcessUnitsAsync()
+        public async Task LoaderToolProcessUnits()
         {
             // Arrange
             var loggerMock = new Mock<ILogger<LoaderTool>>();
@@ -96,7 +96,7 @@ namespace KafkaSnapshot.Processing.Tests
 
         [Fact(DisplayName = "LoaderTool can process units if error.")]
         [Trait("Category", "Unit")]
-        public async Task LoaderToolProcessUnitsIfErrorAsync()
+        public async Task LoaderToolProcessUnitsIfError()
         {
             // Arrange
             var loggerMock = new Mock<ILogger<LoaderTool>>();

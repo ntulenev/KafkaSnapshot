@@ -113,7 +113,7 @@ namespace KafkaSnapshot.Import.Tests
 
         [Fact(DisplayName = "SnapshotLoader can't load for null topic.")]
         [Trait("Category", "Unit")]
-        public async Task SnapshotLoaderCantLoadForNullTopicAsync()
+        public async Task SnapshotLoaderCantLoadForNullTopic()
         {
 
             // Arrange
@@ -140,7 +140,7 @@ namespace KafkaSnapshot.Import.Tests
 
         [Fact(DisplayName = "SnapshotLoader can't load for null filter.")]
         [Trait("Category", "Unit")]
-        public async Task SnapshotLoaderCantLoadForNullFilterAsync()
+        public async Task SnapshotLoaderCantLoadForNullFilter()
         {
 
             // Arrange

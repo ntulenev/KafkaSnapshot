@@ -96,7 +96,7 @@ namespace KafkaAsTable.Tests
 
         [Fact(DisplayName = "TopicWatermarkLoader can't load data with null factory.")]
         [Trait("Category", "Unit")]
-        public async Task TopicWatermarkLoaderCantLoadWithNullFactoryAsync()
+        public async Task TopicWatermarkLoaderCantLoadWithNullFactory()
         {
 
             // Arrange
@@ -121,7 +121,7 @@ namespace KafkaAsTable.Tests
 
         [Fact(DisplayName = "TopicWatermarkLoader can't load data with null topic.")]
         [Trait("Category", "Unit")]
-        public async Task TopicWatermarkLoaderCantLoadWithNullTopicAsync()
+        public async Task TopicWatermarkLoaderCantLoadWithNullTopic()
         {
 
             // Arrange
@@ -146,7 +146,7 @@ namespace KafkaAsTable.Tests
 
         [Fact(DisplayName = "TopicWatermarkLoader can load watermarks with valid params.")]
         [Trait("Category", "Unit")]
-        public async Task CanLoadWatermarksWithValidParamsAsync()
+        public async Task CanLoadWatermarksWithValidParams()
         {
 
             var topic = new LoadingTopic("test", true);

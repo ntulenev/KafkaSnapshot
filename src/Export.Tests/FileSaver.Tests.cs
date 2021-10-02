@@ -25,7 +25,7 @@ namespace KafkaSnapshot.Export.Tests
 
         [Fact(DisplayName = "File saver cant save file with null name.")]
         [Trait("Category", "Unit")]
-        public async Task CantSaveWithNullFileNameAsync()
+        public async Task CantSaveWithNullFileName()
         {
             // Arrange
             var fileSaver = new FileSaver();
@@ -41,7 +41,7 @@ namespace KafkaSnapshot.Export.Tests
 
         [Fact(DisplayName = "File saver cant save file with empty name.")]
         [Trait("Category", "Unit")]
-        public async Task CantSaveWithEmptyFileNameAsync()
+        public async Task CantSaveWithEmptyFileName()
         {
             // Arrange
             var fileSaver = new FileSaver();
@@ -57,7 +57,7 @@ namespace KafkaSnapshot.Export.Tests
 
         [Fact(DisplayName = "File saver cant save file with witespaces name.")]
         [Trait("Category", "Unit")]
-        public async Task CantSaveWithSpacesFileNameAsync()
+        public async Task CantSaveWithSpacesFileName()
         {
             // Arrange
             var fileSaver = new FileSaver();
@@ -73,7 +73,7 @@ namespace KafkaSnapshot.Export.Tests
 
         [Fact(DisplayName = "File saver cant save file with null content.")]
         [Trait("Category", "Unit")]
-        public async Task CantSaveWithNullContentAsync()
+        public async Task CantSaveWithNullContent()
         {
             // Arrange
             var fileSaver = new FileSaver();

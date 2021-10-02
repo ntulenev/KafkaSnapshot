@@ -72,7 +72,7 @@ namespace KafkaSnapshot.Processing.Tests
 
         [Fact(DisplayName = "LoaderConcurrentTool can process units.")]
         [Trait("Category", "Unit")]
-        public async Task LoaderConcurrentToolProcessUnitsAsync()
+        public async Task LoaderConcurrentToolProcessUnits()
         {
             // Arrange
             var loggerMock = new Mock<ILogger<LoaderTool>>();

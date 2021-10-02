@@ -182,7 +182,7 @@ namespace KafkaSnapshot.Processing.Tests
 
         [Fact(DisplayName = "ProcessingUnit can process topuc.")]
         [Trait("Category", "Unit")]
-        public async Task ProcessingUnitCanProcessTopicAsync()
+        public async Task ProcessingUnitCanProcessTopic()
         {
             var markerMoq = new Mock<IKeyRepresentationMarker>();
             var marker = markerMoq.Object;

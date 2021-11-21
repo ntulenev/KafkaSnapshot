@@ -1,10 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
+	<LangVersion>10.0</LangVersion>
     <AssemblyName>KafkaSnapshot.Filters.Tests</AssemblyName>
     <RootNamespace>KafkaSnapshot.Filters.Tests</RootNamespace>
-	<LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <Platform>x64</Platform>

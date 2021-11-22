@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-
 using Confluent.Kafka;
 
 using KafkaSnapshot.Models.Import;

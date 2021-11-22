@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace KafkaSnapshot.Import.Configuration
+﻿namespace KafkaSnapshot.Import.Configuration
 {
     /// <summary>
     /// Bootstrap servers configuration.

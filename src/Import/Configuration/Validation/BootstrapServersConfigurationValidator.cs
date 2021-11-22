@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 
 namespace KafkaSnapshot.Import.Configuration.Validation
 {

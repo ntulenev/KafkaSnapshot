@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace KafkaSnapshot.Import.Configuration
+﻿namespace KafkaSnapshot.Import.Configuration
 {
     public class SnapshotLoaderConfiguration
     {

@@ -1,6 +1,4 @@
-﻿using System;
-
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 
 using KafkaSnapshot.Abstractions.Filters;
 

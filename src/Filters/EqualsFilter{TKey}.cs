@@ -1,6 +1,4 @@
-﻿using System;
-
-using KafkaSnapshot.Abstractions.Filters;
+﻿using KafkaSnapshot.Abstractions.Filters;
 
 namespace KafkaSnapshot.Filters
 {

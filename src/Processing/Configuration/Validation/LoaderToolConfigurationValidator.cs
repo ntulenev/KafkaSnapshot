@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Text.RegularExpressions;
 
 using Microsoft.Extensions.Options;
@@ -19,26 +18,6 @@ namespace KafkaSnapshot.Processing.Configuration.Validation
             {
                 return ValidateOptionsResult.Fail("Configuration object is null.");
             }
-
-            //if (options.BootstrapServers is null)
-            //{
-            //    return ValidateOptionsResult.Fail("BootstrapServers section is not set.");
-            //}
-
-            //if (!options.BootstrapServers.Any())
-            //{
-            //    return ValidateOptionsResult.Fail("BootstrapServers section is empty.");
-            //}
-
-            //if (options.BootstrapServers.Any(x => String.IsNullOrEmpty(x)))
-            //{
-            //    return ValidateOptionsResult.Fail("BootstrapServers section contains empty string.");
-            //}
-
-            //if (options.BootstrapServers.Any(x => String.IsNullOrWhiteSpace(x)))
-            //{
-            //    return ValidateOptionsResult.Fail("BootstrapServers section contains empty string of whitespaces.");
-            //}
 
             if (options.Topics is null)
             {

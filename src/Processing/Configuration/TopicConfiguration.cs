@@ -1,6 +1,4 @@
-﻿using System;
-
-using KafkaSnapshot.Models.Filters;
+﻿using KafkaSnapshot.Models.Filters;
 using KafkaSnapshot.Models.Processing;
 
 namespace KafkaSnapshot.Processing.Configuration

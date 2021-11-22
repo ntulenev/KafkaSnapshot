@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace KafkaSnapshot.Processing.Configuration
+﻿namespace KafkaSnapshot.Processing.Configuration
 {
     /// <summary>
     /// Application configuration.

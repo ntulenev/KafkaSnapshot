@@ -1,8 +1,4 @@
-﻿using System;
-
-using System.Collections.Generic;
-
-using KafkaSnapshot.Abstractions.Export;
+﻿using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Models.Message;
 using KafkaSnapshot.Export.Markers;
 

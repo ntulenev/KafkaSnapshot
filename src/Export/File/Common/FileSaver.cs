@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-
-using KafkaSnapshot.Abstractions.Export;
+﻿using KafkaSnapshot.Abstractions.Export;
 
 namespace KafkaSnapshot.Export.File.Common
 {

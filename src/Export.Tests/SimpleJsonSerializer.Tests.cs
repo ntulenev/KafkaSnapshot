@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System;
-
-using FluentAssertions;
+﻿using FluentAssertions;
 
 using Xunit;
 

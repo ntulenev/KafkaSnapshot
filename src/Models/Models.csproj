@@ -9,6 +9,7 @@
 	<Platforms>x64</Platforms>
 	<AssemblyName>KafkaSnapshot.Models</AssemblyName>
 	<RootNamespace>KafkaSnapshot.Models</RootNamespace>
+	<ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
 </Project>

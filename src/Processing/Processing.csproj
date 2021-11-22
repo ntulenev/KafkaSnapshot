@@ -9,6 +9,7 @@
 	<Platforms>x64</Platforms>
 	<AssemblyName>KafkaSnapshot.Processing</AssemblyName>
 	<RootNamespace>KafkaSnapshot.Processing</RootNamespace>
+	<ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>

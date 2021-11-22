@@ -9,6 +9,7 @@
 	<Platforms>x64</Platforms>
 	<AssemblyName>KafkaSnapshot.Import</AssemblyName>
 	<RootNamespace>KafkaSnapshot.Import</RootNamespace>
+	<ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>

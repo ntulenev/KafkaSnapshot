@@ -10,7 +10,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AssemblyName>KafkaSnapshot.Utility.Tests</AssemblyName>
     <RootNamespace>KafkaSnapshot.Utility.Tests</RootNamespace>
-	
+	<ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>

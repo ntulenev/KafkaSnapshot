@@ -9,6 +9,7 @@
 	<Platforms>x64</Platforms>
     <AssemblyName>KafkaSnapshot.Filters</AssemblyName>
 	<RootNamespace>KafkaSnapshot.Filters</RootNamespace>
+	<ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>

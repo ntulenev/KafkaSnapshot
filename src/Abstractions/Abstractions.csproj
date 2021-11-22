@@ -9,6 +9,7 @@
 	<Platforms>x64</Platforms>
 	<AssemblyName>KafkaSnapshot.Abstractions</AssemblyName>
 	<RootNamespace>KafkaSnapshot.Abstractions</RootNamespace>
+	<ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>

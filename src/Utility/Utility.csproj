@@ -10,6 +10,7 @@
     <Platforms>x64</Platforms>
     <AssemblyName>KafkaSnapshot.Utility</AssemblyName>
     <RootNamespace>KafkaSnapshot.Utility</RootNamespace>
+	<ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>

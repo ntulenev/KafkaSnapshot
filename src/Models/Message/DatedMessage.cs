@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace KafkaSnapshot.Models.Message
+﻿namespace KafkaSnapshot.Models.Message
 {
     /// <summary>
     /// Message with timestamp

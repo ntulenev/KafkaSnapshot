@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace KafkaSnapshot.Abstractions.Export
+﻿namespace KafkaSnapshot.Abstractions.Export
 {
     /// <summary>
     /// Utility that saves string content to file.

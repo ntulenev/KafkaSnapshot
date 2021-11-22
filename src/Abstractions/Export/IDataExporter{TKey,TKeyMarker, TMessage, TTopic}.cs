@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-
-using KafkaSnapshot.Models.Export;
+﻿using KafkaSnapshot.Models.Export;
 using KafkaSnapshot.Models.Message;
 
 namespace KafkaSnapshot.Abstractions.Export

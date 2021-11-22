@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-
-using KafkaSnapshot.Abstractions.Filters;
+﻿using KafkaSnapshot.Abstractions.Filters;
 using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Message;
 

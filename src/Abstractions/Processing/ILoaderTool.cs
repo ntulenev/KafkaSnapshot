@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace KafkaSnapshot.Abstractions.Processing
+﻿namespace KafkaSnapshot.Abstractions.Processing
 {
     /// <summary>
     /// Runner for processing units.

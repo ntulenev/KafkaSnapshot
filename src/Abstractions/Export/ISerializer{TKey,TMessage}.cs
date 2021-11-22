@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-using KafkaSnapshot.Models.Message;
+﻿using KafkaSnapshot.Models.Message;
 
 namespace KafkaSnapshot.Abstractions.Export
 {

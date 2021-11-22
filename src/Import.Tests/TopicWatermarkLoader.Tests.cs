@@ -1,9 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Threading;
-using System.Linq;
-
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 
 using Confluent.Kafka;
 

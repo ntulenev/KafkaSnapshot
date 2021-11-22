@@ -1,5 +1,3 @@
-using System;
-
 using Confluent.Kafka;
 
 using FluentAssertions;
@@ -10,7 +8,6 @@ using Xunit;
 
 using KafkaSnapshot.Import.Watermarks;
 using KafkaSnapshot.Models.Import;
-using System.Collections.Generic;
 
 namespace KafkaAsTable.Tests
 {

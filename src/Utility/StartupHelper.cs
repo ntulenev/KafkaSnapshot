@@ -104,7 +104,11 @@ namespace KafkaSnapshot.Utility
                 var servers = string.Join(",", config.BootstrapServers);
                 var adminConfig = new AdminClientConfig()
                 {
-                    BootstrapServers = servers
+                    BootstrapServers = servers,
+                    SecurityProtocol = config.SecurityProtocol,
+                    SaslMechanism = config.SASLMechanism,
+                    SaslUsername = config.Username,
+                    SaslPassword = config.Password
                 };
                 return new AdminClientBuilder(adminConfig).Build();
             });
@@ -120,7 +124,11 @@ namespace KafkaSnapshot.Utility
                     BootstrapServers = servers,
                     AutoOffsetReset = AutoOffsetReset.Earliest,
                     GroupId = Guid.NewGuid().ToString(),
-                    EnableAutoCommit = false
+                    EnableAutoCommit = false,
+                    SecurityProtocol = config.SecurityProtocol,
+                    SaslMechanism = config.SASLMechanism,
+                    SaslUsername = config.Username,
+                    SaslPassword = config.Password
                 };
 
                 return new ConsumerBuilder<Key, string>(conf).Build();

@@ -8,17 +8,21 @@ Supports:
 * Searching start offset for the given date and time
 * String keys (optionally as json) and long keys
 * Multi-partition topics
+* SASL authentication mechanism
 
 By default messages should contains JSON data. Simple strings also supported (see ExportRawMessage parameter).
 
 ![Details](Case1.PNG)
 
-Config with topics for export:
+Config example:
 
 ```yaml
   "BootstrapServersConfiguration": {
-    "BootstrapServers": [
-    ]
+    "BootstrapServers": [ "test" ],
+    "Username": "user123",
+    "Password": "pwd123",
+    "SecurityProtocol": "SaslPlaintext",
+    "SASLMechanism": "ScramSha512"
   },
   "TopicWatermarkLoaderConfiguration": {
     "AdminClientTimeout": "00:00:05"
@@ -62,6 +66,10 @@ Config with topics for export:
 | AdminClientTimeout | Cluster metadata loading timeout |
 | DateOffsetTimeout | Searching offset by date timeout |
 | BootstrapServers | List of kafka cluster servers, like "kafka-test:9092"  |
+| Username | SASL username (optional)  |
+| Password | SASL password (optional)  |
+| SecurityProtocol | Protocol used to communicate with brokers (Plaintext,Ssl,SaslPlaintext,SaslSsl) (optional)  |
+| SASLMechanism | SASL mechanism to use for authentication (Gssapi,Plain,ScramSha256,ScramSha512,OAuthBearer) (optional)  |
 | UseConcurrentLoad | Loads data in concurrent mode or one by one |
 | Name           | Apache Kafka topic name |
 | KeyType        | Apache Kafka topic key representation (Json,String,Long) |
@@ -69,5 +77,5 @@ Config with topics for export:
 | ExportFileName | File name for exported data  |
 | FilterType | Equals or None (optional)  |
 | FilterValue | Sample value for filtering (if FilterType sets as 'Equals') |
-| OffsetStartDate | First message date (optional). Use to skip old messages in large topics.|
-| ExportRawMessage | If true - export will write message as raw string without converting to formatted json (optional).|
+| OffsetStartDate | First message date (optional). Use to skip old messages in large topics|
+| ExportRawMessage | If true - export will write message as raw string without converting to formatted json (optional)|

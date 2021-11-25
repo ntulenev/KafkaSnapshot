@@ -14,7 +14,7 @@ By default messages should contains JSON data. Simple strings also supported (se
 
 ![Details](Case1.PNG)
 
-Config with topics for export:
+Config example:
 
 ```yaml
   "BootstrapServersConfiguration": {

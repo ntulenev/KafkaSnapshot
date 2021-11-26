@@ -50,7 +50,7 @@ namespace KafkaSnapshot.Export.File.Output
 
             using var _ = _logger.BeginScope("Data from topic {topic} to File {file}", topic.Name, topic.ExportName);
 
-            _logger.LogDebug("Starting saving data");
+            _logger.LogDebug("Starting saving data.");
 
             await _fileSaver.SaveAsync(topic.ExportName, _serializer.Serialize(data, topic.ExportRawMessage), ct).ConfigureAwait(false);
 

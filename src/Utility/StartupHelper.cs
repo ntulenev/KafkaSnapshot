@@ -30,7 +30,7 @@ namespace KafkaSnapshot.Utility
     public static class StartupHelper
     {
         /// <summary>
-        /// Registers configuration and entry point of application.
+        /// Register configuration and entry point of application.
         /// </summary>
         public static void AddTools(this IServiceCollection services, HostBuilderContext hostContext)
         {
@@ -52,7 +52,7 @@ namespace KafkaSnapshot.Utility
         }
 
         /// <summary>
-        /// Adds export providers.
+        /// Add export providers.
         /// </summary>
         public static void AddExport(this IServiceCollection services)
         {
@@ -66,7 +66,7 @@ namespace KafkaSnapshot.Utility
         }
 
         /// <summary>
-        /// Adds Serilog.
+        /// Add Serilog.
         /// </summary>
         public static void AddLogging(this IServiceCollection services, HostBuilderContext hostContext)
         {
@@ -82,7 +82,7 @@ namespace KafkaSnapshot.Utility
         }
 
         /// <summary>
-        /// Adds topic loaders.
+        /// Add topic loaders.
         /// </summary>
         public static void AddTopicLoaders(this IServiceCollection services, HostBuilderContext hostContext)
         {

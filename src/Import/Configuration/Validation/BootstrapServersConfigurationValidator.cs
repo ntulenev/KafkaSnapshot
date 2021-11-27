@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Options;
+﻿using System.Diagnostics;
+
+using Microsoft.Extensions.Options;
 
 namespace KafkaSnapshot.Import.Configuration.Validation
 {
@@ -12,6 +14,9 @@ namespace KafkaSnapshot.Import.Configuration.Validation
         /// </summary>
         public ValidateOptionsResult Validate(string name, BootstrapServersConfiguration options)
         {
+            Debug.Assert(name is not null);
+            Debug.Assert(options is not null);
+
             if (options is null)
             {
                 return ValidateOptionsResult.Fail("Configuration object is null.");

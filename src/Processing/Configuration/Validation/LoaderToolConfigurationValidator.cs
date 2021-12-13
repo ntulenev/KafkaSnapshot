@@ -70,6 +70,14 @@ namespace KafkaSnapshot.Processing.Configuration.Validation
                     return ValidateOptionsResult.Fail(
                         "The topic export name cannot be empty or consist of whitespaces.");
                 }
+
+                if (topic.FilterType is not Models.Filters.FilterType.None)
+                {
+                    if (topic.FilterValue is null)
+                    {
+                        return ValidateOptionsResult.Fail($"Filter value does not set for topic {topic.Name}.");
+                    }
+                }
             }
 
             return ValidateOptionsResult.Success;

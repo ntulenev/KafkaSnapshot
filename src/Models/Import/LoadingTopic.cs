@@ -24,9 +24,20 @@ namespace KafkaSnapshot.Models.Import
             throw new InvalidOperationException("Topic params does not have date offset.");
 
         /// <summary>
-        /// Read from Dated offset.
+        /// Date and time of end offset.
+        /// </summary>
+        public DateTime EndOffsetDate => _endOffsetDate.HasValue ? _endOffsetDate!.Value :
+            throw new InvalidOperationException("Topic params does not have end date offset.");
+
+        /// <summary>
+        /// Does offset trimmed with start date.
         /// </summary>
         public bool HasOffsetDate => _offsetDate.HasValue;
+
+        /// <summary>
+        /// Does offset trimmed with end date.
+        /// </summary>
+        public bool HasEndOffsetDate => _endOffsetDate.HasValue;
 
         /// <summary>
         /// Creates <see cref="LoadingTopic"/>.
@@ -49,6 +60,18 @@ namespace KafkaSnapshot.Models.Import
         public LoadingTopic(string name, bool loadWithCompacting, DateTime offsetDate) : this(name, loadWithCompacting)
         {
             _offsetDate = offsetDate;
+        }
+
+        /// <summary>
+        /// Creates <see cref="LoadingTopic"/>.
+        /// </summary>
+        /// <param name="name">topic name.</param>
+        /// <param name="loadWithCompacting">Flag for compacting.</param>
+        /// <param name="offsetDate">date for initial offset.</param>
+        public LoadingTopic(string name, bool loadWithCompacting, DateTime offsetDate, DateTime endOffsetDate) :
+            this(name, loadWithCompacting, offsetDate)
+        {
+            _endOffsetDate = endOffsetDate;
         }
 
         /// <summary>
@@ -88,6 +111,8 @@ namespace KafkaSnapshot.Models.Import
         }
 
         private readonly DateTime? _offsetDate;
+
+        private readonly DateTime? _endOffsetDate;
 
         private static readonly Regex _topicNameCharacters = new(
            "^[a-zA-Z0-9\\-]*$",

@@ -52,9 +52,11 @@ namespace KafkaSnapshot.Processing
 
             _logger.LogDebug("Instance created for topic {topic}.", topic);
 
-            _topicParams = topic.StartingDate.HasValue
-                ? new LoadingTopic(topic.Name, topic.LoadWithCompacting, topic.StartingDate.Value)
-                : new LoadingTopic(topic.Name, topic.LoadWithCompacting);
+            _topicParams = new LoadingTopic(
+                                topic.Name,
+                                topic.LoadWithCompacting,
+                                new DateFilterParams(topic.StartingDate, topic.EndingDate)
+                                );
 
             _exportedTopic = new ExportedTopic(topic.Name, topic.ExportName, topic.ExportRawMessage);
 

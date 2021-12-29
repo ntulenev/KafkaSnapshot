@@ -103,7 +103,7 @@ namespace KafkaAsTable.Tests
             });
             var loader = new TopicWatermarkLoader(client, options.Object);
             var consumerFactory = (Func<IConsumer<string, string>>)null!;
-            var topicName = new LoadingTopic("test", true);
+            var topicName = new LoadingTopic("test", true, new DateFilterParams(null!, null!));
 
             // Act
             var exception = await Record.ExceptionAsync(async () =>
@@ -144,7 +144,7 @@ namespace KafkaAsTable.Tests
         public async Task CanLoadWatermarksWithValidParams()
         {
 
-            var topic = new LoadingTopic("test", true);
+            var topic = new LoadingTopic("test", true, new DateFilterParams(null!, null!));
             var clientMock = new Mock<IAdminClient>();
             var client = clientMock.Object;
             var timeout = 1;

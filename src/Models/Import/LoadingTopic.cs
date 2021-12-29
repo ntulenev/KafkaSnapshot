@@ -44,34 +44,20 @@ namespace KafkaSnapshot.Models.Import
         /// </summary>
         /// <param name="name">topic name.</param>
         /// <param name="loadWithCompacting">Flag for compacting.</param>
-        public LoadingTopic(string name, bool loadWithCompacting)
+        /// <param name="dateParams">date filter for initial offset.</param>
+        public LoadingTopic(string name, bool loadWithCompacting, DateFilterParams dateParams)
         {
             ValidateTopicName(name);
             Value = name;
             LoadWithCompacting = loadWithCompacting;
-        }
 
-        /// <summary>
-        /// Creates <see cref="LoadingTopic"/>.
-        /// </summary>
-        /// <param name="name">topic name.</param>
-        /// <param name="loadWithCompacting">Flag for compacting.</param>
-        /// <param name="offsetDate">date for initial offset.</param>
-        public LoadingTopic(string name, bool loadWithCompacting, DateTime offsetDate) : this(name, loadWithCompacting)
-        {
-            _offsetDate = offsetDate;
-        }
+            if (dateParams is null)
+            {
+                throw new ArgumentNullException(nameof(dateParams));
+            }
 
-        /// <summary>
-        /// Creates <see cref="LoadingTopic"/>.
-        /// </summary>
-        /// <param name="name">topic name.</param>
-        /// <param name="loadWithCompacting">Flag for compacting.</param>
-        /// <param name="offsetDate">date for initial offset.</param>
-        public LoadingTopic(string name, bool loadWithCompacting, DateTime offsetDate, DateTime endOffsetDate) :
-            this(name, loadWithCompacting, offsetDate)
-        {
-            _endOffsetDate = endOffsetDate;
+            _offsetDate = dateParams.StartDate;
+            _endOffsetDate = dateParams.EndDate;
         }
 
         /// <summary>

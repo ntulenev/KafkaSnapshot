@@ -36,7 +36,7 @@ namespace KafkaAsTable.Tests
         {
 
             // Arrange
-            var topicName = new LoadingTopic("Test", true);
+            var topicName = new LoadingTopic("Test", true, new DateFilterParams(null!, null!));
             WatermarkOffsets offsets = null!;
             var partition = new Partition(1);
 
@@ -53,7 +53,7 @@ namespace KafkaAsTable.Tests
         {
 
             // Arrange
-            var topicName = new LoadingTopic("Test", true);
+            var topicName = new LoadingTopic("Test", true, new DateFilterParams(null!, null!));
             var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
             var partition = new Partition(1);
 
@@ -78,7 +78,7 @@ namespace KafkaAsTable.Tests
         {
 
             // Arrange
-            var topicName = new LoadingTopic("Test", true);
+            var topicName = new LoadingTopic("Test", true, new DateFilterParams(null!, null!));
             var offsets = new WatermarkOffsets(new Offset(startOffset), new Offset(endOffset));
             var partition = new Partition(1);
 
@@ -100,7 +100,7 @@ namespace KafkaAsTable.Tests
         {
 
             // Arrange
-            var topicName = new LoadingTopic("Test", true);
+            var topicName = new LoadingTopic("Test", true, new DateFilterParams(null!, null!));
             var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
             var partition = new Partition(1);
 
@@ -121,7 +121,7 @@ namespace KafkaAsTable.Tests
         {
 
             // Arrange
-            var topicName = new LoadingTopic("Test", true);
+            var topicName = new LoadingTopic("Test", true, new DateFilterParams(null!, null!));
             var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
             var partition = new Partition(1);
 
@@ -147,7 +147,7 @@ namespace KafkaAsTable.Tests
         {
 
             // Arrange
-            var topicName = new LoadingTopic("Test", true);
+            var topicName = new LoadingTopic("Test", true, new DateFilterParams(null!, null!));
             var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
             var partition = new Partition(1);
 
@@ -173,7 +173,7 @@ namespace KafkaAsTable.Tests
         {
 
             // Arrange
-            var topicName = new LoadingTopic("Test", true);
+            var topicName = new LoadingTopic("Test", true, new DateFilterParams(null!, null!));
             var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
             var partition = new Partition(1);
             var pw = new PartitionWatermark(topicName, offsets, partition);
@@ -192,7 +192,7 @@ namespace KafkaAsTable.Tests
         {
 
             // Arrange
-            var topicName = new LoadingTopic("Test", true);
+            var topicName = new LoadingTopic("Test", true, new DateFilterParams(null!, null!));
             var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
             var partition = new Partition(1);
             var pw = new PartitionWatermark(topicName, offsets, partition);
@@ -217,7 +217,7 @@ namespace KafkaAsTable.Tests
             // Arrange
             var date = DateTime.UtcNow;
             var timeout = TimeSpan.FromSeconds(10);
-            var topicName = new LoadingTopic("Test", true, date);
+            var topicName = new LoadingTopic("Test", true, new DateFilterParams(date, null!));
             var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
             var partition = new Partition(1);
             var pw = new PartitionWatermark(topicName, offsets, partition);
@@ -246,7 +246,7 @@ namespace KafkaAsTable.Tests
             // Arrange
             var date = DateTime.UtcNow;
             var timeout = TimeSpan.FromSeconds(10);
-            var topicName = new LoadingTopic("Test", true, date);
+            var topicName = new LoadingTopic("Test", true, new DateFilterParams(date, null!));
             var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
             var partition = new Partition(1);
             var pw = new PartitionWatermark(topicName, offsets, partition);

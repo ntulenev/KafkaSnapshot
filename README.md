@@ -5,7 +5,7 @@ Tool that allows to read current data snapshot from Apache Kafka topic to the fi
 Supports:
 * Compacting
 * Key filtering
-* Searching start offset for the given date and time
+* Filtering with start and end offsets
 * String keys (optionally as json) and long keys
 * Multi-partition topics
 * SASL authentication mechanism
@@ -41,6 +41,7 @@ Config example:
         "FilterType": "Equals",
         "FilterValue": "{\"value\": 1 }",
         "OffsetStartDate": "09.01.2021 12:12:12",
+        "OffsetEndDate": "09.01.2021 14:12:12",
         "ExportRawMessage": true
       },
       {
@@ -78,4 +79,5 @@ Config example:
 | FilterType | Equals or None (optional)  |
 | FilterValue | Sample value for filtering (if FilterType sets as 'Equals') |
 | OffsetStartDate | First message date (optional). Use to skip old messages in large topics|
+| OffsetEndDate | Message date top limit (optional). Use to limit filtering messages in large topics|
 | ExportRawMessage | If true - export will write message as raw string without converting to formatted json (optional)|

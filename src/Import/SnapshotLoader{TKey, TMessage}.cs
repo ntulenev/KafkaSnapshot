@@ -119,9 +119,16 @@ namespace KafkaSnapshot.Import
                 }
 
                 ConsumeResult<TKey, TMessage> result;
+
                 do
                 {
                     result = consumer.Consume(ct);
+
+                    if (topicParams.HasEndOffsetDate && result.Message.Timestamp.UtcDateTime > topicParams.EndOffsetDate)
+                    {
+                        _logger.LogInformation("Final date offset {date} reached", topicParams.EndOffsetDate);
+                        break;
+                    }
 
                     if (filter.IsMatch(result.Message.Key))
                     {

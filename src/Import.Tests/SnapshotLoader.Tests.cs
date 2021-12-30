@@ -579,5 +579,11 @@ namespace KafkaSnapshot.Import.Tests
             exception.Should().BeNull();
             result.Should().BeEquivalentTo(exceptedData);
         }
+
+        // TODO Add test
+        //Load with end date
+        //Load with end date no range
+        //Load with end date with compacting
+        //Load with start and end date
     }
 }

@@ -344,7 +344,7 @@ namespace KafkaSnapshot.Import.Tests
         [Trait("Category", "Unit")]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task SnapshotLoaderSkipsLoadDataWithoutCompactingOnNonRangeDate(bool compacting)
+        public async Task SnapshotLoaderSkipsLoadDataOnNonRangeDate(bool compacting)
         {
             // Arrange
             var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
@@ -580,10 +580,153 @@ namespace KafkaSnapshot.Import.Tests
             result.Should().BeEquivalentTo(exceptedData);
         }
 
-        // TODO Add test
-        //Load with end date
-        //Load with end date no range
-        //Load with end date with compacting
-        //Load with start and end date
+        [Theory(DisplayName = "SnapshotLoader skips load data on out of range end date.")]
+        [Trait("Category", "Unit")]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task SnapshotLoaderLoadNoDataWithEndDate(bool compacting)
+        {
+            // Arrange
+            var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
+            var logger = loggerMock.Object;
+            var consumerMock = new Mock<IConsumer<object, object>>();
+            Func<IConsumer<object, object>> consumerFactory = () => consumerMock.Object;
+            var topicLoaderMock = new Mock<ITopicWatermarkLoader>();
+
+            var topicLoader = topicLoaderMock.Object;
+            var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>();
+            optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
+            var options = optionsMock.Object;
+            var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader);
+            var withCompacting = compacting;
+            var testDate = DateTime.UtcNow;
+            var topicName = new LoadingTopic("test", withCompacting, new DateFilterParams(null!, testDate));
+            var filterMock = new Mock<IKeyFilter<object>>();
+            filterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+
+            var filter = filterMock.Object;
+            IEnumerable<KeyValuePair<object, DatedMessage<object>>> result = null!;
+            var offset = new WatermarkOffsets(new Offset(0), new Offset(3));
+            var partition = new Partition(1);
+            var topicWatermark = new TopicWatermark(new[]
+            {
+                new PartitionWatermark(topicName,offset,partition)
+            });
+
+            var topicPartition = new TopicPartition(topicName.Value, partition);
+            var partitionWithTime = new TopicPartitionTimestamp(topicPartition, new Timestamp(testDate));
+
+            consumerMock.Setup(x => x.Consume(It.IsAny<CancellationToken>())).Returns(new ConsumeResult<object, object>
+            {
+                Message = new Message<object, object>
+                {
+                    Timestamp = new Timestamp(testDate.AddDays(1))
+                }
+            });
+
+            topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, object>(consumerFactory, topicName, CancellationToken.None))
+                .Returns(Task.FromResult(topicWatermark));
+
+            // Act
+            var exception = await Record.ExceptionAsync(
+                async () => result = await loader.LoadCompactSnapshotAsync(topicName, filter, CancellationToken.None).ConfigureAwait(false));
+
+            // Assert
+            exception.Should().BeNull();
+            result.Should().BeEquivalentTo(Enumerable.Empty<KeyValuePair<object, DatedMessage<object>>>());
+        }
+
+        [Fact(DisplayName = "SnapshotLoader load data with end date filter.")]
+        [Trait("Category", "Unit")]
+        public async Task SnapshotLoaderLoadDataWithEndDate()
+        {
+            // Arrange
+            var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
+            var logger = loggerMock.Object;
+            var consumerMock = new Mock<IConsumer<object, object>>();
+            Func<IConsumer<object, object>> consumerFactory = () => consumerMock.Object;
+            var topicLoaderMock = new Mock<ITopicWatermarkLoader>();
+
+            var topicLoader = topicLoaderMock.Object;
+            var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>();
+            optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
+            var options = optionsMock.Object;
+            var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader);
+            var withCompacting = false;
+            var testDate = DateTime.UtcNow;
+            var topicName = new LoadingTopic("test", withCompacting, new DateFilterParams(null!, testDate));
+            var filterMock = new Mock<IKeyFilter<object>>();
+            filterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+
+            var filter = filterMock.Object;
+            IEnumerable<KeyValuePair<object, DatedMessage<object>>> result = null!;
+            var offset = new WatermarkOffsets(new Offset(0), new Offset(3));
+            var partition = new Partition(1);
+            var topicWatermark = new TopicWatermark(new[]
+            {
+                new PartitionWatermark(topicName,offset,partition)
+            });
+
+            var topicPartition = new TopicPartition(topicName.Value, partition);
+            var partitionWithTime = new TopicPartitionTimestamp(topicPartition, new Timestamp(testDate));
+
+            var indexer = 0;
+            var consumerData = new[]
+            {
+                new ConsumeResult<object, object>
+                {
+                     Message = new Message<object, object>
+                     {
+                           Key = "key1",
+                           Value = "value1",
+                           Timestamp =  new Timestamp(testDate.AddDays(-1))
+                     },
+                     Offset = new Offset(0)
+                },
+                new ConsumeResult<object, object>
+                {
+                     Message = new Message<object, object>
+                     {
+                           Key = "key2",
+                           Value = "value2",
+                           Timestamp =  new Timestamp(testDate)
+                     },
+                     Offset = new Offset(1)
+                },
+                new ConsumeResult<object, object>
+                {
+                     Message = new Message<object, object>
+                     {
+                           Key = "key2",
+                           Value = "value2",
+                           Timestamp =  new Timestamp(testDate.AddDays(+1))
+                     },
+                     Offset = new Offset(2)
+                }
+            };
+
+            var exceptedData = consumerData.Select(x =>
+
+            new KeyValuePair<object, DatedMessage<object>>(x.Message.Key, new DatedMessage<object>(x.Message.Value, x.Message.Timestamp.UtcDateTime))
+            ).ToList();
+            exceptedData.RemoveAt(2);
+
+
+            consumerMock.Setup(x => x.Consume(CancellationToken.None)).Returns(() =>
+            {
+                return consumerData[indexer++];
+            });
+
+            topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, object>(consumerFactory, topicName, CancellationToken.None))
+                .Returns(Task.FromResult(topicWatermark));
+
+            // Act
+            var exception = await Record.ExceptionAsync(
+                async () => result = await loader.LoadCompactSnapshotAsync(topicName, filter, CancellationToken.None).ConfigureAwait(false));
+
+            // Assert
+            exception.Should().BeNull();
+            result.Should().BeEquivalentTo(exceptedData);
+        }
     }
 }

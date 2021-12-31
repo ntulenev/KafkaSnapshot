@@ -3,6 +3,7 @@ using Confluent.Kafka;
 using FluentAssertions;
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 using Moq;
 
@@ -13,7 +14,6 @@ using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Abstractions.Filters;
 using KafkaSnapshot.Models.Message;
 using KafkaSnapshot.Import.Watermarks;
-using Microsoft.Extensions.Options;
 using KafkaSnapshot.Import.Configuration;
 
 namespace KafkaSnapshot.Import.Tests

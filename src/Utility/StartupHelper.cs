@@ -56,6 +56,7 @@ namespace KafkaSnapshot.Utility
         /// </summary>
         public static void AddExport(this IServiceCollection services)
         {
+            services.AddSingleton<ISerializer<string, string, IgnoreKeyMarker>, IgnoreKeySerializer>();
             services.AddSingleton<ISerializer<string, string, JsonKeyMarker>, JsonKeySerializer>();
             services.AddSingleton<ISerializer<string, string, OriginalKeyMarker>, OriginalKeySerializer<string>>();
             services.AddSingleton<ISerializer<long, string, OriginalKeyMarker>, OriginalKeySerializer<long>>();
@@ -145,6 +146,7 @@ namespace KafkaSnapshot.Utility
 
             return config.Topics.Select(topic => topic.KeyType switch
             {
+                KeyType.Ignored => InitUnit<string, IgnoreKeyMarker>(topic, sp),
                 KeyType.Json => InitUnit<string, JsonKeyMarker>(topic, sp),
                 KeyType.String => InitUnit<string, OriginalKeyMarker>(topic, sp),
                 KeyType.Long => InitUnit<long, OriginalKeyMarker>(topic, sp),

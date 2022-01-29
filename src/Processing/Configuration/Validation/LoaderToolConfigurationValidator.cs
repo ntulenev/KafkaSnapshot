@@ -78,6 +78,11 @@ namespace KafkaSnapshot.Processing.Configuration.Validation
                         return ValidateOptionsResult.Fail($"Filter value does not set for topic {topic.Name}.");
                     }
                 }
+
+                if ((topic.KeyType == Models.Filters.KeyType.Ignored && topic.Compacting == CompactingMode.On))
+                {
+                    return ValidateOptionsResult.Fail($"Compacting is not supported for ignored keys. Topic {topic.Name}.");
+                }
             }
 
             return ValidateOptionsResult.Success;

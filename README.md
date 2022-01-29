@@ -6,7 +6,7 @@ Supports:
 * Compacting
 * Key filtering
 * Filtering with start and end offsets
-* String keys (optionally as json) and long keys
+* String keys (optionally as json) and long keys. Also Key field could be ignored (e.g. key is null or not exists it topic)
 * Multi-partition topics
 * SASL authentication mechanism
 
@@ -57,6 +57,12 @@ Config example:
         "ExportFileName": "topic3.json",
         "FilterType": "Equals",
         "FilterValue": 42
+      },
+      {
+        "Name": "topic4",
+        "KeyType": "Ignored",
+        "Compacting": "Off",
+        "ExportFileName": "topic4.json"
       }
     ]
   }
@@ -73,7 +79,7 @@ Config example:
 | SASLMechanism | SASL mechanism to use for authentication (Gssapi,Plain,ScramSha256,ScramSha512,OAuthBearer) (optional)  |
 | UseConcurrentLoad | Loads data in concurrent mode or one by one |
 | Name           | Apache Kafka topic name |
-| KeyType        | Apache Kafka topic key representation (Json,String,Long) |
+| KeyType        | Apache Kafka topic key representation (Json,String,Long,Ignored) |
 | Compacting     | Use compacting by key or not (On,Off) |
 | ExportFileName | File name for exported data  |
 | FilterType | Equals or None (optional)  |

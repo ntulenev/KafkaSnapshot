@@ -4,6 +4,7 @@
     {
         Json,
         String,
-        Long
+        Long,
+        Ignored
     }
 }

@@ -80,7 +80,7 @@ Config example:
 | UseConcurrentLoad | Loads data in concurrent mode or one by one |
 | Name           | Apache Kafka topic name |
 | KeyType        | Apache Kafka topic key representation (Json,String,Long,Ignored) |
-| Compacting     | Use compacting by key or not (On,Off) |
+| Compacting     | Use compacting by key or not (On,Off). Not supported for Ignored keyType |
 | ExportFileName | File name for exported data  |
 | FilterType | Equals or None (optional)  |
 | FilterValue | Sample value for filtering (if FilterType sets as 'Equals') |

@@ -101,9 +101,9 @@ namespace KafkaSnapshot.Export.Tests
             exception.Should().NotBeNull().And.BeOfType<Newtonsoft.Json.JsonReaderException>();
         }
 
-        [Fact(DisplayName = "JsonKeySerializer cant serialize raw data.")]
+        [Fact(DisplayName = "JsonKeySerializer can serialize raw data.")]
         [Trait("Category", "Unit")]
-        public void JsonKeySerializerCantSerializeRawData()
+        public void JsonKeySerializerCanSerializeRawData()
         {
             // Arrange
             var serializer = new JsonKeySerializer();

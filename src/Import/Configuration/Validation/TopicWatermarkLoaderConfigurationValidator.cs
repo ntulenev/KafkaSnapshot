@@ -17,11 +17,6 @@ namespace KafkaSnapshot.Import.Configuration.Validation
             Debug.Assert(name is not null);
             Debug.Assert(options is not null);
 
-            if (options is null)
-            {
-                return ValidateOptionsResult.Fail("Configuration object is null.");
-            }
-
             if (options.AdminClientTimeout == TimeSpan.Zero)
             {
                 return ValidateOptionsResult.Fail("Timeout should not be zero.");

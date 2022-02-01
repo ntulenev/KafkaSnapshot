@@ -21,7 +21,7 @@ namespace KafkaSnapshot.Processing.Configuration.Validation
 
             if (options.Topics is null)
             {
-                return ValidateOptionsResult.Fail("Topics section is notset.");
+                return ValidateOptionsResult.Fail("Topics section is not set.");
             }
 
             if (!options.Topics.Any())

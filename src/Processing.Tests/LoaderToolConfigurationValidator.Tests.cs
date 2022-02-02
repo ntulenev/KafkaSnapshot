@@ -59,5 +59,70 @@ namespace KafkaSnapshot.Processing.Tests
             exception.Should().BeNull();
             result.Succeeded.Should().BeTrue();
         }
+
+        [Fact(DisplayName = "LoaderToolConfigurationValidator cant be validated with null options.")]
+        [Trait("Category", "Unit")]
+        public void LoaderToolConfigurationValidatorCantBeValidatedWithNullOptions()
+        {
+
+            // Arrange
+            var validator = new LoaderToolConfigurationValidator();
+            var name = "Test";
+            ValidateOptionsResult result = null!;
+            var options = (LoaderToolConfiguration)null!;
+
+            // Act
+            var exception = Record.Exception(() => result = validator.Validate(name, options));
+
+            // Assert
+            exception.Should().BeNull();
+            result.Succeeded.Should().BeFalse();
+        }
+
+        [Fact(DisplayName = "LoaderToolConfigurationValidator cant be validated with null topics.")]
+        [Trait("Category", "Unit")]
+        public void LoaderToolConfigurationValidatorCantBeValidatedWithNullTopics()
+        {
+
+            // Arrange
+            var validator = new LoaderToolConfigurationValidator();
+            var name = "Test";
+            ValidateOptionsResult result = null!;
+            var options = new LoaderToolConfiguration
+            {
+                UseConcurrentLoad = true,
+                Topics = null!
+            };
+
+            // Act
+            var exception = Record.Exception(() => result = validator.Validate(name, options));
+
+            // Assert
+            exception.Should().BeNull();
+            result.Succeeded.Should().BeFalse();
+        }
+
+        [Fact(DisplayName = "LoaderToolConfigurationValidator cant be validated with empty topics.")]
+        [Trait("Category", "Unit")]
+        public void LoaderToolConfigurationValidatorCantBeValidatedWithEmptyTopics()
+        {
+
+            // Arrange
+            var validator = new LoaderToolConfigurationValidator();
+            var name = "Test";
+            ValidateOptionsResult result = null!;
+            var options = new LoaderToolConfiguration
+            {
+                UseConcurrentLoad = true,
+                Topics = new List<TopicConfiguration>()
+            };
+
+            // Act
+            var exception = Record.Exception(() => result = validator.Validate(name, options));
+
+            // Assert
+            exception.Should().BeNull();
+            result.Succeeded.Should().BeFalse();
+        }
     }
 }

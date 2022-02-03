@@ -517,5 +517,130 @@ namespace KafkaSnapshot.Processing.Tests
             exception.Should().BeNull();
             result.Succeeded.Should().BeFalse();
         }
+
+        [Fact(DisplayName = "LoaderToolConfigurationValidator can be validated with filter.")]
+        [Trait("Category", "Unit")]
+        public void LoaderToolConfigurationValidatorCanBeValidatedWithFilter()
+        {
+
+            // Arrange
+            var validator = new LoaderToolConfigurationValidator();
+            var name = "Test";
+            ValidateOptionsResult result = null!;
+            var options = new LoaderToolConfiguration
+            {
+                UseConcurrentLoad = true,
+                Topics = new List<TopicConfiguration>()
+                {
+                      new TopicConfiguration
+                      {
+                          Name = "test",
+                          Compacting = CompactingMode.On,
+                          ExportFileName = "export",
+                          ExportRawMessage = true,
+                          FilterType = Models.Filters.FilterType.Equals,
+                          FilterValue = new object(),
+                          KeyType = Models.Filters.KeyType.Json,
+                      }
+                }
+            };
+
+            // Act
+            var exception = Record.Exception(() => result = validator.Validate(name, options));
+
+            // Assert
+            exception.Should().BeNull();
+            result.Succeeded.Should().BeTrue();
+        }
+
+        [Fact(DisplayName = "LoaderToolConfigurationValidator cant be validated with null filter.")]
+        [Trait("Category", "Unit")]
+        public void LoaderToolConfigurationValidatorCantBeValidatedWithNullFilter()
+        {
+
+            // Arrange
+            var validator = new LoaderToolConfigurationValidator();
+            var name = "Test";
+            ValidateOptionsResult result = null!;
+            var options = new LoaderToolConfiguration
+            {
+                UseConcurrentLoad = true,
+                Topics = new List<TopicConfiguration>()
+                {
+                      new TopicConfiguration
+                      {
+                          Name = "test",
+                          Compacting = CompactingMode.On,
+                          ExportFileName = "export",
+                          ExportRawMessage = true,
+                          FilterType = Models.Filters.FilterType.Equals,
+                          FilterValue = new object(),
+                          KeyType = Models.Filters.KeyType.Json,
+                      },
+                      new TopicConfiguration
+                      {
+                          Name = "test",
+                          Compacting = CompactingMode.On,
+                          ExportFileName = "export",
+                          ExportRawMessage = true,
+                          FilterType = Models.Filters.FilterType.Equals,
+                          FilterValue = null!,
+                          KeyType = Models.Filters.KeyType.Json,
+                      }
+                }
+            };
+
+            // Act
+            var exception = Record.Exception(() => result = validator.Validate(name, options));
+
+            // Assert
+            exception.Should().BeNull();
+            result.Succeeded.Should().BeFalse();
+        }
+
+        [Fact(DisplayName = "LoaderToolConfigurationValidator cant be validated with compacting and key ignored.")]
+        [Trait("Category", "Unit")]
+        public void LoaderToolConfigurationValidatorCantBeCompactedAndKeyIgnored()
+        {
+
+            // Arrange
+            var validator = new LoaderToolConfigurationValidator();
+            var name = "Test";
+            ValidateOptionsResult result = null!;
+            var options = new LoaderToolConfiguration
+            {
+                UseConcurrentLoad = true,
+                Topics = new List<TopicConfiguration>()
+                {
+                      new TopicConfiguration
+                      {
+                          Name = "test",
+                          Compacting = CompactingMode.On,
+                          ExportFileName = "export",
+                          ExportRawMessage = true,
+                          FilterType = Models.Filters.FilterType.Equals,
+                          FilterValue = new object(),
+                          KeyType = Models.Filters.KeyType.Json,
+                      },
+                      new TopicConfiguration
+                      {
+                          Name = "test",
+                          Compacting = CompactingMode.On,
+                          ExportFileName = "export",
+                          ExportRawMessage = true,
+                          FilterType = Models.Filters.FilterType.Equals,
+                          FilterValue = new object(),
+                          KeyType = Models.Filters.KeyType.Ignored,
+                      }
+                }
+            };
+
+            // Act
+            var exception = Record.Exception(() => result = validator.Validate(name, options));
+
+            // Assert
+            exception.Should().BeNull();
+            result.Succeeded.Should().BeFalse();
+        }
     }
 }

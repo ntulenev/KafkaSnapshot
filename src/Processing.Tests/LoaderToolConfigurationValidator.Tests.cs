@@ -386,5 +386,136 @@ namespace KafkaSnapshot.Processing.Tests
             exception.Should().BeNull();
             result.Succeeded.Should().BeFalse();
         }
+
+
+        [Fact(DisplayName = "LoaderToolConfigurationValidator cant be validated with null export name.")]
+        [Trait("Category", "Unit")]
+        public void LoaderToolConfigurationValidatorCantBeValidatedWithNullExportName()
+        {
+
+            // Arrange
+            var validator = new LoaderToolConfigurationValidator();
+            var name = "Test";
+            ValidateOptionsResult result = null!;
+            var options = new LoaderToolConfiguration
+            {
+                UseConcurrentLoad = true,
+                Topics = new List<TopicConfiguration>()
+                {
+                      new TopicConfiguration
+                      {
+                          Name = "test",
+                          Compacting = CompactingMode.On,
+                          ExportFileName = "export",
+                          ExportRawMessage = true,
+                          FilterType = Models.Filters.FilterType.None,
+                          KeyType = Models.Filters.KeyType.Json,
+                      },
+                      new TopicConfiguration
+                      {
+                          Name = "test",
+                          Compacting = CompactingMode.On,
+                          ExportFileName = null!,
+                          ExportRawMessage = true,
+                          FilterType = Models.Filters.FilterType.None,
+                          KeyType = Models.Filters.KeyType.Json,
+                      }
+                }
+            };
+
+            // Act
+            var exception = Record.Exception(() => result = validator.Validate(name, options));
+
+            // Assert
+            exception.Should().BeNull();
+            result.Succeeded.Should().BeFalse();
+        }
+
+        [Fact(DisplayName = "LoaderToolConfigurationValidator cant be validated with empty export name.")]
+        [Trait("Category", "Unit")]
+        public void LoaderToolConfigurationValidatorCantBeValidatedWithEmptyExportName()
+        {
+
+            // Arrange
+            var validator = new LoaderToolConfigurationValidator();
+            var name = "Test";
+            ValidateOptionsResult result = null!;
+            var options = new LoaderToolConfiguration
+            {
+                UseConcurrentLoad = true,
+                Topics = new List<TopicConfiguration>()
+                {
+                      new TopicConfiguration
+                      {
+                          Name = "test",
+                          Compacting = CompactingMode.On,
+                          ExportFileName = "export",
+                          ExportRawMessage = true,
+                          FilterType = Models.Filters.FilterType.None,
+                          KeyType = Models.Filters.KeyType.Json,
+                      },
+                      new TopicConfiguration
+                      {
+                          Name = "test",
+                          Compacting = CompactingMode.On,
+                          ExportFileName = string.Empty,
+                          ExportRawMessage = true,
+                          FilterType = Models.Filters.FilterType.None,
+                          KeyType = Models.Filters.KeyType.Json,
+                      }
+                }
+            };
+
+            // Act
+            var exception = Record.Exception(() => result = validator.Validate(name, options));
+
+            // Assert
+            exception.Should().BeNull();
+            result.Succeeded.Should().BeFalse();
+        }
+
+
+        [Fact(DisplayName = "LoaderToolConfigurationValidator cant be validated with space export name.")]
+        [Trait("Category", "Unit")]
+        public void LoaderToolConfigurationValidatorCantBeValidatedWithSpaceExportName()
+        {
+
+            // Arrange
+            var validator = new LoaderToolConfigurationValidator();
+            var name = "Test";
+            ValidateOptionsResult result = null!;
+            var options = new LoaderToolConfiguration
+            {
+                UseConcurrentLoad = true,
+                Topics = new List<TopicConfiguration>()
+                {
+                      new TopicConfiguration
+                      {
+                          Name = "test",
+                          Compacting = CompactingMode.On,
+                          ExportFileName = "export",
+                          ExportRawMessage = true,
+                          FilterType = Models.Filters.FilterType.None,
+                          KeyType = Models.Filters.KeyType.Json,
+                      },
+                      new TopicConfiguration
+                      {
+                          Name = "test",
+                          Compacting = CompactingMode.On,
+                          ExportFileName = "  ",
+                          ExportRawMessage = true,
+                          FilterType = Models.Filters.FilterType.None,
+                          KeyType = Models.Filters.KeyType.Json,
+                      }
+                }
+            };
+
+            // Act
+            var exception = Record.Exception(() => result = validator.Validate(name, options));
+
+            // Assert
+            exception.Should().BeNull();
+            result.Succeeded.Should().BeFalse();
+        }
     }
 }

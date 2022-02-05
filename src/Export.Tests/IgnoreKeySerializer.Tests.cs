@@ -2,6 +2,10 @@
 
 using Xunit;
 
+using Moq;
+
+using Microsoft.Extensions.Logging;
+
 using KafkaSnapshot.Export.Serialization;
 using KafkaSnapshot.Models.Message;
 
@@ -9,12 +13,29 @@ namespace KafkaSnapshot.Export.Tests
 {
     public class IgnoreKeySerializerTests
     {
+        [Fact(DisplayName = "IgnoreKeySerializer can't be created without logger.")]
+        [Trait("Category", "Unit")]
+        public void IgnoreKeySerializerCantBeCreated()
+        {
+            // Arrange
+            var logger = (ILogger<IgnoreKeySerializer>)null!;
+
+            // Act
+            var exception = Record.Exception(() => _ = new IgnoreKeySerializer(logger));
+
+            // Assert
+            exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
+        }
+
         [Fact(DisplayName = "IgnoreKeySerializer could be created.")]
         [Trait("Category", "Unit")]
         public void IgnoreKeySerializerCouldBeCreated()
         {
+            // Arrange
+            var logger = new Mock<ILogger<IgnoreKeySerializer>>().Object;
+
             // Act
-            var exception = Record.Exception(() => _ = new IgnoreKeySerializer());
+            var exception = Record.Exception(() => _ = new IgnoreKeySerializer(logger));
 
             // Assert
             exception.Should().BeNull();
@@ -27,7 +48,8 @@ namespace KafkaSnapshot.Export.Tests
         public void IgnoreKeySerializerCantSerializeNullData(bool isRawData)
         {
             // Arrange
-            var serializer = new IgnoreKeySerializer();
+            var logger = new Mock<ILogger<IgnoreKeySerializer>>().Object;
+            var serializer = new IgnoreKeySerializer(logger);
             var data = (IEnumerable<KeyValuePair<string, DatedMessage<string>>>)null!;
 
             // Act
@@ -42,7 +64,8 @@ namespace KafkaSnapshot.Export.Tests
         public void IgnoreKeySerializerCanSerializeData()
         {
             // Arrange
-            var serializer = new IgnoreKeySerializer();
+            var logger = new Mock<ILogger<IgnoreKeySerializer>>().Object;
+            var serializer = new IgnoreKeySerializer(logger);
             var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
             var isRaw = false;
             var data = new[]
@@ -64,7 +87,8 @@ namespace KafkaSnapshot.Export.Tests
         public void IgnoreKeySerializerCantSerializeNonJsonData()
         {
             // Arrange
-            var serializer = new IgnoreKeySerializer();
+            var logger = new Mock<ILogger<IgnoreKeySerializer>>().Object;
+            var serializer = new IgnoreKeySerializer(logger);
             var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
             var isRaw = false;
             var data = new[]
@@ -85,7 +109,8 @@ namespace KafkaSnapshot.Export.Tests
         public void IgnoreKeySerializerCanSerializeRawData()
         {
             // Arrange
-            var serializer = new IgnoreKeySerializer();
+            var logger = new Mock<ILogger<IgnoreKeySerializer>>().Object;
+            var serializer = new IgnoreKeySerializer(logger);
             var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
             var isRaw = true;
             var data = new[]

@@ -1,6 +1,9 @@
-﻿using KafkaSnapshot.Abstractions.Export;
+﻿using Microsoft.Extensions.Logging;
+
+using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Models.Message;
 using KafkaSnapshot.Export.Markers;
+
 
 namespace KafkaSnapshot.Export.Serialization
 {
@@ -12,6 +15,12 @@ namespace KafkaSnapshot.Export.Serialization
                                                         ISerializer<TKey, TMessage, OriginalKeyMarker>
                                                         where TMessage : notnull
     {
+        /// <summary>
+        /// Creates <see cref="SimpleJsonSerializer{TKey, TMessage}"/>.
+        /// </summary>
+        /// <param name="logger">Logger.</param>
+        public SimpleJsonSerializer(ILogger<SimpleJsonSerializer<TKey, TMessage>> logger) : base(logger) { }
+
         /// <inheritdoc/>
         public string Serialize(IEnumerable<KeyValuePair<TKey, DatedMessage<TMessage>>> data, bool exportRawMessage)
         {

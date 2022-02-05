@@ -2,6 +2,10 @@ using FluentAssertions;
 
 using Xunit;
 
+using Moq;
+
+using Microsoft.Extensions.Logging;
+
 using KafkaSnapshot.Export.Serialization;
 using KafkaSnapshot.Models.Message;
 
@@ -9,12 +13,29 @@ namespace KafkaSnapshot.Export.Tests
 {
     public class OriginalKeySerializerTests
     {
+        [Fact(DisplayName = "OriginalKeySerializer cant be created without logger.")]
+        [Trait("Category", "Unit")]
+        public void OriginalKeySerializerCantBeCreated()
+        {
+            // Arrange
+            var logger = (ILogger<OriginalKeySerializer<object>>)null!;
+
+            // Act
+            var exception = Record.Exception(() => _ = new OriginalKeySerializer<object>(logger));
+
+            // Assert
+            exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
+        }
+
         [Fact(DisplayName = "OriginalKeySerializer could be created.")]
         [Trait("Category", "Unit")]
         public void OriginalKeySerializerCouldBeCreated()
         {
+            // Arrange
+            var logger = new Mock<ILogger<OriginalKeySerializer<object>>>().Object;
+
             // Act
-            var exception = Record.Exception(() => _ = new OriginalKeySerializer<object>());
+            var exception = Record.Exception(() => _ = new OriginalKeySerializer<object>(logger));
 
             // Assert
             exception.Should().BeNull();
@@ -27,7 +48,8 @@ namespace KafkaSnapshot.Export.Tests
         public void OriginalKeySerializerCantSerializeNullData(bool isRawData)
         {
             // Arrange
-            var serializer = new OriginalKeySerializer<object>();
+            var logger = new Mock<ILogger<OriginalKeySerializer<object>>>().Object;
+            var serializer = new OriginalKeySerializer<object>(logger);
             var data = (IEnumerable<KeyValuePair<object, DatedMessage<string>>>)null!;
 
             // Act
@@ -42,7 +64,8 @@ namespace KafkaSnapshot.Export.Tests
         public void OriginalKeySerializerCanSerializeData()
         {
             // Arrange
-            var serializer = new OriginalKeySerializer<object>();
+            var logger = new Mock<ILogger<OriginalKeySerializer<object>>>().Object;
+            var serializer = new OriginalKeySerializer<object>(logger);
             var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
             var isRaw = false;
             var data = new[]
@@ -64,7 +87,8 @@ namespace KafkaSnapshot.Export.Tests
         public void OriginalKeySerializerCantSerializeNonData()
         {
             // Arrange
-            var serializer = new OriginalKeySerializer<object>();
+            var logger = new Mock<ILogger<OriginalKeySerializer<object>>>().Object;
+            var serializer = new OriginalKeySerializer<object>(logger);
             var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
             var isRaw = false;
             var data = new[]
@@ -85,7 +109,8 @@ namespace KafkaSnapshot.Export.Tests
         public void OriginalKeySerializerCanSerializeRawData()
         {
             // Arrange
-            var serializer = new OriginalKeySerializer<object>();
+            var logger = new Mock<ILogger<OriginalKeySerializer<object>>>().Object;
+            var serializer = new OriginalKeySerializer<object>(logger);
             var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
             var isRaw = true;
             var data = new[]

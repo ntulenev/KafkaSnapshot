@@ -1,8 +1,10 @@
-﻿using KafkaSnapshot.Abstractions.Export;
-using KafkaSnapshot.Export.Markers;
-using KafkaSnapshot.Models.Message;
+﻿using Microsoft.Extensions.Logging;
 
 using Newtonsoft.Json.Linq;
+
+using KafkaSnapshot.Abstractions.Export;
+using KafkaSnapshot.Export.Markers;
+using KafkaSnapshot.Models.Message;
 
 namespace KafkaSnapshot.Export.Serialization
 {
@@ -11,6 +13,13 @@ namespace KafkaSnapshot.Export.Serialization
     /// </summary>
     public class JsonKeySerializer : JsonSerializerBase, ISerializer<string, string, JsonKeyMarker>
     {
+
+        /// <summary>
+        /// Creates <see cref="JsonKeySerializer"/>.
+        /// </summary>
+        /// <param name="logger">Logger.</param>
+        public JsonKeySerializer(ILogger<JsonKeySerializer> logger) : base(logger) { }
+
         /// <inheritdoc/>
         public string Serialize(IEnumerable<KeyValuePair<string, DatedMessage<string>>> data, bool exportRawMessage)
         {

@@ -2,6 +2,9 @@ using FluentAssertions;
 
 using Xunit;
 
+using Moq;
+using Microsoft.Extensions.Logging;
+
 using KafkaSnapshot.Export.Serialization;
 using KafkaSnapshot.Models.Message;
 
@@ -9,12 +12,29 @@ namespace KafkaSnapshot.Export.Tests
 {
     public class JsonKeySerializerTests
     {
+        [Fact(DisplayName = "JsonKeySerializer cant be created without logger.")]
+        [Trait("Category", "Unit")]
+        public void JsonKeySerializerCanBeCreated()
+        {
+            //Arrange
+            var logger = (ILogger<JsonKeySerializer>)null!;
+
+            // Act
+            var exception = Record.Exception(() => _ = new JsonKeySerializer(logger));
+
+            // Assert
+            exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
+        }
+
         [Fact(DisplayName = "JsonKeySerializer could be created.")]
         [Trait("Category", "Unit")]
         public void JsonKeySerializerCouldBeCreated()
         {
+            //Arrange
+            var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
+
             // Act
-            var exception = Record.Exception(() => _ = new JsonKeySerializer());
+            var exception = Record.Exception(() => _ = new JsonKeySerializer(logger));
 
             // Assert
             exception.Should().BeNull();
@@ -27,7 +47,8 @@ namespace KafkaSnapshot.Export.Tests
         public void JsonKeySerializerCantSerializeNullData(bool isRawData)
         {
             // Arrange
-            var serializer = new JsonKeySerializer();
+            var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
+            var serializer = new JsonKeySerializer(logger);
             var data = (IEnumerable<KeyValuePair<string, DatedMessage<string>>>)null!;
 
             // Act
@@ -42,7 +63,8 @@ namespace KafkaSnapshot.Export.Tests
         public void JsonKeySerializerCanSerializeData()
         {
             // Arrange
-            var serializer = new JsonKeySerializer();
+            var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
+            var serializer = new JsonKeySerializer(logger);
             var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
             var isRaw = false;
             var data = new[]
@@ -64,7 +86,8 @@ namespace KafkaSnapshot.Export.Tests
         public void JsonKeySerializerCantSerializeNonJsonData()
         {
             // Arrange
-            var serializer = new JsonKeySerializer();
+            var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
+            var serializer = new JsonKeySerializer(logger);
             var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
             var isRaw = false;
             var data = new[]
@@ -85,7 +108,8 @@ namespace KafkaSnapshot.Export.Tests
         public void JsonKeySerializerCantSerializeNonJsonKey()
         {
             // Arrange
-            var serializer = new JsonKeySerializer();
+            var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
+            var serializer = new JsonKeySerializer(logger);
             var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
             var isRaw = false;
             var data = new[]
@@ -106,7 +130,8 @@ namespace KafkaSnapshot.Export.Tests
         public void JsonKeySerializerCanSerializeRawData()
         {
             // Arrange
-            var serializer = new JsonKeySerializer();
+            var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
+            var serializer = new JsonKeySerializer(logger);
             var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
             var isRaw = true;
             var data = new[]

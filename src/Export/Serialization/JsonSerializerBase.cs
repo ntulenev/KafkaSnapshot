@@ -42,6 +42,6 @@ namespace KafkaSnapshot.Export.Serialization
 
         private readonly JsonSerializer _serializer = new() { Formatting = Formatting.Indented };
 
-        private readonly ILogger<JsonSerializerBase> _logger;
+        protected readonly ILogger<JsonSerializerBase> _logger;
     }
 }

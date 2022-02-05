@@ -27,7 +27,7 @@ namespace KafkaSnapshot.Export.Serialization
 
             if (data.Any(x => x.Key is not null))
             {
-                
+                _logger.LogWarning("Serialization data contains not null Keys. This Keys will be ignored.");
             }
 
             var items = data.Select(x => new

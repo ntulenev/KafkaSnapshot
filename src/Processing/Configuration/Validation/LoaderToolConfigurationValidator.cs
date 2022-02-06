@@ -79,9 +79,17 @@ namespace KafkaSnapshot.Processing.Configuration.Validation
                     }
                 }
 
-                if ((topic.KeyType == Models.Filters.KeyType.Ignored && topic.Compacting == CompactingMode.On))
+                if (topic.KeyType == Models.Filters.KeyType.Ignored && topic.Compacting == CompactingMode.On)
                 {
                     return ValidateOptionsResult.Fail($"Compacting is not supported for ignored keys. Topic {topic.Name}.");
+                }
+
+                if (topic.OffsetStartDate is not null && topic.OffsetEndDate is not null)
+                {
+                    if (topic.OffsetStartDate > topic.OffsetEndDate)
+                    {
+                        return ValidateOptionsResult.Fail($"Topic start date ({topic.OffsetStartDate}) is greater than end date ({topic.OffsetEndDate}). Topic {topic.Name}.");
+                    }
                 }
             }
 

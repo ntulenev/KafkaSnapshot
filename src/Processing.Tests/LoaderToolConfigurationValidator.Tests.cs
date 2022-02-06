@@ -642,5 +642,39 @@ namespace KafkaSnapshot.Processing.Tests
             exception.Should().BeNull();
             result.Succeeded.Should().BeFalse();
         }
+
+        [Fact(DisplayName = "LoaderToolConfigurationValidator cant be validated with start date grater then end date.")]
+        [Trait("Category", "Unit")]
+        public void LoaderToolConfigurationValidatorCantBeValidatedWithIncorrectDates()
+        {
+
+            // Arrange
+            var startDate = new DateTime(2022, 1, 1);
+            var endDate = startDate.AddDays(-1);
+            var validator = new LoaderToolConfigurationValidator();
+            var name = "Test";
+            ValidateOptionsResult result = null!;
+            var options = new LoaderToolConfiguration
+            {
+                Topics = new List<TopicConfiguration>()
+                {
+                      new TopicConfiguration
+                      {
+                          Name = "test",
+                          ExportFileName = "export",
+                          KeyType = Models.Filters.KeyType.Json,
+                          OffsetStartDate = startDate,
+                          OffsetEndDate = endDate
+                      }
+                }
+            };
+
+            // Act
+            var exception = Record.Exception(() => result = validator.Validate(name, options));
+
+            // Assert
+            exception.Should().BeNull();
+            result.Succeeded.Should().BeFalse();
+        }
     }
 }

@@ -38,15 +38,8 @@ namespace KafkaSnapshot.Processing
             _kafkaLoader = kafkaLoader ?? throw new ArgumentNullException(nameof(kafkaLoader));
             _exporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
 
-            if (topic is null)
-            {
-                throw new ArgumentNullException(nameof(topic));
-            }
-
-            if (filterFactory is null)
-            {
-                throw new ArgumentNullException(nameof(filterFactory));
-            }
+            ArgumentNullException.ThrowIfNull(topic);
+            ArgumentNullException.ThrowIfNull(filterFactory);
 
             _filter = filterFactory.Create(topic.FilterType, topic.KeyType, topic.FilterValue);
 

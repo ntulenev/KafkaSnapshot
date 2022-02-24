@@ -15,10 +15,7 @@ namespace KafkaSnapshot.Filters
         /// <param name="sample">Key sample.</param>
         public JsonEqualsFilter(string sample)
         {
-            if (sample is null)
-            {
-                throw new ArgumentNullException(nameof(sample));
-            }
+            ArgumentNullException.ThrowIfNull(sample);
 
             _sample = JObject.Parse(sample);
         }
@@ -26,10 +23,7 @@ namespace KafkaSnapshot.Filters
         /// <inheritdoc/>
         public bool IsMatch(string key)
         {
-            if (key is null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
+            ArgumentNullException.ThrowIfNull(key);
 
             var jsonKey = JObject.Parse(key);
 

@@ -11,10 +11,8 @@
         /// <param name="partitionWatermarks">Raw topic partition watermarks.</param>
         public TopicWatermark(IEnumerable<PartitionWatermark> partitionWatermarks)
         {
-            if (partitionWatermarks is null)
-            {
-                throw new ArgumentNullException(nameof(partitionWatermarks));
-            }
+            ArgumentNullException.ThrowIfNull(partitionWatermarks);
+ 
             Watermarks = partitionWatermarks;
         }
 

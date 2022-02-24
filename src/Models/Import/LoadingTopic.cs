@@ -51,10 +51,7 @@ namespace KafkaSnapshot.Models.Import
             Value = name;
             LoadWithCompacting = loadWithCompacting;
 
-            if (dateParams is null)
-            {
-                throw new ArgumentNullException(nameof(dateParams));
-            }
+            ArgumentNullException.ThrowIfNull(dateParams);
 
             _offsetDate = dateParams.StartDate;
             _endOffsetDate = dateParams.EndDate;
@@ -66,10 +63,7 @@ namespace KafkaSnapshot.Models.Import
         /// <param name="topicName">Topic name.</param>
         private static void ValidateTopicName(string topicName)
         {
-            if (topicName is null)
-            {
-                throw new ArgumentNullException(nameof(topicName));
-            }
+            ArgumentNullException.ThrowIfNull(topicName);
 
             if (string.IsNullOrWhiteSpace(topicName))
             {

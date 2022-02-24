@@ -21,15 +21,8 @@ namespace KafkaSnapshot.Import.Metadata
         public TopicWatermarkLoader(IAdminClient adminClient,
                                     IOptions<TopicWatermarkLoaderConfiguration> options)
         {
-            if (adminClient is null)
-            {
-                throw new ArgumentNullException(nameof(adminClient));
-            }
-
-            if (options is null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
+            ArgumentNullException.ThrowIfNull(adminClient);
+            ArgumentNullException.ThrowIfNull(options);
 
             if (options.Value is null)
             {
@@ -68,15 +61,8 @@ namespace KafkaSnapshot.Import.Metadata
                             CancellationToken ct
                             )
         {
-            if (consumerFactory is null)
-            {
-                throw new ArgumentNullException(nameof(consumerFactory));
-            }
-
-            if (topicName is null)
-            {
-                throw new ArgumentNullException(nameof(topicName));
-            }
+            ArgumentNullException.ThrowIfNull(consumerFactory);
+            ArgumentNullException.ThrowIfNull(topicName);
 
             using var consumer = consumerFactory();
 

@@ -24,10 +24,7 @@ namespace KafkaSnapshot.Export.Serialization
         /// <inheritdoc/>
         public string Serialize(IEnumerable<KeyValuePair<TKey, DatedMessage<TMessage>>> data, bool exportRawMessage)
         {
-            if (data is null)
-            {
-                throw new ArgumentNullException(nameof(data));
-            }
+            ArgumentNullException.ThrowIfNull(data);
 
             _ = exportRawMessage; // not needed for this implementation.
             return SerializeData(data);

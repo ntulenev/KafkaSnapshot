@@ -38,15 +38,8 @@ namespace KafkaSnapshot.Export.File.Output
         /// <inheritdoc/>
         public async Task ExportAsync(IEnumerable<KeyValuePair<TKey, DatedMessage<TValue>>> data, TTopic topic, CancellationToken ct)
         {
-            if (data is null)
-            {
-                throw new ArgumentNullException(nameof(data));
-            }
-
-            if (topic is null)
-            {
-                throw new ArgumentNullException(nameof(topic));
-            }
+            ArgumentNullException.ThrowIfNull(data);
+            ArgumentNullException.ThrowIfNull(topic);
 
             using var _ = _logger.BeginScope("Data from topic {topic} to File {file}", topic.Name, topic.ExportName);
 

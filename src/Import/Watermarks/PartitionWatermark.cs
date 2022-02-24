@@ -25,15 +25,8 @@ namespace KafkaSnapshot.Import.Watermarks
                                   WatermarkOffsets offset,
                                   Partition partition)
         {
-            if (topicName is null)
-            {
-                throw new ArgumentNullException(nameof(topicName));
-            }
-
-            if (offset is null)
-            {
-                throw new ArgumentNullException(nameof(offset));
-            }
+            ArgumentNullException.ThrowIfNull(topicName);
+            ArgumentNullException.ThrowIfNull(offset);
 
             _topicName = topicName;
 
@@ -55,10 +48,7 @@ namespace KafkaSnapshot.Import.Watermarks
         /// <param name="consumeResult">Consumer result.</param>
         public bool IsWatermarkAchievedBy<TKey, TValue>(ConsumeResult<TKey, TValue> consumeResult)
         {
-            if (consumeResult is null)
-            {
-                throw new ArgumentNullException(nameof(consumeResult));
-            }
+            ArgumentNullException.ThrowIfNull(consumeResult);
 
             return consumeResult.Offset != _offset.High - 1;
         }
@@ -71,10 +61,7 @@ namespace KafkaSnapshot.Import.Watermarks
         /// <param name="consumer">Consumer.</param>
         public void AssingWithConsumer<TKey, TValue>(IConsumer<TKey, TValue> consumer)
         {
-            if (consumer is null)
-            {
-                throw new ArgumentNullException(nameof(consumer));
-            }
+            ArgumentNullException.ThrowIfNull(consumer);
 
             consumer.Assign(new TopicPartition(_topicName.Value, _partition));
 
@@ -90,10 +77,7 @@ namespace KafkaSnapshot.Import.Watermarks
         /// <param name="timeout">Timeout for offset searching</param>
         public bool AssingWithConsumer<TKey, TValue>(IConsumer<TKey, TValue> consumer, DateTime startDate, TimeSpan timeout)
         {
-            if (consumer is null)
-            {
-                throw new ArgumentNullException(nameof(consumer));
-            }
+            ArgumentNullException.ThrowIfNull(consumer);
 
             var topicPartition = new TopicPartition(_topicName.Value, _partition);
 

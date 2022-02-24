@@ -20,10 +20,7 @@ namespace KafkaSnapshot.Filters
         /// <inheritdoc/>
         public bool IsMatch(TKey key)
         {
-            if (key is null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
+            ArgumentNullException.ThrowIfNull(key);
 
             return key.Equals(_sample);
         }

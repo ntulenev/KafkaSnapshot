@@ -31,10 +31,7 @@ namespace KafkaSnapshot.Import
             _topicWatermarkLoader = topicWatermarkLoader ?? throw new ArgumentNullException(nameof(topicWatermarkLoader));
             _consumerFactory = consumerFactory ?? throw new ArgumentNullException(nameof(consumerFactory));
 
-            if (config is null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
+            ArgumentNullException.ThrowIfNull(config);
 
             if (config.Value is null)
             {
@@ -52,15 +49,9 @@ namespace KafkaSnapshot.Import
             IKeyFilter<TKey> filter,
             CancellationToken ct)
         {
-            if (topicParams is null)
-            {
-                throw new ArgumentNullException(nameof(topicParams));
-            }
+            ArgumentNullException.ThrowIfNull(topicParams);
 
-            if (filter is null)
-            {
-                throw new ArgumentNullException(nameof(filter));
-            }
+            ArgumentNullException.ThrowIfNull(filter);
 
             _logger.LogDebug("Loading topic watermark");
             var topicWatermark = await _topicWatermarkLoader

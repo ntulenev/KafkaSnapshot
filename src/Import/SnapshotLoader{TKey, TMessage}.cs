@@ -90,6 +90,10 @@ namespace KafkaSnapshot.Import
             IKeyFilter<TKey> filter,
             CancellationToken ct)
         {
+            using var _ = _logger.BeginScope("Partition {Partition}", watermark.Partition.Value);
+
+            _logger.LogInformation("Watermarks: Low {Low}, High {High}", watermark.Offset.Low, watermark.Offset.High);
+
             using var consumer = _consumerFactory();
             try
             {

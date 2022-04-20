@@ -89,3 +89,11 @@ Config params:
 | OffsetEndDate | Message date top limit (optional). Use to limit filtering messages in large topics|
 | ExportRawMessage | If true - export will write message as raw string without converting to formatted json (optional)|
 
+Exported file json description:
+| Field name | Description   |
+| -------------- | ------------- |
+| Key           | Kafka message key (optional) |
+| Value           | Kafka message value |
+| Meta           | Kafka message metadata |
+| Meta.Timestamp | Kafka message creation timestamp |
+

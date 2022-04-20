@@ -67,6 +67,7 @@ Config example:
     ]
   }
 ```
+Config params:
 
 | Parameter name | Description   |
 | -------------- | ------------- |
@@ -87,3 +88,4 @@ Config example:
 | OffsetStartDate | First message date (optional). Use to skip old messages in large topics|
 | OffsetEndDate | Message date top limit (optional). Use to limit filtering messages in large topics|
 | ExportRawMessage | If true - export will write message as raw string without converting to formatted json (optional)|
+

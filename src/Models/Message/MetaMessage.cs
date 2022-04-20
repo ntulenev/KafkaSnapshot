@@ -1,11 +1,11 @@
 ﻿namespace KafkaSnapshot.Models.Message
 {
     /// <summary>
-    /// Kafka message
+    /// Kafka message with metadata.
     /// </summary>
-    /// <typeparam name="TMessage">Message type</typeparam>
+    /// <typeparam name="TMessage">Message type.</typeparam>
     /// <param name="Message">Kafka message.</param>
     /// <param name="Meta">Message metadata.</param>
-    public record DatedMessage<TMessage>(TMessage Message, MessageMeta Meta)
+    public record MetaMessage<TMessage>(TMessage Message, MessageMeta Meta)
         where TMessage : notnull;
 }

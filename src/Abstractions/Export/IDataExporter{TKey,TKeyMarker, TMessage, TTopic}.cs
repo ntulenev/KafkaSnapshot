@@ -21,6 +21,6 @@ namespace KafkaSnapshot.Abstractions.Export
         /// <param name="topic">topic description.</param>
         /// <param name="ct">Token for cancelling operation.</param>
         /// <returns></returns>
-        public Task ExportAsync(IEnumerable<KeyValuePair<TKey, DatedMessage<TMessage>>> data, TTopic topic, CancellationToken ct);
+        public Task ExportAsync(IEnumerable<KeyValuePair<TKey, MetaMessage<TMessage>>> data, TTopic topic, CancellationToken ct);
     }
 }

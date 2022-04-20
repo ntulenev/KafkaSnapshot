@@ -50,7 +50,7 @@ namespace KafkaSnapshot.Export.Tests
             // Arrange
             var logger = new Mock<ILogger<IgnoreKeySerializer>>().Object;
             var serializer = new IgnoreKeySerializer(logger);
-            var data = (IEnumerable<KeyValuePair<string, DatedMessage<string>>>)null!;
+            var data = (IEnumerable<KeyValuePair<string, MetaMessage<string>>>)null!;
 
             // Act
             var exception = Record.Exception(() => _ = serializer.Serialize(data, isRawData));
@@ -70,7 +70,7 @@ namespace KafkaSnapshot.Export.Tests
             var isRaw = false;
             var data = new[]
             {
-                new KeyValuePair<string, DatedMessage<string>>(null!,new DatedMessage<string>("{\"Test\":42}",new MessageMeta(dateTime)))
+                new KeyValuePair<string, MetaMessage<string>>(null!,new MetaMessage<string>("{\"Test\":42}",new MessageMeta(dateTime)))
             };
             string result = null!;
 
@@ -93,7 +93,7 @@ namespace KafkaSnapshot.Export.Tests
             var isRaw = false;
             var data = new[]
             {
-                new KeyValuePair<string, DatedMessage<string>>(null!,new DatedMessage<string>("Test",new MessageMeta(dateTime)))
+                new KeyValuePair<string, MetaMessage<string>>(null!,new MetaMessage<string>("Test",new MessageMeta(dateTime)))
             };
             string result = null!;
 
@@ -115,7 +115,7 @@ namespace KafkaSnapshot.Export.Tests
             var isRaw = true;
             var data = new[]
             {
-                new KeyValuePair<string, DatedMessage<string>>(null!,new DatedMessage<string>("Test",new MessageMeta(dateTime)))
+                new KeyValuePair<string, MetaMessage<string>>(null!,new MetaMessage<string>("Test",new MessageMeta(dateTime)))
             };
             string result = null!;
 

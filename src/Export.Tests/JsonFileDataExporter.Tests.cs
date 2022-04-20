@@ -94,7 +94,7 @@ namespace KafkaSnapshot.Export.Tests
             var serializer = new Mock<ISerializer<object, object, OriginalKeyMarker>>();
             var exporter = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(logger.Object, fileSaver.Object, serializer.Object);
             var topic = new ExportedTopic("name", "filename", true);
-            var data = (IEnumerable<KeyValuePair<object, DatedMessage<object>>>)null!;
+            var data = (IEnumerable<KeyValuePair<object, MetaMessage<object>>>)null!;
 
             // Act
             var exception = await Record.ExceptionAsync(async () =>
@@ -115,7 +115,7 @@ namespace KafkaSnapshot.Export.Tests
             var serializer = new Mock<ISerializer<object, object, OriginalKeyMarker>>();
             var exporter = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(logger.Object, fileSaver.Object, serializer.Object);
             var topic = (ExportedTopic)null!;
-            var data = Enumerable.Empty<KeyValuePair<object, DatedMessage<object>>>();
+            var data = Enumerable.Empty<KeyValuePair<object, MetaMessage<object>>>();
 
             // Act
             var exception = await Record.ExceptionAsync(async () =>
@@ -138,9 +138,9 @@ namespace KafkaSnapshot.Export.Tests
             var serializer = new Mock<ISerializer<object, object, OriginalKeyMarker>>();
             var exporter = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(logger.Object, fileSaver.Object, serializer.Object);
             var topic = new ExportedTopic("name", "filename", isRawMessage);
-            var data = new KeyValuePair<object, DatedMessage<object>>[]
+            var data = new KeyValuePair<object, MetaMessage<object>>[]
             {
-                new KeyValuePair<object, DatedMessage<object>>("test",new DatedMessage<object>("value", new MessageMeta(DateTime.UtcNow)))
+                new KeyValuePair<object, MetaMessage<object>>("test",new MetaMessage<object>("value", new MessageMeta(DateTime.UtcNow)))
             };
             var jsonData = "testJson";
             serializer.Setup(x => x.Serialize(data, isRawMessage)).Returns(jsonData);

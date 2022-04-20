@@ -182,7 +182,7 @@ namespace KafkaSnapshot.Import.Tests
             filterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
 
             var filter = filterMock.Object;
-            IEnumerable<KeyValuePair<object, DatedMessage<object>>> result = null!;
+            IEnumerable<KeyValuePair<object, MetaMessage<object>>> result = null!;
             var offset = new WatermarkOffsets(new Offset(0), new Offset(3));
             var topicWatermark = new TopicWatermark(new[]
             {
@@ -229,7 +229,7 @@ namespace KafkaSnapshot.Import.Tests
 
             var exceptedData = consumerData.Select(x =>
 
-            new KeyValuePair<object, DatedMessage<object>>(x.Message.Key, new DatedMessage<object>(x.Message.Value, new MessageMeta(x.Message.Timestamp.UtcDateTime))));
+            new KeyValuePair<object, MetaMessage<object>>(x.Message.Key, new MetaMessage<object>(x.Message.Value, new MessageMeta(x.Message.Timestamp.UtcDateTime))));
 
             consumerMock.Setup(x => x.Consume(CancellationToken.None)).Returns(() =>
             {
@@ -268,7 +268,7 @@ namespace KafkaSnapshot.Import.Tests
             filterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
 
             var filter = filterMock.Object;
-            IEnumerable<KeyValuePair<object, DatedMessage<object>>> result = null!;
+            IEnumerable<KeyValuePair<object, MetaMessage<object>>> result = null!;
             var offset = new WatermarkOffsets(new Offset(0), new Offset(3));
             var partition = new Partition(1);
             var topicWatermark = new TopicWatermark(new[]
@@ -324,7 +324,7 @@ namespace KafkaSnapshot.Import.Tests
             };
 
             var exceptedData = consumerData.Select(x =>
-                            new KeyValuePair<object, DatedMessage<object>>(x.Message.Key, new DatedMessage<object>(x.Message.Value, new MessageMeta(x.Message.Timestamp.UtcDateTime))));
+                            new KeyValuePair<object, MetaMessage<object>>(x.Message.Key, new MetaMessage<object>(x.Message.Value, new MessageMeta(x.Message.Timestamp.UtcDateTime))));
 
             consumerMock.Setup(x => x.Consume(CancellationToken.None)).Returns(() =>
             {
@@ -365,7 +365,7 @@ namespace KafkaSnapshot.Import.Tests
             filterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
 
             var filter = filterMock.Object;
-            IEnumerable<KeyValuePair<object, DatedMessage<object>>> result = null!;
+            IEnumerable<KeyValuePair<object, MetaMessage<object>>> result = null!;
             var offset = new WatermarkOffsets(new Offset(0), new Offset(3));
             var partition = new Partition(1);
             var topicWatermark = new TopicWatermark(new[]
@@ -391,7 +391,7 @@ namespace KafkaSnapshot.Import.Tests
 
             // Assert
             exception.Should().BeNull();
-            result.Should().BeEquivalentTo(Enumerable.Empty<KeyValuePair<object, DatedMessage<object>>>());
+            result.Should().BeEquivalentTo(Enumerable.Empty<KeyValuePair<object, MetaMessage<object>>>());
         }
 
         [Fact(DisplayName = "SnapshotLoader can load data with compacting.")]
@@ -416,7 +416,7 @@ namespace KafkaSnapshot.Import.Tests
             filterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
 
             var filter = filterMock.Object;
-            IEnumerable<KeyValuePair<object, DatedMessage<object>>> result = null!;
+            IEnumerable<KeyValuePair<object, MetaMessage<object>>> result = null!;
             var offset = new WatermarkOffsets(new Offset(0), new Offset(3));
             var topicWatermark = new TopicWatermark(new[]
             {
@@ -463,7 +463,7 @@ namespace KafkaSnapshot.Import.Tests
 
             var exceptedData = consumerData.Select(x =>
 
-            new KeyValuePair<object, DatedMessage<object>>(x.Message.Key, new DatedMessage<object>(x.Message.Value, new MessageMeta(x.Message.Timestamp.UtcDateTime)))
+            new KeyValuePair<object, MetaMessage<object>>(x.Message.Key, new MetaMessage<object>(x.Message.Value, new MessageMeta(x.Message.Timestamp.UtcDateTime)))
             ).ToList();
             exceptedData.RemoveAt(1);
 
@@ -504,7 +504,7 @@ namespace KafkaSnapshot.Import.Tests
             filterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
 
             var filter = filterMock.Object;
-            IEnumerable<KeyValuePair<object, DatedMessage<object>>> result = null!;
+            IEnumerable<KeyValuePair<object, MetaMessage<object>>> result = null!;
             var offset = new WatermarkOffsets(new Offset(0), new Offset(3));
             var partition = new Partition(1);
             var topicWatermark = new TopicWatermark(new[]
@@ -561,7 +561,7 @@ namespace KafkaSnapshot.Import.Tests
 
             var exceptedData = consumerData.Select(x =>
 
-            new KeyValuePair<object, DatedMessage<object>>(x.Message.Key, new DatedMessage<object>(x.Message.Value, new MessageMeta(x.Message.Timestamp.UtcDateTime)))
+            new KeyValuePair<object, MetaMessage<object>>(x.Message.Key, new MetaMessage<object>(x.Message.Value, new MessageMeta(x.Message.Timestamp.UtcDateTime)))
             ).ToList();
             exceptedData.RemoveAt(1);
 
@@ -605,7 +605,7 @@ namespace KafkaSnapshot.Import.Tests
             filterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
 
             var filter = filterMock.Object;
-            IEnumerable<KeyValuePair<object, DatedMessage<object>>> result = null!;
+            IEnumerable<KeyValuePair<object, MetaMessage<object>>> result = null!;
             var offset = new WatermarkOffsets(new Offset(0), new Offset(3));
             var partition = new Partition(1);
             var topicWatermark = new TopicWatermark(new[]
@@ -633,7 +633,7 @@ namespace KafkaSnapshot.Import.Tests
 
             // Assert
             exception.Should().BeNull();
-            result.Should().BeEquivalentTo(Enumerable.Empty<KeyValuePair<object, DatedMessage<object>>>());
+            result.Should().BeEquivalentTo(Enumerable.Empty<KeyValuePair<object, MetaMessage<object>>>());
         }
 
         [Fact(DisplayName = "SnapshotLoader load data with end date filter.")]
@@ -659,7 +659,7 @@ namespace KafkaSnapshot.Import.Tests
             filterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
 
             var filter = filterMock.Object;
-            IEnumerable<KeyValuePair<object, DatedMessage<object>>> result = null!;
+            IEnumerable<KeyValuePair<object, MetaMessage<object>>> result = null!;
             var offset = new WatermarkOffsets(new Offset(0), new Offset(3));
             var partition = new Partition(1);
             var topicWatermark = new TopicWatermark(new[]
@@ -707,7 +707,7 @@ namespace KafkaSnapshot.Import.Tests
 
             var exceptedData = consumerData.Select(x =>
 
-            new KeyValuePair<object, DatedMessage<object>>(x.Message.Key, new DatedMessage<object>(x.Message.Value, new MessageMeta(x.Message.Timestamp.UtcDateTime)))
+            new KeyValuePair<object, MetaMessage<object>>(x.Message.Key, new MetaMessage<object>(x.Message.Value, new MessageMeta(x.Message.Timestamp.UtcDateTime)))
             ).ToList();
             exceptedData.RemoveAt(2);
 

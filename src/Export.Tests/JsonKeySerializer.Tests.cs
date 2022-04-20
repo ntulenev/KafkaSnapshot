@@ -49,7 +49,7 @@ namespace KafkaSnapshot.Export.Tests
             // Arrange
             var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
             var serializer = new JsonKeySerializer(logger);
-            var data = (IEnumerable<KeyValuePair<string, DatedMessage<string>>>)null!;
+            var data = (IEnumerable<KeyValuePair<string, MetaMessage<string>>>)null!;
 
             // Act
             var exception = Record.Exception(() => _ = serializer.Serialize(data, isRawData));
@@ -69,7 +69,7 @@ namespace KafkaSnapshot.Export.Tests
             var isRaw = false;
             var data = new[]
             {
-                new KeyValuePair<string, DatedMessage<string>>("{\"A\": 42}",new DatedMessage<string>("{\"Test\":42}",new MessageMeta(dateTime)))
+                new KeyValuePair<string, MetaMessage<string>>("{\"A\": 42}",new MetaMessage<string>("{\"Test\":42}",new MessageMeta(dateTime)))
             };
             string result = null!;
 
@@ -92,7 +92,7 @@ namespace KafkaSnapshot.Export.Tests
             var isRaw = false;
             var data = new[]
             {
-                new KeyValuePair<string, DatedMessage<string>>("{\"A\": 42}",new DatedMessage<string>("Test",new MessageMeta(dateTime)))
+                new KeyValuePair<string, MetaMessage<string>>("{\"A\": 42}",new MetaMessage<string>("Test",new MessageMeta(dateTime)))
             };
             string result = null!;
 
@@ -114,7 +114,7 @@ namespace KafkaSnapshot.Export.Tests
             var isRaw = false;
             var data = new[]
             {
-                new KeyValuePair<string, DatedMessage<string>>("Test",new DatedMessage<string>("{\"Test\":42}",new MessageMeta(dateTime)))
+                new KeyValuePair<string, MetaMessage<string>>("Test",new MetaMessage<string>("{\"Test\":42}",new MessageMeta(dateTime)))
             };
             string result = null!;
 
@@ -136,7 +136,7 @@ namespace KafkaSnapshot.Export.Tests
             var isRaw = true;
             var data = new[]
             {
-                new KeyValuePair<string, DatedMessage<string>>("{\"A\": 42}",new DatedMessage<string>("Test",new MessageMeta(dateTime)))
+                new KeyValuePair<string, MetaMessage<string>>("{\"A\": 42}",new MetaMessage<string>("Test",new MessageMeta(dateTime)))
             };
             string result = null!;
 

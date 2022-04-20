@@ -18,7 +18,7 @@ namespace KafkaSnapshot.Export.Serialization
         public IgnoreKeySerializer(ILogger<IgnoreKeySerializer> logger) : base(logger) { }
 
         /// <inheritdoc/>
-        public string Serialize(IEnumerable<KeyValuePair<string, DatedMessage<string>>> data, bool exportRawMessage)
+        public string Serialize(IEnumerable<KeyValuePair<string, MetaMessage<string>>> data, bool exportRawMessage)
         {
             ArgumentNullException.ThrowIfNull(data);
 

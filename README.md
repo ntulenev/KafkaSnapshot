@@ -89,6 +89,48 @@ Config params:
 | OffsetEndDate | Message date top limit (optional). Use to limit filtering messages in large topics|
 | ExportRawMessage | If true - export will write message as raw string without converting to formatted json (optional)|
 
+Exported file example:
+```json
+[
+  {
+    "Key": {
+      "key": 1
+    },
+    "Value": {
+      "value": 1
+    },
+    "Meta": {
+      "Timestamp": "2022-04-20T16:56:17.266Z",
+      "Partition": 0
+    }
+  },
+  {
+    "Key": {
+      "key": 2
+    },
+    "Value": {
+      "key": 2
+    },
+    "Meta": {
+      "Timestamp": "2022-04-20T16:56:29.283Z",
+      "Partition": 0
+    }
+  },
+  {
+    "Key": {
+      "key": 1
+    },
+    "Value": {
+      "key": 3
+    },
+    "Meta": {
+      "Timestamp": "2022-04-20T16:56:37.842Z",
+      "Partition": 0
+    }
+  }
+]
+```
+
 Exported file json description:
 | Field name | Description   |
 | -------------- | ------------- |
@@ -96,4 +138,5 @@ Exported file json description:
 | Value           | Kafka message value |
 | Meta           | Kafka message metadata |
 | Meta.Timestamp | Kafka message creation timestamp |
+| Meta.Partition | Kafka message partition |
 

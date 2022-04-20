@@ -29,7 +29,7 @@ namespace KafkaSnapshot.Export.Serialization
             {
                 x.Key,
                 Value = exportRawMessage ? x.Value.Message : JToken.Parse(x.Value.Message),
-                x.Value.Timestamp
+                x.Value.Meta
             });
 
             return SerializeData(items);

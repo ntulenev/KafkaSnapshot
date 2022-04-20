@@ -71,7 +71,7 @@ namespace KafkaSnapshot.Export.Tests
             var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
             var data = new[]
             {
-                new KeyValuePair<object, DatedMessage<object>>(1,new DatedMessage<object>("Test",dateTime))
+                new KeyValuePair<object, DatedMessage<object>>(1,new DatedMessage<object>("Test",new MessageMeta(dateTime)))
             };
             string result = null!;
 
@@ -80,7 +80,7 @@ namespace KafkaSnapshot.Export.Tests
 
             // Assert
             exception.Should().BeNull();
-            result.Should().Be("[\r\n  {\r\n    \"Key\": 1,\r\n    \"Value\": {\r\n      \"Message\": \"Test\",\r\n      \"Timestamp\": \"2020-12-12T01:02:03\"\r\n    }\r\n  }\r\n]");
+            result.Should().Be("[\r\n  {\r\n    \"Key\": 1,\r\n    \"Value\": {\r\n      \"Message\": \"Test\",\r\n      \"Meta\": {\r\n        \"Timestamp\": \"2020-12-12T01:02:03\"\r\n      }\r\n    }\r\n  }\r\n]");
         }
     }
 }

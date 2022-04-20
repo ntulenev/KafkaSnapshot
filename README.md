@@ -94,37 +94,37 @@ Exported file example:
 [
   {
     "Key": {
-      "key": 1
+      "ItemId": 1
     },
     "Value": {
-      "value": 1
+      "Data": 100
     },
     "Meta": {
-      "Timestamp": "2022-04-20T16:56:17.266Z",
+      "Timestamp": "2022-04-20T17:04:43.307Z",
       "Partition": 0
     }
   },
   {
     "Key": {
-      "key": 2
+      "ItemId": 1
     },
     "Value": {
-      "key": 2
+      "Data": 200
     },
     "Meta": {
-      "Timestamp": "2022-04-20T16:56:29.283Z",
+      "Timestamp": "2022-04-20T17:04:55.197Z",
       "Partition": 0
     }
   },
   {
     "Key": {
-      "key": 1
+      "ItemId": 2
     },
     "Value": {
-      "key": 3
+      "Data": 100
     },
     "Meta": {
-      "Timestamp": "2022-04-20T16:56:37.842Z",
+      "Timestamp": "2022-04-20T17:05:05.81Z",
       "Partition": 0
     }
   }

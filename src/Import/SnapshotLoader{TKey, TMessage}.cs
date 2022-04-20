@@ -128,7 +128,7 @@ namespace KafkaSnapshot.Import
                     if (filter.IsMatch(result.Message.Key))
                     {
                         _logger.LogTrace("Loading {Key} - {Value}", result.Message.Key, result.Message.Value);
-                        var message = new MetaMessage<TMessage>(result.Message.Value, new MessageMeta(result.Message.Timestamp.UtcDateTime));
+                        var message = new MetaMessage<TMessage>(result.Message.Value, new MessageMeta(result.Message.Timestamp.UtcDateTime, watermark.Partition.Value));
                         yield return new KeyValuePair<TKey, MetaMessage<TMessage>>(result.Message.Key, message);
                     }
 

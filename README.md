@@ -90,6 +90,10 @@ Config params:
 | ExportRawMessage | If true - export will write message as raw string without converting to formatted json (optional)|
 
 Exported file example:
+
+
+![KafkaData](OriginalData.png)
+
 ```json
 [
   {

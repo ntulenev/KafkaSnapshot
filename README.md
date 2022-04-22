@@ -105,7 +105,8 @@ Exported file example:
     },
     "Meta": {
       "Timestamp": "2022-04-20T17:04:43.307Z",
-      "Partition": 0
+      "Partition": 0,
+      "Offset": 0
     }
   },
   {
@@ -117,7 +118,8 @@ Exported file example:
     },
     "Meta": {
       "Timestamp": "2022-04-20T17:04:55.197Z",
-      "Partition": 0
+      "Partition": 0,
+      "Offset": 1
     }
   },
   {
@@ -129,7 +131,8 @@ Exported file example:
     },
     "Meta": {
       "Timestamp": "2022-04-20T17:05:05.81Z",
-      "Partition": 0
+      "Partition": 0,
+      "Offset": 2
     }
   }
 ]
@@ -143,4 +146,5 @@ Exported file json description:
 | Meta           | Kafka message metadata |
 | Meta.Timestamp | Kafka message creation timestamp |
 | Meta.Partition | Kafka message partition |
+| Meta.Offset | Kafka message partition offset |
 

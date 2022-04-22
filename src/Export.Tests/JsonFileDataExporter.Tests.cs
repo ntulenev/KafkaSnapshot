@@ -140,7 +140,7 @@ namespace KafkaSnapshot.Export.Tests
             var topic = new ExportedTopic("name", "filename", isRawMessage);
             var data = new KeyValuePair<object, MetaMessage<object>>[]
             {
-                new KeyValuePair<object, MetaMessage<object>>("test",new MetaMessage<object>("value", new MessageMeta(DateTime.UtcNow,1)))
+                new KeyValuePair<object, MetaMessage<object>>("test",new MetaMessage<object>("value", new MessageMeta(DateTime.UtcNow,1,2)))
             };
             var jsonData = "testJson";
             serializer.Setup(x => x.Serialize(data, isRawMessage)).Returns(jsonData);

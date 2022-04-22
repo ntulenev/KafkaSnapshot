@@ -69,7 +69,7 @@ namespace KafkaSnapshot.Export.Tests
             var isRaw = false;
             var data = new[]
             {
-                new KeyValuePair<string, MetaMessage<string>>("{\"A\": 42}",new MetaMessage<string>("{\"Test\":42}",new MessageMeta(dateTime,1)))
+                new KeyValuePair<string, MetaMessage<string>>("{\"A\": 42}",new MetaMessage<string>("{\"Test\":42}",new MessageMeta(dateTime,1,2)))
             };
             string result = null!;
 
@@ -78,7 +78,7 @@ namespace KafkaSnapshot.Export.Tests
 
             // Assert
             exception.Should().BeNull();
-            result.Should().Be("[\r\n  {\r\n    \"Key\": {\r\n      \"A\": 42\r\n    },\r\n    \"Value\": {\r\n      \"Test\": 42\r\n    },\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03\",\r\n      \"Partition\": 1\r\n    }\r\n  }\r\n]");
+            result.Should().Be("[\r\n  {\r\n    \"Key\": {\r\n      \"A\": 42\r\n    },\r\n    \"Value\": {\r\n      \"Test\": 42\r\n    },\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
         }
 
         [Fact(DisplayName = "JsonKeySerializer cant serialize non json data.")]
@@ -92,7 +92,7 @@ namespace KafkaSnapshot.Export.Tests
             var isRaw = false;
             var data = new[]
             {
-                new KeyValuePair<string, MetaMessage<string>>("{\"A\": 42}",new MetaMessage<string>("Test",new MessageMeta(dateTime,1)))
+                new KeyValuePair<string, MetaMessage<string>>("{\"A\": 42}",new MetaMessage<string>("Test",new MessageMeta(dateTime,1,2)))
             };
             string result = null!;
 
@@ -114,7 +114,7 @@ namespace KafkaSnapshot.Export.Tests
             var isRaw = false;
             var data = new[]
             {
-                new KeyValuePair<string, MetaMessage<string>>("Test",new MetaMessage<string>("{\"Test\":42}",new MessageMeta(dateTime,1)))
+                new KeyValuePair<string, MetaMessage<string>>("Test",new MetaMessage<string>("{\"Test\":42}",new MessageMeta(dateTime,1,2)))
             };
             string result = null!;
 
@@ -136,7 +136,7 @@ namespace KafkaSnapshot.Export.Tests
             var isRaw = true;
             var data = new[]
             {
-                new KeyValuePair<string, MetaMessage<string>>("{\"A\": 42}",new MetaMessage<string>("Test",new MessageMeta(dateTime,1)))
+                new KeyValuePair<string, MetaMessage<string>>("{\"A\": 42}",new MetaMessage<string>("Test",new MessageMeta(dateTime,1,2)))
             };
             string result = null!;
 
@@ -145,7 +145,7 @@ namespace KafkaSnapshot.Export.Tests
 
             // Assert
             exception.Should().BeNull();
-            result.Should().Be("[\r\n  {\r\n    \"Key\": {\r\n      \"A\": 42\r\n    },\r\n    \"Value\": \"Test\",\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03\",\r\n      \"Partition\": 1\r\n    }\r\n  }\r\n]");
+            result.Should().Be("[\r\n  {\r\n    \"Key\": {\r\n      \"A\": 42\r\n    },\r\n    \"Value\": \"Test\",\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
         }
     }
 }

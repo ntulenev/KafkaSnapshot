@@ -16,11 +16,11 @@ namespace KafkaSnapshot.Import.Metadata
         /// <typeparam name="TKey">Message key.</typeparam>
         /// <typeparam name="TValue">Message value.</typeparam>
         /// <param name="consumerFactory">Factory delegate for creating consumer.</param>
-        /// <param name="topicName">Kafka topic name.</param>
+        /// <param name="loadingTopic">Kafka topic data.</param>
         /// <param name="ct">Cancellation token.</param>
         public Task<TopicWatermark> LoadWatermarksAsync<TKey, TValue>(
             Func<IConsumer<TKey, TValue>> consumerFactory,
-            LoadingTopic topicName,
+            LoadingTopic loadingTopic,
             CancellationToken ct);
     }
 }

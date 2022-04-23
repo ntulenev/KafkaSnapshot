@@ -55,7 +55,8 @@ namespace KafkaSnapshot.Models.Import
         /// <param name="name">topic name.</param>
         /// <param name="loadWithCompacting">Flag for compacting.</param>
         /// <param name="dateParams">date filter for initial offset.</param>
-        public LoadingTopic(string name, bool loadWithCompacting, DateFilterParams dateParams)
+        /// <param name="partitionFilter">filtered partition ids.</param>
+        public LoadingTopic(string name, bool loadWithCompacting, DateFilterParams dateParams, HashSet<int> partitionFilter = null!)
         {
             ValidateTopicName(name);
             Value = name;
@@ -65,7 +66,20 @@ namespace KafkaSnapshot.Models.Import
 
             _offsetDate = dateParams.StartDate;
             _endOffsetDate = dateParams.EndDate;
-            _partitionFilter = new HashSet<int>();
+
+            if (partitionFilter != null)
+            {
+                if (!partitionFilter.Any())
+                {
+                    throw new ArgumentException("Filter is not set", nameof(partitionFilter));
+                }
+
+                _partitionFilter = new HashSet<int>(partitionFilter);
+            }
+            else
+            {
+                _partitionFilter = new HashSet<int>();
+            }
         }
 
         /// <summary>

@@ -40,6 +40,16 @@ namespace KafkaSnapshot.Models.Import
         public bool HasEndOffsetDate => _endOffsetDate.HasValue;
 
         /// <summary>
+        /// Topic's interested partitions.
+        /// </summary>
+        public IReadOnlySet<int> PartitionFilter => _partitionFilter;
+
+        /// <summary>
+        /// Checks if <see cref="PartitionFilter"/> contains any items.
+        /// </summary>
+        public bool HasPartitionFilter => _partitionFilter.Any();
+
+        /// <summary>
         /// Creates <see cref="LoadingTopic"/>.
         /// </summary>
         /// <param name="name">topic name.</param>
@@ -55,6 +65,7 @@ namespace KafkaSnapshot.Models.Import
 
             _offsetDate = dateParams.StartDate;
             _endOffsetDate = dateParams.EndDate;
+            _partitionFilter = new HashSet<int>();
         }
 
         /// <summary>
@@ -93,6 +104,8 @@ namespace KafkaSnapshot.Models.Import
         private readonly DateTime? _offsetDate;
 
         private readonly DateTime? _endOffsetDate;
+
+        private readonly IReadOnlySet<int> _partitionFilter;
 
         private static readonly Regex _topicNameCharacters = new(
            "^[a-zA-Z0-9\\-]*$",

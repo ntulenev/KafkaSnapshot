@@ -33,13 +33,18 @@ namespace KafkaSnapshot.Import.Metadata
             _adminClient = adminClient;
         }
 
-        private IEnumerable<TopicPartition> SplitTopicOnPartitions(LoadingTopic topicName)
+        private IEnumerable<TopicPartition> SplitTopicOnPartitions(LoadingTopic loadingTopic)
         {
-            var topicMeta = _adminClient.GetMetadata(topicName.Value, _metaTimeout);
+            var topicMeta = _adminClient.GetMetadata(loadingTopic.Value, _metaTimeout);
 
-            var partitions = topicMeta.Topics.Single().Partitions;
+            IEnumerable<PartitionMetadata> partitions = topicMeta.Topics.Single().Partitions;
 
-            return partitions.Select(partition => new TopicPartition(topicName.Value, new Partition(partition.PartitionId)));
+            if (loadingTopic.HasPartitionFilter)
+            {
+                partitions = partitions.Where(x => loadingTopic.PartitionFilter.Contains(x.PartitionId));
+            }
+
+            return partitions.Select(partition => new TopicPartition(loadingTopic.Value, new Partition(partition.PartitionId)));
         }
 
         private PartitionWatermark CreatePartitionWatermark<Key, Value>
@@ -57,22 +62,22 @@ namespace KafkaSnapshot.Import.Metadata
         /// <inheritdoc/>>
         public async Task<TopicWatermark> LoadWatermarksAsync<TKey, TValue>(
                             Func<IConsumer<TKey, TValue>> consumerFactory,
-                            LoadingTopic topicName,
+                            LoadingTopic loadingTopic,
                             CancellationToken ct
                             )
         {
             ArgumentNullException.ThrowIfNull(consumerFactory);
-            ArgumentNullException.ThrowIfNull(topicName);
+            ArgumentNullException.ThrowIfNull(loadingTopic);
 
             using var consumer = consumerFactory();
 
             try
             {
-                var partitions = SplitTopicOnPartitions(topicName);
+                var partitions = SplitTopicOnPartitions(loadingTopic);
 
                 var partitionWatermarks = await Task.WhenAll(partitions.Select(
                             topicPartition => Task.Run(() =>
-                            CreatePartitionWatermark(consumer, topicName, topicPartition), ct)
+                            CreatePartitionWatermark(consumer, loadingTopic, topicPartition), ct)
                                                        )).ConfigureAwait(false);
 
                 return new TopicWatermark(partitionWatermarks.Where(item => item.IsReadyToRead()));

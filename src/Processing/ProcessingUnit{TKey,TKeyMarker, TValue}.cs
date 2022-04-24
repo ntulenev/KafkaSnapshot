@@ -43,8 +43,6 @@ namespace KafkaSnapshot.Processing
 
             _filter = filterFactory.Create(topic.FilterType, topic.KeyType, topic.FilterValue);
 
-            _logger.LogDebug("Instance created for topic {topic}.", topic);
-
             _topicParams = new LoadingTopic(
                                 topic.Name,
                                 topic.LoadWithCompacting,
@@ -53,7 +51,7 @@ namespace KafkaSnapshot.Processing
 
             _exportedTopic = new ExportedTopic(topic.Name, topic.ExportName, topic.ExportRawMessage);
 
-            _logger.LogDebug("Instance created for topic {topic}.", topic);
+            _logger.LogDebug("Instance created for topic {@topic}.", topic);
         }
 
         /// <inheritdoc/>

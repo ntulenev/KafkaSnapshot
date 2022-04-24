@@ -53,6 +53,8 @@ namespace KafkaSnapshot.Processing.Configuration
         /// </summary>
         public object? FilterValue { get; set; }
 
+        public HashSet<int>? PartitionsIds { get; set; }
+
         public ProcessingTopic<TKey> ConvertToProcess<TKey>()
         {
             var typedFilterValue = FilterValue is not null ?
@@ -65,7 +67,7 @@ namespace KafkaSnapshot.Processing.Configuration
                                              Compacting == CompactingMode.On,
                                              FilterType,
                                              KeyType,
-                                             typedFilterValue!, OffsetStartDate, OffsetEndDate, ExportRawMessage);
+                                             typedFilterValue!, OffsetStartDate, OffsetEndDate, ExportRawMessage, PartitionsIds);
         }
     }
 }

@@ -21,5 +21,6 @@ namespace KafkaSnapshot.Models.Processing
                                         TKey FilterValue,
                                         DateTime? StartingDate,
                                         DateTime? EndingDate,
-                                        bool ExportRawMessage);
+                                        bool ExportRawMessage,
+                                        HashSet<int>? PartitionIdsFilter = null);
 }

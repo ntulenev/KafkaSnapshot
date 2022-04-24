@@ -56,7 +56,7 @@ namespace KafkaSnapshot.Models.Import
         /// <param name="loadWithCompacting">Flag for compacting.</param>
         /// <param name="dateParams">date filter for initial offset.</param>
         /// <param name="partitionFilter">filtered partition ids.</param>
-        public LoadingTopic(string name, bool loadWithCompacting, DateFilterParams dateParams, HashSet<int> partitionFilter = null!)
+        public LoadingTopic(string name, bool loadWithCompacting, DateFilterParams dateParams, HashSet<int>? partitionFilter = null!)
         {
             ValidateTopicName(name);
             Value = name;

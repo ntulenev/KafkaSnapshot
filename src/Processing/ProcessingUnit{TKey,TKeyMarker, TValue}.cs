@@ -48,7 +48,7 @@ namespace KafkaSnapshot.Processing
             _topicParams = new LoadingTopic(
                                 topic.Name,
                                 topic.LoadWithCompacting,
-                                new DateFilterParams(topic.StartingDate, topic.EndingDate)
+                                new DateFilterParams(topic.StartingDate, topic.EndingDate), topic.PartitionIdsFilter
                                 );
 
             _exportedTopic = new ExportedTopic(topic.Name, topic.ExportName, topic.ExportRawMessage);

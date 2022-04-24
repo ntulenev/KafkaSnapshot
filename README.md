@@ -42,7 +42,8 @@ Config example:
         "FilterValue": "{\"value\": 1 }",
         "OffsetStartDate": "09.01.2021 12:12:12",
         "OffsetEndDate": "09.01.2021 14:12:12",
-        "ExportRawMessage": true
+        "ExportRawMessage": true,
+        "PartitionsIds": [ 0, 2 ]
       },
       {
         "Name": "topic2",
@@ -88,6 +89,7 @@ Config params:
 | OffsetStartDate | First message date (optional). Use to skip old messages in large topics|
 | OffsetEndDate | Message date top limit (optional). Use to limit filtering messages in large topics|
 | ExportRawMessage | If true - export will write message as raw string without converting to formatted json (optional)|
+| PartitionsIds | Partitions ids filter (optional)|
 
 Exported file example:
 

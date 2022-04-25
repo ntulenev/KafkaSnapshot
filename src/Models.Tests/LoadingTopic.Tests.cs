@@ -353,5 +353,25 @@ namespace KafkaSnapshot.Models.Tests
             // Assert
             exception.Should().BeNull();
         }
+
+        [Fact(DisplayName = "Can get topic partition filter.")]
+        [Trait("Category", "Unit")]
+        public void CanGetTopicPartitionFilter()
+        {
+
+            // Arrange
+            var items = new[] { 1, 2, 3 };
+            var date = DateTime.UtcNow;
+            var name = "test";
+
+            // Act
+            var topic = new LoadingTopic(name, true, new DateFilterParams(date, date), new HashSet<int>(items));
+
+            // Assert
+            topic.HasPartitionFilter.Should().BeTrue();
+            topic.PartitionFilter.Should().NotBeNull();
+            topic.PartitionFilter.Should().Contain(items);
+
+        }
     }
 }

@@ -291,7 +291,7 @@ namespace KafkaSnapshot.Models.Tests
 
         [Fact(DisplayName = "Cant get topic end offset date if not set.")]
         [Trait("Category", "Unit")]
-        public void CanGetTopicEndOffsetDate()
+        public void CantGetTopicEndOffsetDate()
         {
 
             // Arrange
@@ -307,7 +307,7 @@ namespace KafkaSnapshot.Models.Tests
 
         [Fact(DisplayName = "Can get topic end offset date if date is set.")]
         [Trait("Category", "Unit")]
-        public void CantGetTopicEndOffsetDate()
+        public void CanGetTopicEndOffsetDate()
         {
 
             // Arrange
@@ -322,6 +322,36 @@ namespace KafkaSnapshot.Models.Tests
             // Assert
             exception.Should().BeNull();
             resultedDate.Should().Be(date);
+        }
+
+        [Fact(DisplayName = "Can't setup empty partition filter.")]
+        [Trait("Category", "Unit")]
+        public void CantCreateTopicWithEmptyPartitionFilter()
+        {
+
+            // Arrange
+            var name = "test";
+
+            // Act
+            var exception = Record.Exception(() => new LoadingTopic(name, true, new DateFilterParams(DateTime.UtcNow, DateTime.UtcNow.AddDays(1)), new HashSet<int>()));
+
+            // Assert
+            exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
+        }
+
+        [Fact(DisplayName = "Can setup partition filter.")]
+        [Trait("Category", "Unit")]
+        public void CanCreateTopicWithValidPartitionFilter()
+        {
+
+            // Arrange
+            var name = "test";
+
+            // Act
+            var exception = Record.Exception(() => new LoadingTopic(name, true, new DateFilterParams(DateTime.UtcNow, DateTime.UtcNow.AddDays(1)), new HashSet<int>(new[] { 1, 2, 3 })));
+
+            // Assert
+            exception.Should().BeNull();
         }
     }
 }

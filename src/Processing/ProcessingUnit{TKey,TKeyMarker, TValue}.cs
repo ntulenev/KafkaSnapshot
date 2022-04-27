@@ -7,6 +7,8 @@ using KafkaSnapshot.Models.Processing;
 using KafkaSnapshot.Models.Export;
 using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Abstractions.Filters;
+using KafkaSnapshot.Models.Message;
+using KafkaSnapshot.Models.Sorting;
 
 namespace KafkaSnapshot.Processing
 {
@@ -63,8 +65,25 @@ namespace KafkaSnapshot.Processing
                 _filter,
                 ct).ConfigureAwait(false);
 
+            items = SortData(items);
+
             _logger.LogDebug("Start exporting data to file.");
             await _exporter.ExportAsync(items, _exportedTopic, ct).ConfigureAwait(false);
+        }
+
+        private IEnumerable<KeyValuePair<TKey, MetaMessage<TValue>>> SortData(
+            IEnumerable<KeyValuePair<TKey, MetaMessage<TValue>>> items)
+        {
+            // TODO Move to separate class
+            return (_topicParams.SortOrder, _topicParams.SortingType) switch
+            {
+                (SortOrder.No, _) => items,
+                (SortOrder.Ask, SortingType.Time) => items.OrderBy(x => x.Value.Meta.Timestamp).ToList(),
+                (SortOrder.Desk, SortingType.Time) => items.OrderByDescending(x => x.Value.Meta.Timestamp).ToList(),
+                (SortOrder.Ask, SortingType.Partition) => items.OrderBy(x => x.Value.Meta.Partition).ToList(),
+                (SortOrder.Desk, SortingType.Partition) => items.OrderByDescending(x => x.Value.Meta.Partition).ToList(),
+                _ => throw new NotImplementedException("Sort type not implemented")
+            };
         }
 
         /// <inheritdoc/>

@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using KafkaSnapshot.Models.Sorting;
+using System.Text.RegularExpressions;
 
 namespace KafkaSnapshot.Models.Import
 {
@@ -49,6 +50,10 @@ namespace KafkaSnapshot.Models.Import
         /// </summary>
         public bool HasPartitionFilter => _partitionFilter.Any();
 
+        public SortingType SortingType { get; }
+
+        public SortOrder SortOrder { get; }
+
         /// <summary>
         /// Creates <see cref="LoadingTopic"/>.
         /// </summary>
@@ -56,7 +61,12 @@ namespace KafkaSnapshot.Models.Import
         /// <param name="loadWithCompacting">Flag for compacting.</param>
         /// <param name="dateParams">date filter for initial offset.</param>
         /// <param name="partitionFilter">filtered partition ids.</param>
-        public LoadingTopic(string name, bool loadWithCompacting, DateFilterParams dateParams, HashSet<int>? partitionFilter = null!)
+        public LoadingTopic(string name,
+                            bool loadWithCompacting,
+                            DateFilterParams dateParams,
+                            HashSet<int>? partitionFilter = null!,
+                            SortingType sortingType = SortingType.Time,
+                            SortOrder sortingOrder = SortOrder.No)
         {
             ValidateTopicName(name);
             Value = name;
@@ -66,6 +76,9 @@ namespace KafkaSnapshot.Models.Import
 
             _offsetDate = dateParams.StartDate;
             _endOffsetDate = dateParams.EndDate;
+
+            SortingType = sortingType;
+            SortOrder = sortingOrder;
 
             if (partitionFilter != null)
             {

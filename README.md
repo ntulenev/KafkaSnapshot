@@ -38,8 +38,8 @@ Config example:
         "KeyType": "Json",
         "Compacting": "On",
         "ExportFileName": "topic1.json",
-        "FilterType": "Equals",
-        "FilterValue": "{\"value\": 1 }",
+        "FilterKeyType": "Equals",
+        "FilterKeyValue": "{\"value\": 1 }",
         "OffsetStartDate": "09.01.2021 12:12:12",
         "OffsetEndDate": "09.01.2021 14:12:12",
         "ExportRawMessage": true,
@@ -56,8 +56,8 @@ Config example:
         "KeyType": "Long",
         "Compacting": "Off",
         "ExportFileName": "topic3.json",
-        "FilterType": "Equals",
-        "FilterValue": 42
+        "FilterKeyType": "Equals",
+        "FilterKeyValue": 42
       },
       {
         "Name": "topic4",
@@ -65,8 +65,6 @@ Config example:
         "Compacting": "Off",
         "ExportFileName": "topic4.json"
       }
-    ]
-  }
 ```
 Config params:
 
@@ -84,8 +82,8 @@ Config params:
 | KeyType        | Apache Kafka topic key representation (Json,String,Long,Ignored) |
 | Compacting     | Use compacting by key or not (On,Off). Not supported for Ignored keyType |
 | ExportFileName | File name for exported data  |
-| FilterType | Equals or None (optional)  |
-| FilterValue | Sample value for filtering (if FilterType sets as 'Equals') |
+| FilterKeyType | Equals or None (optional)  |
+| FilterKeyValue | Sample value for filtering (if FilterKeyType sets as 'Equals') |
 | OffsetStartDate | First message date (optional). Use to skip old messages in large topics|
 | OffsetEndDate | Message date top limit (optional). Use to limit filtering messages in large topics|
 | ExportRawMessage | If true - export will write message as raw string without converting to formatted json (optional)|

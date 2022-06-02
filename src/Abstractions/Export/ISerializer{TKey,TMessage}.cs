@@ -5,6 +5,9 @@ namespace KafkaSnapshot.Abstractions.Export
     /// <summary>
     /// Export data serializer.
     /// </summary>
+    /// <typeparam name="TKey">Message key.</typeparam>
+    /// <typeparam name="TMessage">Message value.</typeparam>
+    /// <typeparam name="TKeyMarker">Key Interpretation.</typeparam>
     public interface ISerializer<TKey, TMessage, TKeyMarker> where TMessage : notnull
                                                              where TKeyMarker : IKeyRepresentationMarker
     {

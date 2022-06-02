@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 namespace KafkaSnapshot.Export.Serialization
 {
     /// <summary>
-    /// Base class for Json serialization
+    /// Base class for Json serialization.
     /// </summary>
     public abstract class JsonSerializerBase
     {

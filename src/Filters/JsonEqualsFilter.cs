@@ -5,7 +5,7 @@ using KafkaSnapshot.Abstractions.Filters;
 namespace KafkaSnapshot.Filters
 {
     /// <summary>
-    /// Json equals filter
+    /// Json equals filter.
     /// </summary>
     public class JsonEqualsFilter : IKeyFilter<string>
     {

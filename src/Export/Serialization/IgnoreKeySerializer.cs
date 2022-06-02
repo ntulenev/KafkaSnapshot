@@ -9,6 +9,9 @@ using KafkaSnapshot.Models.Message;
 namespace KafkaSnapshot.Export.Serialization
 {
 
+    /// <summary>
+    /// Serializer for data with no keys.
+    /// </summary>
     public class IgnoreKeySerializer : JsonSerializerBase, ISerializer<string, string, IgnoreKeyMarker>
     {
         /// <summary>

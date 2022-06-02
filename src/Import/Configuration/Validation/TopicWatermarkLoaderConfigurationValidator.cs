@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 namespace KafkaSnapshot.Import.Configuration.Validation
 {
     /// <summary>
-    /// Validator for <see cref="TopicWatermarkLoaderConfiguration"/>
+    /// Validator for <see cref="TopicWatermarkLoaderConfiguration"/>.
     /// </summary>
     public class TopicWatermarkLoaderConfigurationValidator : IValidateOptions<TopicWatermarkLoaderConfiguration>
     {

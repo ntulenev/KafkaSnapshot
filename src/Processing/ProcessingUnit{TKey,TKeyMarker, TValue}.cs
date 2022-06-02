@@ -33,7 +33,7 @@ namespace KafkaSnapshot.Processing
                               ProcessingTopic<TKey> topic,
                               ISnapshotLoader<TKey, TValue> kafkaLoader,
                               IDataExporter<TKey, TKeyMarker, TValue, ExportedTopic> exporter,
-                              IKeyFiltersFactory<TKey> filterFactory
+                              IKeyFiltersFactory<TKey> keyFilterFactory
                               )
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -41,9 +41,9 @@ namespace KafkaSnapshot.Processing
             _exporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
 
             ArgumentNullException.ThrowIfNull(topic);
-            ArgumentNullException.ThrowIfNull(filterFactory);
+            ArgumentNullException.ThrowIfNull(keyFilterFactory);
 
-            _filter = filterFactory.Create(topic.FilterType, topic.KeyType, topic.FilterValue);
+            _keyFilter = keyFilterFactory.Create(topic.FilterKeyType, topic.KeyType, topic.FilterKeyValue);
 
             _topicParams = new LoadingTopic(
                                 topic.Name,
@@ -62,7 +62,7 @@ namespace KafkaSnapshot.Processing
             _logger.LogDebug("Start loading data from Kafka.");
             var items = await _kafkaLoader.LoadCompactSnapshotAsync(
                 _topicParams,
-                _filter,
+                _keyFilter,
                 ct).ConfigureAwait(false);
 
             items = SortData(items);
@@ -92,7 +92,7 @@ namespace KafkaSnapshot.Processing
         private readonly ISnapshotLoader<TKey, TValue> _kafkaLoader;
         private readonly IDataExporter<TKey, TKeyMarker, TValue, ExportedTopic> _exporter;
         private readonly ILogger<ProcessingUnit<TKey, TKeyMarker, TValue>> _logger;
-        private readonly IKeyFilter<TKey> _filter;
+        private readonly IKeyFilter<TKey> _keyFilter;
         private readonly LoadingTopic _topicParams;
         private readonly ExportedTopic _exportedTopic;
     }

@@ -196,7 +196,7 @@ namespace KafkaSnapshot.Processing.Tests
             var filter = filterMock.Object;
             var snapshotMock = new Mock<IEnumerable<KeyValuePair<object, MetaMessage<object>>>>();
             var snapshot = snapshotMock.Object;
-            factoryMock.Setup(x => x.Create(topic.FilterType, topic.KeyType, topic.FilterValue)).Returns(filter);
+            factoryMock.Setup(x => x.Create(topic.FilterKeyType, topic.KeyType, topic.FilterKeyValue)).Returns(filter);
             loaderMock.Setup(x => x.LoadCompactSnapshotAsync(
                         It.Is<LoadingTopic>(n => n.Value == topic.Name),
                         filter, CancellationToken.None)).Returns(Task.FromResult(snapshot));

@@ -46,7 +46,7 @@ namespace KafkaSnapshot.Processing.Tests
                           Compacting = CompactingMode.On,
                           ExportFileName = "export",
                           ExportRawMessage = true,
-                          FilterType = Models.Filters.FilterType.None,
+                          FilterKeyType = Models.Filters.FilterType.None,
                           KeyType = Models.Filters.KeyType.Json,
                       }
                  }
@@ -145,7 +145,7 @@ namespace KafkaSnapshot.Processing.Tests
                           Compacting = CompactingMode.On,
                           ExportFileName = "export",
                           ExportRawMessage = true,
-                          FilterType = Models.Filters.FilterType.None,
+                          FilterKeyType = Models.Filters.FilterType.None,
                           KeyType = Models.Filters.KeyType.Json,
                       },
                       new TopicConfiguration
@@ -154,7 +154,7 @@ namespace KafkaSnapshot.Processing.Tests
                           Compacting = CompactingMode.On,
                           ExportFileName = "export",
                           ExportRawMessage = true,
-                          FilterType = Models.Filters.FilterType.None,
+                          FilterKeyType = Models.Filters.FilterType.None,
                           KeyType = Models.Filters.KeyType.Json,
                       }
                 }
@@ -188,7 +188,7 @@ namespace KafkaSnapshot.Processing.Tests
                           Compacting = CompactingMode.On,
                           ExportFileName = "export",
                           ExportRawMessage = true,
-                          FilterType = Models.Filters.FilterType.None,
+                          FilterKeyType = Models.Filters.FilterType.None,
                           KeyType = Models.Filters.KeyType.Json,
                       },
                       new TopicConfiguration
@@ -197,7 +197,7 @@ namespace KafkaSnapshot.Processing.Tests
                           Compacting = CompactingMode.On,
                           ExportFileName = "export",
                           ExportRawMessage = true,
-                          FilterType = Models.Filters.FilterType.None,
+                          FilterKeyType = Models.Filters.FilterType.None,
                           KeyType = Models.Filters.KeyType.Json,
                       }
                 }
@@ -231,7 +231,7 @@ namespace KafkaSnapshot.Processing.Tests
                           Compacting = CompactingMode.On,
                           ExportFileName = "export",
                           ExportRawMessage = true,
-                          FilterType = Models.Filters.FilterType.None,
+                          FilterKeyType = Models.Filters.FilterType.None,
                           KeyType = Models.Filters.KeyType.Json,
                       },
                       new TopicConfiguration
@@ -240,7 +240,7 @@ namespace KafkaSnapshot.Processing.Tests
                           Compacting = CompactingMode.On,
                           ExportFileName = "export",
                           ExportRawMessage = true,
-                          FilterType = Models.Filters.FilterType.None,
+                          FilterKeyType = Models.Filters.FilterType.None,
                           KeyType = Models.Filters.KeyType.Json,
                       }
                 }
@@ -277,7 +277,7 @@ namespace KafkaSnapshot.Processing.Tests
                           Compacting = CompactingMode.On,
                           ExportFileName = "export",
                           ExportRawMessage = true,
-                          FilterType = Models.Filters.FilterType.None,
+                          FilterKeyType = Models.Filters.FilterType.None,
                           KeyType = Models.Filters.KeyType.Json,
                       },
                       new TopicConfiguration
@@ -286,7 +286,7 @@ namespace KafkaSnapshot.Processing.Tests
                           Compacting = CompactingMode.On,
                           ExportFileName = "export",
                           ExportRawMessage = true,
-                          FilterType = Models.Filters.FilterType.None,
+                          FilterKeyType = Models.Filters.FilterType.None,
                           KeyType = Models.Filters.KeyType.Json,
                       }
                 }
@@ -320,7 +320,7 @@ namespace KafkaSnapshot.Processing.Tests
                           Compacting = CompactingMode.On,
                           ExportFileName = "export",
                           ExportRawMessage = true,
-                          FilterType = Models.Filters.FilterType.None,
+                          FilterKeyType = Models.Filters.FilterType.None,
                           KeyType = Models.Filters.KeyType.Json,
                       },
                       new TopicConfiguration
@@ -329,7 +329,7 @@ namespace KafkaSnapshot.Processing.Tests
                           Compacting = CompactingMode.On,
                           ExportFileName = "export",
                           ExportRawMessage = true,
-                          FilterType = Models.Filters.FilterType.None,
+                          FilterKeyType = Models.Filters.FilterType.None,
                           KeyType = Models.Filters.KeyType.Json,
                       }
                 }
@@ -364,7 +364,7 @@ namespace KafkaSnapshot.Processing.Tests
                           Compacting = CompactingMode.On,
                           ExportFileName = "export",
                           ExportRawMessage = true,
-                          FilterType = Models.Filters.FilterType.None,
+                          FilterKeyType = Models.Filters.FilterType.None,
                           KeyType = Models.Filters.KeyType.Json,
                       },
                       new TopicConfiguration
@@ -373,7 +373,7 @@ namespace KafkaSnapshot.Processing.Tests
                           Compacting = CompactingMode.On,
                           ExportFileName = "export",
                           ExportRawMessage = true,
-                          FilterType = Models.Filters.FilterType.None,
+                          FilterKeyType = Models.Filters.FilterType.None,
                           KeyType = Models.Filters.KeyType.Json,
                       }
                 }
@@ -408,7 +408,7 @@ namespace KafkaSnapshot.Processing.Tests
                           Compacting = CompactingMode.On,
                           ExportFileName = "export",
                           ExportRawMessage = true,
-                          FilterType = Models.Filters.FilterType.None,
+                          FilterKeyType = Models.Filters.FilterType.None,
                           KeyType = Models.Filters.KeyType.Json,
                       },
                       new TopicConfiguration
@@ -417,7 +417,7 @@ namespace KafkaSnapshot.Processing.Tests
                           Compacting = CompactingMode.On,
                           ExportFileName = null!,
                           ExportRawMessage = true,
-                          FilterType = Models.Filters.FilterType.None,
+                          FilterKeyType = Models.Filters.FilterType.None,
                           KeyType = Models.Filters.KeyType.Json,
                       }
                 }
@@ -451,7 +451,7 @@ namespace KafkaSnapshot.Processing.Tests
                           Compacting = CompactingMode.On,
                           ExportFileName = "export",
                           ExportRawMessage = true,
-                          FilterType = Models.Filters.FilterType.None,
+                          FilterKeyType = Models.Filters.FilterType.None,
                           KeyType = Models.Filters.KeyType.Json,
                       },
                       new TopicConfiguration
@@ -460,7 +460,7 @@ namespace KafkaSnapshot.Processing.Tests
                           Compacting = CompactingMode.On,
                           ExportFileName = string.Empty,
                           ExportRawMessage = true,
-                          FilterType = Models.Filters.FilterType.None,
+                          FilterKeyType = Models.Filters.FilterType.None,
                           KeyType = Models.Filters.KeyType.Json,
                       }
                 }
@@ -495,7 +495,7 @@ namespace KafkaSnapshot.Processing.Tests
                           Compacting = CompactingMode.On,
                           ExportFileName = "export",
                           ExportRawMessage = true,
-                          FilterType = Models.Filters.FilterType.None,
+                          FilterKeyType = Models.Filters.FilterType.None,
                           KeyType = Models.Filters.KeyType.Json,
                       },
                       new TopicConfiguration
@@ -504,7 +504,7 @@ namespace KafkaSnapshot.Processing.Tests
                           Compacting = CompactingMode.On,
                           ExportFileName = "  ",
                           ExportRawMessage = true,
-                          FilterType = Models.Filters.FilterType.None,
+                          FilterKeyType = Models.Filters.FilterType.None,
                           KeyType = Models.Filters.KeyType.Json,
                       }
                 }
@@ -538,8 +538,8 @@ namespace KafkaSnapshot.Processing.Tests
                           Compacting = CompactingMode.On,
                           ExportFileName = "export",
                           ExportRawMessage = true,
-                          FilterType = Models.Filters.FilterType.Equals,
-                          FilterValue = new object(),
+                          FilterKeyType = Models.Filters.FilterType.Equals,
+                          FilterKeyValue = new object(),
                           KeyType = Models.Filters.KeyType.Json,
                       }
                 }
@@ -573,8 +573,8 @@ namespace KafkaSnapshot.Processing.Tests
                           Compacting = CompactingMode.On,
                           ExportFileName = "export",
                           ExportRawMessage = true,
-                          FilterType = Models.Filters.FilterType.Equals,
-                          FilterValue = new object(),
+                          FilterKeyType = Models.Filters.FilterType.Equals,
+                          FilterKeyValue = new object(),
                           KeyType = Models.Filters.KeyType.Json,
                       },
                       new TopicConfiguration
@@ -583,8 +583,8 @@ namespace KafkaSnapshot.Processing.Tests
                           Compacting = CompactingMode.On,
                           ExportFileName = "export",
                           ExportRawMessage = true,
-                          FilterType = Models.Filters.FilterType.Equals,
-                          FilterValue = null!,
+                          FilterKeyType = Models.Filters.FilterType.Equals,
+                          FilterKeyValue = null!,
                           KeyType = Models.Filters.KeyType.Json,
                       }
                 }
@@ -618,8 +618,8 @@ namespace KafkaSnapshot.Processing.Tests
                           Compacting = CompactingMode.On,
                           ExportFileName = "export",
                           ExportRawMessage = true,
-                          FilterType = Models.Filters.FilterType.Equals,
-                          FilterValue = new object(),
+                          FilterKeyType = Models.Filters.FilterType.Equals,
+                          FilterKeyValue = new object(),
                           KeyType = Models.Filters.KeyType.Json,
                       },
                       new TopicConfiguration
@@ -628,8 +628,8 @@ namespace KafkaSnapshot.Processing.Tests
                           Compacting = CompactingMode.On,
                           ExportFileName = "export",
                           ExportRawMessage = true,
-                          FilterType = Models.Filters.FilterType.Equals,
-                          FilterValue = new object(),
+                          FilterKeyType = Models.Filters.FilterType.Equals,
+                          FilterKeyValue = new object(),
                           KeyType = Models.Filters.KeyType.Ignored,
                       }
                 }

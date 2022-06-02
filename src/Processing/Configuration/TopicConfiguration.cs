@@ -19,7 +19,7 @@ namespace KafkaSnapshot.Processing.Configuration
         public KeyType KeyType { get; set; }
 
         /// <summary>
-        /// Setting to On or Off compacting
+        /// Setting to On or Off compacting.
         /// </summary>
         public CompactingMode Compacting { get; set; } = CompactingMode.On;
 
@@ -29,45 +29,52 @@ namespace KafkaSnapshot.Processing.Configuration
         public string ExportFileName { get; set; } = default!;
 
         /// <summary>
-        /// Topic filter type
+        /// Topic filter key type.
         /// </summary>
-        public FilterType FilterType { get; set; } = FilterType.None;
+        public FilterType FilterKeyType { get; set; } = FilterType.None;
 
         /// <summary>
-        /// Date and time for starting offset
+        /// Date and time for starting offset.
         /// </summary>
         public DateTime? OffsetStartDate { get; set; }
 
         /// <summary>
-        /// Date and time for final offset
+        /// Date and time for final offset.
         /// </summary>
         public DateTime? OffsetEndDate { get; set; }
 
         /// <summary>
-        /// Message format in export JSON 
+        /// Message format in export JSON.
         /// </summary>
         public bool ExportRawMessage { get; set; }
 
         /// <summary>
-        /// Optional filter value
+        /// Optional filter key value.
         /// </summary>
-        public object? FilterValue { get; set; }
+        public object? FilterKeyValue { get; set; }
 
+        /// <summary>
+        /// Partition ids filter.
+        /// </summary>
         public HashSet<int>? PartitionsIds { get; set; }
 
+        /// <summary>
+        /// Converts configuration to <see cref="ProcessingTopic{TKey}"/>.
+        /// </summary>
+        /// <typeparam name="TKey">Message key.</typeparam>
         public ProcessingTopic<TKey> ConvertToProcess<TKey>()
         {
-            var typedFilterValue = FilterValue is not null ?
-                                  (TKey)Convert.ChangeType(FilterValue, typeof(TKey))
+            var typedFilterKeyValue = FilterKeyValue is not null ?
+                                  (TKey)Convert.ChangeType(FilterKeyValue, typeof(TKey))
                                   :
                                   default;
 
             return new ProcessingTopic<TKey>(Name,
                                              ExportFileName,
                                              Compacting == CompactingMode.On,
-                                             FilterType,
+                                             FilterKeyType,
                                              KeyType,
-                                             typedFilterValue!, OffsetStartDate, OffsetEndDate, ExportRawMessage, PartitionsIds);
+                                             typedFilterKeyValue!, OffsetStartDate, OffsetEndDate, ExportRawMessage, PartitionsIds);
         }
     }
 }

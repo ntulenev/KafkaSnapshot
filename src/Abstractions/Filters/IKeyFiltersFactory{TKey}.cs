@@ -11,10 +11,10 @@ namespace KafkaSnapshot.Abstractions.Filters
         /// <summary>
         /// Creates suitable filter for filter type and key type.
         /// </summary>
-        /// <param name="filterType">Filter type.</param>
+        /// <param name="filterKeyType">Filter type.</param>
         /// <param name="keyType">Key type.</param>
         /// <param name="sample">Key value sample.</param>
         /// <returns>Filter for this key type and filter type.</returns>
-        public IKeyFilter<TKey> Create(FilterType filterType, KeyType keyType, TKey sample);
+        public IKeyFilter<TKey> Create(FilterType filterKeyType, KeyType keyType, TKey sample);
     }
 }

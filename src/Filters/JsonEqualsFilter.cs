@@ -12,7 +12,7 @@ namespace KafkaSnapshot.Filters
         /// <summary>
         /// Creates <see cref="JsonEqualsFilter"/>.
         /// </summary>
-        /// <param name="sample">Key sample.</param>
+        /// <param name="sample">Data sample.</param>
         public JsonEqualsFilter(string sample)
         {
             ArgumentNullException.ThrowIfNull(sample);

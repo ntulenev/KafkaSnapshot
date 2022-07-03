@@ -4,7 +4,7 @@ using KafkaSnapshot.Models.Filters;
 namespace KafkaSnapshot.Filters
 {
     /// <summary>
-    /// Simple filter factory.
+    /// Simple key filter factory.
     /// </summary>
     /// <typeparam name="TKey">Message key type.</typeparam>
     public class NaiveKeyFiltersFactory<TKey> : IKeyFiltersFactory<TKey> where TKey : notnull

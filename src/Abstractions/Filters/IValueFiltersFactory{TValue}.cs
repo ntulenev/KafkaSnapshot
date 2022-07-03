@@ -6,7 +6,7 @@ namespace KafkaSnapshot.Abstractions.Filters
     /// Creates KeyFilter by condition.
     /// </summary>
     /// <typeparam name="TValue">Message value type.</typeparam>
-    internal interface IValueFilterFactory<TValue> where TValue : notnull
+    public interface IValueFilterFactory<TValue> where TValue : notnull
     {
         /// <summary>
         /// Creates suitable filter for filter type and value type.

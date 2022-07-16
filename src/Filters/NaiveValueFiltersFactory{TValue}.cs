@@ -12,12 +12,15 @@ namespace KafkaSnapshot.Filters
         ///// <inheritdoc/>
         public IKeyFilter<TValue> Create(FilterType filterValueType, ValueMessageType valueType, TValue sample)
         {
-            //TODO Add cases
-            return _default;
+            return (filterValueType, valueType, sample) switch
+            {
+                (FilterType.None, _, _) => _default,
+                (FilterType.Equals, ValueMessageType.Raw, _) => new EqualsFilter<TValue>(sample),
+                (FilterType.Equals, ValueMessageType.Json, string json) => (IKeyFilter<TValue>)new JsonEqualsFilter(json),
+                _ => throw new ArgumentException($"Invalid filter type {filterValueType} for value type {valueType} with sample type {typeof(TValue).Name}.", nameof(filterValueType)),
+            };
         }
 
         private readonly DefaultFilter<TValue> _default = new();
-
-
     }
 }

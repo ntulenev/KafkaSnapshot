@@ -192,7 +192,7 @@ namespace KafkaSnapshot.Processing.Tests
             var exporterMock = new Mock<IDataExporter<object, IKeyRepresentationMarker, object, ExportedTopic>>();
             var exporter = exporterMock.Object;
             var factoryMock = new Mock<IKeyFiltersFactory<object>>();
-            var filterMock = new Mock<IKeyFilter<object>>();
+            var filterMock = new Mock<IDataFilter<object>>();
             var filter = filterMock.Object;
             var snapshotMock = new Mock<IEnumerable<KeyValuePair<object, MetaMessage<object>>>>();
             var snapshot = snapshotMock.Object;

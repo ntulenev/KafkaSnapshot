@@ -21,7 +21,7 @@ namespace KafkaSnapshot.Abstractions.Import
         /// <returns>Topic's data.</returns>
         public Task<IEnumerable<KeyValuePair<TKey, MetaMessage<TMessage>>>> LoadCompactSnapshotAsync(
             LoadingTopic loadingTpic,
-            IKeyFilter<TKey> filter,
+            IDataFilter<TKey> filter,
             CancellationToken ct);
     }
 }

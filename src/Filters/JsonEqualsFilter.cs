@@ -7,7 +7,7 @@ namespace KafkaSnapshot.Filters
     /// <summary>
     /// Json equals filter.
     /// </summary>
-    public class JsonEqualsFilter : IKeyFilter<string>
+    public class JsonEqualsFilter : IDataFilter<string>
     {
         /// <summary>
         /// Creates <see cref="JsonEqualsFilter"/>.
@@ -21,11 +21,11 @@ namespace KafkaSnapshot.Filters
         }
 
         /// <inheritdoc/>
-        public bool IsMatch(string key)
+        public bool IsMatch(string data)
         {
-            ArgumentNullException.ThrowIfNull(key);
+            ArgumentNullException.ThrowIfNull(data);
 
-            var jsonKey = JObject.Parse(key);
+            var jsonKey = JObject.Parse(data);
 
 
             return JToken.DeepEquals(jsonKey, _sample);

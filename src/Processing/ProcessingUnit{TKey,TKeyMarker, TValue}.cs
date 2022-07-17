@@ -92,7 +92,7 @@ namespace KafkaSnapshot.Processing
         private readonly ISnapshotLoader<TKey, TValue> _kafkaLoader;
         private readonly IDataExporter<TKey, TKeyMarker, TValue, ExportedTopic> _exporter;
         private readonly ILogger<ProcessingUnit<TKey, TKeyMarker, TValue>> _logger;
-        private readonly IKeyFilter<TKey> _keyFilter;
+        private readonly IDataFilter<TKey> _keyFilter;
         private readonly LoadingTopic _topicParams;
         private readonly ExportedTopic _exportedTopic;
     }

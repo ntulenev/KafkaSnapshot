@@ -15,7 +15,7 @@ namespace KafkaSnapshot.Filters.Tests
         {
             // Arrange
             var factory = new NaiveKeyFiltersFactory<object>();
-            IKeyFilter<object> result = null!;
+            IDataFilter<object> result = null!;
 
             // Act
             var exception = Record.Exception(() => result = factory.Create(FilterType.None, new(), new()));
@@ -33,7 +33,7 @@ namespace KafkaSnapshot.Filters.Tests
         {
             // Arrange
             var factory = new NaiveKeyFiltersFactory<object>();
-            IKeyFilter<object> result = null!;
+            IDataFilter<object> result = null!;
 
             // Act
             var exception = Record.Exception(() => result = factory.Create(FilterType.Equals, keyType, new()));
@@ -49,7 +49,7 @@ namespace KafkaSnapshot.Filters.Tests
         {
             // Arrange
             var factory = new NaiveKeyFiltersFactory<string>();
-            IKeyFilter<string> result = null!;
+            IDataFilter<string> result = null!;
             string value = "{\"value\": 1 }";
 
             // Act
@@ -58,6 +58,22 @@ namespace KafkaSnapshot.Filters.Tests
             // Assert
             exception.Should().BeNull();
             result.Should().BeOfType(typeof(JsonEqualsFilter));
+        }
+
+        [Fact(DisplayName = "Equals filter cant be created for ignored type.")]
+        [Trait("Category", "Unit")]
+        public void EqualsFilterCantBeCreatedForIgnoreKeyByFactory()
+        {
+            // Arrange
+            var factory = new NaiveKeyFiltersFactory<string>();
+            IDataFilter<string> result = null!;
+            string value = "{\"value\": 1 }";
+
+            // Act
+            var exception = Record.Exception(() => result = factory.Create(FilterType.Equals, KeyType.Ignored, value));
+
+            // Assert
+            exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
         }
     }
 }

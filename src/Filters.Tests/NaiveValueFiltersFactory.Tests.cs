@@ -15,7 +15,7 @@ namespace KafkaSnapshot.Filters.Tests
         {
             // Arrange
             var factory = new NaiveValueFiltersFactory<object>();
-            IKeyFilter<object> result = null!;
+            IDataFilter<object> result = null!;
 
             // Act
             var exception = Record.Exception(() => result = factory.Create(FilterType.None, new(), new()));
@@ -32,7 +32,7 @@ namespace KafkaSnapshot.Filters.Tests
         {
             // Arrange
             var factory = new NaiveValueFiltersFactory<object>();
-            IKeyFilter<object> result = null!;
+            IDataFilter<object> result = null!;
 
             // Act
             var exception = Record.Exception(() => result = factory.Create(FilterType.Equals, messageType, new()));
@@ -48,7 +48,7 @@ namespace KafkaSnapshot.Filters.Tests
         {
             // Arrange
             var factory = new NaiveValueFiltersFactory<string>();
-            IKeyFilter<string> result = null!;
+            IDataFilter<string> result = null!;
             string value = "{\"value\": 1 }";
 
             // Act
@@ -66,7 +66,7 @@ namespace KafkaSnapshot.Filters.Tests
         {
             // Arrange
             var factory = new NaiveValueFiltersFactory<object>();
-            IKeyFilter<object> result = null!;
+            IDataFilter<object> result = null!;
 
             // Act
             var exception = Record.Exception(() => result = factory.Create(FilterType.Equals, messageType, new()));

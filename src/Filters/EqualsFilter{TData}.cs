@@ -3,10 +3,10 @@
 namespace KafkaSnapshot.Filters
 {
     /// <summary>
-    /// Check key on equality with sample.
+    /// Check data on equality with sample.
     /// </summary>
     /// <typeparam name="TKey">Message data type.</typeparam>
-    public class EqualsFilter<TData> : IKeyFilter<TData> where TData : notnull
+    public class EqualsFilter<TData> : IDataFilter<TData> where TData : notnull
     {
         /// <summary>
         /// Creates <see cref="EqualsFilter{TKey}"/>.
@@ -18,11 +18,11 @@ namespace KafkaSnapshot.Filters
         }
 
         /// <inheritdoc/>
-        public bool IsMatch(TData key)
+        public bool IsMatch(TData data)
         {
-            ArgumentNullException.ThrowIfNull(key);
+            ArgumentNullException.ThrowIfNull(data);
 
-            return key.Equals(_sample);
+            return data.Equals(_sample);
         }
 
         private readonly TData _sample;

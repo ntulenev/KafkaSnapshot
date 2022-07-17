@@ -15,6 +15,6 @@ namespace KafkaSnapshot.Abstractions.Filters
         /// <param name="keyType">Key type.</param>
         /// <param name="sample">Key value sample.</param>
         /// <returns>Filter for this key type and filter type.</returns>
-        public IKeyFilter<TKey> Create(FilterType filterKeyType, KeyType keyType, TKey sample);
+        public IDataFilter<TKey> Create(FilterType filterKeyType, KeyType keyType, TKey sample);
     }
 }

@@ -46,7 +46,7 @@ namespace KafkaSnapshot.Import
         ///<inheritdoc/>
         public async Task<IEnumerable<KeyValuePair<TKey, MetaMessage<TMessage>>>> LoadCompactSnapshotAsync(
             LoadingTopic topicParams,
-            IKeyFilter<TKey> keyFilter,
+            IDataFilter<TKey> keyFilter,
             CancellationToken ct)
         {
             ArgumentNullException.ThrowIfNull(topicParams);
@@ -72,7 +72,7 @@ namespace KafkaSnapshot.Import
         private async Task<IEnumerable<KeyValuePair<TKey, MetaMessage<TMessage>>>> ConsumeInitialAsync
            (TopicWatermark topicWatermark,
             LoadingTopic topicParams,
-            IKeyFilter<TKey> keyFilter,
+            IDataFilter<TKey> keyFilter,
             CancellationToken ct)
         {
             var consumedEntities = await Task.WhenAll(topicWatermark.Watermarks
@@ -87,7 +87,7 @@ namespace KafkaSnapshot.Import
         private IEnumerable<KeyValuePair<TKey, MetaMessage<TMessage>>> ConsumeToWatermark(
             PartitionWatermark watermark,
             LoadingTopic topicParams,
-            IKeyFilter<TKey> keyFilter,
+            IDataFilter<TKey> keyFilter,
             CancellationToken ct)
         {
             using var _ = _logger.BeginScope("Partition {Partition}", watermark.Partition.Value);

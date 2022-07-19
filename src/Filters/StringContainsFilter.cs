@@ -21,7 +21,7 @@ namespace KafkaSnapshot.Filters
 
             if (string.IsNullOrWhiteSpace(sample))
             {
-                throw new ArgumentNullException(nameof(sample), "Sample is empty of whitespace.");
+                throw new ArgumentException("Sample is empty of whitespace.", nameof(sample));
             }
 
             _sample = sample;

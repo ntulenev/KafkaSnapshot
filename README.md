@@ -12,6 +12,8 @@ Supports:
 
 By default messages should contains JSON data. Simple strings also supported (see ExportRawMessage parameter).
 
+'Contains' key filter could be applied only to string keys.
+
 ![Details](Case1.PNG)
 
 Config example:
@@ -64,6 +66,15 @@ Config example:
         "KeyType": "Ignored",
         "Compacting": "Off",
         "ExportFileName": "topic4.json"
+      },
+      {
+        "Name": "topic5",
+        "KeyType": "String",
+        "Compacting": "Off",
+        "FilterKeyType": "Contains",
+        "FilterKeyValue": "Test",
+        "ExportRawMessage": true,
+        "ExportFileName": "topic5.json"
       }
 ```
 Config params:
@@ -82,8 +93,8 @@ Config params:
 | KeyType        | Apache Kafka topic key representation (Json,String,Long,Ignored) |
 | Compacting     | Use compacting by key or not (On,Off). Not supported for Ignored keyType |
 | ExportFileName | File name for exported data  |
-| FilterKeyType | Equals or None (optional)  |
-| FilterKeyValue | Sample value for filtering (if FilterKeyType sets as 'Equals') |
+| FilterKeyType | Equals, Contains or None (optional)  |
+| FilterKeyValue | Sample value for filtering (if FilterKeyType sets as 'Equals' or 'Contains') |
 | OffsetStartDate | First message date (optional). Use to skip old messages in large topics|
 | OffsetEndDate | Message date top limit (optional). Use to limit filtering messages in large topics|
 | ExportRawMessage | If true - export will write message as raw string without converting to formatted json (optional)|

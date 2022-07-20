@@ -6,6 +6,7 @@
     public enum FilterType
     {
         None,
-        Equals
+        Equals,
+        Contains
     }
 }

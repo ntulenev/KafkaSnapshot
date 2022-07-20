@@ -17,6 +17,7 @@ namespace KafkaSnapshot.Filters
                 (FilterType.None, _, _) => _default,
                 (FilterType.Equals, KeyType.Long or KeyType.String, _) => new EqualsFilter<TKey>(sample),
                 (FilterType.Equals, KeyType.Json, string json) => (IDataFilter<TKey>)new JsonEqualsFilter(json),
+                (FilterType.Contains, KeyType.String, string data) => (IDataFilter<TKey>)new StringContainsFilter(data),
                 _ => throw new ArgumentException($"Invalid filter type {filterKeyType} for key type {keyType} with sample type {typeof(TKey).Name}.", nameof(filterKeyType)),
             };
 

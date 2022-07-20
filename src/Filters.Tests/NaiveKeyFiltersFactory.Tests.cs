@@ -75,5 +75,41 @@ namespace KafkaSnapshot.Filters.Tests
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
         }
+
+        [Fact(DisplayName = "Contains filter can be created for string type.")]
+        [Trait("Category", "Unit")]
+        public void ContainsFilterCanBeCreatedForStringKeyByFactory()
+        {
+            // Arrange
+            var factory = new NaiveKeyFiltersFactory<string>();
+            IDataFilter<string> result = null!;
+            string value = "data";
+
+            // Act
+            var exception = Record.Exception(() => result = factory.Create(FilterType.Contains, KeyType.String, value));
+
+            // Assert
+            exception.Should().BeNull();
+            result.Should().BeOfType(typeof(StringContainsFilter));
+        }
+
+        [Theory(DisplayName = "Contains filter cant be created for non string type.")]
+        [Trait("Category", "Unit")]
+        [InlineData(KeyType.Json)]
+        [InlineData(KeyType.Long)]
+        [InlineData(KeyType.Ignored)]
+        public void ContainsFilterCantBeCreatedForNonStringKeyByFactory(KeyType keyType)
+        {
+            // Arrange
+            var factory = new NaiveKeyFiltersFactory<string>();
+            IDataFilter<string> result = null!;
+            string value = "data";
+
+            // Act
+            var exception = Record.Exception(() => result = factory.Create(FilterType.Contains, keyType, value));
+
+            // Assert
+            exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
+        }
     }
 }

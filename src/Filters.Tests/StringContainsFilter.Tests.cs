@@ -31,7 +31,7 @@ namespace KafkaSnapshot.Filters.Tests
             var exception = Record.Exception(() => new StringContainsFilter(value));
 
             // Assert
-            exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
+            exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
         }
 
         [Fact(DisplayName = "Unable to create StringContains filter with spaces only value.")]

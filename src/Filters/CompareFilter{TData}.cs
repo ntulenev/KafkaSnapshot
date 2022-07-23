@@ -12,6 +12,8 @@ namespace KafkaSnapshot.Filters
 
         public bool IsMatch(TData data)
         {
+            ArgumentNullException.ThrowIfNull(data);
+
             var result = data.CompareTo(_sample);
 
             if (_greater)

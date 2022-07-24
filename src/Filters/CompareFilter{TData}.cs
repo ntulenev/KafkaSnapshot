@@ -26,6 +26,8 @@ namespace KafkaSnapshot.Filters
             }
         }
 
+        public bool IsGreaterWay => _greater;
+
         private readonly bool _greater;
         private readonly TData _sample;
 

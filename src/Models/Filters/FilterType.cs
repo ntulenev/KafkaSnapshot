@@ -7,6 +7,8 @@
     {
         None,
         Equals,
-        Contains
+        Contains,
+        LessOrEquals,
+        GreaterOrEquals
     }
 }

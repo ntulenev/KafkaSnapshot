@@ -15,6 +15,8 @@ namespace KafkaSnapshot.Filters
             IDataFilter<TKey> filter = (filterKeyType, keyType, sample) switch
             {
                 (FilterType.None, _, _) => _default,
+                (FilterType.GreaterOrEquals, KeyType.Long, long longSample) => (IDataFilter<TKey>)new CompareFilter<long>(longSample, greater: true),
+                (FilterType.LessOrEquals, KeyType.Long, long longSample) => (IDataFilter<TKey>)new CompareFilter<long>(longSample, greater: false),
                 (FilterType.Equals, KeyType.Long or KeyType.String, _) => new EqualsFilter<TKey>(sample),
                 (FilterType.Equals, KeyType.Json, string json) => (IDataFilter<TKey>)new JsonEqualsFilter(json),
                 (FilterType.Contains, KeyType.String, string data) => (IDataFilter<TKey>)new StringContainsFilter(data),

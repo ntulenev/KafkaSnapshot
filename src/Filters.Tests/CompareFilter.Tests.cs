@@ -23,6 +23,23 @@ namespace KafkaSnapshot.Filters.Tests
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
         }
 
+        [Theory(DisplayName = "Compare filter could be created.")]
+        [Trait("Category", "Unit")]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void CompareFilterCanBeCreated(bool side)
+        {
+
+            // Arrange
+            string value = "data";
+
+            // Act
+            var result = new CompareFilter<string>(value, side);
+
+            // Assert
+            result.IsGreaterWay.Should().Be(side);
+        }
+
         [Theory(DisplayName = "Unable to create Compare filter with null match.")]
         [Trait("Category", "Unit")]
         [InlineData(true)]

@@ -59,7 +59,7 @@ namespace KafkaSnapshot.Filters.Tests
             result.Should().BeOfType(typeof(JsonEqualsFilter));
         }
 
-        [Theory(DisplayName = "Equals filter can be created.")]
+        [Theory(DisplayName = "Json Equals filter can't be created.")]
         [Trait("Category", "Unit")]
         [InlineData(ValueMessageType.Json)]
         public void EqualsFilterCantBeCreatedForJsonOnObject(ValueMessageType messageType)
@@ -70,6 +70,40 @@ namespace KafkaSnapshot.Filters.Tests
 
             // Act
             var exception = Record.Exception(() => result = factory.Create(FilterType.Equals, messageType, new()));
+
+            // Assert
+            exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
+        }
+
+        [Theory(DisplayName = "GreaterOrEquals filter can't be created.")]
+        [Trait("Category", "Unit")]
+        [InlineData(ValueMessageType.Json)]
+        [InlineData(ValueMessageType.Raw)]
+        public void GreaterOrEqualsFilterCantBeCreated(ValueMessageType messageType)
+        {
+            // Arrange
+            var factory = new NaiveValueFiltersFactory<object>();
+            IDataFilter<object> result = null!;
+
+            // Act
+            var exception = Record.Exception(() => result = factory.Create(FilterType.GreaterOrEquals, messageType, new()));
+
+            // Assert
+            exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
+        }
+
+        [Theory(DisplayName = "LessOrEquals filter can't be created.")]
+        [Trait("Category", "Unit")]
+        [InlineData(ValueMessageType.Json)]
+        [InlineData(ValueMessageType.Raw)]
+        public void LessOrEqualsFilterCantBeCreated(ValueMessageType messageType)
+        {
+            // Arrange
+            var factory = new NaiveValueFiltersFactory<object>();
+            IDataFilter<object> result = null!;
+
+            // Act
+            var exception = Record.Exception(() => result = factory.Create(FilterType.LessOrEquals, messageType, new()));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentException>();

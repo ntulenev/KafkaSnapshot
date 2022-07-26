@@ -13,6 +13,7 @@ Supports:
 By default messages should contains JSON data. Simple strings also supported (see ExportRawMessage parameter).
 
 'Contains' key filter could be applied only to string keys.
+'GreaterOrEquals' and 'LessOrEquals' filters could be applied only to long keys.
 
 ![Details](Case1.PNG)
 
@@ -75,6 +76,22 @@ Config example:
         "FilterKeyValue": "Test",
         "ExportRawMessage": true,
         "ExportFileName": "topic5.json"
+      },
+      {
+        "Name": "topic6",
+        "KeyType": "Long",
+        "Compacting": "Off",
+        "FilterKeyType": "LessOrEquals",
+        "FilterKeyValue": 3,
+        "ExportFileName": "topic6.json"
+      },
+      {
+        "Name": "topic7",
+        "KeyType": "Long",
+        "Compacting": "Off",
+        "FilterKeyType": "GreaterOrEquals",
+        "FilterKeyValue": 3,
+        "ExportFileName": "topic7.json"
       }
 ```
 Config params:
@@ -94,7 +111,7 @@ Config params:
 | Compacting     | Use compacting by key or not (On,Off). Not supported for Ignored keyType |
 | ExportFileName | File name for exported data  |
 | FilterKeyType | Equals, Contains or None (optional)  |
-| FilterKeyValue | Sample value for filtering (if FilterKeyType sets as 'Equals' or 'Contains') |
+| FilterKeyValue | Sample value for filtering (if FilterKeyType sets as 'Equals', 'Contains','GreaterOrEquals' or 'LessOrEquals') |
 | OffsetStartDate | First message date (optional). Use to skip old messages in large topics|
 | OffsetEndDate | Message date top limit (optional). Use to limit filtering messages in large topics|
 | ExportRawMessage | If true - export will write message as raw string without converting to formatted json (optional)|

@@ -93,6 +93,18 @@ namespace KafkaSnapshot.Processing.Configuration.Validation
                 }
             }
 
+            var fileDuplicates = options.Topics.GroupBy(x => x.ExportFileName, new FileNameComparer())
+                                               .Where(x => x.Count() > 1)
+                                               .Select(x => x.Key)
+                                               .ToList();
+
+            if (fileDuplicates.Any())
+            {
+                var duplicates = string.Join(",", fileDuplicates);
+                return ValidateOptionsResult.Fail($"Files names duplicate in several topics ({duplicates}).");
+
+            }
+
             return ValidateOptionsResult.Success;
         }
 

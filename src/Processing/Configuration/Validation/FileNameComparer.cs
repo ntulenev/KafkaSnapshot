@@ -3,7 +3,7 @@
 namespace KafkaSnapshot.Processing.Configuration.Validation
 {
     /// <summary>
-    /// File name comparer
+    /// File name comparer.
     /// </summary>
     public class FileNameComparer : IEqualityComparer<string>
     {

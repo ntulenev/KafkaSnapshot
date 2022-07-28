@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 
 namespace KafkaSnapshot.Processing.Configuration.Validation
 {
@@ -19,6 +20,6 @@ namespace KafkaSnapshot.Processing.Configuration.Validation
         }
 
         /// <inheritdoc/>
-        public int GetHashCode([DisallowNull] string obj) => HashCode.Combine(obj);
+        public int GetHashCode([DisallowNull] string obj) => HashCode.Combine(obj.ToLower(CultureInfo.CurrentCulture));
     }
 }

@@ -60,6 +60,51 @@ namespace KafkaSnapshot.Processing.Tests
             result.Succeeded.Should().BeTrue();
         }
 
+
+        [Fact(DisplayName = "LoaderToolConfigurationValidator can't be validated for same files.")]
+        [Trait("Category", "Unit")]
+        public void LoaderToolConfigurationValidatorCantBeValidatedForSameFiles()
+        {
+
+            // Arrange
+            var validator = new LoaderToolConfigurationValidator();
+            var name = "Test";
+            ValidateOptionsResult result = null!;
+            var options = new LoaderToolConfiguration
+            {
+                UseConcurrentLoad = true,
+                Topics = new List<TopicConfiguration>
+                 {
+                      new TopicConfiguration
+                      {
+                          Name = "test",
+                          Compacting = CompactingMode.On,
+                          ExportFileName = "export",
+                          ExportRawMessage = true,
+                          FilterKeyType = Models.Filters.FilterType.None,
+                          KeyType = Models.Filters.KeyType.Json,
+                      },
+                      new TopicConfiguration
+                      {
+                          Name = "test",
+                          Compacting = CompactingMode.On,
+                          ExportFileName = "Export",
+                          ExportRawMessage = true,
+                          FilterKeyType = Models.Filters.FilterType.None,
+                          KeyType = Models.Filters.KeyType.Json,
+                      },
+
+                 }
+            };
+
+            // Act
+            var exception = Record.Exception(() => result = validator.Validate(name, options));
+
+            // Assert
+            exception.Should().BeNull();
+            result.Succeeded.Should().BeFalse();
+        }
+
         [Fact(DisplayName = "LoaderToolConfigurationValidator cant be validated with null options.")]
         [Trait("Category", "Unit")]
         public void LoaderToolConfigurationValidatorCantBeValidatedWithNullOptions()

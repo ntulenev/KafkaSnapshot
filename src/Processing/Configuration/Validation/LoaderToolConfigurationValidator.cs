@@ -93,7 +93,7 @@ namespace KafkaSnapshot.Processing.Configuration.Validation
                 }
             }
 
-            var fileDuplicates = options.Topics.GroupBy(x => x.ExportFileName, new FileNameComparer())
+            var fileDuplicates = options.Topics.GroupBy(x => x.ExportFileName, StringComparer.CurrentCultureIgnoreCase)
                                                .Where(x => x.Count() > 1)
                                                .Select(x => x.Key)
                                                .ToList();

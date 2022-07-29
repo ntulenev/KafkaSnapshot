@@ -95,6 +95,7 @@ namespace KafkaSnapshot.Import
             _logger.LogInformation("Watermarks: Low {Low}, High {High}", watermark.Offset.Low, watermark.Offset.High);
 
             using var consumer = _consumerFactory();
+
             try
             {
 
@@ -115,11 +116,14 @@ namespace KafkaSnapshot.Import
 
                 ConsumeResult<TKey, TMessage> result;
 
+                bool isFinalOffsetDateReached() => topicParams.HasEndOffsetDate &&
+                                                   result.Message.Timestamp.UtcDateTime > topicParams.EndOffsetDate;
+
                 do
                 {
                     result = consumer.Consume(ct);
 
-                    if (topicParams.HasEndOffsetDate && result.Message.Timestamp.UtcDateTime > topicParams.EndOffsetDate)
+                    if (isFinalOffsetDateReached())
                     {
                         _logger.LogInformation("Final date offset {date} reached", topicParams.EndOffsetDate);
                         break;

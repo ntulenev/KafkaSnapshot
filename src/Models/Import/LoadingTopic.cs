@@ -51,9 +51,20 @@ namespace KafkaSnapshot.Models.Import
         /// </summary>
         public bool HasPartitionFilter => _partitionFilter.Any();
 
+        /// <summary>
+        /// Type of data sorting for <see cref="SortOrder"/>.
+        /// </summary>
         public SortingType SortingType { get; }
 
+        /// <summary>
+        /// Data sorting order before compacting.
+        /// </summary>
         public SortOrder SortOrder { get; }
+
+        /// <summary>
+        /// Skip next partitions if data was found in current.
+        /// </summary>
+        public bool IgnoreNextParitionsAfterDataFound { get; }
 
         /// <summary>
         /// Creates <see cref="LoadingTopic"/>.
@@ -67,7 +78,8 @@ namespace KafkaSnapshot.Models.Import
                             DateFilterParams dateParams,
                             HashSet<int>? partitionFilter = null!,
                             SortingType sortingType = SortingType.Time,
-                            SortOrder sortingOrder = SortOrder.No)
+                            SortOrder sortingOrder = SortOrder.No,
+                            bool ignoreNextParitionsAfterDataFound = false)
         {
             ValidateTopicName(name);
             Value = name;
@@ -80,6 +92,8 @@ namespace KafkaSnapshot.Models.Import
 
             SortingType = sortingType;
             SortOrder = sortingOrder;
+
+            IgnoreNextParitionsAfterDataFound = ignoreNextParitionsAfterDataFound;
 
             if (partitionFilter != null)
             {

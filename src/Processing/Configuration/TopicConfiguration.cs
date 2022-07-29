@@ -59,6 +59,11 @@ namespace KafkaSnapshot.Processing.Configuration
         public HashSet<int>? PartitionsIds { get; set; }
 
         /// <summary>
+        /// Skip all partitions after first with any matching data.
+        /// </summary>
+        public bool IgnoreNextParitionsAfterDataFound { get; set; }
+
+        /// <summary>
         /// Converts configuration to <see cref="ProcessingTopic{TKey}"/>.
         /// </summary>
         /// <typeparam name="TKey">Message key.</typeparam>
@@ -74,7 +79,12 @@ namespace KafkaSnapshot.Processing.Configuration
                                              Compacting == CompactingMode.On,
                                              FilterKeyType,
                                              KeyType,
-                                             typedFilterKeyValue!, OffsetStartDate, OffsetEndDate, ExportRawMessage, PartitionsIds);
+                                             typedFilterKeyValue!, 
+                                             OffsetStartDate, 
+                                             OffsetEndDate, 
+                                             ExportRawMessage, 
+                                             PartitionsIds,
+                                             IgnoreNextParitionsAfterDataFound);
         }
     }
 }

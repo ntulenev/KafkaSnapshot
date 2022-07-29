@@ -13,6 +13,7 @@ namespace KafkaSnapshot.Models.Processing
     /// <param name="FilterKeyValue">Filter key value.</param>
     /// <param name="StartingDate">Optional date for initial osset.</param>
     /// <param name="ExportRawMessage">Use raw string for message or json.</param>
+    /// <param name="IgnoreNextParitionsAfterDataFound">Skips next partitions if data was found.</param>
     public record ProcessingTopic<TKey>(string Name,
                                         string ExportName,
                                         bool LoadWithCompacting,
@@ -22,5 +23,6 @@ namespace KafkaSnapshot.Models.Processing
                                         DateTime? StartingDate,
                                         DateTime? EndingDate,
                                         bool ExportRawMessage,
-                                        HashSet<int>? PartitionIdsFilter = null);
+                                        HashSet<int>? PartitionIdsFilter = null,
+                                        bool IgnoreNextParitionsAfterDataFound = false);
 }

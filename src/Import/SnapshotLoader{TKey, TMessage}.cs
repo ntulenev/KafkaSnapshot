@@ -127,6 +127,10 @@ namespace KafkaSnapshot.Import
 
                     if (keyFilter.IsMatch(result.Message.Key))
                     {
+
+                        //If Skip IgnoreNextParitionsAfterDataFound is set send signal to other tasks
+                        //TODO need to think how to handle it.
+
                         _logger.LogTrace("Loading {Key} - {Value}", result.Message.Key, result.Message.Value);
                         var meta = new MessageMeta(result.Message.Timestamp.UtcDateTime, watermark.Partition.Value, result.Offset.Value);
                         var message = new MetaMessage<TMessage>(result.Message.Value, meta);

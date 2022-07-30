@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 
 using Microsoft.Extensions.Options;
@@ -9,24 +10,39 @@ namespace KafkaSnapshot.Processing.Configuration.Validation
     /// </summary>
     public class LoaderToolConfigurationValidator : IValidateOptions<LoaderToolConfiguration>
     {
+        private static bool TryFailCommon(LoaderToolConfiguration options,
+                                          [NotNullWhen(returnValue: true)] out ValidateOptionsResult result)
+        {
+            if (options is null)
+            {
+                result = ValidateOptionsResult.Fail("Configuration object is null.");
+                return true;
+            }
+
+            if (options.Topics is null)
+            {
+                result = ValidateOptionsResult.Fail("Topics section is not set.");
+                return true;
+            }
+
+            if (!options.Topics.Any())
+            {
+                result = ValidateOptionsResult.Fail("Topics section is empty.");
+                return true;
+            }
+
+            result = null!;
+            return false;
+        }
+
         /// <summary>
         /// Validates <see cref="LoaderToolConfiguration"/>.
         /// </summary>
         public ValidateOptionsResult Validate(string name, LoaderToolConfiguration options)
         {
-            if (options is null)
+            if (TryFailCommon(options, out var error))
             {
-                return ValidateOptionsResult.Fail("Configuration object is null.");
-            }
-
-            if (options.Topics is null)
-            {
-                return ValidateOptionsResult.Fail("Topics section is not set.");
-            }
-
-            if (!options.Topics.Any())
-            {
-                return ValidateOptionsResult.Fail("Topics section is empty.");
+                return error;
             }
 
             foreach (var topic in options.Topics)

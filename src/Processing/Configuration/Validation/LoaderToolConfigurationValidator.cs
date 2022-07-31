@@ -10,7 +10,85 @@ namespace KafkaSnapshot.Processing.Configuration.Validation
     /// </summary>
     public class LoaderToolConfigurationValidator : IValidateOptions<LoaderToolConfiguration>
     {
-        private static bool TryFailCommon(LoaderToolConfiguration options,
+
+        private static bool TryFailOnTopicRules(TopicConfiguration topic, [NotNullWhen(returnValue: true)] out ValidateOptionsResult result)
+        {
+            if (topic.Name is null)
+            {
+                result = ValidateOptionsResult.Fail("Topic name is not set.");
+                return true;
+            }
+
+            if (string.IsNullOrWhiteSpace(topic.Name))
+            {
+                result = ValidateOptionsResult.Fail(
+                    "The topic name cannot be empty or consist of whitespaces.");
+                return true;
+            }
+
+            if (topic.Name.Any(character => char.IsWhiteSpace(character)))
+            {
+                result = ValidateOptionsResult.Fail(
+                    $"The topic name {topic.Name} cannot contain whitespaces.");
+                return true;
+            }
+
+            if (topic.Name.Length > MAX_TOPIC_NAME_LENGTH)
+            {
+                result = ValidateOptionsResult.Fail(
+                    $"The name of a topic {topic.Name} is too long.");
+                return true;
+            }
+
+            if (!_topicNameCharacters.IsMatch(topic.Name))
+            {
+                result = ValidateOptionsResult.Fail(
+                   $"Incorrect topic name {topic.Name}. The topic name may consist of characters 'a' to 'z', 'A' to 'Z', digits, and minus signs.");
+                return true;
+            }
+
+            if (topic.ExportFileName is null)
+            {
+                result = ValidateOptionsResult.Fail("Topic export name is not set.");
+                return true;
+            }
+
+            if (string.IsNullOrWhiteSpace(topic.ExportFileName))
+            {
+                result = ValidateOptionsResult.Fail(
+                    "The topic export name cannot be empty or consist of whitespaces.");
+                return true;
+            }
+
+            if (topic.FilterKeyType is not Models.Filters.FilterType.None)
+            {
+                if (topic.FilterKeyValue is null)
+                {
+                    result = ValidateOptionsResult.Fail($"Filter value does not set for topic {topic.Name}.");
+                    return true;
+                }
+            }
+
+            if (topic.KeyType == Models.Filters.KeyType.Ignored && topic.Compacting == CompactingMode.On)
+            {
+                result = ValidateOptionsResult.Fail($"Compacting is not supported for ignored keys. Topic {topic.Name}.");
+                return true;
+            }
+
+            if (topic.OffsetStartDate is not null && topic.OffsetEndDate is not null)
+            {
+                if (topic.OffsetStartDate > topic.OffsetEndDate)
+                {
+                    result = ValidateOptionsResult.Fail($"Topic start date ({topic.OffsetStartDate}) is greater than end date ({topic.OffsetEndDate}). Topic {topic.Name}.");
+                    return true;
+                }
+            }
+
+            result = null!;
+            return false;
+        }
+
+        private static bool TryFailOnEmptyConfig(LoaderToolConfiguration options,
                                           [NotNullWhen(returnValue: true)] out ValidateOptionsResult result)
         {
             if (options is null)
@@ -40,72 +118,16 @@ namespace KafkaSnapshot.Processing.Configuration.Validation
         /// </summary>
         public ValidateOptionsResult Validate(string name, LoaderToolConfiguration options)
         {
-            if (TryFailCommon(options, out var error))
+            if (TryFailOnEmptyConfig(options, out var error))
             {
                 return error;
             }
 
             foreach (var topic in options.Topics)
             {
-                if (topic.Name is null)
+                if (TryFailOnTopicRules(topic, out var topicError))
                 {
-                    return ValidateOptionsResult.Fail("Topic name is not set.");
-                }
-
-                if (string.IsNullOrWhiteSpace(topic.Name))
-                {
-                    return ValidateOptionsResult.Fail(
-                        "The topic name cannot be empty or consist of whitespaces.");
-                }
-
-                if (topic.Name.Any(character => char.IsWhiteSpace(character)))
-                {
-                    return ValidateOptionsResult.Fail(
-                        $"The topic name {topic.Name} cannot contain whitespaces.");
-                }
-
-                if (topic.Name.Length > MAX_TOPIC_NAME_LENGTH)
-                {
-                    return ValidateOptionsResult.Fail(
-                        $"The name of a topic {topic.Name} is too long.");
-                }
-
-                if (!_topicNameCharacters.IsMatch(topic.Name))
-                {
-                    return ValidateOptionsResult.Fail(
-                       $"Incorrect topic name {topic.Name}. The topic name may consist of characters 'a' to 'z', 'A' to 'Z', digits, and minus signs.");
-                }
-
-                if (topic.ExportFileName is null)
-                {
-                    return ValidateOptionsResult.Fail("Topic export name is not set.");
-                }
-
-                if (string.IsNullOrWhiteSpace(topic.ExportFileName))
-                {
-                    return ValidateOptionsResult.Fail(
-                        "The topic export name cannot be empty or consist of whitespaces.");
-                }
-
-                if (topic.FilterKeyType is not Models.Filters.FilterType.None)
-                {
-                    if (topic.FilterKeyValue is null)
-                    {
-                        return ValidateOptionsResult.Fail($"Filter value does not set for topic {topic.Name}.");
-                    }
-                }
-
-                if (topic.KeyType == Models.Filters.KeyType.Ignored && topic.Compacting == CompactingMode.On)
-                {
-                    return ValidateOptionsResult.Fail($"Compacting is not supported for ignored keys. Topic {topic.Name}.");
-                }
-
-                if (topic.OffsetStartDate is not null && topic.OffsetEndDate is not null)
-                {
-                    if (topic.OffsetStartDate > topic.OffsetEndDate)
-                    {
-                        return ValidateOptionsResult.Fail($"Topic start date ({topic.OffsetStartDate}) is greater than end date ({topic.OffsetEndDate}). Topic {topic.Name}.");
-                    }
+                    return topicError;
                 }
             }
 

@@ -10,7 +10,6 @@ namespace KafkaSnapshot.Processing.Configuration.Validation
     /// </summary>
     public class LoaderToolConfigurationValidator : IValidateOptions<LoaderToolConfiguration>
     {
-
         private static bool TryFailOnTopicRules(TopicConfiguration topic, [NotNullWhen(returnValue: true)] out ValidateOptionsResult result)
         {
             if (topic.Name is null)
@@ -113,6 +112,25 @@ namespace KafkaSnapshot.Processing.Configuration.Validation
             return false;
         }
 
+        private static bool TryFailOnDuplicateFiles(LoaderToolConfiguration options,
+                                                   [NotNullWhen(returnValue: true)] out ValidateOptionsResult result)
+        {
+            var fileDuplicates = options.Topics.GroupBy(x => x.ExportFileName, StringComparer.CurrentCultureIgnoreCase)
+                                              .Where(x => x.Count() > 1)
+                                              .Select(x => x.Key)
+                                              .ToList();
+
+            if (fileDuplicates.Any())
+            {
+                var duplicates = string.Join(",", fileDuplicates);
+                result = ValidateOptionsResult.Fail($"Files names duplicate in several topics ({duplicates}).");
+                return true;
+            }
+
+            result = null!;
+            return false;
+        }
+
         /// <summary>
         /// Validates <see cref="LoaderToolConfiguration"/>.
         /// </summary>
@@ -131,16 +149,9 @@ namespace KafkaSnapshot.Processing.Configuration.Validation
                 }
             }
 
-            var fileDuplicates = options.Topics.GroupBy(x => x.ExportFileName, StringComparer.CurrentCultureIgnoreCase)
-                                               .Where(x => x.Count() > 1)
-                                               .Select(x => x.Key)
-                                               .ToList();
-
-            if (fileDuplicates.Any())
+            if (TryFailOnDuplicateFiles(options, out var duplicateError))
             {
-                var duplicates = string.Join(",", fileDuplicates);
-                return ValidateOptionsResult.Fail($"Files names duplicate in several topics ({duplicates}).");
-
+                return duplicateError;
             }
 
             return ValidateOptionsResult.Success;

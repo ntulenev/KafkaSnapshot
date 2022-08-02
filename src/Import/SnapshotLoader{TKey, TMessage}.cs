@@ -47,11 +47,13 @@ namespace KafkaSnapshot.Import
         public async Task<IEnumerable<KeyValuePair<TKey, MetaMessage<TMessage>>>> LoadCompactSnapshotAsync(
             LoadingTopic topicParams,
             IDataFilter<TKey> keyFilter,
+            IDataFilter<TMessage> valueFilter,
             CancellationToken ct)
         {
             ArgumentNullException.ThrowIfNull(topicParams);
 
             ArgumentNullException.ThrowIfNull(keyFilter);
+            ArgumentNullException.ThrowIfNull(valueFilter);
 
             _logger.LogDebug("Loading topic watermark");
             var topicWatermark = await _topicWatermarkLoader
@@ -59,7 +61,8 @@ namespace KafkaSnapshot.Import
                                         .ConfigureAwait(false);
 
             _logger.LogDebug("Loading initial state");
-            var initialState = await ConsumeInitialAsync(topicWatermark, topicParams, keyFilter, ct).ConfigureAwait(false);
+            var initialState = await ConsumeInitialAsync(topicWatermark, topicParams, keyFilter, valueFilter, ct)
+                                    .ConfigureAwait(false);
 
             _logger.LogDebug("Creating compacting state");
             var compactedState = CreateSnapshot(initialState, topicParams.LoadWithCompacting);
@@ -73,11 +76,12 @@ namespace KafkaSnapshot.Import
            (TopicWatermark topicWatermark,
             LoadingTopic topicParams,
             IDataFilter<TKey> keyFilter,
+            IDataFilter<TMessage> valueFilter,
             CancellationToken ct)
         {
             var consumedEntities = await Task.WhenAll(topicWatermark.Watermarks
                 .Select(watermark =>
-                            Task.Run(() => ConsumeToWatermark(watermark, topicParams, keyFilter, ct))
+                            Task.Run(() => ConsumeToWatermark(watermark, topicParams, keyFilter, valueFilter, ct))
                        )
                 ).ConfigureAwait(false);
 
@@ -88,6 +92,7 @@ namespace KafkaSnapshot.Import
             PartitionWatermark watermark,
             LoadingTopic topicParams,
             IDataFilter<TKey> keyFilter,
+            IDataFilter<TMessage> valueFilter,
             CancellationToken ct)
         {
             using var _ = _logger.BeginScope("Partition {Partition}", watermark.Partition.Value);
@@ -129,7 +134,7 @@ namespace KafkaSnapshot.Import
                         break;
                     }
 
-                    if (keyFilter.IsMatch(result.Message.Key))
+                    if (keyFilter.IsMatch(result.Message.Key) && valueFilter.IsMatch(result.Message.Value))
                     {
                         _logger.LogTrace("Loading {Key} - {Value}", result.Message.Key, result.Message.Value);
                         var meta = new MessageMeta(result.Message.Timestamp.UtcDateTime, watermark.Partition.Value, result.Offset.Value);

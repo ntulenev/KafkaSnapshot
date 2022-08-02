@@ -16,12 +16,14 @@ namespace KafkaSnapshot.Abstractions.Import
         /// Loads topic as Dictionary with compacting per key.
         /// </summary>
         /// <param name="loadingTpic">loading topic config.</param>
-        /// <param name="filter">filter for topic's data.</param>
+        /// <param name="keyFilter">filter for topic's keys.</param>
+        /// <param name="valueFilter">filter for topic's values.</param>
         /// <param name="ct">Cancellation token.</param>
         /// <returns>Topic's data.</returns>
         public Task<IEnumerable<KeyValuePair<TKey, MetaMessage<TMessage>>>> LoadCompactSnapshotAsync(
             LoadingTopic loadingTpic,
-            IDataFilter<TKey> filter,
+            IDataFilter<TKey> keyFilter,
+            IDataFilter<TMessage> valueFilter,
             CancellationToken ct);
     }
 }

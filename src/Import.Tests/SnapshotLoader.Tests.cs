@@ -121,20 +121,25 @@ namespace KafkaSnapshot.Import.Tests
             var options = optionsMock.Object;
             var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader);
             var topicName = (LoadingTopic)null!;
-            var filterMock = new Mock<IDataFilter<object>>();
-            var filter = filterMock.Object;
+
+            var filterKeyMock = new Mock<IDataFilter<object>>();
+            var keyFilter = filterKeyMock.Object;
+
+            var filterValueMock = new Mock<IDataFilter<object>>();
+            var valueFilter = filterValueMock.Object;
+
             // Act
             var exception = await Record.ExceptionAsync(
-                async () => _ = await loader.LoadCompactSnapshotAsync(topicName, filter, CancellationToken.None).ConfigureAwait(false));
+                async () => _ = await loader.LoadCompactSnapshotAsync(topicName, keyFilter, valueFilter, CancellationToken.None).ConfigureAwait(false));
 
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
         }
 
-        [Fact(DisplayName = "SnapshotLoader can't load for null filter.")]
+        [Fact(DisplayName = "SnapshotLoader can't load for null key filter.")]
         [Trait("Category", "Unit")]
-        public async Task SnapshotLoaderCantLoadForNullFilter()
+        public async Task SnapshotLoaderCantLoadForNullKeyFilter()
         {
 
             // Arrange
@@ -149,10 +154,48 @@ namespace KafkaSnapshot.Import.Tests
             var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader);
             var withCompacting = true;
             var topicParams = new LoadingTopic("test", withCompacting, new DateFilterParams(null!, null!));
-            var filter = (IDataFilter<object>)null!;
+            var keyFilter = (IDataFilter<object>)null!;
+
+
+            var filterValueMock = new Mock<IDataFilter<object>>();
+            var valueFilter = filterValueMock.Object;
+
             // Act
             var exception = await Record.ExceptionAsync(
-                async () => _ = await loader.LoadCompactSnapshotAsync(topicParams, filter, CancellationToken.None).ConfigureAwait(false));
+                async () => _ = await loader.LoadCompactSnapshotAsync(topicParams, keyFilter, valueFilter, CancellationToken.None).ConfigureAwait(false));
+
+
+            // Assert
+            exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
+        }
+
+
+        [Fact(DisplayName = "SnapshotLoader can't load for null value filter.")]
+        [Trait("Category", "Unit")]
+        public async Task SnapshotLoaderCantLoadForNullValueFilter()
+        {
+
+            // Arrange
+            var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
+            var logger = loggerMock.Object;
+            IConsumer<object, object> consumerFactory() => null!;
+            var topicLoaderMock = new Mock<ITopicWatermarkLoader>();
+            var topicLoader = topicLoaderMock.Object;
+            var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>();
+            optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
+            var options = optionsMock.Object;
+            var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader);
+            var withCompacting = true;
+            var topicParams = new LoadingTopic("test", withCompacting, new DateFilterParams(null!, null!));
+
+            var filterKeyMock = new Mock<IDataFilter<object>>();
+            var keyFilter = filterKeyMock.Object;
+
+            var valueFilter = (IDataFilter<object>)null!;
+
+            // Act
+            var exception = await Record.ExceptionAsync(
+                async () => _ = await loader.LoadCompactSnapshotAsync(topicParams, keyFilter, valueFilter, CancellationToken.None).ConfigureAwait(false));
 
 
             // Assert
@@ -178,10 +221,15 @@ namespace KafkaSnapshot.Import.Tests
             var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader);
             var withCompacting = false;
             var topicName = new LoadingTopic("test", withCompacting, new DateFilterParams(null!, null!));
-            var filterMock = new Mock<IDataFilter<object>>();
-            filterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+            var filterKeyMock = new Mock<IDataFilter<object>>();
+            filterKeyMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
 
-            var filter = filterMock.Object;
+            var keyFilter = filterKeyMock.Object;
+
+            var filterValueMock = new Mock<IDataFilter<object>>();
+            filterValueMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+            var valueFilter = filterValueMock.Object;
+
             IEnumerable<KeyValuePair<object, MetaMessage<object>>> result = null!;
             var offset = new WatermarkOffsets(new Offset(0), new Offset(3));
             var topicWatermark = new TopicWatermark(new[]
@@ -240,7 +288,7 @@ namespace KafkaSnapshot.Import.Tests
 
             // Act
             var exception = await Record.ExceptionAsync(
-                async () => result = await loader.LoadCompactSnapshotAsync(topicName, filter, CancellationToken.None).ConfigureAwait(false));
+                async () => result = await loader.LoadCompactSnapshotAsync(topicName, keyFilter, valueFilter, CancellationToken.None).ConfigureAwait(false));
 
             // Assert
             exception.Should().BeNull();
@@ -266,10 +314,15 @@ namespace KafkaSnapshot.Import.Tests
             var withCompacting = false;
             var testDate = DateTime.UtcNow;
             var topicName = new LoadingTopic("test", withCompacting, new DateFilterParams(testDate, null!));
-            var filterMock = new Mock<IDataFilter<object>>();
-            filterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
 
-            var filter = filterMock.Object;
+            var keyFilterMock = new Mock<IDataFilter<object>>();
+            keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+            var keyFilter = keyFilterMock.Object;
+
+            var valueFilterMock = new Mock<IDataFilter<object>>();
+            valueFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+            var valueFilter = valueFilterMock.Object;
+
             IEnumerable<KeyValuePair<object, MetaMessage<object>>> result = null!;
             var offset = new WatermarkOffsets(new Offset(0), new Offset(3));
             var partition = new Partition(1);
@@ -335,7 +388,7 @@ namespace KafkaSnapshot.Import.Tests
 
             // Act
             var exception = await Record.ExceptionAsync(
-                async () => result = await loader.LoadCompactSnapshotAsync(topicName, filter, CancellationToken.None).ConfigureAwait(false));
+                async () => result = await loader.LoadCompactSnapshotAsync(topicName, keyFilter, valueFilter, CancellationToken.None).ConfigureAwait(false));
 
             // Assert
             exception.Should().BeNull();
@@ -363,10 +416,16 @@ namespace KafkaSnapshot.Import.Tests
             var withCompacting = compacting;
             var testDate = DateTime.UtcNow;
             var topicName = new LoadingTopic("test", withCompacting, new DateFilterParams(testDate, null!));
-            var filterMock = new Mock<IDataFilter<object>>();
-            filterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
 
-            var filter = filterMock.Object;
+            var keyFilterMock = new Mock<IDataFilter<object>>();
+            keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+            var keyFilter = keyFilterMock.Object;
+
+            var valueFilterMock = new Mock<IDataFilter<object>>();
+            valueFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+            var valueFilter = valueFilterMock.Object;
+
+
             IEnumerable<KeyValuePair<object, MetaMessage<object>>> result = null!;
             var offset = new WatermarkOffsets(new Offset(0), new Offset(3));
             var partition = new Partition(1);
@@ -389,7 +448,7 @@ namespace KafkaSnapshot.Import.Tests
 
             // Act
             var exception = await Record.ExceptionAsync(
-                async () => result = await loader.LoadCompactSnapshotAsync(topicName, filter, CancellationToken.None).ConfigureAwait(false));
+                async () => result = await loader.LoadCompactSnapshotAsync(topicName, keyFilter, valueFilter, CancellationToken.None).ConfigureAwait(false));
 
             // Assert
             exception.Should().BeNull();
@@ -414,10 +473,16 @@ namespace KafkaSnapshot.Import.Tests
             var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader);
             var withCompacting = true;
             var topicName = new LoadingTopic("test", withCompacting, new DateFilterParams(null!, null!));
-            var filterMock = new Mock<IDataFilter<object>>();
-            filterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
 
-            var filter = filterMock.Object;
+            var keyFilterMock = new Mock<IDataFilter<object>>();
+            keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+            var keyFilter = keyFilterMock.Object;
+
+            var valueFilterMock = new Mock<IDataFilter<object>>();
+            valueFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+            var valueFilter = valueFilterMock.Object;
+
+
             IEnumerable<KeyValuePair<object, MetaMessage<object>>> result = null!;
             var offset = new WatermarkOffsets(new Offset(0), new Offset(3));
             var topicWatermark = new TopicWatermark(new[]
@@ -477,7 +542,7 @@ namespace KafkaSnapshot.Import.Tests
 
             // Act
             var exception = await Record.ExceptionAsync(
-                async () => result = await loader.LoadCompactSnapshotAsync(topicName, filter, CancellationToken.None).ConfigureAwait(false));
+                async () => result = await loader.LoadCompactSnapshotAsync(topicName, keyFilter, valueFilter, CancellationToken.None).ConfigureAwait(false));
 
             // Assert
             exception.Should().BeNull();
@@ -502,10 +567,15 @@ namespace KafkaSnapshot.Import.Tests
             var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader);
             var withCompacting = true;
             var topicName = new LoadingTopic("test", withCompacting, new DateFilterParams(null!, null!));
-            var filterMock = new Mock<IDataFilter<object>>();
-            filterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
 
-            var filter = filterMock.Object;
+            var keyFilterMock = new Mock<IDataFilter<object>>();
+            keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+            var keyFilter = keyFilterMock.Object;
+
+            var valueFilterMock = new Mock<IDataFilter<object>>();
+            valueFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+            var valueFilter = valueFilterMock.Object;
+
             IEnumerable<KeyValuePair<object, MetaMessage<object>>> result = null!;
             var offset = new WatermarkOffsets(new Offset(0), new Offset(3));
             var partition = new Partition(1);
@@ -563,7 +633,7 @@ namespace KafkaSnapshot.Import.Tests
 
             var exceptedData = consumerData.Select((x, i) =>
 
-            new KeyValuePair<object, MetaMessage<object>>(x.Message.Key, new MetaMessage<object>(x.Message.Value, new MessageMeta(x.Message.Timestamp.UtcDateTime, 1, i )))
+            new KeyValuePair<object, MetaMessage<object>>(x.Message.Key, new MetaMessage<object>(x.Message.Value, new MessageMeta(x.Message.Timestamp.UtcDateTime, 1, i)))
             ).ToList();
             exceptedData.RemoveAt(1);
 
@@ -575,7 +645,7 @@ namespace KafkaSnapshot.Import.Tests
 
             // Act
             var exception = await Record.ExceptionAsync(
-                async () => result = await loader.LoadCompactSnapshotAsync(topicName, filter, CancellationToken.None).ConfigureAwait(false));
+                async () => result = await loader.LoadCompactSnapshotAsync(topicName, keyFilter, valueFilter, CancellationToken.None).ConfigureAwait(false));
 
             // Assert
             exception.Should().BeNull();
@@ -603,10 +673,15 @@ namespace KafkaSnapshot.Import.Tests
             var withCompacting = compacting;
             var testDate = DateTime.UtcNow;
             var topicName = new LoadingTopic("test", withCompacting, new DateFilterParams(null!, testDate));
-            var filterMock = new Mock<IDataFilter<object>>();
-            filterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
 
-            var filter = filterMock.Object;
+            var keyFilterMock = new Mock<IDataFilter<object>>();
+            keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+            var keyFilter = keyFilterMock.Object;
+
+            var valueFilterMock = new Mock<IDataFilter<object>>();
+            valueFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+            var valueFilter = valueFilterMock.Object;
+
             IEnumerable<KeyValuePair<object, MetaMessage<object>>> result = null!;
             var offset = new WatermarkOffsets(new Offset(0), new Offset(3));
             var partition = new Partition(1);
@@ -631,7 +706,7 @@ namespace KafkaSnapshot.Import.Tests
 
             // Act
             var exception = await Record.ExceptionAsync(
-                async () => result = await loader.LoadCompactSnapshotAsync(topicName, filter, CancellationToken.None).ConfigureAwait(false));
+                async () => result = await loader.LoadCompactSnapshotAsync(topicName, keyFilter, valueFilter, CancellationToken.None).ConfigureAwait(false));
 
             // Assert
             exception.Should().BeNull();
@@ -657,10 +732,15 @@ namespace KafkaSnapshot.Import.Tests
             var withCompacting = false;
             var testDate = DateTime.UtcNow;
             var topicName = new LoadingTopic("test", withCompacting, new DateFilterParams(null!, testDate));
-            var filterMock = new Mock<IDataFilter<object>>();
-            filterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
 
-            var filter = filterMock.Object;
+            var keyFilterMock = new Mock<IDataFilter<object>>();
+            keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+            var keyfilter = keyFilterMock.Object;
+
+            var valueFilterMock = new Mock<IDataFilter<object>>();
+            valueFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+            var valueFilter = valueFilterMock.Object;
+
             IEnumerable<KeyValuePair<object, MetaMessage<object>>> result = null!;
             var offset = new WatermarkOffsets(new Offset(0), new Offset(3));
             var partition = new Partition(1);
@@ -724,7 +804,7 @@ namespace KafkaSnapshot.Import.Tests
 
             // Act
             var exception = await Record.ExceptionAsync(
-                async () => result = await loader.LoadCompactSnapshotAsync(topicName, filter, CancellationToken.None).ConfigureAwait(false));
+                async () => result = await loader.LoadCompactSnapshotAsync(topicName, keyfilter, valueFilter, CancellationToken.None).ConfigureAwait(false));
 
             // Assert
             exception.Should().BeNull();

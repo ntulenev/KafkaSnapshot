@@ -13,6 +13,7 @@ using KafkaSnapshot.Models.Export;
 using KafkaSnapshot.Models.Processing;
 using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Message;
+using KafkaSnapshot.Models.Filters;
 
 namespace KafkaSnapshot.Processing.Tests
 {
@@ -36,9 +37,12 @@ namespace KafkaSnapshot.Processing.Tests
             var factoryMock = new Mock<IKeyFiltersFactory<object>>();
             var factory = factoryMock.Object;
 
+            var valueFactoryMock = new Mock<IValueFilterFactory<object>>();
+            var valueFactory = valueFactoryMock.Object;
+
             // Act
             var exception = Record.Exception(() =>
-                new ProcessingUnit<object, IKeyRepresentationMarker, object>(logger, topic, loader, exporter, factory));
+                new ProcessingUnit<object, IKeyRepresentationMarker, object>(logger, topic, loader, exporter, factory, valueFactory));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -61,10 +65,12 @@ namespace KafkaSnapshot.Processing.Tests
             var exporter = exporterMock.Object;
             var factoryMock = new Mock<IKeyFiltersFactory<object>>();
             var factory = factoryMock.Object;
+            var valueFactoryMock = new Mock<IValueFilterFactory<object>>();
+            var valueFactory = valueFactoryMock.Object;
 
             // Act
             var exception = Record.Exception(() =>
-                new ProcessingUnit<object, IKeyRepresentationMarker, object>(logger, topic, loader, exporter, factory));
+                new ProcessingUnit<object, IKeyRepresentationMarker, object>(logger, topic, loader, exporter, factory, valueFactory));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -87,10 +93,12 @@ namespace KafkaSnapshot.Processing.Tests
             var exporter = exporterMock.Object;
             var factoryMock = new Mock<IKeyFiltersFactory<object>>();
             var factory = factoryMock.Object;
+            var valueFactoryMock = new Mock<IValueFilterFactory<object>>();
+            var valueFactory = valueFactoryMock.Object;
 
             // Act
             var exception = Record.Exception(() =>
-                new ProcessingUnit<object, IKeyRepresentationMarker, object>(logger, topic, loader, exporter, factory));
+                new ProcessingUnit<object, IKeyRepresentationMarker, object>(logger, topic, loader, exporter, factory, valueFactory));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -113,10 +121,12 @@ namespace KafkaSnapshot.Processing.Tests
             var exporter = (IDataExporter<object, IKeyRepresentationMarker, object, ExportedTopic>)null!;
             var factoryMock = new Mock<IKeyFiltersFactory<object>>();
             var factory = factoryMock.Object;
+            var valueFactoryMock = new Mock<IValueFilterFactory<object>>();
+            var valueFactory = valueFactoryMock.Object;
 
             // Act
             var exception = Record.Exception(() =>
-                new ProcessingUnit<object, IKeyRepresentationMarker, object>(logger, topic, loader, exporter, factory));
+                new ProcessingUnit<object, IKeyRepresentationMarker, object>(logger, topic, loader, exporter, factory, valueFactory));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -139,10 +149,40 @@ namespace KafkaSnapshot.Processing.Tests
             var exporterMock = new Mock<IDataExporter<object, IKeyRepresentationMarker, object, ExportedTopic>>();
             var exporter = exporterMock.Object;
             var factory = (IKeyFiltersFactory<object>)null!;
+            var valueFactoryMock = new Mock<IValueFilterFactory<object>>();
+            var valueFactory = valueFactoryMock.Object;
 
             // Act
             var exception = Record.Exception(() =>
-                new ProcessingUnit<object, IKeyRepresentationMarker, object>(logger, topic, loader, exporter, factory));
+                new ProcessingUnit<object, IKeyRepresentationMarker, object>(logger, topic, loader, exporter, factory, valueFactory));
+
+            // Assert
+            exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
+        }
+
+        [Fact(DisplayName = "ProcessingUnit can't be created without value filters factory.")]
+        [Trait("Category", "Unit")]
+        public void ProcessingUnitCantBeCreatedWithoutValueFiltersFactory()
+        {
+            var markerMoq = new Mock<IKeyRepresentationMarker>();
+            var marker = markerMoq.Object;
+
+            // Arrange
+            var loggerMock = new Mock<ILogger<ProcessingUnit<object, IKeyRepresentationMarker, object>>>();
+            var logger = loggerMock.Object;
+            var topic = new ProcessingTopic<object>
+                                ("test", "test", true, Models.Filters.FilterType.None, Models.Filters.KeyType.String, null!, null!, null!, false);
+            var loaderMock = new Mock<ISnapshotLoader<object, object>>();
+            var loader = loaderMock.Object;
+            var exporterMock = new Mock<IDataExporter<object, IKeyRepresentationMarker, object, ExportedTopic>>();
+            var exporter = exporterMock.Object;
+            var factoryMock = new Mock<IKeyFiltersFactory<object>>();
+            var factory = factoryMock.Object;
+            var valueFactory = (IValueFilterFactory<object>)null!;
+
+            // Act
+            var exception = Record.Exception(() =>
+                new ProcessingUnit<object, IKeyRepresentationMarker, object>(logger, topic, loader, exporter, factory, valueFactory));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -166,10 +206,12 @@ namespace KafkaSnapshot.Processing.Tests
             var exporter = exporterMock.Object;
             var factoryMock = new Mock<IKeyFiltersFactory<object>>();
             var factory = factoryMock.Object;
+            var valueFactoryMock = new Mock<IValueFilterFactory<object>>();
+            var valueFactory = valueFactoryMock.Object;
 
             // Act
             var exception = Record.Exception(() =>
-                new ProcessingUnit<object, IKeyRepresentationMarker, object>(logger, topic, loader, exporter, factory));
+                new ProcessingUnit<object, IKeyRepresentationMarker, object>(logger, topic, loader, exporter, factory, valueFactory));
 
             // Assert
             exception.Should().BeNull();
@@ -192,17 +234,27 @@ namespace KafkaSnapshot.Processing.Tests
             var exporterMock = new Mock<IDataExporter<object, IKeyRepresentationMarker, object, ExportedTopic>>();
             var exporter = exporterMock.Object;
             var factoryMock = new Mock<IKeyFiltersFactory<object>>();
-            var filterMock = new Mock<IDataFilter<object>>();
-            var filter = filterMock.Object;
+
+            var keyFilterMock = new Mock<IDataFilter<object>>();
+            var keyFilter = keyFilterMock.Object;
+
+            var valueFactoryMock = new Mock<IValueFilterFactory<object>>();
+            var valueFilterMock = new Mock<IDataFilter<object>>();
+            var valueFilter = valueFilterMock.Object;
+
             var snapshotMock = new Mock<IEnumerable<KeyValuePair<object, MetaMessage<object>>>>();
             var snapshot = snapshotMock.Object;
-            factoryMock.Setup(x => x.Create(topic.FilterKeyType, topic.KeyType, topic.FilterKeyValue)).Returns(filter);
+            factoryMock.Setup(x => x.Create(topic.FilterKeyType, topic.KeyType, topic.FilterKeyValue)).Returns(keyFilter);
+
+            valueFactoryMock.Setup(x => x.Create(Models.Filters.FilterType.None, ValueMessageType.Raw, default!)).Returns(valueFilter);
+            var valueFactory = valueFactoryMock.Object;
+
             loaderMock.Setup(x => x.LoadCompactSnapshotAsync(
                         It.Is<LoadingTopic>(n => n.Value == topic.Name),
-                        filter, CancellationToken.None)).Returns(Task.FromResult(snapshot));
+                        keyFilter, valueFilter, CancellationToken.None)).Returns(Task.FromResult(snapshot));
             var factory = factoryMock.Object;
             var loader = loaderMock.Object;
-            var unit = new ProcessingUnit<object, IKeyRepresentationMarker, object>(logger, topic, loader, exporter, factory);
+            var unit = new ProcessingUnit<object, IKeyRepresentationMarker, object>(logger, topic, loader, exporter, factory, valueFactory);
 
             // Act
             var exception = await Record.ExceptionAsync(async () =>

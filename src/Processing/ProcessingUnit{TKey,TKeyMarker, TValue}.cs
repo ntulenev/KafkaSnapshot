@@ -9,6 +9,7 @@ using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Abstractions.Filters;
 using KafkaSnapshot.Models.Message;
 using KafkaSnapshot.Models.Sorting;
+using KafkaSnapshot.Models.Filters;
 
 namespace KafkaSnapshot.Processing
 {
@@ -33,7 +34,8 @@ namespace KafkaSnapshot.Processing
                               ProcessingTopic<TKey> topic,
                               ISnapshotLoader<TKey, TValue> kafkaLoader,
                               IDataExporter<TKey, TKeyMarker, TValue, ExportedTopic> exporter,
-                              IKeyFiltersFactory<TKey> keyFilterFactory
+                              IKeyFiltersFactory<TKey> keyFilterFactory,
+                              IValueFilterFactory<TValue> valueFilterFactory
                               )
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -42,8 +44,13 @@ namespace KafkaSnapshot.Processing
 
             ArgumentNullException.ThrowIfNull(topic);
             ArgumentNullException.ThrowIfNull(keyFilterFactory);
+            ArgumentNullException.ThrowIfNull(valueFilterFactory);
 
             _keyFilter = keyFilterFactory.Create(topic.FilterKeyType, topic.KeyType, topic.FilterKeyValue);
+
+            //Stup for value filters
+            //TODO Add params later
+            _valueFilter = valueFilterFactory.Create(Models.Filters.FilterType.None, ValueMessageType.Raw, default!);
 
             _topicParams = new LoadingTopic(
                                 topic.Name,
@@ -63,6 +70,7 @@ namespace KafkaSnapshot.Processing
             var items = await _kafkaLoader.LoadCompactSnapshotAsync(
                 _topicParams,
                 _keyFilter,
+                _valueFilter,
                 ct).ConfigureAwait(false);
 
             items = SortData(items);
@@ -93,6 +101,7 @@ namespace KafkaSnapshot.Processing
         private readonly IDataExporter<TKey, TKeyMarker, TValue, ExportedTopic> _exporter;
         private readonly ILogger<ProcessingUnit<TKey, TKeyMarker, TValue>> _logger;
         private readonly IDataFilter<TKey> _keyFilter;
+        private readonly IDataFilter<TValue> _valueFilter;
         private readonly LoadingTopic _topicParams;
         private readonly ExportedTopic _exportedTopic;
     }

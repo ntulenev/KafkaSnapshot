@@ -48,7 +48,7 @@ namespace KafkaSnapshot.Processing
 
             _keyFilter = keyFilterFactory.Create(topic.FilterKeyType, topic.KeyType, topic.FilterKeyValue);
 
-            //Stup for value filters
+            //Stub for value filters
             //TODO Add params later
             _valueFilter = valueFilterFactory.Create(Models.Filters.FilterType.None, ValueMessageType.Raw, default!);
 

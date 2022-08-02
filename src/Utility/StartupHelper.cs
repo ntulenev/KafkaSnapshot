@@ -89,6 +89,7 @@ namespace KafkaSnapshot.Utility
         {
             services.AddSingleton<IKeyFiltersFactory<long>, NaiveKeyFiltersFactory<long>>();
             services.AddSingleton<IKeyFiltersFactory<string>, NaiveKeyFiltersFactory<string>>();
+            services.AddSingleton<IValueFilterFactory<string>, NaiveValueFiltersFactory<string>>();
             services.AddSingleton(sp => CreateTopicLoaders(sp, hostContext.Configuration));
         }
 

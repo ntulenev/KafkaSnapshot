@@ -3,6 +3,7 @@
 using FluentAssertions;
 
 using KafkaSnapshot.Models.Import;
+using KafkaSnapshot.Models.Filters;
 
 namespace KafkaSnapshot.Models.Tests
 {
@@ -19,7 +20,7 @@ namespace KafkaSnapshot.Models.Tests
             string name = null!;
 
             // Act
-            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterParams(null!, null!)));
+            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!)));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -36,7 +37,7 @@ namespace KafkaSnapshot.Models.Tests
             string name = null!;
 
             // Act
-            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterParams(null!, null!)));
+            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!)));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -53,7 +54,7 @@ namespace KafkaSnapshot.Models.Tests
             var name = string.Empty;
 
             // Act
-            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterParams(null!, null!)));
+            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!)));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -70,7 +71,7 @@ namespace KafkaSnapshot.Models.Tests
             var name = string.Empty;
 
             // Act
-            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterParams(null!, null!)));
+            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!)));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -87,7 +88,7 @@ namespace KafkaSnapshot.Models.Tests
             var name = "     ";
 
             // Act
-            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterParams(null!, null!)));
+            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!)));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -104,7 +105,7 @@ namespace KafkaSnapshot.Models.Tests
             var name = "     ";
 
             // Act
-            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterParams(null!, null!)));
+            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!)));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -121,7 +122,7 @@ namespace KafkaSnapshot.Models.Tests
             var name = "topic name";
 
             // Act
-            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterParams(null!, null!)));
+            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!)));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -138,7 +139,7 @@ namespace KafkaSnapshot.Models.Tests
             var name = "topic name";
 
             // Act
-            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterParams(null!, null!)));
+            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!)));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -155,7 +156,7 @@ namespace KafkaSnapshot.Models.Tests
             var name = new string('x', 250);
 
             // Act
-            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterParams(null!, null!)));
+            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!)));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -172,7 +173,7 @@ namespace KafkaSnapshot.Models.Tests
             var name = new string('x', 250);
 
             // Act
-            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterParams(null!, null!)));
+            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!)));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -189,7 +190,7 @@ namespace KafkaSnapshot.Models.Tests
             var name = "ы?:%";
 
             // Act
-            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterParams(null!, null!)));
+            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!)));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -206,7 +207,7 @@ namespace KafkaSnapshot.Models.Tests
             var name = "ы?:%";
 
             // Act
-            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterParams(null!, null!)));
+            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!)));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -223,7 +224,7 @@ namespace KafkaSnapshot.Models.Tests
             var name = "test";
             LoadingTopic item = null!;
             // Act
-            var exception = Record.Exception(() => item = new LoadingTopic(name, compactingRule, new DateFilterParams(null!, null!)));
+            var exception = Record.Exception(() => item = new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!)));
 
             // Assert
             exception.Should().BeNull();
@@ -244,7 +245,7 @@ namespace KafkaSnapshot.Models.Tests
             var name = "test";
             LoadingTopic item = null!;
             // Act
-            var exception = Record.Exception(() => item = new LoadingTopic(name, compactingRule, new DateFilterParams(DateTime.UtcNow, DateTime.UtcNow)));
+            var exception = Record.Exception(() => item = new LoadingTopic(name, compactingRule, new DateFilterRange(DateTime.UtcNow, DateTime.UtcNow)));
 
             // Assert
             exception.Should().BeNull();
@@ -261,7 +262,7 @@ namespace KafkaSnapshot.Models.Tests
 
             // Arrange
             var name = "test";
-            var topic = new LoadingTopic(name, true, new DateFilterParams(null!, DateTime.UtcNow));
+            var topic = new LoadingTopic(name, true, new DateFilterRange(null!, DateTime.UtcNow));
 
             // Act
             var exception = Record.Exception(() => topic.OffsetDate);
@@ -278,7 +279,7 @@ namespace KafkaSnapshot.Models.Tests
             // Arrange
             var date = DateTime.UtcNow;
             var name = "test";
-            var topic = new LoadingTopic(name, true, new DateFilterParams(date, null!));
+            var topic = new LoadingTopic(name, true, new DateFilterRange(date, null!));
             DateTime resultedDate = default;
 
             // Act
@@ -296,7 +297,7 @@ namespace KafkaSnapshot.Models.Tests
 
             // Arrange
             var name = "test";
-            var topic = new LoadingTopic(name, true, new DateFilterParams(DateTime.UtcNow, null!));
+            var topic = new LoadingTopic(name, true, new DateFilterRange(DateTime.UtcNow, null!));
 
             // Act
             var exception = Record.Exception(() => topic.EndOffsetDate);
@@ -313,7 +314,7 @@ namespace KafkaSnapshot.Models.Tests
             // Arrange
             var date = DateTime.UtcNow;
             var name = "test";
-            var topic = new LoadingTopic(name, true, new DateFilterParams(null!, date));
+            var topic = new LoadingTopic(name, true, new DateFilterRange(null!, date));
             DateTime resultedDate = default;
 
             // Act
@@ -333,7 +334,7 @@ namespace KafkaSnapshot.Models.Tests
             var name = "test";
 
             // Act
-            var exception = Record.Exception(() => new LoadingTopic(name, true, new DateFilterParams(DateTime.UtcNow, DateTime.UtcNow.AddDays(1)), new HashSet<int>()));
+            var exception = Record.Exception(() => new LoadingTopic(name, true, new DateFilterRange(DateTime.UtcNow, DateTime.UtcNow.AddDays(1)), new HashSet<int>()));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -348,7 +349,7 @@ namespace KafkaSnapshot.Models.Tests
             var name = "test";
 
             // Act
-            var exception = Record.Exception(() => new LoadingTopic(name, true, new DateFilterParams(DateTime.UtcNow, DateTime.UtcNow.AddDays(1)), new HashSet<int>(new[] { 1, 2, 3 })));
+            var exception = Record.Exception(() => new LoadingTopic(name, true, new DateFilterRange(DateTime.UtcNow, DateTime.UtcNow.AddDays(1)), new HashSet<int>(new[] { 1, 2, 3 })));
 
             // Assert
             exception.Should().BeNull();
@@ -365,7 +366,7 @@ namespace KafkaSnapshot.Models.Tests
             var name = "test";
 
             // Act
-            var topic = new LoadingTopic(name, true, new DateFilterParams(date, date), new HashSet<int>(items));
+            var topic = new LoadingTopic(name, true, new DateFilterRange(date, date), new HashSet<int>(items));
 
             // Assert
             topic.HasPartitionFilter.Should().BeTrue();

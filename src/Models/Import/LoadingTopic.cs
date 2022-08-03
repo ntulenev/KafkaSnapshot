@@ -1,4 +1,5 @@
-﻿using KafkaSnapshot.Models.Sorting;
+﻿using KafkaSnapshot.Models.Filters;
+using KafkaSnapshot.Models.Sorting;
 
 using System.Text.RegularExpressions;
 
@@ -64,7 +65,7 @@ namespace KafkaSnapshot.Models.Import
         /// <param name="partitionFilter">filtered partition ids.</param>
         public LoadingTopic(string name,
                             bool loadWithCompacting,
-                            DateFilterParams dateParams,
+                            DateFilterRange dateParams,
                             HashSet<int>? partitionFilter = null!,
                             SortingType sortingType = SortingType.Time,
                             SortOrder sortingOrder = SortOrder.No)

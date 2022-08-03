@@ -15,6 +15,7 @@ using KafkaSnapshot.Abstractions.Filters;
 using KafkaSnapshot.Models.Message;
 using KafkaSnapshot.Import.Watermarks;
 using KafkaSnapshot.Import.Configuration;
+using KafkaSnapshot.Models.Filters;
 
 namespace KafkaSnapshot.Import.Tests
 {
@@ -153,7 +154,7 @@ namespace KafkaSnapshot.Import.Tests
             var options = optionsMock.Object;
             var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader);
             var withCompacting = true;
-            var topicParams = new LoadingTopic("test", withCompacting, new DateFilterParams(null!, null!));
+            var topicParams = new LoadingTopic("test", withCompacting, new DateFilterRange(null!, null!));
             var keyFilter = (IDataFilter<object>)null!;
 
 
@@ -186,7 +187,7 @@ namespace KafkaSnapshot.Import.Tests
             var options = optionsMock.Object;
             var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader);
             var withCompacting = true;
-            var topicParams = new LoadingTopic("test", withCompacting, new DateFilterParams(null!, null!));
+            var topicParams = new LoadingTopic("test", withCompacting, new DateFilterRange(null!, null!));
 
             var filterKeyMock = new Mock<IDataFilter<object>>();
             var keyFilter = filterKeyMock.Object;
@@ -220,7 +221,7 @@ namespace KafkaSnapshot.Import.Tests
             var options = optionsMock.Object;
             var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader);
             var withCompacting = false;
-            var topicName = new LoadingTopic("test", withCompacting, new DateFilterParams(null!, null!));
+            var topicName = new LoadingTopic("test", withCompacting, new DateFilterRange(null!, null!));
             var filterKeyMock = new Mock<IDataFilter<object>>();
             filterKeyMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
 
@@ -313,7 +314,7 @@ namespace KafkaSnapshot.Import.Tests
             var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader);
             var withCompacting = false;
             var testDate = DateTime.UtcNow;
-            var topicName = new LoadingTopic("test", withCompacting, new DateFilterParams(testDate, null!));
+            var topicName = new LoadingTopic("test", withCompacting, new DateFilterRange(testDate, null!));
 
             var keyFilterMock = new Mock<IDataFilter<object>>();
             keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
@@ -415,7 +416,7 @@ namespace KafkaSnapshot.Import.Tests
             var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader);
             var withCompacting = compacting;
             var testDate = DateTime.UtcNow;
-            var topicName = new LoadingTopic("test", withCompacting, new DateFilterParams(testDate, null!));
+            var topicName = new LoadingTopic("test", withCompacting, new DateFilterRange(testDate, null!));
 
             var keyFilterMock = new Mock<IDataFilter<object>>();
             keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
@@ -472,7 +473,7 @@ namespace KafkaSnapshot.Import.Tests
             var options = optionsMock.Object;
             var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader);
             var withCompacting = true;
-            var topicName = new LoadingTopic("test", withCompacting, new DateFilterParams(null!, null!));
+            var topicName = new LoadingTopic("test", withCompacting, new DateFilterRange(null!, null!));
 
             var keyFilterMock = new Mock<IDataFilter<object>>();
             keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
@@ -566,7 +567,7 @@ namespace KafkaSnapshot.Import.Tests
             var options = optionsMock.Object;
             var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader);
             var withCompacting = true;
-            var topicName = new LoadingTopic("test", withCompacting, new DateFilterParams(null!, null!));
+            var topicName = new LoadingTopic("test", withCompacting, new DateFilterRange(null!, null!));
 
             var keyFilterMock = new Mock<IDataFilter<object>>();
             keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
@@ -672,7 +673,7 @@ namespace KafkaSnapshot.Import.Tests
             var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader);
             var withCompacting = compacting;
             var testDate = DateTime.UtcNow;
-            var topicName = new LoadingTopic("test", withCompacting, new DateFilterParams(null!, testDate));
+            var topicName = new LoadingTopic("test", withCompacting, new DateFilterRange(null!, testDate));
 
             var keyFilterMock = new Mock<IDataFilter<object>>();
             keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
@@ -731,7 +732,7 @@ namespace KafkaSnapshot.Import.Tests
             var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader);
             var withCompacting = false;
             var testDate = DateTime.UtcNow;
-            var topicName = new LoadingTopic("test", withCompacting, new DateFilterParams(null!, testDate));
+            var topicName = new LoadingTopic("test", withCompacting, new DateFilterRange(null!, testDate));
 
             var keyFilterMock = new Mock<IDataFilter<object>>();
             keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);

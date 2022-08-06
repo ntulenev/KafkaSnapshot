@@ -137,7 +137,7 @@ namespace KafkaSnapshot.Import
                     if (keyFilter.IsMatch(result.Message.Key) && valueFilter.IsMatch(result.Message.Value))
                     {
                         _logger.LogTrace("Loading {Key} - {Value}", result.Message.Key, result.Message.Value);
-                        var meta = new MessageMeta(result.Message.Timestamp.UtcDateTime, watermark.Partition.Value, result.Offset.Value);
+                        var meta = new Models.Message.KafkaMetadata(result.Message.Timestamp.UtcDateTime, watermark.Partition.Value, result.Offset.Value);
                         var message = new MetaMessage<TMessage>(result.Message.Value, meta);
                         yield return new KeyValuePair<TKey, MetaMessage<TMessage>>(result.Message.Key, message);
                     }

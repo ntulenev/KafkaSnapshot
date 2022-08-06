@@ -71,7 +71,7 @@ namespace KafkaSnapshot.Export.Tests
             var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
             var data = new[]
             {
-                new KeyValuePair<object, MetaMessage<object>>(1,new MetaMessage<object>("Test",new MessageMeta(dateTime,1,2)))
+                new KeyValuePair<object, MetaMessage<object>>(1,new MetaMessage<object>("Test",new KafkaMetadata(dateTime,1,2)))
             };
             string result = null!;
 

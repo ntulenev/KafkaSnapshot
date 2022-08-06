@@ -69,7 +69,7 @@ namespace KafkaSnapshot.Export.Tests
             var isRaw = false;
             var data = new[]
             {
-                new KeyValuePair<string, MetaMessage<string>>("{\"A\": 42}",new MetaMessage<string>("{\"Test\":42}",new MessageMeta(dateTime,1,2)))
+                new KeyValuePair<string, MetaMessage<string>>("{\"A\": 42}",new MetaMessage<string>("{\"Test\":42}",new KafkaMetadata(dateTime,1,2)))
             };
             string result = null!;
 
@@ -92,7 +92,7 @@ namespace KafkaSnapshot.Export.Tests
             var isRaw = false;
             var data = new[]
             {
-                new KeyValuePair<string, MetaMessage<string>>("{\"A\": 42}",new MetaMessage<string>("Test",new MessageMeta(dateTime,1,2)))
+                new KeyValuePair<string, MetaMessage<string>>("{\"A\": 42}",new MetaMessage<string>("Test",new KafkaMetadata(dateTime,1,2)))
             };
             string result = null!;
 
@@ -114,7 +114,7 @@ namespace KafkaSnapshot.Export.Tests
             var isRaw = false;
             var data = new[]
             {
-                new KeyValuePair<string, MetaMessage<string>>("Test",new MetaMessage<string>("{\"Test\":42}",new MessageMeta(dateTime,1,2)))
+                new KeyValuePair<string, MetaMessage<string>>("Test",new MetaMessage<string>("{\"Test\":42}",new KafkaMetadata(dateTime,1,2)))
             };
             string result = null!;
 
@@ -136,7 +136,7 @@ namespace KafkaSnapshot.Export.Tests
             var isRaw = true;
             var data = new[]
             {
-                new KeyValuePair<string, MetaMessage<string>>("{\"A\": 42}",new MetaMessage<string>("Test",new MessageMeta(dateTime,1,2)))
+                new KeyValuePair<string, MetaMessage<string>>("{\"A\": 42}",new MetaMessage<string>("Test",new KafkaMetadata(dateTime,1,2)))
             };
             string result = null!;
 

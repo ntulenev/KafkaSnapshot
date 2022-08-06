@@ -278,7 +278,7 @@ namespace KafkaSnapshot.Import.Tests
 
             var exceptedData = consumerData.Select((x, i) =>
 
-            new KeyValuePair<object, MetaMessage<object>>(x.Message.Key, new MetaMessage<object>(x.Message.Value, new MessageMeta(x.Message.Timestamp.UtcDateTime, 1, i)))
+            new KeyValuePair<object, MetaMessage<object>>(x.Message.Key, new MetaMessage<object>(x.Message.Value, new Models.Message.KafkaMetadata(x.Message.Timestamp.UtcDateTime, 1, i)))
 
             );
 
@@ -380,7 +380,7 @@ namespace KafkaSnapshot.Import.Tests
             };
 
             var exceptedData = consumerData.Select((x, i) =>
-                            new KeyValuePair<object, MetaMessage<object>>(x.Message.Key, new MetaMessage<object>(x.Message.Value, new MessageMeta(x.Message.Timestamp.UtcDateTime, 1, i))));
+                            new KeyValuePair<object, MetaMessage<object>>(x.Message.Key, new MetaMessage<object>(x.Message.Value, new Models.Message.KafkaMetadata(x.Message.Timestamp.UtcDateTime, 1, i))));
 
             consumerMock.Setup(x => x.Consume(CancellationToken.None)).Returns(() =>
             {
@@ -531,7 +531,7 @@ namespace KafkaSnapshot.Import.Tests
 
             var exceptedData = consumerData.Select((x, i) =>
 
-            new KeyValuePair<object, MetaMessage<object>>(x.Message.Key, new MetaMessage<object>(x.Message.Value, new MessageMeta(x.Message.Timestamp.UtcDateTime, 1, i)))
+            new KeyValuePair<object, MetaMessage<object>>(x.Message.Key, new MetaMessage<object>(x.Message.Value, new KafkaMetadata(x.Message.Timestamp.UtcDateTime, 1, i)))
             ).ToList();
             exceptedData.RemoveAt(1);
 
@@ -634,7 +634,7 @@ namespace KafkaSnapshot.Import.Tests
 
             var exceptedData = consumerData.Select((x, i) =>
 
-            new KeyValuePair<object, MetaMessage<object>>(x.Message.Key, new MetaMessage<object>(x.Message.Value, new MessageMeta(x.Message.Timestamp.UtcDateTime, 1, i)))
+            new KeyValuePair<object, MetaMessage<object>>(x.Message.Key, new MetaMessage<object>(x.Message.Value, new KafkaMetadata(x.Message.Timestamp.UtcDateTime, 1, i)))
             ).ToList();
             exceptedData.RemoveAt(1);
 
@@ -790,7 +790,7 @@ namespace KafkaSnapshot.Import.Tests
 
             var exceptedData = consumerData.Select((x, i) =>
 
-            new KeyValuePair<object, MetaMessage<object>>(x.Message.Key, new MetaMessage<object>(x.Message.Value, new MessageMeta(x.Message.Timestamp.UtcDateTime, 1, i)))
+            new KeyValuePair<object, MetaMessage<object>>(x.Message.Key, new MetaMessage<object>(x.Message.Value, new KafkaMetadata(x.Message.Timestamp.UtcDateTime, 1, i)))
             ).ToList();
             exceptedData.RemoveAt(2);
 

@@ -69,12 +69,17 @@ namespace KafkaSnapshot.Processing.Configuration
                                   :
                                   default;
 
+            var dateRange = new DateFilterRange(OffsetStartDate, OffsetEndDate);
+
             return new ProcessingTopic<TKey>(Name,
                                              ExportFileName,
                                              Compacting == CompactingMode.On,
                                              FilterKeyType,
                                              KeyType,
-                                             typedFilterKeyValue!, OffsetStartDate, OffsetEndDate, ExportRawMessage, PartitionsIds);
+                                             typedFilterKeyValue!,
+                                             dateRange,
+                                             ExportRawMessage,
+                                             PartitionsIds);
         }
     }
 }

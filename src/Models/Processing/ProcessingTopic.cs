@@ -19,8 +19,7 @@ namespace KafkaSnapshot.Models.Processing
                                         FilterType FilterKeyType,
                                         KeyType KeyType,
                                         TKey FilterKeyValue,
-                                        DateTime? StartingDate,
-                                        DateTime? EndingDate,
+                                        DateFilterRange DateRange,
                                         bool ExportRawMessage,
                                         HashSet<int>? PartitionIdsFilter = null);
 }

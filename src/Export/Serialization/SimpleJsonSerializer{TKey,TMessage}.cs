@@ -22,7 +22,7 @@ namespace KafkaSnapshot.Export.Serialization
         public SimpleJsonSerializer(ILogger<SimpleJsonSerializer<TKey, TMessage>> logger) : base(logger) { }
 
         /// <inheritdoc/>
-        public string Serialize(IEnumerable<KeyValuePair<TKey, MetaMessage<TMessage>>> data, bool exportRawMessage)
+        public string Serialize(IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> data, bool exportRawMessage)
         {
             ArgumentNullException.ThrowIfNull(data);
 

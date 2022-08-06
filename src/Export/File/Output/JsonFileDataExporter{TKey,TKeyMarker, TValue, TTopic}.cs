@@ -36,7 +36,7 @@ namespace KafkaSnapshot.Export.File.Output
         }
 
         /// <inheritdoc/>
-        public async Task ExportAsync(IEnumerable<KeyValuePair<TKey, MetaMessage<TValue>>> data, TTopic topic, CancellationToken ct)
+        public async Task ExportAsync(IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> data, TTopic topic, CancellationToken ct)
         {
             ArgumentNullException.ThrowIfNull(data);
             ArgumentNullException.ThrowIfNull(topic);

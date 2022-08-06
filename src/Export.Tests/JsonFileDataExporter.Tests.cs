@@ -94,7 +94,7 @@ namespace KafkaSnapshot.Export.Tests
             var serializer = new Mock<ISerializer<object, object, OriginalKeyMarker>>();
             var exporter = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(logger.Object, fileSaver.Object, serializer.Object);
             var topic = new ExportedTopic("name", "filename", true);
-            var data = (IEnumerable<KeyValuePair<object, MetaMessage<object>>>)null!;
+            var data = (IEnumerable<KeyValuePair<object, KafkaMessage<object>>>)null!;
 
             // Act
             var exception = await Record.ExceptionAsync(async () =>
@@ -115,7 +115,7 @@ namespace KafkaSnapshot.Export.Tests
             var serializer = new Mock<ISerializer<object, object, OriginalKeyMarker>>();
             var exporter = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(logger.Object, fileSaver.Object, serializer.Object);
             var topic = (ExportedTopic)null!;
-            var data = Enumerable.Empty<KeyValuePair<object, MetaMessage<object>>>();
+            var data = Enumerable.Empty<KeyValuePair<object, KafkaMessage<object>>>();
 
             // Act
             var exception = await Record.ExceptionAsync(async () =>
@@ -138,9 +138,9 @@ namespace KafkaSnapshot.Export.Tests
             var serializer = new Mock<ISerializer<object, object, OriginalKeyMarker>>();
             var exporter = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(logger.Object, fileSaver.Object, serializer.Object);
             var topic = new ExportedTopic("name", "filename", isRawMessage);
-            var data = new KeyValuePair<object, MetaMessage<object>>[]
+            var data = new KeyValuePair<object, KafkaMessage<object>>[]
             {
-                new KeyValuePair<object, MetaMessage<object>>("test",new MetaMessage<object>("value", new KafkaMetadata(DateTime.UtcNow,1,2)))
+                new KeyValuePair<object, KafkaMessage<object>>("test",new KafkaMessage<object>("value", new KafkaMetadata(DateTime.UtcNow,1,2)))
             };
             var jsonData = "testJson";
             serializer.Setup(x => x.Serialize(data, isRawMessage)).Returns(jsonData);

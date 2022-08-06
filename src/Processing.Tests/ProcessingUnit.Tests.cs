@@ -242,7 +242,7 @@ namespace KafkaSnapshot.Processing.Tests
             var valueFilterMock = new Mock<IDataFilter<object>>();
             var valueFilter = valueFilterMock.Object;
 
-            var snapshotMock = new Mock<IEnumerable<KeyValuePair<object, MetaMessage<object>>>>();
+            var snapshotMock = new Mock<IEnumerable<KeyValuePair<object, KafkaMessage<object>>>>();
             var snapshot = snapshotMock.Object;
             factoryMock.Setup(x => x.Create(topic.FilterKeyType, topic.KeyType, topic.FilterKeyValue)).Returns(keyFilter);
 

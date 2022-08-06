@@ -50,7 +50,7 @@ namespace KafkaSnapshot.Export.Tests
             // Arrange
             var logger = new Mock<ILogger<SimpleJsonSerializer<object, object>>>().Object;
             var serializer = new SimpleJsonSerializer<object, object>(logger);
-            var data = (IEnumerable<KeyValuePair<object, MetaMessage<object>>>)null!;
+            var data = (IEnumerable<KeyValuePair<object, KafkaMessage<object>>>)null!;
 
             // Act
             var exception = Record.Exception(() => _ = serializer.Serialize(data, isRawData));
@@ -71,7 +71,7 @@ namespace KafkaSnapshot.Export.Tests
             var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
             var data = new[]
             {
-                new KeyValuePair<object, MetaMessage<object>>(1,new MetaMessage<object>("Test",new KafkaMetadata(dateTime,1,2)))
+                new KeyValuePair<object, KafkaMessage<object>>(1,new KafkaMessage<object>("Test",new KafkaMetadata(dateTime,1,2)))
             };
             string result = null!;
 

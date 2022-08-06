@@ -20,7 +20,7 @@ namespace KafkaSnapshot.Abstractions.Import
         /// <param name="valueFilter">filter for topic's values.</param>
         /// <param name="ct">Cancellation token.</param>
         /// <returns>Topic's data.</returns>
-        public Task<IEnumerable<KeyValuePair<TKey, MetaMessage<TMessage>>>> LoadCompactSnapshotAsync(
+        public Task<IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>>> LoadCompactSnapshotAsync(
             LoadingTopic loadingTpic,
             IDataFilter<TKey> keyFilter,
             IDataFilter<TMessage> valueFilter,

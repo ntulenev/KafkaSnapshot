@@ -79,8 +79,8 @@ namespace KafkaSnapshot.Processing
             await _exporter.ExportAsync(items, _exportedTopic, ct).ConfigureAwait(false);
         }
 
-        private IEnumerable<KeyValuePair<TKey, MetaMessage<TValue>>> SortData(
-            IEnumerable<KeyValuePair<TKey, MetaMessage<TValue>>> items)
+        private IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> SortData(
+            IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> items)
         {
             // TODO Move to separate class
             return (_topicParams.SortOrder, _topicParams.SortingType) switch

@@ -17,6 +17,6 @@ namespace KafkaSnapshot.Abstractions.Export
         /// <param name="data">Data for serialization.</param>
         /// <param name="exportRawMessage">Rule for message serialization.</param>
         /// <returns>String data representation.</returns>
-        public string Serialize(IEnumerable<KeyValuePair<TKey, MetaMessage<TMessage>>> data, bool exportRawMessage);
+        public string Serialize(IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> data, bool exportRawMessage);
     }
 }

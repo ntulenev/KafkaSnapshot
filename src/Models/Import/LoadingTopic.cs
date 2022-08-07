@@ -54,7 +54,7 @@ namespace KafkaSnapshot.Models.Import
 
         public SortingType SortingType { get; }
 
-        public SortOrder SortOrder { get; }
+        public SortingOrder SortOrder { get; }
 
         /// <summary>
         /// Creates <see cref="LoadingTopic"/>.
@@ -68,7 +68,7 @@ namespace KafkaSnapshot.Models.Import
                             DateFilterRange dateParams,
                             HashSet<int>? partitionFilter = null!,
                             SortingType sortingType = SortingType.Time,
-                            SortOrder sortingOrder = SortOrder.No)
+                            SortingOrder sortingOrder = SortingOrder.No)
         {
             ValidateTopicName(name);
             Value = name;

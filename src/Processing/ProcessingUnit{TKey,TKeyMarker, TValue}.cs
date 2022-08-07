@@ -86,11 +86,11 @@ namespace KafkaSnapshot.Processing
             // TODO Move to separate class
             return (_topicParams.SortOrder, _topicParams.SortingType) switch
             {
-                (SortOrder.No, _) => items,
-                (SortOrder.Ask, SortingType.Time) => items.OrderBy(x => x.Value.Meta.Timestamp).ToList(),
-                (SortOrder.Desk, SortingType.Time) => items.OrderByDescending(x => x.Value.Meta.Timestamp).ToList(),
-                (SortOrder.Ask, SortingType.Partition) => items.OrderBy(x => x.Value.Meta.Partition).ToList(),
-                (SortOrder.Desk, SortingType.Partition) => items.OrderByDescending(x => x.Value.Meta.Partition).ToList(),
+                (SortingOrder.No, _) => items,
+                (SortingOrder.Ask, SortingType.Time) => items.OrderBy(x => x.Value.Meta.Timestamp).ToList(),
+                (SortingOrder.Desk, SortingType.Time) => items.OrderByDescending(x => x.Value.Meta.Timestamp).ToList(),
+                (SortingOrder.Ask, SortingType.Partition) => items.OrderBy(x => x.Value.Meta.Partition).ToList(),
+                (SortingOrder.Desk, SortingType.Partition) => items.OrderByDescending(x => x.Value.Meta.Partition).ToList(),
                 _ => throw new NotImplementedException("Sort type not implemented")
             };
         }

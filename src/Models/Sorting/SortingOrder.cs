@@ -3,7 +3,7 @@
     /// <summary>
     /// Kafka items sort order.
     /// </summary>
-    public enum SortOrder
+    public enum SortingOrder
     {
         Ask, Desk, No
     }

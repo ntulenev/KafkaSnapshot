@@ -13,6 +13,7 @@ using KafkaSnapshot.Import.Metadata;
 using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Import.Watermarks;
 using KafkaSnapshot.Models.Filters;
+using KafkaSnapshot.Models.Sorting;
 
 namespace KafkaAsTable.Tests
 {
@@ -104,7 +105,9 @@ namespace KafkaAsTable.Tests
             });
             var loader = new TopicWatermarkLoader(client, options.Object);
             var consumerFactory = (Func<IConsumer<string, string>>)null!;
-            var topicName = new LoadingTopic("test", true, new DateFilterRange(null!, null!));
+            HashSet<int> partitionFilter = null!;
+            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
+            var topicName = new LoadingTopic("test", true, new DateFilterRange(null!, null!),partitionFilter,sort);
 
             // Act
             var exception = await Record.ExceptionAsync(async () =>
@@ -145,7 +148,9 @@ namespace KafkaAsTable.Tests
         public async Task CanLoadWatermarksWithValidParams()
         {
 
-            var topic = new LoadingTopic("test", true, new DateFilterRange(null!, null!));
+            HashSet<int> partitionFilter = null!;
+            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
+            var topic = new LoadingTopic("test", true, new DateFilterRange(null!, null!),partitionFilter,sort);
             var clientMock = new Mock<IAdminClient>();
             var client = clientMock.Object;
             var timeout = 1;
@@ -214,8 +219,8 @@ namespace KafkaAsTable.Tests
         [Trait("Category", "Unit")]
         public async Task CanLoadWatermarksWithValidParamsWithPartitionFilter()
         {
-
-            var topic = new LoadingTopic("test", true, new DateFilterRange(null!, null!), new HashSet<int>(new[] { 2 }));
+            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
+            var topic = new LoadingTopic("test", true, new DateFilterRange(null!, null!), new HashSet<int>(new[] { 2 }),sort);
             var clientMock = new Mock<IAdminClient>();
             var client = clientMock.Object;
             var timeout = 1;

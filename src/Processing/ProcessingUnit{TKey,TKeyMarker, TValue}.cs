@@ -52,11 +52,15 @@ namespace KafkaSnapshot.Processing
             //TODO Add params later
             _valueFilter = valueFilterFactory.Create(Models.Filters.FilterType.None, ValueMessageType.Raw, default!);
 
+            //Stub for getting sort from topic
+            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
+
             _topicParams = new LoadingTopic(
                                 topic.Name,
                                 topic.LoadWithCompacting,
-                                topic.DateRange, 
-                                topic.PartitionIdsFilter
+                                topic.DateRange,
+                                topic.PartitionIdsFilter,
+                                sort
                                 );
 
             _exportedTopic = new ExportedTopic(topic.Name, topic.ExportName, topic.ExportRawMessage);
@@ -84,13 +88,13 @@ namespace KafkaSnapshot.Processing
             IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> items)
         {
             // TODO Move to separate class
-            return (_topicParams.SortOrder, _topicParams.SortingType) switch
+            return (_topicParams.Sorting) switch
             {
-                (SortingOrder.No, _) => items,
-                (SortingOrder.Ask, SortingType.Time) => items.OrderBy(x => x.Value.Meta.Timestamp).ToList(),
-                (SortingOrder.Desk, SortingType.Time) => items.OrderByDescending(x => x.Value.Meta.Timestamp).ToList(),
-                (SortingOrder.Ask, SortingType.Partition) => items.OrderBy(x => x.Value.Meta.Partition).ToList(),
-                (SortingOrder.Desk, SortingType.Partition) => items.OrderByDescending(x => x.Value.Meta.Partition).ToList(),
+                { Order: SortingOrder.No, Type: _ } => items,
+                { Order: SortingOrder.Ask, Type: SortingType.Time } => items.OrderBy(x => x.Value.Meta.Timestamp).ToList(),
+                { Order: SortingOrder.Desk, Type: SortingType.Time } => items.OrderByDescending(x => x.Value.Meta.Timestamp).ToList(),
+                { Order: SortingOrder.Ask, Type: SortingType.Partition } => items.OrderBy(x => x.Value.Meta.Partition).ThenBy(x => x.Value.Meta.Timestamp).ToList(),
+                { Order: SortingOrder.Desk, Type: SortingType.Partition } => items.OrderByDescending(x => x.Value.Meta.Partition).ThenBy(x => x.Value.Meta.Timestamp).ToList(),
                 _ => throw new NotImplementedException("Sort type not implemented")
             };
         }

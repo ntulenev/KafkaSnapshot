@@ -4,6 +4,7 @@ using FluentAssertions;
 
 using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Filters;
+using KafkaSnapshot.Models.Sorting;
 
 namespace KafkaSnapshot.Models.Tests
 {
@@ -18,9 +19,11 @@ namespace KafkaSnapshot.Models.Tests
 
             // Arrange
             string name = null!;
+            HashSet<int> partitionFilter = null!;
+            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
 
             // Act
-            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!)));
+            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!), partitionFilter, sort));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -35,9 +38,11 @@ namespace KafkaSnapshot.Models.Tests
 
             // Arrange
             string name = null!;
+            HashSet<int> partitionFilter = null!;
+            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
 
             // Act
-            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!)));
+            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!), partitionFilter, sort));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -52,9 +57,11 @@ namespace KafkaSnapshot.Models.Tests
 
             // Arrange
             var name = string.Empty;
+            HashSet<int> partitionFilter = null!;
+            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
 
             // Act
-            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!)));
+            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!), partitionFilter, sort));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -69,9 +76,11 @@ namespace KafkaSnapshot.Models.Tests
 
             // Arrange
             var name = string.Empty;
+            HashSet<int> partitionFilter = null!;
+            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
 
             // Act
-            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!)));
+            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!), partitionFilter, sort));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -86,9 +95,11 @@ namespace KafkaSnapshot.Models.Tests
 
             // Arrange
             var name = "     ";
+            HashSet<int> partitionFilter = null!;
+            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
 
             // Act
-            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!)));
+            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!), partitionFilter, sort));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -103,9 +114,11 @@ namespace KafkaSnapshot.Models.Tests
 
             // Arrange
             var name = "     ";
+            HashSet<int> partitionFilter = null!;
+            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
 
             // Act
-            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!)));
+            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!), partitionFilter, sort));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -120,9 +133,11 @@ namespace KafkaSnapshot.Models.Tests
 
             // Arrange
             var name = "topic name";
+            HashSet<int> partitionFilter = null!;
+            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
 
             // Act
-            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!)));
+            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!), partitionFilter, sort));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -137,9 +152,11 @@ namespace KafkaSnapshot.Models.Tests
 
             // Arrange
             var name = "topic name";
+            HashSet<int> partitionFilter = null!;
+            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
 
             // Act
-            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!)));
+            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!), partitionFilter, sort));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -154,9 +171,11 @@ namespace KafkaSnapshot.Models.Tests
 
             // Arrange
             var name = new string('x', 250);
+            HashSet<int> partitionFilter = null!;
+            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
 
             // Act
-            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!)));
+            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!), partitionFilter, sort));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -171,9 +190,11 @@ namespace KafkaSnapshot.Models.Tests
 
             // Arrange
             var name = new string('x', 250);
+            HashSet<int> partitionFilter = null!;
+            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
 
             // Act
-            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!)));
+            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!), partitionFilter, sort));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -188,9 +209,11 @@ namespace KafkaSnapshot.Models.Tests
 
             // Arrange
             var name = "ы?:%";
+            HashSet<int> partitionFilter = null!;
+            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
 
             // Act
-            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!)));
+            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!), partitionFilter, sort));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -205,9 +228,11 @@ namespace KafkaSnapshot.Models.Tests
 
             // Arrange
             var name = "ы?:%";
+            HashSet<int> partitionFilter = null!;
+            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
 
             // Act
-            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!)));
+            var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!), partitionFilter, sort));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -223,8 +248,11 @@ namespace KafkaSnapshot.Models.Tests
             // Arrange
             var name = "test";
             LoadingTopic item = null!;
+            HashSet<int> partitionFilter = null!;
+            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
+
             // Act
-            var exception = Record.Exception(() => item = new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!)));
+            var exception = Record.Exception(() => item = new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!), partitionFilter, sort));
 
             // Assert
             exception.Should().BeNull();
@@ -244,8 +272,11 @@ namespace KafkaSnapshot.Models.Tests
             // Arrange
             var name = "test";
             LoadingTopic item = null!;
+            HashSet<int> partitionFilter = null!;
+            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
+
             // Act
-            var exception = Record.Exception(() => item = new LoadingTopic(name, compactingRule, new DateFilterRange(DateTime.UtcNow, DateTime.UtcNow)));
+            var exception = Record.Exception(() => item = new LoadingTopic(name, compactingRule, new DateFilterRange(DateTime.UtcNow, DateTime.UtcNow), partitionFilter, sort));
 
             // Assert
             exception.Should().BeNull();
@@ -262,7 +293,10 @@ namespace KafkaSnapshot.Models.Tests
 
             // Arrange
             var name = "test";
-            var topic = new LoadingTopic(name, true, new DateFilterRange(null!, DateTime.UtcNow));
+            HashSet<int> partitionFilter = null!;
+            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
+            var topic = new LoadingTopic(name, true, new DateFilterRange(null!, DateTime.UtcNow), partitionFilter, sort);
+
 
             // Act
             var exception = Record.Exception(() => topic.OffsetDate);
@@ -279,7 +313,9 @@ namespace KafkaSnapshot.Models.Tests
             // Arrange
             var date = DateTime.UtcNow;
             var name = "test";
-            var topic = new LoadingTopic(name, true, new DateFilterRange(date, null!));
+            HashSet<int> partitionFilter = null!;
+            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
+            var topic = new LoadingTopic(name, true, new DateFilterRange(date, null!), partitionFilter, sort);
             DateTime resultedDate = default;
 
             // Act
@@ -297,7 +333,9 @@ namespace KafkaSnapshot.Models.Tests
 
             // Arrange
             var name = "test";
-            var topic = new LoadingTopic(name, true, new DateFilterRange(DateTime.UtcNow, null!));
+            HashSet<int> partitionFilter = null!;
+            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
+            var topic = new LoadingTopic(name, true, new DateFilterRange(DateTime.UtcNow, null!), partitionFilter, sort);
 
             // Act
             var exception = Record.Exception(() => topic.EndOffsetDate);
@@ -314,7 +352,9 @@ namespace KafkaSnapshot.Models.Tests
             // Arrange
             var date = DateTime.UtcNow;
             var name = "test";
-            var topic = new LoadingTopic(name, true, new DateFilterRange(null!, date));
+            HashSet<int> partitionFilter = null!;
+            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
+            var topic = new LoadingTopic(name, true, new DateFilterRange(null!, date), partitionFilter, sort);
             DateTime resultedDate = default;
 
             // Act
@@ -332,9 +372,10 @@ namespace KafkaSnapshot.Models.Tests
 
             // Arrange
             var name = "test";
+            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
 
             // Act
-            var exception = Record.Exception(() => new LoadingTopic(name, true, new DateFilterRange(DateTime.UtcNow, DateTime.UtcNow.AddDays(1)), new HashSet<int>()));
+            var exception = Record.Exception(() => new LoadingTopic(name, true, new DateFilterRange(DateTime.UtcNow, DateTime.UtcNow.AddDays(1)), new HashSet<int>(), sort));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -347,9 +388,10 @@ namespace KafkaSnapshot.Models.Tests
 
             // Arrange
             var name = "test";
+            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
 
             // Act
-            var exception = Record.Exception(() => new LoadingTopic(name, true, new DateFilterRange(DateTime.UtcNow, DateTime.UtcNow.AddDays(1)), new HashSet<int>(new[] { 1, 2, 3 })));
+            var exception = Record.Exception(() => new LoadingTopic(name, true, new DateFilterRange(DateTime.UtcNow, DateTime.UtcNow.AddDays(1)), new HashSet<int>(new[] { 1, 2, 3 }), sort));
 
             // Assert
             exception.Should().BeNull();
@@ -364,15 +406,32 @@ namespace KafkaSnapshot.Models.Tests
             var items = new[] { 1, 2, 3 };
             var date = DateTime.UtcNow;
             var name = "test";
+            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
 
             // Act
-            var topic = new LoadingTopic(name, true, new DateFilterRange(date, date), new HashSet<int>(items));
+            var topic = new LoadingTopic(name, true, new DateFilterRange(date, date), new HashSet<int>(items), sort);
 
             // Assert
             topic.HasPartitionFilter.Should().BeTrue();
             topic.PartitionFilter.Should().NotBeNull();
             topic.PartitionFilter.Should().Contain(items);
 
+        }
+
+        [Fact(DisplayName = "Can't setup null sort filter.")]
+        [Trait("Category", "Unit")]
+        public void CantCreateTopicWithEmptySortFilter()
+        {
+
+            // Arrange
+            var name = "test";
+            var sort = (SortingParams)null!;
+
+            // Act
+            var exception = Record.Exception(() => new LoadingTopic(name, true, new DateFilterRange(DateTime.UtcNow, DateTime.UtcNow.AddDays(1)), new HashSet<int>(), sort));
+
+            // Assert
+            exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
         }
     }
 }

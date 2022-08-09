@@ -53,6 +53,7 @@ namespace KafkaSnapshot.Processing
             _valueFilter = valueFilterFactory.Create(Models.Filters.FilterType.None, ValueMessageType.Raw, default!);
 
             //Stub for getting sort from topic
+            //TODO Add params later
             var sort = new SortingParams(SortingType.Time, SortingOrder.No);
 
             _topicParams = new LoadingTopic(

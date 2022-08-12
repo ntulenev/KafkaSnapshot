@@ -47,24 +47,12 @@ namespace KafkaSnapshot.Processing
             ArgumentNullException.ThrowIfNull(valueFilterFactory);
 
             _keyFilter = keyFilterFactory.Create(topic.FilterKeyType, topic.KeyType, topic.FilterKeyValue);
-
             //Stub for value filters
             //TODO Add params later
             _valueFilter = valueFilterFactory.Create(Models.Filters.FilterType.None, ValueMessageType.Raw, default!);
 
-            //Stub for getting sort from topic
-            //TODO Add params later
-            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
-
-            _topicParams = new LoadingTopic(
-                                topic.Name,
-                                topic.LoadWithCompacting,
-                                topic.DateRange,
-                                topic.PartitionIdsFilter,
-                                sort
-                                );
-
-            _exportedTopic = new ExportedTopic(topic.Name, topic.ExportName, topic.ExportRawMessage);
+            _topicParams = topic.CreateLoadingParams();
+            _exportedTopic = topic.CreateExportParams();
 
             _logger.LogDebug("Instance created for topic {@topic}.", topic);
         }

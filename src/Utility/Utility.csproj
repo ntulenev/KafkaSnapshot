@@ -36,6 +36,7 @@
     <ProjectReference Include="..\Filters\Filters.csproj" />
     <ProjectReference Include="..\Import\Import.csproj" />
     <ProjectReference Include="..\Processing\Processing.csproj" />
+    <ProjectReference Include="..\Sorting\Sorting.csproj" />
   </ItemGroup>
 
 </Project>

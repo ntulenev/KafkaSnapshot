@@ -21,6 +21,8 @@ using KafkaSnapshot.Abstractions.Import;
 using KafkaSnapshot.Filters;
 using KafkaSnapshot.Models.Filters;
 using KafkaSnapshot.Export.Serialization;
+using KafkaSnapshot.Abstractions.Sorting;
+using KafkaSnapshot.Sorting;
 
 namespace KafkaSnapshot.Utility
 {
@@ -139,6 +141,17 @@ namespace KafkaSnapshot.Utility
             services.AddSingleton<Func<IConsumer<string, string>>>(sp => () => createConsumer<string>(sp));
             services.AddSingleton<Func<IConsumer<long, string>>>(sp => () => createConsumer<long>(sp));
             services.AddSingleton(typeof(ISnapshotLoader<,>), typeof(SnapshotLoader<,>));
+
+            IMessageSorter<TKey, TValue> createSorter<TKey, TValue>()
+                where TKey : notnull where TValue : notnull
+            {
+                //TODO move params to config
+                return new MessageSorter<TKey, TValue>
+                    (new Models.Sorting.SortingParams(Models.Sorting.SortingType.Time, Models.Sorting.SortingOrder.No));
+            }
+
+            services.AddSingleton<IMessageSorter<string, string>>(sp => createSorter<string, string>());
+            services.AddSingleton<IMessageSorter<long, string>>(sp => createSorter<long, string>());
         }
 
         private static ICollection<IProcessingUnit> CreateTopicLoaders(IServiceProvider sp, IConfiguration configuration)

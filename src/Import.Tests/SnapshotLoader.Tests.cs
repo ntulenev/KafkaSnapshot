@@ -17,6 +17,7 @@ using KafkaSnapshot.Import.Watermarks;
 using KafkaSnapshot.Import.Configuration;
 using KafkaSnapshot.Models.Filters;
 using KafkaSnapshot.Models.Sorting;
+using KafkaSnapshot.Abstractions.Sorting;
 
 namespace KafkaSnapshot.Import.Tests
 {
@@ -35,9 +36,11 @@ namespace KafkaSnapshot.Import.Tests
             var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>();
             optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
             var options = optionsMock.Object;
+            var sorterMock = new Mock<IMessageSorter<object, object>>();
+            var sorter = sorterMock.Object;
 
             // Act
-            var exception = Record.Exception(() => new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader));
+            var exception = Record.Exception(() => new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -56,9 +59,11 @@ namespace KafkaSnapshot.Import.Tests
             var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>();
             optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
             var options = optionsMock.Object;
+            var sorterMock = new Mock<IMessageSorter<object, object>>();
+            var sorter = sorterMock.Object;
 
             // Act
-            var exception = Record.Exception(() => new SnapshotLoader<object, object>(logger, options, null!, topicLoader));
+            var exception = Record.Exception(() => new SnapshotLoader<object, object>(logger, options, null!, topicLoader, sorter));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -77,9 +82,33 @@ namespace KafkaSnapshot.Import.Tests
             var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>();
             optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
             var options = optionsMock.Object;
+            var sorterMock = new Mock<IMessageSorter<object, object>>();
+            var sorter = sorterMock.Object;
 
             // Act
-            var exception = Record.Exception(() => new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader));
+            var exception = Record.Exception(() => new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter));
+
+            // Assert
+            exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
+        }
+
+        [Fact(DisplayName = "SnapshotLoader cant be created with null sorter.")]
+        [Trait("Category", "Unit")]
+        public void SnapshotLoaderCantBeCreatedWithNullSorter()
+        {
+
+            // Arrange
+            var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
+            var logger = loggerMock.Object;
+            IConsumer<object, object> consumerFactory() => null!;
+            var topicLoaderMock = new Mock<ITopicWatermarkLoader>();
+            var topicLoader = topicLoaderMock.Object;
+            var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>();
+            optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
+            var options = optionsMock.Object;
+
+            // Act
+            var exception = Record.Exception(() => new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, null!));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -99,9 +128,11 @@ namespace KafkaSnapshot.Import.Tests
             var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>();
             optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
             var options = optionsMock.Object;
+            var sorterMock = new Mock<IMessageSorter<object, object>>();
+            var sorter = sorterMock.Object;
 
             // Act
-            var exception = Record.Exception(() => new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader));
+            var exception = Record.Exception(() => new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter));
 
             // Assert
             exception.Should().BeNull();
@@ -121,7 +152,9 @@ namespace KafkaSnapshot.Import.Tests
             var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>();
             optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
             var options = optionsMock.Object;
-            var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader);
+            var sorterMock = new Mock<IMessageSorter<object, object>>();
+            var sorter = sorterMock.Object;
+            var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter);
             var topicName = (LoadingTopic)null!;
 
             var filterKeyMock = new Mock<IDataFilter<object>>();
@@ -129,6 +162,7 @@ namespace KafkaSnapshot.Import.Tests
 
             var filterValueMock = new Mock<IDataFilter<object>>();
             var valueFilter = filterValueMock.Object;
+
 
             // Act
             var exception = await Record.ExceptionAsync(
@@ -153,7 +187,9 @@ namespace KafkaSnapshot.Import.Tests
             var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>();
             optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
             var options = optionsMock.Object;
-            var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader);
+            var sorterMock = new Mock<IMessageSorter<object, object>>();
+            var sorter = sorterMock.Object;
+            var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter);
             var withCompacting = true;
             HashSet<int> partitionFilter = null!;
             var sort = new SortingParams(SortingType.Time, SortingOrder.No);
@@ -188,7 +224,9 @@ namespace KafkaSnapshot.Import.Tests
             var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>();
             optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
             var options = optionsMock.Object;
-            var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader);
+            var sorterMock = new Mock<IMessageSorter<object, object>>();
+            var sorter = sorterMock.Object;
+            var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter);
             var withCompacting = true;
             HashSet<int> partitionFilter = null!;
             var sort = new SortingParams(SortingType.Time, SortingOrder.No);
@@ -214,43 +252,8 @@ namespace KafkaSnapshot.Import.Tests
         {
 
             // Arrange
-            var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
-            var logger = loggerMock.Object;
-            var consumerMock = new Mock<IConsumer<object, object>>();
-            Func<IConsumer<object, object>> consumerFactory = () => consumerMock.Object;
-            var topicLoaderMock = new Mock<ITopicWatermarkLoader>();
-
-            var topicLoader = topicLoaderMock.Object;
-            var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>();
-            optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
-            var options = optionsMock.Object;
-            var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader);
-            var withCompacting = false;
-            HashSet<int> partitionFilter = null!;
-            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
-            var topicName = new LoadingTopic("test", withCompacting, new DateFilterRange(null!, null!), partitionFilter, sort);
-            var filterKeyMock = new Mock<IDataFilter<object>>();
-            filterKeyMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
-
-            var keyFilter = filterKeyMock.Object;
-
-            var filterValueMock = new Mock<IDataFilter<object>>();
-            filterValueMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
-            var valueFilter = filterValueMock.Object;
-
-            IEnumerable<KeyValuePair<object, KafkaMessage<object>>> result = null!;
-            var offset = new WatermarkOffsets(new Offset(0), new Offset(3));
-            var topicWatermark = new TopicWatermark(new[]
-            {
-                new PartitionWatermark(topicName,offset,new Partition(1))
-            });
-
-            topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, object>(consumerFactory, topicName, CancellationToken.None))
-                .Returns(Task.FromResult(topicWatermark));
-
-            var indexer = 0;
             var consumerData = new[]
-            {
+           {
                 new ConsumeResult<object, object>
                 {
                      Message = new Message<object, object>
@@ -283,11 +286,51 @@ namespace KafkaSnapshot.Import.Tests
                 }
             };
 
+            var indexer = 0;
             var exceptedData = consumerData.Select((x, i) =>
-
             new KeyValuePair<object, KafkaMessage<object>>(x.Message.Key, new KafkaMessage<object>(x.Message.Value, new Models.Message.KafkaMetadata(x.Message.Timestamp.UtcDateTime, 1, i)))
 
             );
+
+
+            var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
+            var logger = loggerMock.Object;
+            var consumerMock = new Mock<IConsumer<object, object>>();
+            Func<IConsumer<object, object>> consumerFactory = () => consumerMock.Object;
+            var topicLoaderMock = new Mock<ITopicWatermarkLoader>();
+
+            var topicLoader = topicLoaderMock.Object;
+            var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>();
+            optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
+            var options = optionsMock.Object;
+
+            var sorterMock = new Mock<IMessageSorter<object, object>>();
+            sorterMock.Setup(x => x.Sort(exceptedData)).Returns(exceptedData);
+            var sorter = sorterMock.Object;
+
+            var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter);
+            var withCompacting = false;
+            HashSet<int> partitionFilter = null!;
+            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
+            var topicName = new LoadingTopic("test", withCompacting, new DateFilterRange(null!, null!), partitionFilter, sort);
+            var filterKeyMock = new Mock<IDataFilter<object>>();
+            filterKeyMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+
+            var keyFilter = filterKeyMock.Object;
+
+            var filterValueMock = new Mock<IDataFilter<object>>();
+            filterValueMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+            var valueFilter = filterValueMock.Object;
+
+            IEnumerable<KeyValuePair<object, KafkaMessage<object>>> result = null!;
+            var offset = new WatermarkOffsets(new Offset(0), new Offset(3));
+            var topicWatermark = new TopicWatermark(new[]
+            {
+                new PartitionWatermark(topicName,offset,new Partition(1))
+            });
+
+            topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, object>(consumerFactory, topicName, CancellationToken.None))
+                .Returns(Task.FromResult(topicWatermark));
 
             consumerMock.Setup(x => x.Consume(CancellationToken.None)).Returns(() =>
             {
@@ -308,51 +351,6 @@ namespace KafkaSnapshot.Import.Tests
         public async Task SnapshotLoaderCanLoadDataWithoutCompactingOnDate()
         {
             // Arrange
-            var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
-            var logger = loggerMock.Object;
-            var consumerMock = new Mock<IConsumer<object, object>>();
-            Func<IConsumer<object, object>> consumerFactory = () => consumerMock.Object;
-            var topicLoaderMock = new Mock<ITopicWatermarkLoader>();
-
-            var topicLoader = topicLoaderMock.Object;
-            var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>();
-            optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
-            var options = optionsMock.Object;
-            var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader);
-            var withCompacting = false;
-            var testDate = DateTime.UtcNow;
-            HashSet<int> partitionFilter = null!;
-            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
-            var topicName = new LoadingTopic("test", withCompacting, new DateFilterRange(testDate, null!), partitionFilter, sort);
-
-            var keyFilterMock = new Mock<IDataFilter<object>>();
-            keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
-            var keyFilter = keyFilterMock.Object;
-
-            var valueFilterMock = new Mock<IDataFilter<object>>();
-            valueFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
-            var valueFilter = valueFilterMock.Object;
-
-            IEnumerable<KeyValuePair<object, KafkaMessage<object>>> result = null!;
-            var offset = new WatermarkOffsets(new Offset(0), new Offset(3));
-            var partition = new Partition(1);
-            var topicWatermark = new TopicWatermark(new[]
-            {
-                new PartitionWatermark(topicName,offset,partition)
-            });
-
-            var topicPartition = new TopicPartition(topicName.Value, partition);
-            var partitionWithTime = new TopicPartitionTimestamp(topicPartition, new Timestamp(testDate));
-            consumerMock.Setup(x => x.OffsetsForTimes(
-                It.Is<IEnumerable<TopicPartitionTimestamp>>(x => x.Single() == partitionWithTime),
-                It.IsAny<TimeSpan>())).Returns(new[]
-                {
-                    new TopicPartitionOffset(topicPartition,new Offset(0))
-                }.ToList());
-
-            topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, object>(consumerFactory, topicName, CancellationToken.None))
-                .Returns(Task.FromResult(topicWatermark));
-
             var indexer = 0;
             var consumerData = new[]
             {
@@ -391,6 +389,57 @@ namespace KafkaSnapshot.Import.Tests
             var exceptedData = consumerData.Select((x, i) =>
                             new KeyValuePair<object, KafkaMessage<object>>(x.Message.Key, new KafkaMessage<object>(x.Message.Value, new Models.Message.KafkaMetadata(x.Message.Timestamp.UtcDateTime, 1, i))));
 
+
+            var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
+            var logger = loggerMock.Object;
+            var consumerMock = new Mock<IConsumer<object, object>>();
+            Func<IConsumer<object, object>> consumerFactory = () => consumerMock.Object;
+            var topicLoaderMock = new Mock<ITopicWatermarkLoader>();
+
+            var topicLoader = topicLoaderMock.Object;
+            var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>();
+            optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
+            var options = optionsMock.Object;
+
+            var sorterMock = new Mock<IMessageSorter<object, object>>();
+            sorterMock.Setup(x => x.Sort(exceptedData)).Returns(exceptedData);
+            var sorter = sorterMock.Object;
+
+            var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter);
+            var withCompacting = false;
+            var testDate = DateTime.UtcNow;
+            HashSet<int> partitionFilter = null!;
+            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
+            var topicName = new LoadingTopic("test", withCompacting, new DateFilterRange(testDate, null!), partitionFilter, sort);
+
+            var keyFilterMock = new Mock<IDataFilter<object>>();
+            keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+            var keyFilter = keyFilterMock.Object;
+
+            var valueFilterMock = new Mock<IDataFilter<object>>();
+            valueFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+            var valueFilter = valueFilterMock.Object;
+
+            IEnumerable<KeyValuePair<object, KafkaMessage<object>>> result = null!;
+            var offset = new WatermarkOffsets(new Offset(0), new Offset(3));
+            var partition = new Partition(1);
+            var topicWatermark = new TopicWatermark(new[]
+            {
+                new PartitionWatermark(topicName,offset,partition)
+            });
+
+            var topicPartition = new TopicPartition(topicName.Value, partition);
+            var partitionWithTime = new TopicPartitionTimestamp(topicPartition, new Timestamp(testDate));
+            consumerMock.Setup(x => x.OffsetsForTimes(
+                It.Is<IEnumerable<TopicPartitionTimestamp>>(x => x.Single() == partitionWithTime),
+                It.IsAny<TimeSpan>())).Returns(new[]
+                {
+                    new TopicPartitionOffset(topicPartition,new Offset(0))
+                }.ToList());
+
+            topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, object>(consumerFactory, topicName, CancellationToken.None))
+                .Returns(Task.FromResult(topicWatermark));
+
             consumerMock.Setup(x => x.Consume(CancellationToken.None)).Returns(() =>
             {
                 return consumerData[indexer++];
@@ -422,7 +471,13 @@ namespace KafkaSnapshot.Import.Tests
             var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>();
             optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
             var options = optionsMock.Object;
-            var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader);
+
+            var emptyData = Enumerable.Empty<KeyValuePair<object, KafkaMessage<object>>>();
+            var sorterMock = new Mock<IMessageSorter<object, object>>(MockBehavior.Strict);
+            sorterMock.Setup(x => x.Sort(emptyData)).Returns(emptyData);
+            var sorter = sorterMock.Object;
+
+            var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter);
             var withCompacting = compacting;
             var testDate = DateTime.UtcNow;
             HashSet<int> partitionFilter = null!;
@@ -472,41 +527,6 @@ namespace KafkaSnapshot.Import.Tests
         public async Task SnapshotLoaderCanLoadDataWithCompacting()
         {
             // Arrange
-            var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
-            var logger = loggerMock.Object;
-            var consumerMock = new Mock<IConsumer<object, object>>();
-            Func<IConsumer<object, object>> consumerFactory = () => consumerMock.Object;
-            var topicLoaderMock = new Mock<ITopicWatermarkLoader>();
-
-            var topicLoader = topicLoaderMock.Object;
-            var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>();
-            optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
-            var options = optionsMock.Object;
-            var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader);
-            var withCompacting = true;
-            HashSet<int> partitionFilter = null!;
-            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
-            var topicName = new LoadingTopic("test", withCompacting, new DateFilterRange(null!, null!),partitionFilter,sort);
-
-            var keyFilterMock = new Mock<IDataFilter<object>>();
-            keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
-            var keyFilter = keyFilterMock.Object;
-
-            var valueFilterMock = new Mock<IDataFilter<object>>();
-            valueFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
-            var valueFilter = valueFilterMock.Object;
-
-
-            IEnumerable<KeyValuePair<object, KafkaMessage<object>>> result = null!;
-            var offset = new WatermarkOffsets(new Offset(0), new Offset(3));
-            var topicWatermark = new TopicWatermark(new[]
-            {
-                new PartitionWatermark(topicName,offset,new Partition(1))
-            });
-
-            topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, object>(consumerFactory, topicName, CancellationToken.None))
-                .Returns(Task.FromResult(topicWatermark));
-
             var indexer = 0;
             var consumerData = new[]
             {
@@ -549,6 +569,46 @@ namespace KafkaSnapshot.Import.Tests
             exceptedData.RemoveAt(1);
 
 
+            var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
+            var logger = loggerMock.Object;
+            var consumerMock = new Mock<IConsumer<object, object>>();
+            Func<IConsumer<object, object>> consumerFactory = () => consumerMock.Object;
+            var topicLoaderMock = new Mock<ITopicWatermarkLoader>();
+
+            var topicLoader = topicLoaderMock.Object;
+            var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>();
+            optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
+            var options = optionsMock.Object;
+
+            var sorterMock = new Mock<IMessageSorter<object, object>>();
+            sorterMock.Setup(x => x.Sort(exceptedData)).Returns(exceptedData);
+            var sorter = sorterMock.Object;
+
+            var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter);
+            var withCompacting = true;
+            HashSet<int> partitionFilter = null!;
+            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
+            var topicName = new LoadingTopic("test", withCompacting, new DateFilterRange(null!, null!), partitionFilter, sort);
+
+            var keyFilterMock = new Mock<IDataFilter<object>>();
+            keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+            var keyFilter = keyFilterMock.Object;
+
+            var valueFilterMock = new Mock<IDataFilter<object>>();
+            valueFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+            var valueFilter = valueFilterMock.Object;
+
+
+            IEnumerable<KeyValuePair<object, KafkaMessage<object>>> result = null!;
+            var offset = new WatermarkOffsets(new Offset(0), new Offset(3));
+            var topicWatermark = new TopicWatermark(new[]
+            {
+                new PartitionWatermark(topicName,offset,new Partition(1))
+            });
+
+            topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, object>(consumerFactory, topicName, CancellationToken.None))
+                .Returns(Task.FromResult(topicWatermark));
+
             consumerMock.Setup(x => x.Consume(CancellationToken.None)).Returns(() =>
             {
                 return consumerData[indexer++];
@@ -568,6 +628,48 @@ namespace KafkaSnapshot.Import.Tests
         public async Task SnapshotLoaderCanLoadDataWithCompactingOnDate()
         {
             // Arrange
+            var indexer = 0;
+            var consumerData = new[]
+            {
+                new ConsumeResult<object, object>
+                {
+                     Message = new Message<object, object>
+                     {
+                           Key = "key1",
+                           Value = "value1",
+                           Timestamp =  Timestamp.Default
+                     },
+                     Offset = new Offset(0)
+                },
+                new ConsumeResult<object, object>
+                {
+                     Message = new Message<object, object>
+                     {
+                           Key = "key2",
+                           Value = "value2",
+                           Timestamp =  Timestamp.Default
+                     },
+                     Offset = new Offset(1)
+                },
+                new ConsumeResult<object, object>
+                {
+                     Message = new Message<object, object>
+                     {
+                           Key = "key2",
+                           Value = "value2",
+                           Timestamp =  Timestamp.Default
+                     },
+                     Offset = new Offset(2)
+                }
+            };
+
+            var exceptedData = consumerData.Select((x, i) =>
+
+            new KeyValuePair<object, KafkaMessage<object>>(x.Message.Key, new KafkaMessage<object>(x.Message.Value, new KafkaMetadata(x.Message.Timestamp.UtcDateTime, 1, i)))
+            ).ToList();
+            exceptedData.RemoveAt(1);
+
+
             var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
             var logger = loggerMock.Object;
             var consumerMock = new Mock<IConsumer<object, object>>();
@@ -578,11 +680,16 @@ namespace KafkaSnapshot.Import.Tests
             var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>();
             optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
             var options = optionsMock.Object;
-            var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader);
+
+            var sorterMock = new Mock<IMessageSorter<object, object>>();
+            sorterMock.Setup(x => x.Sort(exceptedData)).Returns(exceptedData);
+            var sorter = sorterMock.Object;
+
+            var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter);
             var withCompacting = true;
             HashSet<int> partitionFilter = null!;
             var sort = new SortingParams(SortingType.Time, SortingOrder.No);
-            var topicName = new LoadingTopic("test", withCompacting, new DateFilterRange(null!, null!),partitionFilter,sort);
+            var topicName = new LoadingTopic("test", withCompacting, new DateFilterRange(null!, null!), partitionFilter, sort);
 
             var keyFilterMock = new Mock<IDataFilter<object>>();
             keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
@@ -611,48 +718,6 @@ namespace KafkaSnapshot.Import.Tests
 
             topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, object>(consumerFactory, topicName, CancellationToken.None))
                 .Returns(Task.FromResult(topicWatermark));
-
-            var indexer = 0;
-            var consumerData = new[]
-            {
-                new ConsumeResult<object, object>
-                {
-                     Message = new Message<object, object>
-                     {
-                           Key = "key1",
-                           Value = "value1",
-                           Timestamp =  Timestamp.Default
-                     },
-                     Offset = new Offset(0)
-                },
-                new ConsumeResult<object, object>
-                {
-                     Message = new Message<object, object>
-                     {
-                           Key = "key2",
-                           Value = "value2",
-                           Timestamp =  Timestamp.Default
-                     },
-                     Offset = new Offset(1)
-                },
-                new ConsumeResult<object, object>
-                {
-                     Message = new Message<object, object>
-                     {
-                           Key = "key2",
-                           Value = "value2",
-                           Timestamp =  Timestamp.Default
-                     },
-                     Offset = new Offset(2)
-                }
-            };
-
-            var exceptedData = consumerData.Select((x, i) =>
-
-            new KeyValuePair<object, KafkaMessage<object>>(x.Message.Key, new KafkaMessage<object>(x.Message.Value, new KafkaMetadata(x.Message.Timestamp.UtcDateTime, 1, i)))
-            ).ToList();
-            exceptedData.RemoveAt(1);
-
 
             consumerMock.Setup(x => x.Consume(CancellationToken.None)).Returns(() =>
             {
@@ -685,12 +750,18 @@ namespace KafkaSnapshot.Import.Tests
             var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>();
             optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
             var options = optionsMock.Object;
-            var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader);
+
+            var sorterMock = new Mock<IMessageSorter<object, object>>();
+            var empty = Enumerable.Empty<KeyValuePair<object, KafkaMessage<object>>>();
+            sorterMock.Setup(x => x.Sort(empty)).Returns(empty);
+            var sorter = sorterMock.Object;
+
+            var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter);
             var withCompacting = compacting;
             var testDate = DateTime.UtcNow;
             HashSet<int> partitionFilter = null!;
             var sort = new SortingParams(SortingType.Time, SortingOrder.No);
-            var topicName = new LoadingTopic("test", withCompacting, new DateFilterRange(null!, testDate),partitionFilter,sort);
+            var topicName = new LoadingTopic("test", withCompacting, new DateFilterRange(null!, testDate), partitionFilter, sort);
 
             var keyFilterMock = new Mock<IDataFilter<object>>();
             keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
@@ -736,43 +807,8 @@ namespace KafkaSnapshot.Import.Tests
         public async Task SnapshotLoaderLoadDataWithEndDate()
         {
             // Arrange
-            var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
-            var logger = loggerMock.Object;
-            var consumerMock = new Mock<IConsumer<object, object>>();
-            Func<IConsumer<object, object>> consumerFactory = () => consumerMock.Object;
-            var topicLoaderMock = new Mock<ITopicWatermarkLoader>();
-
-            var topicLoader = topicLoaderMock.Object;
-            var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>();
-            optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
-            var options = optionsMock.Object;
-            var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader);
-            var withCompacting = false;
-            var testDate = DateTime.UtcNow;
-            HashSet<int> partitionFilter = null!;
-            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
-            var topicName = new LoadingTopic("test", withCompacting, new DateFilterRange(null!, testDate),partitionFilter,sort);
-
-            var keyFilterMock = new Mock<IDataFilter<object>>();
-            keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
-            var keyfilter = keyFilterMock.Object;
-
-            var valueFilterMock = new Mock<IDataFilter<object>>();
-            valueFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
-            var valueFilter = valueFilterMock.Object;
-
-            IEnumerable<KeyValuePair<object, KafkaMessage<object>>> result = null!;
-            var offset = new WatermarkOffsets(new Offset(0), new Offset(3));
-            var partition = new Partition(1);
-            var topicWatermark = new TopicWatermark(new[]
-            {
-                new PartitionWatermark(topicName,offset,partition)
-            });
-
-            var topicPartition = new TopicPartition(topicName.Value, partition);
-            var partitionWithTime = new TopicPartitionTimestamp(topicPartition, new Timestamp(testDate));
-
             var indexer = 0;
+            var testDate = DateTime.UtcNow;
             var consumerData = new[]
             {
                 new ConsumeResult<object, object>
@@ -813,6 +849,46 @@ namespace KafkaSnapshot.Import.Tests
             ).ToList();
             exceptedData.RemoveAt(2);
 
+            var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
+            var logger = loggerMock.Object;
+            var consumerMock = new Mock<IConsumer<object, object>>();
+            Func<IConsumer<object, object>> consumerFactory = () => consumerMock.Object;
+            var topicLoaderMock = new Mock<ITopicWatermarkLoader>();
+
+            var topicLoader = topicLoaderMock.Object;
+            var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>();
+            optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
+            var options = optionsMock.Object;
+
+            var sorterMock = new Mock<IMessageSorter<object, object>>();
+            sorterMock.Setup(x => x.Sort(exceptedData)).Returns(exceptedData);
+            var sorter = sorterMock.Object;
+
+            var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter);
+            var withCompacting = false;
+
+            HashSet<int> partitionFilter = null!;
+            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
+            var topicName = new LoadingTopic("test", withCompacting, new DateFilterRange(null!, testDate), partitionFilter, sort);
+
+            var keyFilterMock = new Mock<IDataFilter<object>>();
+            keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+            var keyfilter = keyFilterMock.Object;
+
+            var valueFilterMock = new Mock<IDataFilter<object>>();
+            valueFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+            var valueFilter = valueFilterMock.Object;
+
+            IEnumerable<KeyValuePair<object, KafkaMessage<object>>> result = null!;
+            var offset = new WatermarkOffsets(new Offset(0), new Offset(3));
+            var partition = new Partition(1);
+            var topicWatermark = new TopicWatermark(new[]
+            {
+                new PartitionWatermark(topicName,offset,partition)
+            });
+
+            var topicPartition = new TopicPartition(topicName.Value, partition);
+            var partitionWithTime = new TopicPartitionTimestamp(topicPartition, new Timestamp(testDate));
 
             consumerMock.Setup(x => x.Consume(CancellationToken.None)).Returns(() =>
             {

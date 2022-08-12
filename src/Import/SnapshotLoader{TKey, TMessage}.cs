@@ -10,6 +10,7 @@ using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Message;
 using KafkaSnapshot.Import.Configuration;
 using Microsoft.Extensions.Options;
+using KafkaSnapshot.Abstractions.Sorting;
 
 namespace KafkaSnapshot.Import
 {
@@ -24,12 +25,14 @@ namespace KafkaSnapshot.Import
         public SnapshotLoader(ILogger<SnapshotLoader<TKey, TMessage>> logger,
                               IOptions<SnapshotLoaderConfiguration> config,
                               Func<IConsumer<TKey, TMessage>> consumerFactory,
-                              ITopicWatermarkLoader topicWatermarkLoader
+                              ITopicWatermarkLoader topicWatermarkLoader,
+                              IMessageSorter<TKey, TMessage> sorter
                              )
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _topicWatermarkLoader = topicWatermarkLoader ?? throw new ArgumentNullException(nameof(topicWatermarkLoader));
             _consumerFactory = consumerFactory ?? throw new ArgumentNullException(nameof(consumerFactory));
+            _sorter = sorter ?? throw new ArgumentNullException(nameof(sorter));
 
             ArgumentNullException.ThrowIfNull(config);
 
@@ -152,11 +155,13 @@ namespace KafkaSnapshot.Import
 
         private IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> CreateSnapshot(IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> items, bool withCompacting)
         {
+            IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> result = null!;
+
             if (withCompacting)
             {
                 _logger.LogDebug("Compacting data");
 
-                return items.Where(x => x.Key is not null).Aggregate(
+                result = items.Where(x => x.Key is not null).Aggregate(
                     new Dictionary<TKey, KafkaMessage<TMessage>>(),
                     (d, e) =>
                     {
@@ -166,14 +171,17 @@ namespace KafkaSnapshot.Import
             }
             else
             {
-                return items.ToList();
+                result = items.ToList();
             }
+
+            return _sorter.Sort(result);
         }
 
         private readonly SnapshotLoaderConfiguration _config;
         private readonly ITopicWatermarkLoader _topicWatermarkLoader;
         private readonly Func<IConsumer<TKey, TMessage>> _consumerFactory;
         private readonly ILogger<SnapshotLoader<TKey, TMessage>> _logger;
+        private readonly IMessageSorter<TKey, TMessage> _sorter;
     }
 }
 

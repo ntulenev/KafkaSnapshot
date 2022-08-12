@@ -4,15 +4,27 @@ using KafkaSnapshot.Models.Sorting;
 
 namespace KafkaSnapshot.Sorting
 {
+    /// <summary>
+    /// Creates <see cref="MessageSorter{TKey, TValue}"/>.
+    /// </summary>
+    /// <typeparam name="TKey">Kafka message key type.</typeparam>
+    /// <typeparam name="TValue">Kafka message value type.</typeparam>
     public class MessageSorter<TKey, TValue> : IMessageSorter<TKey, TValue>
                                              where TKey : notnull
                                              where TValue : notnull
     {
+        /// <summary>
+        /// Creates <see cref="MessageSorter{TKey, TValue}"/>.
+        /// </summary>
+        /// <param name="sortingRules">Sorting parameters.</param>
+        /// <exception cref="ArgumentNullException">Throws exception if <paramref name="sortingRules"/> is null.</exception>
         public MessageSorter(SortingParams sortingRules)
         {
             _sortingRules = sortingRules ?? throw new ArgumentNullException(nameof(sortingRules));
         }
 
+        /// <inheritdoc/>
+        /// <exception cref="NotImplementedException">If sorting not implemented for this params.</exception>
         public IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> Sort(IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> source)
         {
             return (_sortingRules) switch

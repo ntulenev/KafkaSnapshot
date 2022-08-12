@@ -1,4 +1,7 @@
+using KafkaSnapshot.Models.Export;
 using KafkaSnapshot.Models.Filters;
+using KafkaSnapshot.Models.Import;
+using KafkaSnapshot.Models.Sorting;
 
 namespace KafkaSnapshot.Models.Processing
 {
@@ -21,5 +24,24 @@ namespace KafkaSnapshot.Models.Processing
                                         TKey FilterKeyValue,
                                         DateFilterRange DateRange,
                                         bool ExportRawMessage,
-                                        HashSet<int>? PartitionIdsFilter = null);
+                                        HashSet<int>? PartitionIdsFilter = null)
+    {
+        /// <summary>
+        /// Creates <see cref="LoadingTopic"/>.
+        /// </summary>
+        public LoadingTopic CreateLoadingParams()
+        {
+            var defaultSortParams = new SortingParams(SortingType.Time, SortingOrder.No);
+
+            return new LoadingTopic(Name, LoadWithCompacting, DateRange, PartitionIdsFilter, defaultSortParams);
+        }
+
+        /// <summary>
+        /// Creates <see cref="ExportedTopic"/>.
+        /// </summary>
+        public ExportedTopic CreateExportParams()
+        {
+            return new ExportedTopic(Name, ExportName, ExportRawMessage);
+        }
+    }
 }

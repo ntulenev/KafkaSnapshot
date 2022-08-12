@@ -31,9 +31,7 @@ namespace KafkaSnapshot.Models.Processing
         /// </summary>
         public LoadingTopic CreateLoadingParams()
         {
-            var defaultSortParams = new SortingParams(SortingType.Time, SortingOrder.No);
-
-            return new LoadingTopic(Name, LoadWithCompacting, DateRange, PartitionIdsFilter, defaultSortParams);
+            return new LoadingTopic(Name, LoadWithCompacting, DateRange, PartitionIdsFilter);
         }
 
         /// <summary>

@@ -39,8 +39,7 @@ namespace KafkaAsTable.Tests
 
             // Arrange
             HashSet<int> partitionFilter = null!;
-            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
-            var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!), partitionFilter, sort);
+            var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!), partitionFilter);
             WatermarkOffsets offsets = null!;
             var partition = new Partition(1);
 
@@ -58,8 +57,7 @@ namespace KafkaAsTable.Tests
 
             // Arrange
             HashSet<int> partitionFilter = null!;
-            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
-            var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!),partitionFilter,sort);
+            var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!),partitionFilter);
             var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
             var partition = new Partition(1);
 
@@ -85,8 +83,7 @@ namespace KafkaAsTable.Tests
 
             // Arrange
             HashSet<int> partitionFilter = null!;
-            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
-            var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!),partitionFilter,sort);
+            var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!),partitionFilter);
             var offsets = new WatermarkOffsets(new Offset(startOffset), new Offset(endOffset));
             var partition = new Partition(1);
 
@@ -109,8 +106,7 @@ namespace KafkaAsTable.Tests
 
             // Arrange
             HashSet<int> partitionFilter = null!;
-            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
-            var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!),partitionFilter,sort);
+            var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!),partitionFilter);
             var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
             var partition = new Partition(1);
 
@@ -132,8 +128,7 @@ namespace KafkaAsTable.Tests
 
             // Arrange
             HashSet<int> partitionFilter = null!;
-            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
-            var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!),partitionFilter,sort);
+            var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!),partitionFilter);
             var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
             var partition = new Partition(1);
 
@@ -160,8 +155,7 @@ namespace KafkaAsTable.Tests
 
             // Arrange
             HashSet<int> partitionFilter = null!;
-            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
-            var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!),partitionFilter,sort);
+            var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!),partitionFilter);
             var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
             var partition = new Partition(1);
 
@@ -188,8 +182,7 @@ namespace KafkaAsTable.Tests
 
             // Arrange
             HashSet<int> partitionFilter = null!;
-            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
-            var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!),partitionFilter,sort);
+            var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!),partitionFilter);
             var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
             var partition = new Partition(1);
             var pw = new PartitionWatermark(topicName, offsets, partition);
@@ -209,8 +202,7 @@ namespace KafkaAsTable.Tests
 
             // Arrange
             HashSet<int> partitionFilter = null!;
-            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
-            var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!),partitionFilter,sort);
+            var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!),partitionFilter);
             var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
             var partition = new Partition(1);
             var pw = new PartitionWatermark(topicName, offsets, partition);
@@ -234,10 +226,9 @@ namespace KafkaAsTable.Tests
 
             // Arrange
             HashSet<int> partitionFilter = null!;
-            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
             var date = DateTime.UtcNow;
             var timeout = TimeSpan.FromSeconds(10);
-            var topicName = new LoadingTopic("Test", true, new DateFilterRange(date, null!),partitionFilter,sort);
+            var topicName = new LoadingTopic("Test", true, new DateFilterRange(date, null!),partitionFilter);
             var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
             var partition = new Partition(1);
             var pw = new PartitionWatermark(topicName, offsets, partition);
@@ -265,10 +256,9 @@ namespace KafkaAsTable.Tests
 
             // Arrange
             HashSet<int> partitionFilter = null!;
-            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
             var date = DateTime.UtcNow;
             var timeout = TimeSpan.FromSeconds(10);
-            var topicName = new LoadingTopic("Test", true, new DateFilterRange(date, null!),partitionFilter,sort);
+            var topicName = new LoadingTopic("Test", true, new DateFilterRange(date, null!),partitionFilter);
             var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
             var partition = new Partition(1);
             var pw = new PartitionWatermark(topicName, offsets, partition);

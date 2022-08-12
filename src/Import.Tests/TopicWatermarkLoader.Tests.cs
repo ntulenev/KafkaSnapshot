@@ -106,8 +106,7 @@ namespace KafkaAsTable.Tests
             var loader = new TopicWatermarkLoader(client, options.Object);
             var consumerFactory = (Func<IConsumer<string, string>>)null!;
             HashSet<int> partitionFilter = null!;
-            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
-            var topicName = new LoadingTopic("test", true, new DateFilterRange(null!, null!),partitionFilter,sort);
+            var topicName = new LoadingTopic("test", true, new DateFilterRange(null!, null!),partitionFilter);
 
             // Act
             var exception = await Record.ExceptionAsync(async () =>
@@ -149,8 +148,7 @@ namespace KafkaAsTable.Tests
         {
 
             HashSet<int> partitionFilter = null!;
-            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
-            var topic = new LoadingTopic("test", true, new DateFilterRange(null!, null!),partitionFilter,sort);
+            var topic = new LoadingTopic("test", true, new DateFilterRange(null!, null!),partitionFilter);
             var clientMock = new Mock<IAdminClient>();
             var client = clientMock.Object;
             var timeout = 1;
@@ -219,8 +217,8 @@ namespace KafkaAsTable.Tests
         [Trait("Category", "Unit")]
         public async Task CanLoadWatermarksWithValidParamsWithPartitionFilter()
         {
-            var sort = new SortingParams(SortingType.Time, SortingOrder.No);
-            var topic = new LoadingTopic("test", true, new DateFilterRange(null!, null!), new HashSet<int>(new[] { 2 }),sort);
+            //Arrange
+            var topic = new LoadingTopic("test", true, new DateFilterRange(null!, null!), new HashSet<int>(new[] { 2 }));
             var clientMock = new Mock<IAdminClient>();
             var client = clientMock.Object;
             var timeout = 1;

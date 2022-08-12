@@ -52,8 +52,6 @@ namespace KafkaSnapshot.Models.Import
         /// </summary>
         public bool HasPartitionFilter => _partitionFilter.Any();
 
-        public SortingParams Sorting => _sortingParams;
-
         /// <summary>
         /// Creates <see cref="LoadingTopic"/>.
         /// </summary>
@@ -64,8 +62,7 @@ namespace KafkaSnapshot.Models.Import
         public LoadingTopic(string name,
                             bool loadWithCompacting,
                             DateFilterRange dateParams,
-                            HashSet<int>? partitionFilter,
-                            SortingParams sortingParams)
+                            HashSet<int>? partitionFilter)
         {
             ValidateTopicName(name);
             Value = name;
@@ -75,8 +72,6 @@ namespace KafkaSnapshot.Models.Import
 
             _offsetDate = dateParams.StartDate;
             _endOffsetDate = dateParams.EndDate;
-
-            _sortingParams = sortingParams ?? throw new ArgumentNullException(nameof(sortingParams));
 
             if (partitionFilter != null)
             {
@@ -131,8 +126,6 @@ namespace KafkaSnapshot.Models.Import
         private readonly DateTime? _endOffsetDate;
 
         private readonly IReadOnlySet<int> _partitionFilter;
-
-        private readonly SortingParams _sortingParams;
 
         private static readonly Regex _topicNameCharacters = new(
            "^[a-zA-Z0-9\\-]*$",

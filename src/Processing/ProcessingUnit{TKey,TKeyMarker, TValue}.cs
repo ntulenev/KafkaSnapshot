@@ -10,6 +10,7 @@ using KafkaSnapshot.Abstractions.Filters;
 using KafkaSnapshot.Models.Message;
 using KafkaSnapshot.Models.Sorting;
 using KafkaSnapshot.Models.Filters;
+using KafkaSnapshot.Abstractions.Sorting;
 
 namespace KafkaSnapshot.Processing
 {
@@ -67,25 +68,8 @@ namespace KafkaSnapshot.Processing
                 _valueFilter,
                 ct).ConfigureAwait(false);
 
-            items = SortData(items);
-
             _logger.LogDebug("Start exporting data to file.");
             await _exporter.ExportAsync(items, _exportedTopic, ct).ConfigureAwait(false);
-        }
-
-        private IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> SortData(
-            IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> items)
-        {
-            // TODO Change on IMessageSorter
-            return (_topicParams.Sorting) switch
-            {
-                { Order: SortingOrder.No, Type: _ } => items,
-                { Order: SortingOrder.Ask, Type: SortingType.Time } => items.OrderBy(x => x.Value.Meta.Timestamp).ToList(),
-                { Order: SortingOrder.Desk, Type: SortingType.Time } => items.OrderByDescending(x => x.Value.Meta.Timestamp).ToList(),
-                { Order: SortingOrder.Ask, Type: SortingType.Partition } => items.OrderBy(x => x.Value.Meta.Partition).ThenBy(x => x.Value.Meta.Timestamp).ToList(),
-                { Order: SortingOrder.Desk, Type: SortingType.Partition } => items.OrderByDescending(x => x.Value.Meta.Partition).ThenBy(x => x.Value.Meta.Timestamp).ToList(),
-                _ => throw new NotImplementedException("Sort type not implemented")
-            };
         }
 
         /// <inheritdoc/>

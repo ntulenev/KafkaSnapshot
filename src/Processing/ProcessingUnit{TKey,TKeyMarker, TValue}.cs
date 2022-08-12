@@ -76,7 +76,7 @@ namespace KafkaSnapshot.Processing
         private IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> SortData(
             IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> items)
         {
-            // TODO Move to separate class
+            // TODO Change on IMessageSorter
             return (_topicParams.Sorting) switch
             {
                 { Order: SortingOrder.No, Type: _ } => items,

@@ -23,8 +23,8 @@ namespace KafkaSnapshot.Processing.Configuration
         public SortingType GlobalSortingValue => SortingType.Time;
 
         /// <summary>
-        /// Message soring type.
+        /// Message sorting type.
         /// </summary>
-        public SortingOrder GlobalSrotingOrder => SortingOrder.No;
+        public SortingOrder GlobalSortingOrder => SortingOrder.No;
     }
 }

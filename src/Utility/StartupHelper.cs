@@ -142,16 +142,15 @@ namespace KafkaSnapshot.Utility
             services.AddSingleton<Func<IConsumer<long, string>>>(sp => () => createConsumer<long>(sp));
             services.AddSingleton(typeof(ISnapshotLoader<,>), typeof(SnapshotLoader<,>));
 
-            IMessageSorter<TKey, TValue> createSorter<TKey, TValue>()
+            IMessageSorter<TKey, TValue> createSorter<TKey, TValue>(IServiceProvider sp)
                 where TKey : notnull where TValue : notnull
             {
-                //TODO move params to config
+                var config = sp.GetLoaderConfig(hostContext.Configuration);
                 return new MessageSorter<TKey, TValue>
-                    (new Models.Sorting.SortingParams(Models.Sorting.SortingType.Time, Models.Sorting.SortingOrder.No));
+                    (new Models.Sorting.SortingParams(config.GlobalSortingValue, config.GlobalSrotingOrder));
             }
-
-            services.AddSingleton<IMessageSorter<string, string>>(sp => createSorter<string, string>());
-            services.AddSingleton<IMessageSorter<long, string>>(sp => createSorter<long, string>());
+            services.AddSingleton(sp => createSorter<string, string>(sp));
+            services.AddSingleton(sp => createSorter<long, string>(sp));
         }
 
         private static ICollection<IProcessingUnit> CreateTopicLoaders(IServiceProvider sp, IConfiguration configuration)

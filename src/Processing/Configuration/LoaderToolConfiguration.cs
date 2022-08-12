@@ -1,4 +1,6 @@
-﻿namespace KafkaSnapshot.Processing.Configuration
+﻿using KafkaSnapshot.Models.Sorting;
+
+namespace KafkaSnapshot.Processing.Configuration
 {
     /// <summary>
     /// Application configuration.
@@ -14,5 +16,15 @@
         /// User <see cref="LoaderConcurrentTool"/> to process topics in concurrent mode.
         /// </summary>
         public bool UseConcurrentLoad { get; set; }
+
+        /// <summary>
+        /// Message sorting field.
+        /// </summary>
+        public SortingType GlobalSortingValue => SortingType.Time;
+
+        /// <summary>
+        /// Message soring type.
+        /// </summary>
+        public SortingOrder GlobalSrotingOrder => SortingOrder.No;
     }
 }

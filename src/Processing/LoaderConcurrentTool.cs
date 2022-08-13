@@ -9,11 +9,14 @@ namespace KafkaSnapshot.Processing
     /// </summary>
     public class LoaderConcurrentTool : ILoaderTool
     {
+
         /// <summary>
         /// Creates <see cref="LoaderConcurrentTool"/>.
         /// </summary>
+        /// <param name="logger">Logger.</param>
         /// <param name="units">Processors for topics.</param>
-        public LoaderConcurrentTool(ILogger<LoaderConcurrentTool> logger, ICollection<IProcessingUnit> units)
+        /// <exception cref="ArgumentNullException"></exception>
+        public LoaderConcurrentTool(ILogger<LoaderConcurrentTool> logger, IReadOnlyCollection<IProcessingUnit> units)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _units = units ?? throw new ArgumentNullException(nameof(units));
@@ -55,7 +58,7 @@ namespace KafkaSnapshot.Processing
             _logger.LogInformation("Done.");
         }
 
-        private readonly ICollection<IProcessingUnit> _units;
+        private readonly IReadOnlyCollection<IProcessingUnit> _units;
         private readonly ILogger<LoaderConcurrentTool> _logger;
 
     }

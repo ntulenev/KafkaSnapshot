@@ -12,8 +12,10 @@ namespace KafkaSnapshot.Processing
         /// <summary>
         /// Creates <see cref="LoaderTool"/>.
         /// </summary>
+        /// <param name="logger">Logger.</param>
         /// <param name="units">Processors for topics.</param>
-        public LoaderTool(ILogger<LoaderTool> logger, ICollection<IProcessingUnit> units)
+        /// <exception cref="ArgumentNullException"></exception>
+        public LoaderTool(ILogger<LoaderTool> logger, IReadOnlyCollection<IProcessingUnit> units)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _units = units ?? throw new ArgumentNullException(nameof(units));
@@ -34,6 +36,8 @@ namespace KafkaSnapshot.Processing
             foreach (var unit in _units)
             {
                 using var _ = _logger.BeginScope("topic {topic}", unit.TopicName);
+
+                ct.ThrowIfCancellationRequested();
 
                 _logger.LogInformation("{indexer}/{count} Processing topic {topicName}", ++indexer, _units.Count, unit.TopicName);
 
@@ -57,7 +61,7 @@ namespace KafkaSnapshot.Processing
             _logger.LogInformation("Done.");
         }
 
-        private readonly ICollection<IProcessingUnit> _units;
+        private readonly IReadOnlyCollection<IProcessingUnit> _units;
         private readonly ILogger<LoaderTool> _logger;
 
     }

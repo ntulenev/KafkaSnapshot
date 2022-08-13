@@ -153,7 +153,7 @@ namespace KafkaSnapshot.Utility
             services.AddSingleton(sp => createSorter<long, string>(sp));
         }
 
-        private static ICollection<IProcessingUnit> CreateTopicLoaders(IServiceProvider sp, IConfiguration configuration)
+        private static IReadOnlyCollection<IProcessingUnit> CreateTopicLoaders(IServiceProvider sp, IConfiguration configuration)
         {
             var config = sp.GetLoaderConfig(configuration);
 

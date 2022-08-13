@@ -32,7 +32,8 @@ namespace KafkaSnapshot.Sorting
                 { Order: SortingOrder.No, Type: _ } => source,
                 { Order: SortingOrder.Ask, Type: SortingType.Time } => source.OrderBy(x => x.Value.Meta.Timestamp).ToList(),
                 { Order: SortingOrder.Desk, Type: SortingType.Time } => source.OrderByDescending(x => x.Value.Meta.Timestamp).ToList(),
-                { Order: SortingOrder.Ask, Type: SortingType.Partition } => source.OrderBy(x => x.Value.Meta.Partition).ThenBy(x => x.Value.Meta.Timestamp).ToList(),
+                { Order: SortingOrder.Ask, Type: SortingType.Partition } => source.OrderBy(x => x.Value.Meta.Partition)
+                                                                                  .ThenBy(x => x.Value.Meta.Timestamp).ToList(),
                 { Order: SortingOrder.Desk, Type: SortingType.Partition } => source.OrderByDescending(x => x.Value.Meta.Partition)
                                                                                    .ThenBy(x => x.Value.Meta.Timestamp).ToList(),
                 _ => throw new NotImplementedException("Sort type not implemented")

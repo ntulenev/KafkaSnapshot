@@ -62,9 +62,7 @@ namespace KafkaSnapshot.Utility
             services.AddSingleton<ISerializer<string, string, JsonKeyMarker>, JsonKeySerializer>();
             services.AddSingleton<ISerializer<string, string, OriginalKeyMarker>, OriginalKeySerializer<string>>();
             services.AddSingleton<ISerializer<long, string, OriginalKeyMarker>, OriginalKeySerializer<long>>();
-
             services.AddSingleton(typeof(IDataExporter<,,,>), typeof(JsonFileDataExporter<,,,>));
-
             services.AddSingleton<IFileSaver, FileSaver>();
         }
 

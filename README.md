@@ -9,11 +9,9 @@ Supports:
 * String keys (optionally as json) and long keys. Also Key field could be ignored (e.g. key is null or not exists it topic)
 * Multi-partition topics
 * SASL authentication mechanism
+* Message sorting
 
 By default messages should contains JSON data. Simple strings also supported (see ExportRawMessage parameter).
-
-'Contains' key filter could be applied only to string keys.
-'GreaterOrEquals' and 'LessOrEquals' filters could be applied only to long keys.
 
 ![Details](Case1.PNG)
 
@@ -35,6 +33,8 @@ Config example:
   },
   "LoaderToolConfiguration": {
     "UseConcurrentLoad": true,
+    "GlobalMessageSort": "Time",
+    "GlobalSortOrder": "No",
     "Topics": [
       {
         "Name": "topic1",
@@ -106,6 +106,8 @@ Config params:
 | SecurityProtocol | Protocol used to communicate with brokers (Plaintext,Ssl,SaslPlaintext,SaslSsl) (optional)  |
 | SASLMechanism | SASL mechanism to use for authentication (Gssapi,Plain,ScramSha256,ScramSha512,OAuthBearer) (optional)  |
 | UseConcurrentLoad | Loads data in concurrent mode or one by one |
+| GlobalMessageSort | Message meta field for sorting (Time, Partition) (optional). Applies only for topics without Compacting. |
+| GlobalSortOrder | GlobalMessageSort order (Ask, Desk, No) (optional). Applies only for topics without Compacting.|
 | Name           | Apache Kafka topic name |
 | KeyType        | Apache Kafka topic key representation (Json,String,Long,Ignored) |
 | Compacting     | Use compacting by key or not (On,Off). Not supported for Ignored keyType |
@@ -116,6 +118,11 @@ Config params:
 | OffsetEndDate | Message date top limit (optional). Use to limit filtering messages in large topics|
 | ExportRawMessage | If true - export will write message as raw string without converting to formatted json (optional)|
 | PartitionsIds | Partitions ids filter (optional)|
+
+Filter restrictions:
+* 'Contains' key filter could be applied only to string keys.
+* 'GreaterOrEquals' and 'LessOrEquals' filters could be applied only to long keys.
+
 
 Exported file example:
 

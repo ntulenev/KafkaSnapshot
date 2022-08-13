@@ -37,7 +37,7 @@ namespace KafkaSnapshot.Processing.Tests
             // Arrange
             var loggerMock = new Mock<ILogger<LoaderConcurrentTool>>();
             var logger = loggerMock.Object;
-            var items = (ICollection<IProcessingUnit>)null!;
+            var items = (IReadOnlyCollection<IProcessingUnit>)null!;
 
             // Act
             var exception = Record.Exception(() => new LoaderConcurrentTool(logger, items));

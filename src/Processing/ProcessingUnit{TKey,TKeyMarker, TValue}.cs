@@ -7,10 +7,7 @@ using KafkaSnapshot.Models.Processing;
 using KafkaSnapshot.Models.Export;
 using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Abstractions.Filters;
-using KafkaSnapshot.Models.Message;
-using KafkaSnapshot.Models.Sorting;
 using KafkaSnapshot.Models.Filters;
-using KafkaSnapshot.Abstractions.Sorting;
 
 namespace KafkaSnapshot.Processing
 {

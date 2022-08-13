@@ -1,7 +1,6 @@
-﻿using KafkaSnapshot.Models.Filters;
-using KafkaSnapshot.Models.Sorting;
+﻿using System.Text.RegularExpressions;
 
-using System.Text.RegularExpressions;
+using KafkaSnapshot.Models.Filters;
 
 namespace KafkaSnapshot.Models.Import
 {

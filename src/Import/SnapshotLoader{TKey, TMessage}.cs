@@ -1,6 +1,7 @@
 ﻿using Confluent.Kafka;
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 using KafkaSnapshot.Import.Metadata;
 using KafkaSnapshot.Import.Watermarks;
@@ -9,7 +10,6 @@ using KafkaSnapshot.Abstractions.Import;
 using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Message;
 using KafkaSnapshot.Import.Configuration;
-using Microsoft.Extensions.Options;
 using KafkaSnapshot.Abstractions.Sorting;
 
 namespace KafkaSnapshot.Import

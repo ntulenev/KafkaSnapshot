@@ -1,7 +1,6 @@
 using KafkaSnapshot.Models.Export;
 using KafkaSnapshot.Models.Filters;
 using KafkaSnapshot.Models.Import;
-using KafkaSnapshot.Models.Sorting;
 
 namespace KafkaSnapshot.Models.Processing
 {

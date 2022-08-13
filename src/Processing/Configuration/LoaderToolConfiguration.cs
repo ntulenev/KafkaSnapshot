@@ -20,11 +20,11 @@ namespace KafkaSnapshot.Processing.Configuration
         /// <summary>
         /// Message sorting field.
         /// </summary>
-        public SortingType GlobalSortingValue => SortingType.Time;
+        public SortingType GlobalMessageSort { get; set; } = SortingType.Time;
 
         /// <summary>
         /// Message sorting type.
         /// </summary>
-        public SortingOrder GlobalSortingOrder => SortingOrder.No;
+        public SortingOrder GlobalSortOrder { get; set; } = SortingOrder.No;
     }
 }

@@ -147,7 +147,7 @@ namespace KafkaSnapshot.Utility
             {
                 var config = sp.GetLoaderConfig(hostContext.Configuration);
                 return new MessageSorter<TKey, TValue>
-                    (new Models.Sorting.SortingParams(config.GlobalSortingValue, config.GlobalSortingOrder));
+                    (new Models.Sorting.SortingParams(config.GlobalMessageSort, config.GlobalSortOrder));
             }
             services.AddSingleton(sp => createSorter<string, string>(sp));
             services.AddSingleton(sp => createSorter<long, string>(sp));

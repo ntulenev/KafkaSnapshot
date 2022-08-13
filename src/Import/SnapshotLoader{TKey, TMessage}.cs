@@ -171,10 +171,10 @@ namespace KafkaSnapshot.Import
             }
             else
             {
-                result = items.ToList();
+                result = _sorter.Sort(items).ToList();
             }
 
-            return _sorter.Sort(result);
+            return result;
         }
 
         private readonly SnapshotLoaderConfiguration _config;

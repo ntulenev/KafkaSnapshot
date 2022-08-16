@@ -29,7 +29,8 @@ Config example:
     "AdminClientTimeout": "00:00:05"
   },
   "SnapshotLoaderConfiguration": {
-    "DateOffsetTimeout": "00:00:05"
+    "DateOffsetTimeout": "00:00:05",
+    "SearchSinglePartition": false
   },
   "LoaderToolConfiguration": {
     "UseConcurrentLoad": true,
@@ -100,6 +101,7 @@ Config params:
 | -------------- | ------------- |
 | AdminClientTimeout | Cluster metadata loading timeout |
 | DateOffsetTimeout | Searching offset by date timeout |
+| SearchSinglePartition | Stops traversing partitions after the first partition with suitable data |
 | BootstrapServers | List of kafka cluster servers, like "kafka-test:9092"  |
 | Username | SASL username (optional)  |
 | Password | SASL password (optional)  |

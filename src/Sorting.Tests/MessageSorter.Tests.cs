@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-
+using KafkaSnapshot.Models.Message;
 using KafkaSnapshot.Models.Sorting;
 
 namespace KafkaSnapshot.Sorting.Tests
@@ -35,6 +35,71 @@ namespace KafkaSnapshot.Sorting.Tests
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
+        }
+
+        [Theory(DisplayName = "MessageSorter can skip sort data.")]
+        [Trait("Category", "Unit")]
+        [InlineData(SortingType.Partition)]
+        [InlineData(SortingType.Time)]
+        public void MessageSorterCanSkipSorting(SortingType type)
+        {
+            // Arrange 
+            IEnumerable<KeyValuePair<int, KafkaMessage<int>>> data = new[]
+            {
+                 new KeyValuePair<int, KafkaMessage<int>>(1,new KafkaMessage<int>(1,new KafkaMetadata(DateTime.UtcNow,1,1))),
+                 new KeyValuePair<int, KafkaMessage<int>>(2,new KafkaMessage<int>(2,new KafkaMetadata(DateTime.UtcNow,1,1))),
+                 new KeyValuePair<int, KafkaMessage<int>>(3,new KafkaMessage<int>(3,new KafkaMetadata(DateTime.UtcNow,1,1))),
+            };
+
+            var sorter = new MessageSorter<int, int>(new Models.Sorting.SortingParams(type, SortingOrder.No));
+
+            // Act
+            var result = sorter.Sort(data);
+
+            // Assert
+            result.Should().BeSameAs(data);
+        }
+
+        [Fact(DisplayName = "MessageSorter can sort partition ask.")]
+        [Trait("Category", "Unit")]
+        public void MessageSorterCanSortingPartitionAsk()
+        {
+            // Arrange 
+            var date = DateTime.Now;
+
+            var msg3 = new KeyValuePair<int, KafkaMessage<int>>(1, new KafkaMessage<int>(1, new KafkaMetadata(date, 3, 1)));
+            var msg1 = new KeyValuePair<int, KafkaMessage<int>>(1, new KafkaMessage<int>(1, new KafkaMetadata(date, 1, 1)));
+            var msg2 = new KeyValuePair<int, KafkaMessage<int>>(1, new KafkaMessage<int>(1, new KafkaMetadata(date, 2, 1)));
+
+
+            var sorter = new MessageSorter<int, int>(new Models.Sorting.SortingParams(SortingType.Partition, SortingOrder.Ask));
+
+            // Act
+            var result = sorter.Sort(new[] { msg3, msg1, msg2 });
+
+            // Assert
+            result.Should().BeEquivalentTo(new[] { msg1, msg2, msg3 });
+        }
+
+        [Fact(DisplayName = "MessageSorter can sort partition desc.")]
+        [Trait("Category", "Unit")]
+        public void MessageSorterCanSortingPartitionDesc()
+        {
+            // Arrange 
+            var date = DateTime.Now;
+
+            var msg3 = new KeyValuePair<int, KafkaMessage<int>>(1, new KafkaMessage<int>(1, new KafkaMetadata(date, 3, 1)));
+            var msg1 = new KeyValuePair<int, KafkaMessage<int>>(1, new KafkaMessage<int>(1, new KafkaMetadata(date, 1, 1)));
+            var msg2 = new KeyValuePair<int, KafkaMessage<int>>(1, new KafkaMessage<int>(1, new KafkaMetadata(date, 2, 1)));
+
+
+            var sorter = new MessageSorter<int, int>(new Models.Sorting.SortingParams(SortingType.Partition, SortingOrder.Ask));
+
+            // Act
+            var result = sorter.Sort(new[] { msg3, msg1, msg2 });
+
+            // Assert
+            result.Should().BeEquivalentTo(new[] { msg3, msg2, msg1 });
         }
 
     }

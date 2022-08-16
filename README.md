@@ -116,8 +116,8 @@ Config params:
 | ExportFileName | File name for exported data  |
 | FilterKeyType | Equals, Contains or None (optional)  |
 | FilterKeyValue | Sample value for filtering (if FilterKeyType sets as 'Equals', 'Contains','GreaterOrEquals' or 'LessOrEquals') |
-| OffsetStartDate | First message date (optional). Use to skip old messages in large topics|
-| OffsetEndDate | Message date top limit (optional). Use to limit filtering messages in large topics|
+| OffsetStartDate | First message date (optional). Use to skip old messages in large topics. Format MM.DD.YYYY HH:MM:SS (Local timezone)|
+| OffsetEndDate | Message date top limit (optional). Use to limit filtering messages in large topics. Format MM.DD.YYYY HH:MM:SS (Local timezone)|
 | ExportRawMessage | If true - export will write message as raw string without converting to formatted json (optional)|
 | PartitionsIds | Partitions ids filter (optional)|
 

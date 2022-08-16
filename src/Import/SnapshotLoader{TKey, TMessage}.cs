@@ -82,13 +82,31 @@ namespace KafkaSnapshot.Import
             IDataFilter<TMessage> valueFilter,
             CancellationToken ct)
         {
-            var consumedEntities = await Task.WhenAll(topicWatermark.Watermarks
+            if (_config.SearchSinglePartition)
+            {
+                foreach (var watermark in topicWatermark.Watermarks)
+                {
+                    var result = ConsumeToWatermark(watermark, topicParams, keyFilter, valueFilter, ct);
+
+                    if (result.Any())
+                    {
+                        return result;
+                    }
+                }
+
+                return Enumerable.Empty<KeyValuePair<TKey, KafkaMessage<TMessage>>>();
+            }
+            else
+            {
+                var consumedEntities = await Task.WhenAll(topicWatermark.Watermarks
                 .Select(watermark =>
                             Task.Run(() => ConsumeToWatermark(watermark, topicParams, keyFilter, valueFilter, ct))
                        )
                 ).ConfigureAwait(false);
 
-            return consumedEntities.SelectMany(сonsumerResults => сonsumerResults);
+                return consumedEntities.SelectMany(сonsumerResults => сonsumerResults);
+
+            }
         }
 
         private IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> ConsumeToWatermark(

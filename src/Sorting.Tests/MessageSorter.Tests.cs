@@ -71,7 +71,6 @@ namespace KafkaSnapshot.Sorting.Tests
             var msg1 = new KeyValuePair<int, KafkaMessage<int>>(1, new KafkaMessage<int>(1, new KafkaMetadata(date, 1, 1)));
             var msg2 = new KeyValuePair<int, KafkaMessage<int>>(1, new KafkaMessage<int>(1, new KafkaMetadata(date, 2, 1)));
 
-
             var sorter = new MessageSorter<int, int>(new Models.Sorting.SortingParams(SortingType.Partition, SortingOrder.Ask));
 
             // Act
@@ -92,6 +91,49 @@ namespace KafkaSnapshot.Sorting.Tests
             var msg1 = new KeyValuePair<int, KafkaMessage<int>>(1, new KafkaMessage<int>(1, new KafkaMetadata(date, 1, 1)));
             var msg2 = new KeyValuePair<int, KafkaMessage<int>>(1, new KafkaMessage<int>(1, new KafkaMetadata(date, 2, 1)));
 
+            var sorter = new MessageSorter<int, int>(new Models.Sorting.SortingParams(SortingType.Partition, SortingOrder.Ask));
+
+            // Act
+            var result = sorter.Sort(new[] { msg3, msg1, msg2 });
+
+            // Assert
+            result.Should().BeEquivalentTo(new[] { msg3, msg2, msg1 });
+        }
+
+        [Fact(DisplayName = "MessageSorter can sort date ask.")]
+        [Trait("Category", "Unit")]
+        public void MessageSorterCanSortingDateAsk()
+        {
+            // Arrange 
+            var date1 = DateTime.Now;
+            var date2 = date1.AddDays(1);
+            var date3 = date2.AddDays(1);
+
+            var msg3 = new KeyValuePair<int, KafkaMessage<int>>(1, new KafkaMessage<int>(1, new KafkaMetadata(date3, 1, 1)));
+            var msg1 = new KeyValuePair<int, KafkaMessage<int>>(1, new KafkaMessage<int>(1, new KafkaMetadata(date2, 1, 1)));
+            var msg2 = new KeyValuePair<int, KafkaMessage<int>>(1, new KafkaMessage<int>(1, new KafkaMetadata(date1, 1, 1)));
+
+            var sorter = new MessageSorter<int, int>(new Models.Sorting.SortingParams(SortingType.Partition, SortingOrder.Ask));
+
+            // Act
+            var result = sorter.Sort(new[] { msg3, msg1, msg2 });
+
+            // Assert
+            result.Should().BeEquivalentTo(new[] { msg1, msg2, msg3 });
+        }
+
+        [Fact(DisplayName = "MessageSorter can sort date desc.")]
+        [Trait("Category", "Unit")]
+        public void MessageSorterCanSortingDateDesc()
+        {
+            // Arrange 
+            var date1 = DateTime.Now;
+            var date2 = date1.AddDays(1);
+            var date3 = date2.AddDays(1);
+
+            var msg3 = new KeyValuePair<int, KafkaMessage<int>>(1, new KafkaMessage<int>(1, new KafkaMetadata(date3, 1, 1)));
+            var msg1 = new KeyValuePair<int, KafkaMessage<int>>(1, new KafkaMessage<int>(1, new KafkaMetadata(date2, 1, 1)));
+            var msg2 = new KeyValuePair<int, KafkaMessage<int>>(1, new KafkaMessage<int>(1, new KafkaMetadata(date1, 1, 1)));
 
             var sorter = new MessageSorter<int, int>(new Models.Sorting.SortingParams(SortingType.Partition, SortingOrder.Ask));
 

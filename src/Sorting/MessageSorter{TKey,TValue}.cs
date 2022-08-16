@@ -27,6 +27,8 @@ namespace KafkaSnapshot.Sorting
         /// <exception cref="NotImplementedException">If sorting not implemented for this params.</exception>
         public IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> Sort(IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> source)
         {
+            ArgumentNullException.ThrowIfNull(source);
+
             return (_sortingRules) switch
             {
                 { Order: SortingOrder.No, Type: _ } => source,

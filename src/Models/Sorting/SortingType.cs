@@ -1,10 +1,9 @@
-﻿namespace KafkaSnapshot.Models.Sorting
+﻿namespace KafkaSnapshot.Models.Sorting;
+
+/// <summary>
+/// Kafka Meta sorting field.
+/// </summary>
+public enum SortingType
 {
-    /// <summary>
-    /// Kafka Meta sorting field.
-    /// </summary>
-    public enum SortingType
-    {
-        Time, Partition
-    }
+    Time, Partition
 }

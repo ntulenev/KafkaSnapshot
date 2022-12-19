@@ -5,108 +5,107 @@ using FluentAssertions;
 using KafkaSnapshot.Abstractions.Filters;
 using KafkaSnapshot.Models.Filters;
 
-namespace KafkaSnapshot.Filters.Tests
+namespace KafkaSnapshot.Filters.Tests;
+
+public class NaiveValueFiltersFactoryTests
 {
-    public class NaiveValueFiltersFactoryTests
+    [Fact(DisplayName = "Default filter can be created.")]
+    [Trait("Category", "Unit")]
+    public void DefaultFilterCanBeCreatedByFactory()
     {
-        [Fact(DisplayName = "Default filter can be created.")]
-        [Trait("Category", "Unit")]
-        public void DefaultFilterCanBeCreatedByFactory()
-        {
-            // Arrange
-            var factory = new NaiveValueFiltersFactory<object>();
-            IDataFilter<object> result = null!;
+        // Arrange
+        var factory = new NaiveValueFiltersFactory<object>();
+        IDataFilter<object> result = null!;
 
-            // Act
-            var exception = Record.Exception(() => result = factory.Create(FilterType.None, new(), new()));
+        // Act
+        var exception = Record.Exception(() => result = factory.Create(FilterType.None, new(), new()));
 
-            // Assert
-            exception.Should().BeNull();
-            result.Should().BeOfType(typeof(DefaultFilter<object>));
-        }
+        // Assert
+        exception.Should().BeNull();
+        result.Should().BeOfType(typeof(DefaultFilter<object>));
+    }
 
-        [Theory(DisplayName = "Equals filter can be created.")]
-        [Trait("Category", "Unit")]
-        [InlineData(ValueMessageType.Raw)]
-        public void EqualsFilterCanBeCreatedByFactory(ValueMessageType messageType)
-        {
-            // Arrange
-            var factory = new NaiveValueFiltersFactory<object>();
-            IDataFilter<object> result = null!;
+    [Theory(DisplayName = "Equals filter can be created.")]
+    [Trait("Category", "Unit")]
+    [InlineData(ValueMessageType.Raw)]
+    public void EqualsFilterCanBeCreatedByFactory(ValueMessageType messageType)
+    {
+        // Arrange
+        var factory = new NaiveValueFiltersFactory<object>();
+        IDataFilter<object> result = null!;
 
-            // Act
-            var exception = Record.Exception(() => result = factory.Create(FilterType.Equals, messageType, new()));
+        // Act
+        var exception = Record.Exception(() => result = factory.Create(FilterType.Equals, messageType, new()));
 
-            // Assert
-            exception.Should().BeNull();
-            result.Should().BeOfType(typeof(EqualsFilter<object>));
-        }
+        // Assert
+        exception.Should().BeNull();
+        result.Should().BeOfType(typeof(EqualsFilter<object>));
+    }
 
-        [Fact(DisplayName = "Json Equals filter can be created.")]
-        [Trait("Category", "Unit")]
-        public void JsonEqualsFilterCanBeCreatedByFactory()
-        {
-            // Arrange
-            var factory = new NaiveValueFiltersFactory<string>();
-            IDataFilter<string> result = null!;
-            string value = "{\"value\": 1 }";
+    [Fact(DisplayName = "Json Equals filter can be created.")]
+    [Trait("Category", "Unit")]
+    public void JsonEqualsFilterCanBeCreatedByFactory()
+    {
+        // Arrange
+        var factory = new NaiveValueFiltersFactory<string>();
+        IDataFilter<string> result = null!;
+        string value = "{\"value\": 1 }";
 
-            // Act
-            var exception = Record.Exception(() => result = factory.Create(FilterType.Equals, ValueMessageType.Json, value));
+        // Act
+        var exception = Record.Exception(() => result = factory.Create(FilterType.Equals, ValueMessageType.Json, value));
 
-            // Assert
-            exception.Should().BeNull();
-            result.Should().BeOfType(typeof(JsonEqualsFilter));
-        }
+        // Assert
+        exception.Should().BeNull();
+        result.Should().BeOfType(typeof(JsonEqualsFilter));
+    }
 
-        [Theory(DisplayName = "Json Equals filter can't be created.")]
-        [Trait("Category", "Unit")]
-        [InlineData(ValueMessageType.Json)]
-        public void EqualsFilterCantBeCreatedForJsonOnObject(ValueMessageType messageType)
-        {
-            // Arrange
-            var factory = new NaiveValueFiltersFactory<object>();
-            IDataFilter<object> result = null!;
+    [Theory(DisplayName = "Json Equals filter can't be created.")]
+    [Trait("Category", "Unit")]
+    [InlineData(ValueMessageType.Json)]
+    public void EqualsFilterCantBeCreatedForJsonOnObject(ValueMessageType messageType)
+    {
+        // Arrange
+        var factory = new NaiveValueFiltersFactory<object>();
+        IDataFilter<object> result = null!;
 
-            // Act
-            var exception = Record.Exception(() => result = factory.Create(FilterType.Equals, messageType, new()));
+        // Act
+        var exception = Record.Exception(() => result = factory.Create(FilterType.Equals, messageType, new()));
 
-            // Assert
-            exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
-        }
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
+    }
 
-        [Theory(DisplayName = "GreaterOrEquals filter can't be created.")]
-        [Trait("Category", "Unit")]
-        [InlineData(ValueMessageType.Json)]
-        [InlineData(ValueMessageType.Raw)]
-        public void GreaterOrEqualsFilterCantBeCreated(ValueMessageType messageType)
-        {
-            // Arrange
-            var factory = new NaiveValueFiltersFactory<object>();
-            IDataFilter<object> result = null!;
+    [Theory(DisplayName = "GreaterOrEquals filter can't be created.")]
+    [Trait("Category", "Unit")]
+    [InlineData(ValueMessageType.Json)]
+    [InlineData(ValueMessageType.Raw)]
+    public void GreaterOrEqualsFilterCantBeCreated(ValueMessageType messageType)
+    {
+        // Arrange
+        var factory = new NaiveValueFiltersFactory<object>();
+        IDataFilter<object> result = null!;
 
-            // Act
-            var exception = Record.Exception(() => result = factory.Create(FilterType.GreaterOrEquals, messageType, new()));
+        // Act
+        var exception = Record.Exception(() => result = factory.Create(FilterType.GreaterOrEquals, messageType, new()));
 
-            // Assert
-            exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
-        }
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
+    }
 
-        [Theory(DisplayName = "LessOrEquals filter can't be created.")]
-        [Trait("Category", "Unit")]
-        [InlineData(ValueMessageType.Json)]
-        [InlineData(ValueMessageType.Raw)]
-        public void LessOrEqualsFilterCantBeCreated(ValueMessageType messageType)
-        {
-            // Arrange
-            var factory = new NaiveValueFiltersFactory<object>();
-            IDataFilter<object> result = null!;
+    [Theory(DisplayName = "LessOrEquals filter can't be created.")]
+    [Trait("Category", "Unit")]
+    [InlineData(ValueMessageType.Json)]
+    [InlineData(ValueMessageType.Raw)]
+    public void LessOrEqualsFilterCantBeCreated(ValueMessageType messageType)
+    {
+        // Arrange
+        var factory = new NaiveValueFiltersFactory<object>();
+        IDataFilter<object> result = null!;
 
-            // Act
-            var exception = Record.Exception(() => result = factory.Create(FilterType.LessOrEquals, messageType, new()));
+        // Act
+        var exception = Record.Exception(() => result = factory.Create(FilterType.LessOrEquals, messageType, new()));
 
-            // Assert
-            exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
-        }
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
     }
 }

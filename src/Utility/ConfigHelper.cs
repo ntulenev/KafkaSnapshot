@@ -10,87 +10,86 @@ using KafkaSnapshot.Processing.Configuration;
 using KafkaSnapshot.Processing.Configuration.Validation;
 using KafkaSnapshot.Import.Configuration.Validation;
 
-namespace KafkaSnapshot.Utility
+namespace KafkaSnapshot.Utility;
+
+/// <summary>
+/// Helpers for common config data.
+/// </summary>
+public static class ConfigHelper
 {
     /// <summary>
-    /// Helpers for common config data.
+    /// Gets configuration for Kafka servers.
     /// </summary>
-    public static class ConfigHelper
+    public static BootstrapServersConfiguration GetBootstrapConfig(this IServiceProvider sp, IConfiguration configuration)
     {
-        /// <summary>
-        /// Gets configuration for Kafka servers.
-        /// </summary>
-        public static BootstrapServersConfiguration GetBootstrapConfig(this IServiceProvider sp, IConfiguration configuration)
+        var section = configuration.GetSection(nameof(BootstrapServersConfiguration));
+        var config = section.Get<BootstrapServersConfiguration>();
+
+        Debug.Assert(config is not null);
+
+        var validator = sp.GetRequiredService<IValidateOptions<BootstrapServersConfiguration>>();
+
+        // Crutch to use IValidateOptions in manual generation logic.
+        var validationResult = validator.Validate(string.Empty, config);
+        if (validationResult.Failed)
         {
-            var section = configuration.GetSection(nameof(BootstrapServersConfiguration));
-            var config = section.Get<BootstrapServersConfiguration>();
-
-            Debug.Assert(config is not null);
-
-            var validator = sp.GetRequiredService<IValidateOptions<BootstrapServersConfiguration>>();
-
-            // Crutch to use IValidateOptions in manual generation logic.
-            var validationResult = validator.Validate(string.Empty, config);
-            if (validationResult.Failed)
-            {
-                throw new OptionsValidationException
-                    (string.Empty, typeof(BootstrapServersConfiguration), new[] { validationResult.FailureMessage });
-            }
-
-            return config;
+            throw new OptionsValidationException
+                (string.Empty, typeof(BootstrapServersConfiguration), new[] { validationResult.FailureMessage });
         }
 
-        /// <summary>
-        /// Gets configuration for Kafka topics.
-        /// </summary>
-        public static LoaderToolConfiguration GetLoaderConfig(this IServiceProvider sp, IConfiguration configuration)
+        return config;
+    }
+
+    /// <summary>
+    /// Gets configuration for Kafka topics.
+    /// </summary>
+    public static LoaderToolConfiguration GetLoaderConfig(this IServiceProvider sp, IConfiguration configuration)
+    {
+        var section = configuration.GetSection(nameof(LoaderToolConfiguration));
+        var config = section.Get<LoaderToolConfiguration>();
+
+        Debug.Assert(config is not null);
+
+        var validator = sp.GetRequiredService<IValidateOptions<LoaderToolConfiguration>>();
+
+        // Crutch to use IValidateOptions in manual generation logic.
+        var validationResult = validator.Validate(string.Empty, config);
+        if (validationResult.Failed)
         {
-            var section = configuration.GetSection(nameof(LoaderToolConfiguration));
-            var config = section.Get<LoaderToolConfiguration>();
-
-            Debug.Assert(config is not null);
-
-            var validator = sp.GetRequiredService<IValidateOptions<LoaderToolConfiguration>>();
-
-            // Crutch to use IValidateOptions in manual generation logic.
-            var validationResult = validator.Validate(string.Empty, config);
-            if (validationResult.Failed)
-            {
-                throw new OptionsValidationException
-                    (string.Empty, typeof(LoaderToolConfiguration), new[] { validationResult.FailureMessage });
-            }
-
-            return config;
+            throw new OptionsValidationException
+                (string.Empty, typeof(LoaderToolConfiguration), new[] { validationResult.FailureMessage });
         }
 
-        /// <summary>
-        /// Confugures <see cref="LoaderToolConfiguration"/>
-        /// </summary>
-        public static IServiceCollection ConfigureLoaderTool(this IServiceCollection services, HostBuilderContext hostContext)
-        {
-            services.Configure<LoaderToolConfiguration>(hostContext.Configuration.GetSection(nameof(LoaderToolConfiguration)));
-            services.AddSingleton<IValidateOptions<LoaderToolConfiguration>, LoaderToolConfigurationValidator>();
-            return services;
-        }
+        return config;
+    }
 
-        /// <summary>
-        /// Configures Kafka import settings.
-        /// </summary>
-        public static IServiceCollection ConfigureImport(this IServiceCollection services, HostBuilderContext hostContext)
-        {
-            services.Configure<TopicWatermarkLoaderConfiguration>(hostContext.Configuration.GetSection(nameof(TopicWatermarkLoaderConfiguration)));
-            services.AddSingleton<IValidateOptions<BootstrapServersConfiguration>, BootstrapServersConfigurationValidator>();
-            services.AddSingleton<IValidateOptions<TopicWatermarkLoaderConfiguration>, TopicWatermarkLoaderConfigurationValidator>();
-            services.Configure<SnapshotLoaderConfiguration>(hostContext.Configuration.GetSection(nameof(SnapshotLoaderConfiguration)));
-            return services;
-        }
+    /// <summary>
+    /// Confugures <see cref="LoaderToolConfiguration"/>
+    /// </summary>
+    public static IServiceCollection ConfigureLoaderTool(this IServiceCollection services, HostBuilderContext hostContext)
+    {
+        services.Configure<LoaderToolConfiguration>(hostContext.Configuration.GetSection(nameof(LoaderToolConfiguration)));
+        services.AddSingleton<IValidateOptions<LoaderToolConfiguration>, LoaderToolConfigurationValidator>();
+        return services;
+    }
 
-        /// <summary>
-        /// Registers appsettings.
-        /// </summary>
-        public static void RegisterApplicationSettings(this IConfigurationBuilder builder)
-        {
-            builder.AddJsonFile("appsettings.json", optional: true);
-        }
+    /// <summary>
+    /// Configures Kafka import settings.
+    /// </summary>
+    public static IServiceCollection ConfigureImport(this IServiceCollection services, HostBuilderContext hostContext)
+    {
+        services.Configure<TopicWatermarkLoaderConfiguration>(hostContext.Configuration.GetSection(nameof(TopicWatermarkLoaderConfiguration)));
+        services.AddSingleton<IValidateOptions<BootstrapServersConfiguration>, BootstrapServersConfigurationValidator>();
+        services.AddSingleton<IValidateOptions<TopicWatermarkLoaderConfiguration>, TopicWatermarkLoaderConfigurationValidator>();
+        services.Configure<SnapshotLoaderConfiguration>(hostContext.Configuration.GetSection(nameof(SnapshotLoaderConfiguration)));
+        return services;
+    }
+
+    /// <summary>
+    /// Registers appsettings.
+    /// </summary>
+    public static void RegisterApplicationSettings(this IConfigurationBuilder builder)
+    {
+        builder.AddJsonFile("appsettings.json", optional: true);
     }
 }

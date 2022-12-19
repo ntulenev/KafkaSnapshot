@@ -7,192 +7,191 @@ using Microsoft.Extensions.Options;
 using KafkaSnapshot.Import.Configuration.Validation;
 using KafkaSnapshot.Import.Configuration;
 
-namespace KafkaSnapshot.Import.Tests
+namespace KafkaSnapshot.Import.Tests;
+
+public class BootstrapServersConfigurationValidatorTests
 {
-    public class BootstrapServersConfigurationValidatorTests
+    [Fact(DisplayName = "BootstrapServersConfigurationValidator can be created.")]
+    [Trait("Category", "Unit")]
+    public void BootstrapServersConfigurationValidatorCanBeCreated()
     {
-        [Fact(DisplayName = "BootstrapServersConfigurationValidator can be created.")]
-        [Trait("Category", "Unit")]
-        public void BootstrapServersConfigurationValidatorCanBeCreated()
+
+        // Arrange
+
+        // Act
+        var exception = Record.Exception(() => new BootstrapServersConfigurationValidator());
+
+        // Assert
+        exception.Should().BeNull();
+    }
+
+    [Fact(DisplayName = "BootstrapServersConfigurationValidator can be validated.")]
+    [Trait("Category", "Unit")]
+    public void BootstrapServersConfigurationValidatorCanBeValidated()
+    {
+
+        // Arrange
+        var validator = new BootstrapServersConfigurationValidator();
+        var name = "Test";
+        ValidateOptionsResult result = null!;
+        var options = new BootstrapServersConfiguration
         {
-
-            // Arrange
-
-            // Act
-            var exception = Record.Exception(() => new BootstrapServersConfigurationValidator());
-
-            // Assert
-            exception.Should().BeNull();
-        }
-
-        [Fact(DisplayName = "BootstrapServersConfigurationValidator can be validated.")]
-        [Trait("Category", "Unit")]
-        public void BootstrapServersConfigurationValidatorCanBeValidated()
-        {
-
-            // Arrange
-            var validator = new BootstrapServersConfigurationValidator();
-            var name = "Test";
-            ValidateOptionsResult result = null!;
-            var options = new BootstrapServersConfiguration
+            BootstrapServers = new List<string>
             {
-                BootstrapServers = new List<string>
-                {
-                    "test"
-                },
-                Password = "password",
-                SASLMechanism = Confluent.Kafka.SaslMechanism.Gssapi,
-                SecurityProtocol = Confluent.Kafka.SecurityProtocol.Plaintext,
-                Username = "name"
-            };
+                "test"
+            },
+            Password = "password",
+            SASLMechanism = Confluent.Kafka.SaslMechanism.Gssapi,
+            SecurityProtocol = Confluent.Kafka.SecurityProtocol.Plaintext,
+            Username = "name"
+        };
 
-            // Act
-            var exception = Record.Exception(() => result = validator.Validate(name, options));
+        // Act
+        var exception = Record.Exception(() => result = validator.Validate(name, options));
 
-            // Assert
-            exception.Should().BeNull();
-            result.Succeeded.Should().BeTrue();
-        }
+        // Assert
+        exception.Should().BeNull();
+        result.Succeeded.Should().BeTrue();
+    }
 
-        [Fact(DisplayName = "BootstrapServersConfigurationValidator cant be validated with whitespace.")]
-        [Trait("Category", "Unit")]
-        public void BootstrapServersConfigurationValidatorCantBeValidatedWhitespace()
+    [Fact(DisplayName = "BootstrapServersConfigurationValidator cant be validated with whitespace.")]
+    [Trait("Category", "Unit")]
+    public void BootstrapServersConfigurationValidatorCantBeValidatedWhitespace()
+    {
+
+        // Arrange
+        var validator = new BootstrapServersConfigurationValidator();
+        var name = "Test";
+        ValidateOptionsResult result = null!;
+        var options = new BootstrapServersConfiguration
         {
-
-            // Arrange
-            var validator = new BootstrapServersConfigurationValidator();
-            var name = "Test";
-            ValidateOptionsResult result = null!;
-            var options = new BootstrapServersConfiguration
+            BootstrapServers = new List<string>
             {
-                BootstrapServers = new List<string>
-                {
-                    "test", "    "
-                },
-                Password = "password",
-                SASLMechanism = Confluent.Kafka.SaslMechanism.Gssapi,
-                SecurityProtocol = Confluent.Kafka.SecurityProtocol.Plaintext,
-                Username = "name"
-            };
+                "test", "    "
+            },
+            Password = "password",
+            SASLMechanism = Confluent.Kafka.SaslMechanism.Gssapi,
+            SecurityProtocol = Confluent.Kafka.SecurityProtocol.Plaintext,
+            Username = "name"
+        };
 
-            // Act
-            var exception = Record.Exception(() => result = validator.Validate(name, options));
+        // Act
+        var exception = Record.Exception(() => result = validator.Validate(name, options));
 
-            // Assert
-            exception.Should().BeNull();
-            result.Succeeded.Should().BeFalse();
-        }
+        // Assert
+        exception.Should().BeNull();
+        result.Succeeded.Should().BeFalse();
+    }
 
-        [Fact(DisplayName = "BootstrapServersConfigurationValidator cant be validated with empty.")]
-        [Trait("Category", "Unit")]
-        public void BootstrapServersConfigurationValidatorCantBeValidatedEmpty()
+    [Fact(DisplayName = "BootstrapServersConfigurationValidator cant be validated with empty.")]
+    [Trait("Category", "Unit")]
+    public void BootstrapServersConfigurationValidatorCantBeValidatedEmpty()
+    {
+
+        // Arrange
+        var validator = new BootstrapServersConfigurationValidator();
+        var name = "Test";
+        ValidateOptionsResult result = null!;
+        var options = new BootstrapServersConfiguration
         {
-
-            // Arrange
-            var validator = new BootstrapServersConfigurationValidator();
-            var name = "Test";
-            ValidateOptionsResult result = null!;
-            var options = new BootstrapServersConfiguration
+            BootstrapServers = new List<string>
             {
-                BootstrapServers = new List<string>
-                {
-                    "test", string.Empty
-                },
-                Password = "password",
-                SASLMechanism = Confluent.Kafka.SaslMechanism.Gssapi,
-                SecurityProtocol = Confluent.Kafka.SecurityProtocol.Plaintext,
-                Username = "name"
-            };
+                "test", string.Empty
+            },
+            Password = "password",
+            SASLMechanism = Confluent.Kafka.SaslMechanism.Gssapi,
+            SecurityProtocol = Confluent.Kafka.SecurityProtocol.Plaintext,
+            Username = "name"
+        };
 
-            // Act
-            var exception = Record.Exception(() => result = validator.Validate(name, options));
+        // Act
+        var exception = Record.Exception(() => result = validator.Validate(name, options));
 
-            // Assert
-            exception.Should().BeNull();
-            result.Succeeded.Should().BeFalse();
-        }
+        // Assert
+        exception.Should().BeNull();
+        result.Succeeded.Should().BeFalse();
+    }
 
-        [Fact(DisplayName = "BootstrapServersConfigurationValidator cant be validated with empty.")]
-        [Trait("Category", "Unit")]
-        public void BootstrapServersConfigurationValidatorCantBeValidatedNull()
+    [Fact(DisplayName = "BootstrapServersConfigurationValidator cant be validated with empty.")]
+    [Trait("Category", "Unit")]
+    public void BootstrapServersConfigurationValidatorCantBeValidatedNull()
+    {
+
+        // Arrange
+        var validator = new BootstrapServersConfigurationValidator();
+        var name = "Test";
+        ValidateOptionsResult result = null!;
+        var options = new BootstrapServersConfiguration
         {
-
-            // Arrange
-            var validator = new BootstrapServersConfigurationValidator();
-            var name = "Test";
-            ValidateOptionsResult result = null!;
-            var options = new BootstrapServersConfiguration
+            BootstrapServers = new List<string>
             {
-                BootstrapServers = new List<string>
-                {
-                    "test", null!
-                },
-                Password = "password",
-                SASLMechanism = Confluent.Kafka.SaslMechanism.Gssapi,
-                SecurityProtocol = Confluent.Kafka.SecurityProtocol.Plaintext,
-                Username = "name"
-            };
+                "test", null!
+            },
+            Password = "password",
+            SASLMechanism = Confluent.Kafka.SaslMechanism.Gssapi,
+            SecurityProtocol = Confluent.Kafka.SecurityProtocol.Plaintext,
+            Username = "name"
+        };
 
-            // Act
-            var exception = Record.Exception(() => result = validator.Validate(name, options));
+        // Act
+        var exception = Record.Exception(() => result = validator.Validate(name, options));
 
-            // Assert
-            exception.Should().BeNull();
-            result.Succeeded.Should().BeFalse();
-        }
+        // Assert
+        exception.Should().BeNull();
+        result.Succeeded.Should().BeFalse();
+    }
 
-        [Fact(DisplayName = "BootstrapServersConfigurationValidator cant be validated with no items.")]
-        [Trait("Category", "Unit")]
-        public void BootstrapServersConfigurationValidatorCantBeValidatedNoItems()
+    [Fact(DisplayName = "BootstrapServersConfigurationValidator cant be validated with no items.")]
+    [Trait("Category", "Unit")]
+    public void BootstrapServersConfigurationValidatorCantBeValidatedNoItems()
+    {
+
+        // Arrange
+        var validator = new BootstrapServersConfigurationValidator();
+        var name = "Test";
+        ValidateOptionsResult result = null!;
+        var options = new BootstrapServersConfiguration
         {
-
-            // Arrange
-            var validator = new BootstrapServersConfigurationValidator();
-            var name = "Test";
-            ValidateOptionsResult result = null!;
-            var options = new BootstrapServersConfiguration
+            BootstrapServers = new List<string>
             {
-                BootstrapServers = new List<string>
-                {
-                },
-                Password = "password",
-                SASLMechanism = Confluent.Kafka.SaslMechanism.Gssapi,
-                SecurityProtocol = Confluent.Kafka.SecurityProtocol.Plaintext,
-                Username = "name"
-            };
+            },
+            Password = "password",
+            SASLMechanism = Confluent.Kafka.SaslMechanism.Gssapi,
+            SecurityProtocol = Confluent.Kafka.SecurityProtocol.Plaintext,
+            Username = "name"
+        };
 
-            // Act
-            var exception = Record.Exception(() => result = validator.Validate(name, options));
+        // Act
+        var exception = Record.Exception(() => result = validator.Validate(name, options));
 
-            // Assert
-            exception.Should().BeNull();
-            result.Succeeded.Should().BeFalse();
-        }
+        // Assert
+        exception.Should().BeNull();
+        result.Succeeded.Should().BeFalse();
+    }
 
-        [Fact(DisplayName = "BootstrapServersConfigurationValidator cant be validated with null collection.")]
-        [Trait("Category", "Unit")]
-        public void BootstrapServersConfigurationValidatorCantBeValidatedNullCollection()
+    [Fact(DisplayName = "BootstrapServersConfigurationValidator cant be validated with null collection.")]
+    [Trait("Category", "Unit")]
+    public void BootstrapServersConfigurationValidatorCantBeValidatedNullCollection()
+    {
+
+        // Arrange
+        var validator = new BootstrapServersConfigurationValidator();
+        var name = "Test";
+        ValidateOptionsResult result = null!;
+        var options = new BootstrapServersConfiguration
         {
+            BootstrapServers = null!,
+            Password = "password",
+            SASLMechanism = Confluent.Kafka.SaslMechanism.Gssapi,
+            SecurityProtocol = Confluent.Kafka.SecurityProtocol.Plaintext,
+            Username = "name"
+        };
 
-            // Arrange
-            var validator = new BootstrapServersConfigurationValidator();
-            var name = "Test";
-            ValidateOptionsResult result = null!;
-            var options = new BootstrapServersConfiguration
-            {
-                BootstrapServers = null!,
-                Password = "password",
-                SASLMechanism = Confluent.Kafka.SaslMechanism.Gssapi,
-                SecurityProtocol = Confluent.Kafka.SecurityProtocol.Plaintext,
-                Username = "name"
-            };
+        // Act
+        var exception = Record.Exception(() => result = validator.Validate(name, options));
 
-            // Act
-            var exception = Record.Exception(() => result = validator.Validate(name, options));
-
-            // Assert
-            exception.Should().BeNull();
-            result.Succeeded.Should().BeFalse();
-        }
+        // Assert
+        exception.Should().BeNull();
+        result.Succeeded.Should().BeFalse();
     }
 }

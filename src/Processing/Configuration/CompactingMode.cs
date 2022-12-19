@@ -1,11 +1,10 @@
-﻿namespace KafkaSnapshot.Processing.Configuration
+﻿namespace KafkaSnapshot.Processing.Configuration;
+
+/// <summary>
+/// Allows to compact data 
+/// </summary>
+public enum CompactingMode
 {
-    /// <summary>
-    /// Allows to compact data 
-    /// </summary>
-    public enum CompactingMode
-    {
-        On,
-        Off
-    }
+    On,
+    Off
 }

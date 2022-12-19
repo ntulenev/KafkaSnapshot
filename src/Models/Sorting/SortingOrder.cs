@@ -1,10 +1,9 @@
-﻿namespace KafkaSnapshot.Models.Sorting
+﻿namespace KafkaSnapshot.Models.Sorting;
+
+/// <summary>
+/// Kafka items sort order.
+/// </summary>
+public enum SortingOrder
 {
-    /// <summary>
-    /// Kafka items sort order.
-    /// </summary>
-    public enum SortingOrder
-    {
-        Ask, Desk, No
-    }
+    Ask, Desk, No
 }

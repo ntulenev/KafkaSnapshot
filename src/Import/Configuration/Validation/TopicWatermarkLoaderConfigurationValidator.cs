@@ -2,27 +2,26 @@
 
 using Microsoft.Extensions.Options;
 
-namespace KafkaSnapshot.Import.Configuration.Validation
+namespace KafkaSnapshot.Import.Configuration.Validation;
+
+/// <summary>
+/// Validator for <see cref="TopicWatermarkLoaderConfiguration"/>.
+/// </summary>
+public class TopicWatermarkLoaderConfigurationValidator : IValidateOptions<TopicWatermarkLoaderConfiguration>
 {
     /// <summary>
-    /// Validator for <see cref="TopicWatermarkLoaderConfiguration"/>.
+    /// Validates <see cref="TopicWatermarkLoaderConfiguration"/>.
     /// </summary>
-    public class TopicWatermarkLoaderConfigurationValidator : IValidateOptions<TopicWatermarkLoaderConfiguration>
+    public ValidateOptionsResult Validate(string name, TopicWatermarkLoaderConfiguration options)
     {
-        /// <summary>
-        /// Validates <see cref="TopicWatermarkLoaderConfiguration"/>.
-        /// </summary>
-        public ValidateOptionsResult Validate(string name, TopicWatermarkLoaderConfiguration options)
+        Debug.Assert(name is not null);
+        Debug.Assert(options is not null);
+
+        if (options.AdminClientTimeout == TimeSpan.Zero)
         {
-            Debug.Assert(name is not null);
-            Debug.Assert(options is not null);
-
-            if (options.AdminClientTimeout == TimeSpan.Zero)
-            {
-                return ValidateOptionsResult.Fail("Timeout should not be zero.");
-            }
-
-            return ValidateOptionsResult.Success;
+            return ValidateOptionsResult.Fail("Timeout should not be zero.");
         }
+
+        return ValidateOptionsResult.Success;
     }
 }

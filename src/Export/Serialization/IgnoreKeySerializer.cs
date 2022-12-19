@@ -6,37 +6,35 @@ using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Export.Markers;
 using KafkaSnapshot.Models.Message;
 
-namespace KafkaSnapshot.Export.Serialization
+namespace KafkaSnapshot.Export.Serialization;
+
+/// <summary>
+/// Serializer for data with no keys.
+/// </summary>
+public class IgnoreKeySerializer : JsonSerializerBase, ISerializer<string, string, IgnoreKeyMarker>
 {
-
     /// <summary>
-    /// Serializer for data with no keys.
+    /// Creates <see cref="IgnoreKeySerializer"/>.
     /// </summary>
-    public class IgnoreKeySerializer : JsonSerializerBase, ISerializer<string, string, IgnoreKeyMarker>
+    /// <param name="logger">Logger.</param>
+    public IgnoreKeySerializer(ILogger<IgnoreKeySerializer> logger) : base(logger) { }
+
+    /// <inheritdoc/>
+    public string Serialize(IEnumerable<KeyValuePair<string, KafkaMessage<string>>> data, bool exportRawMessage)
     {
-        /// <summary>
-        /// Creates <see cref="IgnoreKeySerializer"/>.
-        /// </summary>
-        /// <param name="logger">Logger.</param>
-        public IgnoreKeySerializer(ILogger<IgnoreKeySerializer> logger) : base(logger) { }
+        ArgumentNullException.ThrowIfNull(data);
 
-        /// <inheritdoc/>
-        public string Serialize(IEnumerable<KeyValuePair<string, KafkaMessage<string>>> data, bool exportRawMessage)
+        if (data.Any(x => x.Key is not null))
         {
-            ArgumentNullException.ThrowIfNull(data);
-
-            if (data.Any(x => x.Key is not null))
-            {
-                _logger.LogWarning("Serialization data contains not null Keys. This Keys will be ignored.");
-            }
-
-            var items = data.Select(x => new
-            {
-                Value = exportRawMessage ? x.Value.Message : JToken.Parse(x.Value.Message),
-                x.Value.Meta
-            });
-
-            return SerializeData(items);
+            _logger.LogWarning("Serialization data contains not null Keys. This Keys will be ignored.");
         }
+
+        var items = data.Select(x => new
+        {
+            Value = exportRawMessage ? x.Value.Message : JToken.Parse(x.Value.Message),
+            x.Value.Meta
+        });
+
+        return SerializeData(items);
     }
 }

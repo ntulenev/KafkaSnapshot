@@ -6,33 +6,32 @@ using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Models.Message;
 using KafkaSnapshot.Export.Markers;
 
-namespace KafkaSnapshot.Export.Serialization
+namespace KafkaSnapshot.Export.Serialization;
+
+/// <summary>
+/// Serializer for data with keys of <typeparamref name="TKey"/> type.
+/// </summary>
+/// <typeparam name="TKey">Data key type.</typeparam>
+public class OriginalKeySerializer<TKey> : JsonSerializerBase, ISerializer<TKey, string, OriginalKeyMarker>
 {
     /// <summary>
-    /// Serializer for data with keys of <typeparamref name="TKey"/> type.
+    /// Creates <see cref="OriginalKeySerializer{TKey}"/>.
     /// </summary>
-    /// <typeparam name="TKey">Data key type.</typeparam>
-    public class OriginalKeySerializer<TKey> : JsonSerializerBase, ISerializer<TKey, string, OriginalKeyMarker>
+    /// <param name="logger">Logger.</param>
+    public OriginalKeySerializer(ILogger<OriginalKeySerializer<TKey>> logger) : base(logger) { }
+
+    /// <inheritdoc/>
+    public string Serialize(IEnumerable<KeyValuePair<TKey, KafkaMessage<string>>> data, bool exportRawMessage)
     {
-        /// <summary>
-        /// Creates <see cref="OriginalKeySerializer{TKey}"/>.
-        /// </summary>
-        /// <param name="logger">Logger.</param>
-        public OriginalKeySerializer(ILogger<OriginalKeySerializer<TKey>> logger) : base(logger) { }
+        ArgumentNullException.ThrowIfNull(data);
 
-        /// <inheritdoc/>
-        public string Serialize(IEnumerable<KeyValuePair<TKey, KafkaMessage<string>>> data, bool exportRawMessage)
+        var items = data.Select(x => new
         {
-            ArgumentNullException.ThrowIfNull(data);
+            x.Key,
+            Value = exportRawMessage ? x.Value.Message : JToken.Parse(x.Value.Message),
+            x.Value.Meta
+        });
 
-            var items = data.Select(x => new
-            {
-                x.Key,
-                Value = exportRawMessage ? x.Value.Message : JToken.Parse(x.Value.Message),
-                x.Value.Meta
-            });
-
-            return SerializeData(items);
-        }
+        return SerializeData(items);
     }
 }

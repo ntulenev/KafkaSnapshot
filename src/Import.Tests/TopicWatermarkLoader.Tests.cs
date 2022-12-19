@@ -15,276 +15,275 @@ using KafkaSnapshot.Import.Watermarks;
 using KafkaSnapshot.Models.Filters;
 using KafkaSnapshot.Models.Sorting;
 
-namespace KafkaAsTable.Tests
+namespace KafkaAsTable.Tests;
+
+public class TopicWatermarkLoaderTests
 {
-    public class TopicWatermarkLoaderTests
+    [Fact(DisplayName = "TopicWatermarkLoader can be created with valid params.")]
+    [Trait("Category", "Unit")]
+    public void TopicWatermarkLoaderCanBeCreated()
     {
-        [Fact(DisplayName = "TopicWatermarkLoader can be created with valid params.")]
-        [Trait("Category", "Unit")]
-        public void TopicWatermarkLoaderCanBeCreated()
+
+        // Arrange
+        var client = (new Mock<IAdminClient>()).Object;
+        var options = (new Mock<IOptions<TopicWatermarkLoaderConfiguration>>());
+        options.Setup(x => x.Value).Returns(new TopicWatermarkLoaderConfiguration
         {
 
-            // Arrange
-            var client = (new Mock<IAdminClient>()).Object;
-            var options = (new Mock<IOptions<TopicWatermarkLoaderConfiguration>>());
-            options.Setup(x => x.Value).Returns(new TopicWatermarkLoaderConfiguration
-            {
+        });
 
-            });
+        // Act
+        var exception = Record.Exception(() => new TopicWatermarkLoader(client, options.Object));
 
-            // Act
-            var exception = Record.Exception(() => new TopicWatermarkLoader(client, options.Object));
+        // Assert
+        exception.Should().BeNull();
+    }
 
-            // Assert
-            exception.Should().BeNull();
-        }
+    [Fact(DisplayName = "TopicWatermarkLoader can't be created with null client.")]
+    [Trait("Category", "Unit")]
+    public void TopicWatermarkLoaderCantBeCreatedWithNullClient()
+    {
 
-        [Fact(DisplayName = "TopicWatermarkLoader can't be created with null client.")]
-        [Trait("Category", "Unit")]
-        public void TopicWatermarkLoaderCantBeCreatedWithNullClient()
+        // Arrange
+        var client = (IAdminClient)null!;
+        var options = (new Mock<IOptions<TopicWatermarkLoaderConfiguration>>());
+        options.Setup(x => x.Value).Returns(new TopicWatermarkLoaderConfiguration
         {
 
-            // Arrange
-            var client = (IAdminClient)null!;
-            var options = (new Mock<IOptions<TopicWatermarkLoaderConfiguration>>());
-            options.Setup(x => x.Value).Returns(new TopicWatermarkLoaderConfiguration
-            {
+        });
 
-            });
+        // Act
+        var exception = Record.Exception(() => new TopicWatermarkLoader(client, options.Object));
 
-            // Act
-            var exception = Record.Exception(() => new TopicWatermarkLoader(client, options.Object));
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
+    }
 
-            // Assert
-            exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
-        }
+    [Fact(DisplayName = "TopicWatermarkLoader can't be created with null options.")]
+    [Trait("Category", "Unit")]
+    public void TopicWatermarkLoaderCantBeCreatedWithNullOptions()
+    {
 
-        [Fact(DisplayName = "TopicWatermarkLoader can't be created with null options.")]
-        [Trait("Category", "Unit")]
-        public void TopicWatermarkLoaderCantBeCreatedWithNullOptions()
+        // Arrange
+        var client = (new Mock<IAdminClient>()).Object;
+        var options = (IOptions<TopicWatermarkLoaderConfiguration>)null!;
+
+        // Act
+        var exception = Record.Exception(() => new TopicWatermarkLoader(client, options));
+
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
+    }
+
+    [Fact(DisplayName = "TopicWatermarkLoader can't be created with null options value.")]
+    [Trait("Category", "Unit")]
+    public void TopicWatermarkLoaderCantBeCreatedWithNullOptionsValue()
+    {
+
+        // Arrange
+        var client = (new Mock<IAdminClient>()).Object;
+        var options = (new Mock<IOptions<TopicWatermarkLoaderConfiguration>>());
+
+        // Act
+        var exception = Record.Exception(() => new TopicWatermarkLoader(client, options.Object));
+
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
+    }
+
+    [Fact(DisplayName = "TopicWatermarkLoader can't load data with null factory.")]
+    [Trait("Category", "Unit")]
+    public async Task TopicWatermarkLoaderCantLoadWithNullFactory()
+    {
+
+        // Arrange
+        var client = (new Mock<IAdminClient>()).Object;
+        var options = (new Mock<IOptions<TopicWatermarkLoaderConfiguration>>());
+        options.Setup(x => x.Value).Returns(new TopicWatermarkLoaderConfiguration
         {
 
-            // Arrange
-            var client = (new Mock<IAdminClient>()).Object;
-            var options = (IOptions<TopicWatermarkLoaderConfiguration>)null!;
+        });
+        var loader = new TopicWatermarkLoader(client, options.Object);
+        var consumerFactory = (Func<IConsumer<string, string>>)null!;
+        HashSet<int> partitionFilter = null!;
+        var topicName = new LoadingTopic("test", true, new DateFilterRange(null!, null!),partitionFilter);
 
-            // Act
-            var exception = Record.Exception(() => new TopicWatermarkLoader(client, options));
+        // Act
+        var exception = await Record.ExceptionAsync(async () =>
+        await loader.LoadWatermarksAsync(consumerFactory, topicName, CancellationToken.None).ConfigureAwait(false)
+        );
 
-            // Assert
-            exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
-        }
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
+    }
 
-        [Fact(DisplayName = "TopicWatermarkLoader can't be created with null options value.")]
-        [Trait("Category", "Unit")]
-        public void TopicWatermarkLoaderCantBeCreatedWithNullOptionsValue()
+    [Fact(DisplayName = "TopicWatermarkLoader can't load data with null topic.")]
+    [Trait("Category", "Unit")]
+    public async Task TopicWatermarkLoaderCantLoadWithNullTopic()
+    {
+
+        // Arrange
+        var client = (new Mock<IAdminClient>()).Object;
+        var options = (new Mock<IOptions<TopicWatermarkLoaderConfiguration>>());
+        options.Setup(x => x.Value).Returns(new TopicWatermarkLoaderConfiguration
         {
 
-            // Arrange
-            var client = (new Mock<IAdminClient>()).Object;
-            var options = (new Mock<IOptions<TopicWatermarkLoaderConfiguration>>());
+        });
+        var loader = new TopicWatermarkLoader(client, options.Object);
+        static IConsumer<string, string> consumerFactory() => null!;
+        var topicName = (LoadingTopic)null!;
 
-            // Act
-            var exception = Record.Exception(() => new TopicWatermarkLoader(client, options.Object));
+        // Act
+        var exception = await Record.ExceptionAsync(async () =>
+        await loader.LoadWatermarksAsync(consumerFactory, topicName, System.Threading.CancellationToken.None).ConfigureAwait(false)
+        );
 
-            // Assert
-            exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
-        }
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
+    }
 
-        [Fact(DisplayName = "TopicWatermarkLoader can't load data with null factory.")]
-        [Trait("Category", "Unit")]
-        public async Task TopicWatermarkLoaderCantLoadWithNullFactory()
+    [Fact(DisplayName = "TopicWatermarkLoader can load watermarks with valid params.")]
+    [Trait("Category", "Unit")]
+    public async Task CanLoadWatermarksWithValidParams()
+    {
+
+        HashSet<int> partitionFilter = null!;
+        var topic = new LoadingTopic("test", true, new DateFilterRange(null!, null!),partitionFilter);
+        var clientMock = new Mock<IAdminClient>();
+        var client = clientMock.Object;
+        var timeout = 1;
+        var options = (new Mock<IOptions<TopicWatermarkLoaderConfiguration>>());
+        options.Setup(x => x.Value).Returns(new TopicWatermarkLoaderConfiguration
         {
+            AdminClientTimeout = TimeSpan.FromSeconds(timeout)
+        });
+        var loader = new TopicWatermarkLoader(client, options.Object);
 
-            // Arrange
-            var client = (new Mock<IAdminClient>()).Object;
-            var options = (new Mock<IOptions<TopicWatermarkLoaderConfiguration>>());
-            options.Setup(x => x.Value).Returns(new TopicWatermarkLoaderConfiguration
-            {
+        var consumerMock = new Mock<IConsumer<object, object>>();
 
-            });
-            var loader = new TopicWatermarkLoader(client, options.Object);
-            var consumerFactory = (Func<IConsumer<string, string>>)null!;
-            HashSet<int> partitionFilter = null!;
-            var topicName = new LoadingTopic("test", true, new DateFilterRange(null!, null!),partitionFilter);
+        IConsumer<object, object> consumerFactory() => consumerMock!.Object;
 
-            // Act
-            var exception = await Record.ExceptionAsync(async () =>
-            await loader.LoadWatermarksAsync(consumerFactory, topicName, CancellationToken.None).ConfigureAwait(false)
-            );
+        var adminClientPartition = new TopicPartition(topic.Value, new Partition(1));
 
-            // Assert
-            exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
-        }
+        var adminParitions = new[] { adminClientPartition };
 
-        [Fact(DisplayName = "TopicWatermarkLoader can't load data with null topic.")]
-        [Trait("Category", "Unit")]
-        public async Task TopicWatermarkLoaderCantLoadWithNullTopic()
+        var borkerMeta = new BrokerMetadata(1, "testHost", 1000);
+
+        var partitionMeta = new PartitionMetadata(1, 1, new[] { 1 }, new[] { 1 }, null);
+
+        var topicMeta = new TopicMetadata(topic.Value, new[] { partitionMeta }.ToList(), null);
+
+        var meta = new Confluent.Kafka.Metadata(
+                new[] { borkerMeta }.ToList(),
+                new[] { topicMeta }.ToList(), 1, "test"
+                );
+
+        clientMock.Setup(c => c.GetMetadata(topic.Value, TimeSpan.FromSeconds(timeout))).Returns(meta);
+
+        var offets = new WatermarkOffsets(new Offset(1), new Offset(2));
+
+        consumerMock.Setup(x => x.QueryWatermarkOffsets(adminClientPartition, TimeSpan.FromSeconds(timeout))).Returns(offets);
+
+        TopicWatermark result = null!;
+
+        // Act
+        var exception = await Record.ExceptionAsync(async () => result = await loader.LoadWatermarksAsync(consumerFactory, topic, CancellationToken.None).ConfigureAwait(false));
+
+        // Assert
+        exception.Should().BeNull();
+
+        consumerMock.Verify(x => x.Close(), Times.Once);
+
+        consumerMock.Verify(x => x.Dispose(), Times.Once);
+
+        result.Should().NotBeNull();
+
+        var watermarks = result.Watermarks.ToList();
+
+        watermarks.Should().ContainSingle();
+
+        clientMock.Verify(c => c.GetMetadata(topic.Value, TimeSpan.FromSeconds(timeout)), Times.Once);
+
+        consumerMock.Verify(x => x.QueryWatermarkOffsets(adminClientPartition, TimeSpan.FromSeconds(timeout)), Times.Once);
+
+        watermarks.Single().TopicName.Should().Be(topic);
+
+        watermarks.Single().Partition.Value.Should().Be(partitionMeta.PartitionId);
+
+        watermarks.Single().Offset.Should().Be(offets);
+    }
+
+    [Fact(DisplayName = "TopicWatermarkLoader can load watermarks with valid params with partition filter.")]
+    [Trait("Category", "Unit")]
+    public async Task CanLoadWatermarksWithValidParamsWithPartitionFilter()
+    {
+        //Arrange
+        var topic = new LoadingTopic("test", true, new DateFilterRange(null!, null!), new HashSet<int>(new[] { 2 }));
+        var clientMock = new Mock<IAdminClient>();
+        var client = clientMock.Object;
+        var timeout = 1;
+        var options = (new Mock<IOptions<TopicWatermarkLoaderConfiguration>>());
+        options.Setup(x => x.Value).Returns(new TopicWatermarkLoaderConfiguration
         {
+            AdminClientTimeout = TimeSpan.FromSeconds(timeout)
+        });
+        var loader = new TopicWatermarkLoader(client, options.Object);
 
-            // Arrange
-            var client = (new Mock<IAdminClient>()).Object;
-            var options = (new Mock<IOptions<TopicWatermarkLoaderConfiguration>>());
-            options.Setup(x => x.Value).Returns(new TopicWatermarkLoaderConfiguration
-            {
+        var consumerMock = new Mock<IConsumer<object, object>>();
 
-            });
-            var loader = new TopicWatermarkLoader(client, options.Object);
-            static IConsumer<string, string> consumerFactory() => null!;
-            var topicName = (LoadingTopic)null!;
+        IConsumer<object, object> consumerFactory() => consumerMock!.Object;
 
-            // Act
-            var exception = await Record.ExceptionAsync(async () =>
-            await loader.LoadWatermarksAsync(consumerFactory, topicName, System.Threading.CancellationToken.None).ConfigureAwait(false)
-            );
+        var adminClientPartition1 = new TopicPartition(topic.Value, new Partition(1));
+        var adminClientPartition2 = new TopicPartition(topic.Value, new Partition(2));
 
-            // Assert
-            exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
-        }
+        var adminParitions = new[] { adminClientPartition1, adminClientPartition2 };
 
-        [Fact(DisplayName = "TopicWatermarkLoader can load watermarks with valid params.")]
-        [Trait("Category", "Unit")]
-        public async Task CanLoadWatermarksWithValidParams()
-        {
+        var borkerMeta = new BrokerMetadata(1, "testHost", 1000);
 
-            HashSet<int> partitionFilter = null!;
-            var topic = new LoadingTopic("test", true, new DateFilterRange(null!, null!),partitionFilter);
-            var clientMock = new Mock<IAdminClient>();
-            var client = clientMock.Object;
-            var timeout = 1;
-            var options = (new Mock<IOptions<TopicWatermarkLoaderConfiguration>>());
-            options.Setup(x => x.Value).Returns(new TopicWatermarkLoaderConfiguration
-            {
-                AdminClientTimeout = TimeSpan.FromSeconds(timeout)
-            });
-            var loader = new TopicWatermarkLoader(client, options.Object);
+        var partitionMeta1 = new PartitionMetadata(1, 1, new[] { 1 }, new[] { 1 }, null);
+        var partitionMeta2 = new PartitionMetadata(2, 1, new[] { 1 }, new[] { 1 }, null);
 
-            var consumerMock = new Mock<IConsumer<object, object>>();
+        var topicMeta = new TopicMetadata(topic.Value, new[] { partitionMeta1, partitionMeta2 }.ToList(), null);
 
-            IConsumer<object, object> consumerFactory() => consumerMock!.Object;
+        var meta = new Confluent.Kafka.Metadata(
+                new[] { borkerMeta }.ToList(),
+                new[] { topicMeta }.ToList(), 1, "test"
+                );
 
-            var adminClientPartition = new TopicPartition(topic.Value, new Partition(1));
+        clientMock.Setup(c => c.GetMetadata(topic.Value, TimeSpan.FromSeconds(timeout))).Returns(meta);
 
-            var adminParitions = new[] { adminClientPartition };
+        var offets = new WatermarkOffsets(new Offset(1), new Offset(2));
 
-            var borkerMeta = new BrokerMetadata(1, "testHost", 1000);
+        consumerMock.Setup(x => x.QueryWatermarkOffsets(adminClientPartition1, TimeSpan.FromSeconds(timeout))).Returns(offets);
+        consumerMock.Setup(x => x.QueryWatermarkOffsets(adminClientPartition2, TimeSpan.FromSeconds(timeout))).Returns(offets);
 
-            var partitionMeta = new PartitionMetadata(1, 1, new[] { 1 }, new[] { 1 }, null);
+        TopicWatermark result = null!;
 
-            var topicMeta = new TopicMetadata(topic.Value, new[] { partitionMeta }.ToList(), null);
+        // Act
+        var exception = await Record.ExceptionAsync(async () => result = await loader.LoadWatermarksAsync(consumerFactory, topic, CancellationToken.None).ConfigureAwait(false));
 
-            var meta = new Confluent.Kafka.Metadata(
-                    new[] { borkerMeta }.ToList(),
-                    new[] { topicMeta }.ToList(), 1, "test"
-                    );
+        // Assert
+        exception.Should().BeNull();
 
-            clientMock.Setup(c => c.GetMetadata(topic.Value, TimeSpan.FromSeconds(timeout))).Returns(meta);
+        consumerMock.Verify(x => x.Close(), Times.Once);
 
-            var offets = new WatermarkOffsets(new Offset(1), new Offset(2));
+        consumerMock.Verify(x => x.Dispose(), Times.Once);
 
-            consumerMock.Setup(x => x.QueryWatermarkOffsets(adminClientPartition, TimeSpan.FromSeconds(timeout))).Returns(offets);
+        result.Should().NotBeNull();
 
-            TopicWatermark result = null!;
+        var watermarks = result.Watermarks.ToList();
 
-            // Act
-            var exception = await Record.ExceptionAsync(async () => result = await loader.LoadWatermarksAsync(consumerFactory, topic, CancellationToken.None).ConfigureAwait(false));
+        watermarks.Should().ContainSingle();
 
-            // Assert
-            exception.Should().BeNull();
+        clientMock.Verify(c => c.GetMetadata(topic.Value, TimeSpan.FromSeconds(timeout)), Times.Once);
 
-            consumerMock.Verify(x => x.Close(), Times.Once);
+        consumerMock.Verify(x => x.QueryWatermarkOffsets(adminClientPartition1, TimeSpan.FromSeconds(timeout)), Times.Never);
+        consumerMock.Verify(x => x.QueryWatermarkOffsets(adminClientPartition2, TimeSpan.FromSeconds(timeout)), Times.Once);
 
-            consumerMock.Verify(x => x.Dispose(), Times.Once);
+        watermarks.Single().TopicName.Should().Be(topic);
 
-            result.Should().NotBeNull();
+        watermarks.Single().Partition.Value.Should().Be(partitionMeta2.PartitionId);
 
-            var watermarks = result.Watermarks.ToList();
-
-            watermarks.Should().ContainSingle();
-
-            clientMock.Verify(c => c.GetMetadata(topic.Value, TimeSpan.FromSeconds(timeout)), Times.Once);
-
-            consumerMock.Verify(x => x.QueryWatermarkOffsets(adminClientPartition, TimeSpan.FromSeconds(timeout)), Times.Once);
-
-            watermarks.Single().TopicName.Should().Be(topic);
-
-            watermarks.Single().Partition.Value.Should().Be(partitionMeta.PartitionId);
-
-            watermarks.Single().Offset.Should().Be(offets);
-        }
-
-        [Fact(DisplayName = "TopicWatermarkLoader can load watermarks with valid params with partition filter.")]
-        [Trait("Category", "Unit")]
-        public async Task CanLoadWatermarksWithValidParamsWithPartitionFilter()
-        {
-            //Arrange
-            var topic = new LoadingTopic("test", true, new DateFilterRange(null!, null!), new HashSet<int>(new[] { 2 }));
-            var clientMock = new Mock<IAdminClient>();
-            var client = clientMock.Object;
-            var timeout = 1;
-            var options = (new Mock<IOptions<TopicWatermarkLoaderConfiguration>>());
-            options.Setup(x => x.Value).Returns(new TopicWatermarkLoaderConfiguration
-            {
-                AdminClientTimeout = TimeSpan.FromSeconds(timeout)
-            });
-            var loader = new TopicWatermarkLoader(client, options.Object);
-
-            var consumerMock = new Mock<IConsumer<object, object>>();
-
-            IConsumer<object, object> consumerFactory() => consumerMock!.Object;
-
-            var adminClientPartition1 = new TopicPartition(topic.Value, new Partition(1));
-            var adminClientPartition2 = new TopicPartition(topic.Value, new Partition(2));
-
-            var adminParitions = new[] { adminClientPartition1, adminClientPartition2 };
-
-            var borkerMeta = new BrokerMetadata(1, "testHost", 1000);
-
-            var partitionMeta1 = new PartitionMetadata(1, 1, new[] { 1 }, new[] { 1 }, null);
-            var partitionMeta2 = new PartitionMetadata(2, 1, new[] { 1 }, new[] { 1 }, null);
-
-            var topicMeta = new TopicMetadata(topic.Value, new[] { partitionMeta1, partitionMeta2 }.ToList(), null);
-
-            var meta = new Confluent.Kafka.Metadata(
-                    new[] { borkerMeta }.ToList(),
-                    new[] { topicMeta }.ToList(), 1, "test"
-                    );
-
-            clientMock.Setup(c => c.GetMetadata(topic.Value, TimeSpan.FromSeconds(timeout))).Returns(meta);
-
-            var offets = new WatermarkOffsets(new Offset(1), new Offset(2));
-
-            consumerMock.Setup(x => x.QueryWatermarkOffsets(adminClientPartition1, TimeSpan.FromSeconds(timeout))).Returns(offets);
-            consumerMock.Setup(x => x.QueryWatermarkOffsets(adminClientPartition2, TimeSpan.FromSeconds(timeout))).Returns(offets);
-
-            TopicWatermark result = null!;
-
-            // Act
-            var exception = await Record.ExceptionAsync(async () => result = await loader.LoadWatermarksAsync(consumerFactory, topic, CancellationToken.None).ConfigureAwait(false));
-
-            // Assert
-            exception.Should().BeNull();
-
-            consumerMock.Verify(x => x.Close(), Times.Once);
-
-            consumerMock.Verify(x => x.Dispose(), Times.Once);
-
-            result.Should().NotBeNull();
-
-            var watermarks = result.Watermarks.ToList();
-
-            watermarks.Should().ContainSingle();
-
-            clientMock.Verify(c => c.GetMetadata(topic.Value, TimeSpan.FromSeconds(timeout)), Times.Once);
-
-            consumerMock.Verify(x => x.QueryWatermarkOffsets(adminClientPartition1, TimeSpan.FromSeconds(timeout)), Times.Never);
-            consumerMock.Verify(x => x.QueryWatermarkOffsets(adminClientPartition2, TimeSpan.FromSeconds(timeout)), Times.Once);
-
-            watermarks.Single().TopicName.Should().Be(topic);
-
-            watermarks.Single().Partition.Value.Should().Be(partitionMeta2.PartitionId);
-
-            watermarks.Single().Offset.Should().Be(offets);
-        }
+        watermarks.Single().Offset.Should().Be(offets);
     }
 }

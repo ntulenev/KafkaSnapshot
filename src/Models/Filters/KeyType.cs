@@ -1,13 +1,12 @@
-﻿namespace KafkaSnapshot.Models.Filters
+﻿namespace KafkaSnapshot.Models.Filters;
+
+/// <summary>
+/// Keys types of Kafka message.
+/// </summary>
+public enum KeyType
 {
-    /// <summary>
-    /// Keys types of Kafka message.
-    /// </summary>
-    public enum KeyType
-    {
-        Json,
-        String,
-        Long,
-        Ignored
-    }
+    Json,
+    String,
+    Long,
+    Ignored
 }

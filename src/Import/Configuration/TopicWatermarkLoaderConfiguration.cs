@@ -1,13 +1,12 @@
-﻿namespace KafkaSnapshot.Import.Configuration
+﻿namespace KafkaSnapshot.Import.Configuration;
+
+/// <summary>
+/// Kafka Admin Client Configuration.
+/// </summary>
+public class TopicWatermarkLoaderConfiguration
 {
     /// <summary>
-    /// Kafka Admin Client Configuration.
+    /// Timout for metadata request.
     /// </summary>
-    public class TopicWatermarkLoaderConfiguration
-    {
-        /// <summary>
-        /// Timout for metadata request.
-        /// </summary>
-        public TimeSpan AdminClientTimeout { get; set; }
-    }
+    public TimeSpan AdminClientTimeout { get; set; }
 }

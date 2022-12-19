@@ -2,35 +2,34 @@
 
 using KafkaSnapshot.Abstractions.Filters;
 
-namespace KafkaSnapshot.Filters
+namespace KafkaSnapshot.Filters;
+
+/// <summary>
+/// Json equals filter.
+/// </summary>
+public class JsonEqualsFilter : IDataFilter<string>
 {
     /// <summary>
-    /// Json equals filter.
+    /// Creates <see cref="JsonEqualsFilter"/>.
     /// </summary>
-    public class JsonEqualsFilter : IDataFilter<string>
+    /// <param name="sample">Data sample.</param>
+    public JsonEqualsFilter(string sample)
     {
-        /// <summary>
-        /// Creates <see cref="JsonEqualsFilter"/>.
-        /// </summary>
-        /// <param name="sample">Data sample.</param>
-        public JsonEqualsFilter(string sample)
-        {
-            ArgumentNullException.ThrowIfNull(sample);
+        ArgumentNullException.ThrowIfNull(sample);
 
-            _sample = JObject.Parse(sample);
-        }
-
-        /// <inheritdoc/>
-        public bool IsMatch(string data)
-        {
-            ArgumentNullException.ThrowIfNull(data);
-
-            var jsonKey = JObject.Parse(data);
-
-
-            return JToken.DeepEquals(jsonKey, _sample);
-        }
-
-        private readonly JObject _sample;
+        _sample = JObject.Parse(sample);
     }
+
+    /// <inheritdoc/>
+    public bool IsMatch(string data)
+    {
+        ArgumentNullException.ThrowIfNull(data);
+
+        var jsonKey = JObject.Parse(data);
+
+
+        return JToken.DeepEquals(jsonKey, _sample);
+    }
+
+    private readonly JObject _sample;
 }

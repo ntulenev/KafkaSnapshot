@@ -1,32 +1,31 @@
 ﻿using Microsoft.Extensions.Hosting;
 
-namespace KafkaSnapshot.Utility
+namespace KafkaSnapshot.Utility;
+
+/// <summary>
+/// Helper class for IHost creation.
+/// </summary>
+public static class HostBuildHelper
 {
     /// <summary>
-    /// Helper class for IHost creation.
+    /// Creates default host for app.
     /// </summary>
-    public static class HostBuildHelper
+    public static IHost CreateHost()
     {
-        /// <summary>
-        /// Creates default host for app.
-        /// </summary>
-        public static IHost CreateHost()
-        {
-            var builder = new HostBuilder()
-                   .ConfigureAppConfiguration((hostingContext, config) =>
-                   {
-                       config.RegisterApplicationSettings();
-                   })
-                   .ConfigureServices((hostContext, services) =>
-                   {
-                       services.AddTools(hostContext);
-                       services.AddImport(hostContext);
-                       services.AddExport();
-                       services.AddTopicLoaders(hostContext);
-                       services.AddLogging(hostContext);
-                   });
+        var builder = new HostBuilder()
+               .ConfigureAppConfiguration((hostingContext, config) =>
+               {
+                   config.RegisterApplicationSettings();
+               })
+               .ConfigureServices((hostContext, services) =>
+               {
+                   services.AddTools(hostContext);
+                   services.AddImport(hostContext);
+                   services.AddExport();
+                   services.AddTopicLoaders(hostContext);
+                   services.AddLogging(hostContext);
+               });
 
-            return builder.Build();
-        }
+        return builder.Build();
     }
 }

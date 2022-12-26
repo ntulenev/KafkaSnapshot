@@ -35,7 +35,7 @@ Config example:
   "LoaderToolConfiguration": {
     "UseConcurrentLoad": true,
     "GlobalMessageSort": "Time",
-    "GlobalSortOrder": "No",
+    "GlobalSortOrder": "Ask",
     "Topics": [
       {
         "Name": "topic1",

@@ -32,12 +32,12 @@ public class MessageSorter<TKey, TValue> : IMessageSorter<TKey, TValue>
         return (_sortingRules) switch
         {
             { Order: SortingOrder.No, Type: _ } => source,
-            { Order: SortingOrder.Ask, Type: SortingType.Time } => source.OrderBy(x => x.Value.Meta.Timestamp).ToList(),
-            { Order: SortingOrder.Desk, Type: SortingType.Time } => source.OrderByDescending(x => x.Value.Meta.Timestamp).ToList(),
+            { Order: SortingOrder.Ask, Type: SortingType.Time } => source.OrderBy(x => x.Value.Meta.Timestamp),
+            { Order: SortingOrder.Desk, Type: SortingType.Time } => source.OrderByDescending(x => x.Value.Meta.Timestamp),
             { Order: SortingOrder.Ask, Type: SortingType.Partition } => source.OrderBy(x => x.Value.Meta.Partition)
-                                                                              .ThenBy(x => x.Value.Meta.Timestamp).ToList(),
+                                                                              .ThenBy(x => x.Value.Meta.Timestamp),
             { Order: SortingOrder.Desk, Type: SortingType.Partition } => source.OrderByDescending(x => x.Value.Meta.Partition)
-                                                                               .ThenBy(x => x.Value.Meta.Timestamp).ToList(),
+                                                                               .ThenBy(x => x.Value.Meta.Timestamp),
             _ => throw new NotImplementedException("Sort type not implemented")
         };
     }

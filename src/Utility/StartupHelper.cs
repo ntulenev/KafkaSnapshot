@@ -64,6 +64,7 @@ public static class StartupHelper
         services.AddSingleton<ISerializer<long, string, OriginalKeyMarker>, OriginalKeySerializer<long>>();
         services.AddSingleton(typeof(IDataExporter<,,,>), typeof(JsonFileDataExporter<,,,>));
         services.AddSingleton<IFileSaver, FileSaver>();
+        services.AddSingleton<IFileStreamProvider, FileStreamProvider>();
     }
 
     /// <summary>

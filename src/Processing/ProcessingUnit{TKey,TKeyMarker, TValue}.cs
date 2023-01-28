@@ -66,7 +66,9 @@ public class ProcessingUnit<TKey, TKeyMarker, TValue> : IProcessingUnit where TK
             ct).ConfigureAwait(false);
 
         _logger.LogDebug("Start exporting data to file.");
+
         await _exporter.ExportAsync(items, _exportedTopic, ct).ConfigureAwait(false);
+
     }
 
     /// <inheritdoc/>

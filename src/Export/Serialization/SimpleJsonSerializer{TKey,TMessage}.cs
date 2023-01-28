@@ -26,6 +26,7 @@ public class SimpleJsonSerializer<TKey, TMessage> : JsonSerializerBase,
         ArgumentNullException.ThrowIfNull(data);
 
         _ = exportRawMessage; // not needed for this implementation.
+
         return SerializeData(data);
     }
 

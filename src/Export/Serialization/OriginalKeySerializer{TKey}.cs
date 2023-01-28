@@ -20,24 +20,29 @@ public class OriginalKeySerializer<TKey> : JsonSerializerBase, ISerializer<TKey,
     /// <param name="logger">Logger.</param>
     public OriginalKeySerializer(ILogger<OriginalKeySerializer<TKey>> logger) : base(logger) { }
 
-    /// <inheritdoc/>
-    public string Serialize(IEnumerable<KeyValuePair<TKey, KafkaMessage<string>>> data, bool exportRawMessage)
-    {
-        ArgumentNullException.ThrowIfNull(data);
 
-        var items = data.Select(x => new
+    private static object ProjectData(IEnumerable<KeyValuePair<TKey, KafkaMessage<string>>> data, bool exportRawMessage)
+        => data.Select(x => new
         {
             x.Key,
             Value = exportRawMessage ? x.Value.Message : JToken.Parse(x.Value.Message),
             x.Value.Meta
         });
 
-        return SerializeData(items);
+    /// <inheritdoc/>
+    public string Serialize(IEnumerable<KeyValuePair<TKey, KafkaMessage<string>>> data, bool exportRawMessage)
+    {
+        ArgumentNullException.ThrowIfNull(data);
+
+        return SerializeData(ProjectData(data, exportRawMessage));
     }
 
     /// <inheritdoc/>
     public void Serialize(IEnumerable<KeyValuePair<TKey, KafkaMessage<string>>> data, bool exportRawMessage, Stream stream)
     {
-        throw new NotImplementedException();
+        ArgumentNullException.ThrowIfNull(data);
+        ArgumentNullException.ThrowIfNull(stream);
+
+        SerializeDataToStream(ProjectData(data, exportRawMessage), stream);
     }
 }

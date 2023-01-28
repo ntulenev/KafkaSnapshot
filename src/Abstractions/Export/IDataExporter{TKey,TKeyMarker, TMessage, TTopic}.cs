@@ -22,4 +22,13 @@ public interface IDataExporter<TKey, TKeyMarker, TMessage, TTopic> where TTopic 
     /// <param name="ct">Token for cancelling operation.</param>
     /// <returns></returns>
     public Task ExportAsync(IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> data, TTopic topic, CancellationToken ct);
+
+    /// <summary>
+    /// Exports <paramref name="data"/> to file with streaming.
+    /// </summary>
+    /// <param name="data">Data to be exported.</param>
+    /// <param name="topic">topic description.</param>
+    /// <param name="ct">Token for cancelling operation.</param>
+    /// <returns></returns>
+    public Task ExportWithStreamAsync(IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> data, TTopic topic, CancellationToken ct);
 }

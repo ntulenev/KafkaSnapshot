@@ -5,7 +5,6 @@
 /// </summary>
 public interface IFileStreamProvider
 {
-
     /// <summary>
     /// Creates stream for saving data.
     /// </summary>

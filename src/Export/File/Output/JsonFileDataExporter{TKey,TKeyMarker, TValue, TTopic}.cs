@@ -50,6 +50,25 @@ public class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> : IDataExpor
         _logger.LogDebug("Data saved successfully.");
     }
 
+    /// <inheritdoc/>
+    public Task ExportWithStreamAsync(IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> data, TTopic topic, CancellationToken ct)
+    {
+        throw new NotImplementedException();
+
+        //ArgumentNullException.ThrowIfNull(data);
+        //ArgumentNullException.ThrowIfNull(topic);
+
+        //using var _ = _logger.BeginScope("Data from topic {topic} to File {file} with stream", topic.Name, topic.ExportName);
+
+        //IFileStreamProvider provider = null!; //TODO inject
+
+        //using var stream = provider.CreateFileStream(topic.ExportName);
+
+        //_serializer.Serialize(data, topic.ExportRawMessage, stream);
+
+        //return Task.CompletedTask;
+    }
+
     private readonly ILogger<JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic>> _logger;
     private readonly IFileSaver _fileSaver;
     private readonly ISerializer<TKey, TValue, TKeyMarker> _serializer;

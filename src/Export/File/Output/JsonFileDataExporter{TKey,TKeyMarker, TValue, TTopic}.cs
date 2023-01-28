@@ -3,6 +3,7 @@
 using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Models.Export;
 using KafkaSnapshot.Models.Message;
+using Confluent.Kafka;
 
 namespace KafkaSnapshot.Export.File.Output;
 
@@ -26,11 +27,15 @@ public class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> : IDataExpor
     public JsonFileDataExporter(ILogger<JsonFileDataExporter<TKey, TKeyMarker,
                                 TValue, TTopic>> logger,
                                 IFileSaver fileSaver,
+                                IFileStreamProvider streamProvider,
                                 ISerializer<TKey, TValue, TKeyMarker> serializer)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _fileSaver = fileSaver ?? throw new ArgumentNullException(nameof(fileSaver));
+        _streamProvider = streamProvider ?? throw new ArgumentNullException(nameof(streamProvider));
         _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
+
+        _isStreamingMode = false; // TODO Get from config
 
         _logger.LogDebug("Instance created.");
     }
@@ -41,6 +46,18 @@ public class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> : IDataExpor
         ArgumentNullException.ThrowIfNull(data);
         ArgumentNullException.ThrowIfNull(topic);
 
+        if (_isStreamingMode)
+        {
+            await InnerStreamExportAsync(data, topic, ct);
+        }
+        else
+        {
+            await InnerFileExportAsync(data, topic, ct);
+        }
+    }
+
+    private async Task InnerFileExportAsync(IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> data, TTopic topic, CancellationToken ct)
+    {
         using var _ = _logger.BeginScope("Data from topic {topic} to File {file}", topic.Name, topic.ExportName);
 
         _logger.LogDebug("Starting saving data.");
@@ -50,26 +67,20 @@ public class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> : IDataExpor
         _logger.LogDebug("Data saved successfully.");
     }
 
-    /// <inheritdoc/>
-    public Task ExportWithStreamAsync(IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> data, TTopic topic, CancellationToken ct)
+    private async Task InnerStreamExportAsync(IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> data, TTopic topic, CancellationToken ct)
     {
-        throw new NotImplementedException();
+        using var _ = _logger.BeginScope("Data from topic {topic} to File {file} with stream", topic.Name, topic.ExportName);
 
-        //ArgumentNullException.ThrowIfNull(data);
-        //ArgumentNullException.ThrowIfNull(topic);
+        using var stream = _streamProvider.CreateFileStream(topic.ExportName);
 
-        //using var _ = _logger.BeginScope("Data from topic {topic} to File {file} with stream", topic.Name, topic.ExportName);
+        _serializer.Serialize(data, topic.ExportRawMessage, stream);
 
-        //IFileStreamProvider provider = null!; //TODO inject
-
-        //using var stream = provider.CreateFileStream(topic.ExportName);
-
-        //_serializer.Serialize(data, topic.ExportRawMessage, stream);
-
-        //return Task.CompletedTask;
+        await Task.CompletedTask;
     }
 
     private readonly ILogger<JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic>> _logger;
     private readonly IFileSaver _fileSaver;
+    private readonly IFileStreamProvider _streamProvider;
     private readonly ISerializer<TKey, TValue, TKeyMarker> _serializer;
+    private readonly bool _isStreamingMode;
 }

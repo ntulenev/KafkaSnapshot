@@ -32,6 +32,11 @@ public class SimpleJsonSerializer<TKey, TMessage> : JsonSerializerBase,
     /// <inheritdoc/>
     public void Serialize(IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> data, bool exportRawMessage, Stream stream)
     {
-        throw new NotImplementedException();
+        ArgumentNullException.ThrowIfNull(data);
+        ArgumentNullException.ThrowIfNull(stream);
+
+        _ = exportRawMessage; // not needed for this implementation.
+
+        SerializeDataToStream(data, stream);
     }
 }

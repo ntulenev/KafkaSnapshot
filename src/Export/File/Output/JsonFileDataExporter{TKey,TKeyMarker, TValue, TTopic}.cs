@@ -3,7 +3,6 @@
 using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Models.Export;
 using KafkaSnapshot.Models.Message;
-using Confluent.Kafka;
 
 namespace KafkaSnapshot.Export.File.Output;
 

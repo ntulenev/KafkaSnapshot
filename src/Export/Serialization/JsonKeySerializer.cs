@@ -34,4 +34,10 @@ public class JsonKeySerializer : JsonSerializerBase, ISerializer<string, string,
 
         return SerializeData(items);
     }
+
+    /// <inheritdoc/>
+    public void Serialize(IEnumerable<KeyValuePair<string, KafkaMessage<string>>> data, bool exportRawMessage, Stream stream)
+    {
+        throw new NotImplementedException();
+    }
 }

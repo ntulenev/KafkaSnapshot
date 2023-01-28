@@ -4,7 +4,6 @@ using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Models.Message;
 using KafkaSnapshot.Export.Markers;
 
-
 namespace KafkaSnapshot.Export.Serialization;
 
 /// <summary>
@@ -28,5 +27,11 @@ public class SimpleJsonSerializer<TKey, TMessage> : JsonSerializerBase,
 
         _ = exportRawMessage; // not needed for this implementation.
         return SerializeData(data);
+    }
+
+    /// <inheritdoc/>
+    public void Serialize(IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> data, bool exportRawMessage, Stream stream)
+    {
+        throw new NotImplementedException();
     }
 }

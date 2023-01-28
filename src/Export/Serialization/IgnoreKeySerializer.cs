@@ -37,4 +37,10 @@ public class IgnoreKeySerializer : JsonSerializerBase, ISerializer<string, strin
 
         return SerializeData(items);
     }
+
+    /// <inheritdoc/>
+    public void Serialize(IEnumerable<KeyValuePair<string, KafkaMessage<string>>> data, bool exportRawMessage, Stream stream)
+    {
+        throw new NotImplementedException();
+    }
 }

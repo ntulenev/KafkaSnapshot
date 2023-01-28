@@ -40,6 +40,21 @@ public abstract class JsonSerializerBase
         return sb.ToString(); //TODO Change on Stream. OOM on big count of data.
     }
 
+    protected void SerializeDataToStream(object data, Stream stream)
+    {
+        Debug.Assert(data is not null);
+        Debug.Assert(stream is not null);
+
+        using var sw = new StreamWriter(stream);
+        using var jsonWriter = new JsonTextWriter(sw);
+
+        _logger.LogTrace("Start serializing data.");
+
+        _serializer.Serialize(jsonWriter, data);
+
+        _logger.LogTrace("Finish serializing data.");
+    }
+
     private readonly JsonSerializer _serializer = new() { Formatting = Formatting.Indented };
 
     protected readonly ILogger<JsonSerializerBase> _logger;

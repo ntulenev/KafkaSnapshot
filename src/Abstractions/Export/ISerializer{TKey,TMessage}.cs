@@ -18,4 +18,12 @@ public interface ISerializer<TKey, TMessage, TKeyMarker> where TMessage : notnul
     /// <param name="exportRawMessage">Rule for message serialization.</param>
     /// <returns>String data representation.</returns>
     public string Serialize(IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> data, bool exportRawMessage);
+
+    /// <summary>
+    ///  Serializes to stream.
+    /// </summary>
+    /// <param name="data">Data for serialization.</param>
+    /// <param name="exportRawMessage">Rule for message serialization.</param>
+    /// <param name="stream">Stream to store data.</param>
+    public void Serialize(IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> data, bool exportRawMessage, Stream stream);
 }

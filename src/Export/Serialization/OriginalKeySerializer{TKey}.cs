@@ -34,4 +34,10 @@ public class OriginalKeySerializer<TKey> : JsonSerializerBase, ISerializer<TKey,
 
         return SerializeData(items);
     }
+
+    /// <inheritdoc/>
+    public void Serialize(IEnumerable<KeyValuePair<TKey, KafkaMessage<string>>> data, bool exportRawMessage, Stream stream)
+    {
+        throw new NotImplementedException();
+    }
 }

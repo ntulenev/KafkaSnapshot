@@ -68,11 +68,8 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
                                 .ConfigureAwait(false);
 
         _logger.LogDebug("Creating compacting state");
-        var compactedState = CreateSnapshot(initialState, topicParams.LoadWithCompacting);
 
-        _logger.LogDebug("Created compacting state for {items} item(s)", compactedState.Count());
-
-        return compactedState;
+        return CreateSnapshot(initialState, topicParams.LoadWithCompacting);
     }
 
     private async Task<IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>>> ConsumeInitialAsync
@@ -186,10 +183,14 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
                     d[e.Key] = e.Value;
                     return d;
                 });
+
+            _logger.LogDebug("Created compacting state for {items} item(s)", result.Count());
         }
         else
         {
-            result = _sorter.Sort(items).ToList();
+            result = _sorter.Sort(items);
+
+            _logger.LogDebug("Created state without compacting");
         }
 
         return result;

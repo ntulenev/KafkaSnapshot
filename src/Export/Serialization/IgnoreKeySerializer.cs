@@ -19,11 +19,8 @@ public class IgnoreKeySerializer : JsonSerializerBase, ISerializer<string, strin
     /// <param name="logger">Logger.</param>
     public IgnoreKeySerializer(ILogger<IgnoreKeySerializer> logger) : base(logger) { }
 
-    /// <inheritdoc/>
-    public string Serialize(IEnumerable<KeyValuePair<string, KafkaMessage<string>>> data, bool exportRawMessage)
+    private object ProjectData(IEnumerable<KeyValuePair<string, KafkaMessage<string>>> data, bool exportRawMessage)
     {
-        ArgumentNullException.ThrowIfNull(data);
-
         if (data.Any(x => x.Key is not null))
         {
             _logger.LogWarning("Serialization data contains not null Keys. This Keys will be ignored.");
@@ -35,12 +32,23 @@ public class IgnoreKeySerializer : JsonSerializerBase, ISerializer<string, strin
             x.Value.Meta
         });
 
-        return SerializeData(items);
+        return items;
+    }
+
+    /// <inheritdoc/>
+    public string Serialize(IEnumerable<KeyValuePair<string, KafkaMessage<string>>> data, bool exportRawMessage)
+    {
+        ArgumentNullException.ThrowIfNull(data);
+
+        return SerializeData(ProjectData(data, exportRawMessage));
     }
 
     /// <inheritdoc/>
     public void Serialize(IEnumerable<KeyValuePair<string, KafkaMessage<string>>> data, bool exportRawMessage, Stream stream)
     {
-        throw new NotImplementedException();
+        ArgumentNullException.ThrowIfNull(data);
+        ArgumentNullException.ThrowIfNull(stream);
+
+        SerializeDataToStream(ProjectData(data, exportRawMessage), stream);
     }
 }

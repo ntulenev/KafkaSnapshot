@@ -3,7 +3,7 @@
 /// <summary>
 /// Utility that provedes file stream for saving data.
 /// </summary>
-public interface IFileStreamProriver
+public interface IFileStreamProvider
 {
 
     /// <summary>

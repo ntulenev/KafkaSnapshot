@@ -32,6 +32,9 @@ Config example:
     "DateOffsetTimeout": "00:00:05",
     "SearchSinglePartition": false
   },
+  "JsonFileDataExporterConfiguration": {
+    "UseFileStreaming": true
+  },
   "LoaderToolConfiguration": {
     "UseConcurrentLoad": true,
     "GlobalMessageSort": "Time",
@@ -120,6 +123,7 @@ Config params:
 | OffsetEndDate | Message date top limit (optional). Use to limit filtering messages in large topics. Format MM.DD.YYYY HH:MM:SS (Local timezone)|
 | ExportRawMessage | If true - export will write message as raw string without converting to formatted json (optional)|
 | PartitionsIds | Partitions ids filter (optional)|
+| UseFileStreaming | Serializes loaded data to file directly via FileStream (Avoids OOM issue for large amounts of data). Better effect with disabled sorting (GlobalSortOrder No)|
 
 Filter restrictions:
 * 'Contains' key filter could be applied only to string keys.

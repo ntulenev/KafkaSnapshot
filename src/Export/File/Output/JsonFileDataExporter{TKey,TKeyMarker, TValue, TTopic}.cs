@@ -3,6 +3,8 @@
 using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Models.Export;
 using KafkaSnapshot.Models.Message;
+using Microsoft.Extensions.Options;
+using KafkaSnapshot.Export.Configuration;
 
 namespace KafkaSnapshot.Export.File.Output;
 
@@ -23,18 +25,26 @@ public class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> : IDataExpor
     /// </summary>
     /// <param name="logger">Logger for <see cref="JsonFileDataExporter{TKey, TKeyMarker, TValue, TTopic}"/>.</param>
     /// <param name="fileSaver">Utility that saves content to file.</param>
-    public JsonFileDataExporter(ILogger<JsonFileDataExporter<TKey, TKeyMarker,
+    public JsonFileDataExporter(
+                                IOptions<JsonFileDataExporterConfiguration> config,
+                                ILogger<JsonFileDataExporter<TKey, TKeyMarker,
                                 TValue, TTopic>> logger,
                                 IFileSaver fileSaver,
                                 IFileStreamProvider streamProvider,
                                 ISerializer<TKey, TValue, TKeyMarker> serializer)
     {
+        ArgumentNullException.ThrowIfNull(config);
+
+        if (config.Value is null)
+        {
+            throw new ArgumentException("Config is not set", nameof(config));
+        }
+
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _fileSaver = fileSaver ?? throw new ArgumentNullException(nameof(fileSaver));
         _streamProvider = streamProvider ?? throw new ArgumentNullException(nameof(streamProvider));
         _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
-
-        _isStreamingMode = false; // TODO Get from config
+        _isStreamingMode = config.Value.UseFileStreaming;
 
         _logger.LogDebug("Instance created.");
     }

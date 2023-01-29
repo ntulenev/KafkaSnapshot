@@ -11,6 +11,8 @@ using KafkaSnapshot.Export.File.Output;
 using KafkaSnapshot.Export.Markers;
 using KafkaSnapshot.Models.Export;
 using KafkaSnapshot.Models.Message;
+using Microsoft.Extensions.Options;
+using KafkaSnapshot.Export.Configuration;
 
 namespace KafkaSnapshot.Export.Tests;
 
@@ -21,6 +23,8 @@ public class JsonFileDataExporterTests
     public void JsonFileDataExporterCantBeCreatedWithoutLogger()
     {
         // Arrange
+        var config = new Mock<IOptions<JsonFileDataExporterConfiguration>>();
+        config.Setup(x => x.Value).Returns(new JsonFileDataExporterConfiguration());
         var logger = (ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>>)null!;
         var fileSaver = new Mock<IFileSaver>();
         var serializer = new Mock<ISerializer<object, object, OriginalKeyMarker>>();
@@ -28,7 +32,7 @@ public class JsonFileDataExporterTests
 
         // Act
         var exception = Record.Exception(() =>
-        _ = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(logger, fileSaver.Object, fileStreamProvider.Object, serializer.Object));
+        _ = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(config.Object, logger, fileSaver.Object, fileStreamProvider.Object, serializer.Object));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -39,6 +43,8 @@ public class JsonFileDataExporterTests
     public void JsonFileDataExporterCantBeCreatedWithoutSerializer()
     {
         // Arrange
+        var config = new Mock<IOptions<JsonFileDataExporterConfiguration>>();
+        config.Setup(x => x.Value).Returns(new JsonFileDataExporterConfiguration());
         var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>>>();
         var fileSaver = new Mock<IFileSaver>();
         var serializer = (ISerializer<object, object, OriginalKeyMarker>)null!;
@@ -46,7 +52,7 @@ public class JsonFileDataExporterTests
 
         // Act
         var exception = Record.Exception(() =>
-        _ = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(logger.Object, fileSaver.Object, fileStreamProvider.Object, serializer));
+        _ = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(config.Object, logger.Object, fileSaver.Object, fileStreamProvider.Object, serializer));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -57,6 +63,8 @@ public class JsonFileDataExporterTests
     public void JsonFileDataExporterCantBeCreatedWithoutSaver()
     {
         // Arrange
+        var config = new Mock<IOptions<JsonFileDataExporterConfiguration>>();
+        config.Setup(x => x.Value).Returns(new JsonFileDataExporterConfiguration());
         var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>>>();
         var fileSaver = (IFileSaver)null!;
         var serializer = new Mock<ISerializer<object, object, OriginalKeyMarker>>();
@@ -64,7 +72,7 @@ public class JsonFileDataExporterTests
 
         // Act
         var exception = Record.Exception(() =>
-        _ = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(logger.Object, fileSaver, fileStreamProvider.Object, serializer.Object));
+        _ = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(config.Object, logger.Object, fileSaver, fileStreamProvider.Object, serializer.Object));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -75,6 +83,8 @@ public class JsonFileDataExporterTests
     public void JsonFileDataExporterCanBeCreated()
     {
         // Arrange
+        var config = new Mock<IOptions<JsonFileDataExporterConfiguration>>();
+        config.Setup(x => x.Value).Returns(new JsonFileDataExporterConfiguration());
         var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>>>();
         var fileSaver = new Mock<IFileSaver>();
         var serializer = new Mock<ISerializer<object, object, OriginalKeyMarker>>();
@@ -82,7 +92,7 @@ public class JsonFileDataExporterTests
 
         // Act
         var exception = Record.Exception(() =>
-        _ = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(logger.Object, fileSaver.Object, fileStreamProvider.Object, serializer.Object));
+        _ = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(config.Object, logger.Object, fileSaver.Object, fileStreamProvider.Object, serializer.Object));
 
         // Assert
         exception.Should().BeNull();
@@ -93,11 +103,13 @@ public class JsonFileDataExporterTests
     public async Task JsonFileDataExporterCanExportNullDataAsync()
     {
         // Arrange
+        var config = new Mock<IOptions<JsonFileDataExporterConfiguration>>();
+        config.Setup(x => x.Value).Returns(new JsonFileDataExporterConfiguration());
         var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>>>();
         var fileSaver = new Mock<IFileSaver>();
         var serializer = new Mock<ISerializer<object, object, OriginalKeyMarker>>();
         var fileStreamProvider = new Mock<IFileStreamProvider>();
-        var exporter = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(logger.Object, fileSaver.Object, fileStreamProvider.Object, serializer.Object);
+        var exporter = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(config.Object, logger.Object, fileSaver.Object, fileStreamProvider.Object, serializer.Object);
         var topic = new ExportedTopic("name", "filename", true);
         var data = (IEnumerable<KeyValuePair<object, KafkaMessage<object>>>)null!;
 
@@ -115,11 +127,13 @@ public class JsonFileDataExporterTests
     public async Task JsonFileDataExporterCanExportNullTopic()
     {
         // Arrange
+        var config = new Mock<IOptions<JsonFileDataExporterConfiguration>>();
+        config.Setup(x => x.Value).Returns(new JsonFileDataExporterConfiguration());
         var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>>>();
         var fileSaver = new Mock<IFileSaver>();
         var serializer = new Mock<ISerializer<object, object, OriginalKeyMarker>>();
         var fileStreamProvider = new Mock<IFileStreamProvider>();
-        var exporter = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(logger.Object, fileSaver.Object, fileStreamProvider.Object, serializer.Object);
+        var exporter = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(config.Object, logger.Object, fileSaver.Object, fileStreamProvider.Object, serializer.Object);
         var topic = (ExportedTopic)null!;
         var data = Enumerable.Empty<KeyValuePair<object, KafkaMessage<object>>>();
 
@@ -139,11 +153,13 @@ public class JsonFileDataExporterTests
     public async Task JsonFileDataExporterCanExportData(bool isRawMessage)
     {
         // Arrange
+        var config = new Mock<IOptions<JsonFileDataExporterConfiguration>>();
+        config.Setup(x => x.Value).Returns(new JsonFileDataExporterConfiguration());
         var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>>>();
         var fileSaver = new Mock<IFileSaver>();
         var serializer = new Mock<ISerializer<object, object, OriginalKeyMarker>>();
         var fileStreamProvider = new Mock<IFileStreamProvider>();
-        var exporter = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(logger.Object, fileSaver.Object, fileStreamProvider.Object, serializer.Object);
+        var exporter = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(config.Object, logger.Object, fileSaver.Object, fileStreamProvider.Object, serializer.Object);
         var topic = new ExportedTopic("name", "filename", isRawMessage);
         var data = new KeyValuePair<object, KafkaMessage<object>>[]
         {

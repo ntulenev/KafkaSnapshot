@@ -56,8 +56,10 @@ public static class StartupHelper
     /// <summary>
     /// Add export providers.
     /// </summary>
-    public static void AddExport(this IServiceCollection services)
+    public static void AddExport(this IServiceCollection services, HostBuilderContext hostContext)
     {
+        services.ConfigureExport(hostContext);
+
         services.AddSingleton<ISerializer<string, string, IgnoreKeyMarker>, IgnoreKeySerializer>();
         services.AddSingleton<ISerializer<string, string, JsonKeyMarker>, JsonKeySerializer>();
         services.AddSingleton<ISerializer<string, string, OriginalKeyMarker>, OriginalKeySerializer<string>>();

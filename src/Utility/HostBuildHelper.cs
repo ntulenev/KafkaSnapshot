@@ -21,7 +21,7 @@ public static class HostBuildHelper
                {
                    services.AddTools(hostContext);
                    services.AddImport(hostContext);
-                   services.AddExport();
+                   services.AddExport(hostContext);
                    services.AddTopicLoaders(hostContext);
                    services.AddLogging(hostContext);
                });

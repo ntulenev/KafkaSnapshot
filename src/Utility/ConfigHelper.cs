@@ -9,6 +9,7 @@ using KafkaSnapshot.Import.Configuration;
 using KafkaSnapshot.Processing.Configuration;
 using KafkaSnapshot.Processing.Configuration.Validation;
 using KafkaSnapshot.Import.Configuration.Validation;
+using KafkaSnapshot.Export.Configuration;
 
 namespace KafkaSnapshot.Utility;
 
@@ -70,6 +71,15 @@ public static class ConfigHelper
     {
         services.Configure<LoaderToolConfiguration>(hostContext.Configuration.GetSection(nameof(LoaderToolConfiguration)));
         services.AddSingleton<IValidateOptions<LoaderToolConfiguration>, LoaderToolConfigurationValidator>();
+        return services;
+    }
+
+    /// <summary>
+    /// Confugures <see cref="JsonFileDataExporterConfiguration"/>
+    /// </summary>
+    public static IServiceCollection ConfigureExport(this IServiceCollection services, HostBuilderContext hostContext)
+    {
+        services.Configure<JsonFileDataExporterConfiguration>(hostContext.Configuration.GetSection(nameof(JsonFileDataExporterConfiguration)));
         return services;
     }
 

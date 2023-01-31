@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+
 using KafkaSnapshot.Models.Message;
 using KafkaSnapshot.Models.Sorting;
 

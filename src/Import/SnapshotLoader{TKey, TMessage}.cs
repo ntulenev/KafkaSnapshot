@@ -140,7 +140,7 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
             ConsumeResult<TKey, TMessage> result;
 
             bool isFinalOffsetDateReached() => topicParams.HasEndOffsetDate &&
-                                               result.Message.Timestamp.UtcDateTime > topicParams.EndOffsetDate;
+                                               result.Message.Timestamp.UtcDateTime > topicParams.EndOffsetDate.ToUniversalTime();
 
             do
             {

@@ -9,6 +9,8 @@ using Microsoft.Extensions.Logging;
 using KafkaSnapshot.Export.Serialization;
 using KafkaSnapshot.Models.Message;
 
+using System.Text;
+
 namespace KafkaSnapshot.Export.Tests;
 
 public class IgnoreKeySerializerTests
@@ -59,6 +61,25 @@ public class IgnoreKeySerializerTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
+    [Theory(DisplayName = "IgnoreKeySerializer can't serialize null data to the stream.")]
+    [Trait("Category", "Unit")]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void IgnoreKeySerializerCantSerializeNullDataToStream(bool isRawData)
+    {
+        // Arrange
+        var logger = new Mock<ILogger<IgnoreKeySerializer>>().Object;
+        var serializer = new IgnoreKeySerializer(logger);
+        var data = (IEnumerable<KeyValuePair<string, KafkaMessage<string>>>)null!;
+        var stream = new Mock<Stream>().Object;
+
+        // Act
+        var exception = Record.Exception(() => serializer.Serialize(data, isRawData, stream));
+
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
+    }
+
     [Fact(DisplayName = "IgnoreKeySerializer can serialize data.")]
     [Trait("Category", "Unit")]
     public void IgnoreKeySerializerCanSerializeData()
@@ -80,6 +101,29 @@ public class IgnoreKeySerializerTests
         // Assert
         exception.Should().BeNull();
         result.Should().Be("[\r\n  {\r\n    \"Value\": {\r\n      \"Test\": 42\r\n    },\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
+    }
+
+    [Fact(DisplayName = "IgnoreKeySerializer can serialize data to stream.")]
+    [Trait("Category", "Unit")]
+    public void IgnoreKeySerializerCanSerializeDataToStream()
+    {
+        // Arrange
+        var logger = new Mock<ILogger<IgnoreKeySerializer>>().Object;
+        var serializer = new IgnoreKeySerializer(logger);
+        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var isRaw = false;
+        var data = new[]
+        {
+            new KeyValuePair<string, KafkaMessage<string>>(null!,new KafkaMessage<string>("{\"Test\":42}",new KafkaMetadata(dateTime,1,2)))
+        };
+        using var stream = new MemoryStream();
+
+        // Act
+        var exception = Record.Exception(() => serializer.Serialize(data, isRaw, stream));
+
+        // Assert
+        var jsonString = Encoding.Default.GetString((stream.ToArray()));
+        jsonString.Should().Be("[\r\n  {\r\n    \"Value\": {\r\n      \"Test\": 42\r\n    },\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
     }
 
     [Fact(DisplayName = "IgnoreKeySerializer cant serialize non json data.")]

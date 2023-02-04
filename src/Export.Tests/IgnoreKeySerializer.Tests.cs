@@ -80,6 +80,28 @@ public class IgnoreKeySerializerTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
+    [Theory(DisplayName = "IgnoreKeySerializer can't serialize data to the null stream.")]
+    [Trait("Category", "Unit")]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void IgnoreKeySerializerCantSerializeDataToNullStream(bool isRawData)
+    {
+        // Arrange
+        var logger = new Mock<ILogger<IgnoreKeySerializer>>().Object;
+        var serializer = new IgnoreKeySerializer(logger);
+        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var data = new[]
+        {
+            new KeyValuePair<string, KafkaMessage<string>>(null!,new KafkaMessage<string>("{\"Test\":42}",new KafkaMetadata(dateTime,1,2)))
+        };
+
+        // Act
+        var exception = Record.Exception(() => serializer.Serialize(data, isRawData, null!));
+
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
+    }
+
     [Fact(DisplayName = "IgnoreKeySerializer can serialize data.")]
     [Trait("Category", "Unit")]
     public void IgnoreKeySerializerCanSerializeData()

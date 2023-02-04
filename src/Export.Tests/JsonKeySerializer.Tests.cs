@@ -59,6 +59,47 @@ public class JsonKeySerializerTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
+    [Theory(DisplayName = "JsonKeySerializer can't serialize null data to the stream.")]
+    [Trait("Category", "Unit")]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void JsonKeySerializerCantSerializeNullDataToStream(bool isRawData)
+    {
+        // Arrange
+        var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
+        var serializer = new JsonKeySerializer(logger);
+        var data = (IEnumerable<KeyValuePair<string, KafkaMessage<string>>>)null!;
+        var stream = new Mock<Stream>().Object;
+
+        // Act
+        var exception = Record.Exception(() => serializer.Serialize(data, isRawData, stream));
+
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
+    }
+
+    [Theory(DisplayName = "JsonKeySerializer can't serialize data to the null stream.")]
+    [Trait("Category", "Unit")]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void JsonKeySerializerCantSerializeDataToNullStream(bool isRawData)
+    {
+        // Arrange
+        var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
+        var serializer = new JsonKeySerializer(logger);
+        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var data = new[]
+                {
+            new KeyValuePair<string, KafkaMessage<string>>("{\"A\": 42}",new KafkaMessage<string>("{\"Test\":42}",new KafkaMetadata(dateTime,1,2)))
+        };
+
+        // Act
+        var exception = Record.Exception(() => serializer.Serialize(data, isRawData, null!));
+
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
+    }
+
     [Fact(DisplayName = "JsonKeySerializer can serialize data.")]
     [Trait("Category", "Unit")]
     public void JsonKeySerializerCanSerializeData()

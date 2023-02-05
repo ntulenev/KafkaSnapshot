@@ -69,7 +69,7 @@ public class JsonKeySerializerTests
         var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
         var serializer = new JsonKeySerializer(logger);
         var data = (IEnumerable<KeyValuePair<string, KafkaMessage<string>>>)null!;
-        var stream = new Mock<Stream>().Object;
+        var stream = new Mock<Stream>(MockBehavior.Strict).Object;
 
         // Act
         var exception = Record.Exception(() => serializer.Serialize(data, isRawData, stream));

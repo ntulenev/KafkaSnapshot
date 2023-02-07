@@ -9,6 +9,8 @@ using Microsoft.Extensions.Logging;
 using KafkaSnapshot.Export.Serialization;
 using KafkaSnapshot.Models.Message;
 
+using System.Text;
+
 namespace KafkaSnapshot.Export.Tests;
 
 public class JsonKeySerializerTests
@@ -123,6 +125,29 @@ public class JsonKeySerializerTests
         result.Should().Be("[\r\n  {\r\n    \"Key\": {\r\n      \"A\": 42\r\n    },\r\n    \"Value\": {\r\n      \"Test\": 42\r\n    },\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
     }
 
+    [Fact(DisplayName = "JsonKeySerializer can serialize data to the stream.")]
+    [Trait("Category", "Unit")]
+    public void JsonKeySerializerCanSerializeDataToStream()
+    {
+        // Arrange
+        var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
+        var serializer = new JsonKeySerializer(logger);
+        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var isRaw = false;
+        var data = new[]
+        {
+            new KeyValuePair<string, KafkaMessage<string>>("{\"A\": 42}",new KafkaMessage<string>("{\"Test\":42}",new KafkaMetadata(dateTime,1,2)))
+        };
+        using var stream = new MemoryStream();
+
+        // Act
+        var exception = Record.Exception(() => serializer.Serialize(data, isRaw, stream));
+
+        // Assert
+        var jsonString = Encoding.Default.GetString((stream.ToArray()));
+        jsonString.Should().Be("[\r\n  {\r\n    \"Key\": {\r\n      \"A\": 42\r\n    },\r\n    \"Value\": {\r\n      \"Test\": 42\r\n    },\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
+    }
+
     [Fact(DisplayName = "JsonKeySerializer cant serialize non json data.")]
     [Trait("Category", "Unit")]
     public void JsonKeySerializerCantSerializeNonJsonData()
@@ -140,6 +165,28 @@ public class JsonKeySerializerTests
 
         // Act
         var exception = Record.Exception(() => result = serializer.Serialize(data, isRaw));
+
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<Newtonsoft.Json.JsonReaderException>();
+    }
+
+    [Fact(DisplayName = "JsonKeySerializer cant serialize non json data to the stream.")]
+    [Trait("Category", "Unit")]
+    public void JsonKeySerializerCantSerializeNonJsonDataToStream()
+    {
+        // Arrange
+        var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
+        var serializer = new JsonKeySerializer(logger);
+        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var isRaw = false;
+        var data = new[]
+        {
+            new KeyValuePair<string, KafkaMessage<string>>("{\"A\": 42}",new KafkaMessage<string>("Test",new KafkaMetadata(dateTime,1,2)))
+        };
+        var stream = new MemoryStream();
+
+        // Act
+        var exception = Record.Exception(() => serializer.Serialize(data, isRaw, stream));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<Newtonsoft.Json.JsonReaderException>();
@@ -167,6 +214,28 @@ public class JsonKeySerializerTests
         exception.Should().NotBeNull().And.BeOfType<Newtonsoft.Json.JsonReaderException>();
     }
 
+    [Fact(DisplayName = "JsonKeySerializer cant serialize non json key to the stream.")]
+    [Trait("Category", "Unit")]
+    public void JsonKeySerializerCantSerializeNonJsonKeyToStream()
+    {
+        // Arrange
+        var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
+        var serializer = new JsonKeySerializer(logger);
+        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var isRaw = false;
+        var data = new[]
+        {
+            new KeyValuePair<string, KafkaMessage<string>>("Test",new KafkaMessage<string>("{\"Test\":42}",new KafkaMetadata(dateTime,1,2)))
+        };
+        var stream = new MemoryStream();
+
+        // Act
+        var exception = Record.Exception(() => serializer.Serialize(data, isRaw, stream));
+
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<Newtonsoft.Json.JsonReaderException>();
+    }
+
     [Fact(DisplayName = "JsonKeySerializer can serialize raw data.")]
     [Trait("Category", "Unit")]
     public void JsonKeySerializerCanSerializeRawData()
@@ -188,5 +257,28 @@ public class JsonKeySerializerTests
         // Assert
         exception.Should().BeNull();
         result.Should().Be("[\r\n  {\r\n    \"Key\": {\r\n      \"A\": 42\r\n    },\r\n    \"Value\": \"Test\",\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
+    }
+
+    [Fact(DisplayName = "JsonKeySerializer can serialize raw data to the stream.")]
+    [Trait("Category", "Unit")]
+    public void JsonKeySerializerCanSerializeRawDataToStream()
+    {
+        // Arrange
+        var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
+        var serializer = new JsonKeySerializer(logger);
+        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var isRaw = true;
+        var data = new[]
+        {
+            new KeyValuePair<string, KafkaMessage<string>>("{\"A\": 42}",new KafkaMessage<string>("Test",new KafkaMetadata(dateTime,1,2)))
+        };
+        var stream = new MemoryStream();
+
+        // Act
+        serializer.Serialize(data, isRaw, stream);
+
+        // Assert
+        var jsonString = Encoding.Default.GetString((stream.ToArray()));
+        jsonString.Should().Be("[\r\n  {\r\n    \"Key\": {\r\n      \"A\": 42\r\n    },\r\n    \"Value\": \"Test\",\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
     }
 }

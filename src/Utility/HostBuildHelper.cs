@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace KafkaSnapshot.Utility;
 
@@ -24,6 +25,7 @@ public static class HostBuildHelper
                    services.AddExport(hostContext);
                    services.AddTopicLoaders(hostContext);
                    services.AddLogging(hostContext);
+                   services.AddHostedService<LoaderService>();
                });
 
         return builder.Build();

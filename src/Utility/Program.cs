@@ -1,10 +1,6 @@
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
-using KafkaSnapshot.Abstractions.Processing;
 using KafkaSnapshot.Utility;
 
-using var stopper = new CancellationTokenSource();
-using var serviceScope = HostBuildHelper.CreateHost().Services.CreateScope();
-var services = serviceScope.ServiceProvider;
-var tool = services.GetRequiredService<ILoaderTool>();
-await tool.ProcessAsync(stopper.Token).ConfigureAwait(false);
+var host = HostBuildHelper.CreateHost();
+await host.RunAsync();

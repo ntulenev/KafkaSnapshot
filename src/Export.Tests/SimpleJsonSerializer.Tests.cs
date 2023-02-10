@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 
 using KafkaSnapshot.Export.Serialization;
 using KafkaSnapshot.Models.Message;
+
 using System.Text;
 
 namespace KafkaSnapshot.Export.Tests;

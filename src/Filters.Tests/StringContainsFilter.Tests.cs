@@ -88,13 +88,11 @@ public class StringContainsFilterTests
         string value = " some data ";
         var filter = new StringContainsFilter(value);
         string comparand = "this string has some data inside";
-        bool result = false;
 
         // Act
-        var exception = Record.Exception(() => result = filter.IsMatch(comparand));
+        var result = filter.IsMatch(comparand);
 
         // Assert
-        exception.Should().BeNull();
         result.Should().BeTrue();
     }
 
@@ -107,13 +105,11 @@ public class StringContainsFilterTests
         string value = " some data ";
         var filter = new StringContainsFilter(value);
         string comparand = "this string has nothing inside";
-        bool result = false;
 
         // Act
-        var exception = Record.Exception(() => result = filter.IsMatch(comparand));
+        var result = filter.IsMatch(comparand);
 
         // Assert
-        exception.Should().BeNull();
         result.Should().BeFalse();
     }
 }

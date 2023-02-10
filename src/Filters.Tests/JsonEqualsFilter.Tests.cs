@@ -94,13 +94,11 @@ public class JsonEqualsFilterTests
         string value = "{\"value\": 1 }";
         var filter = new JsonEqualsFilter(value);
         string comparand = "{\"value\": 1 }";
-        bool result = false;
 
         // Act
-        var exception = Record.Exception(() => result = filter.IsMatch(comparand));
+        var result = filter.IsMatch(comparand);
 
         // Assert
-        exception.Should().BeNull();
         result.Should().BeTrue();
     }
 
@@ -114,13 +112,11 @@ public class JsonEqualsFilterTests
         string value = "{\"value\": 1 }";
         var filter = new JsonEqualsFilter(value);
         string comparand = "{\"value\": 2 }";
-        bool result = true;
 
         // Act
-        var exception = Record.Exception(() => result = filter.IsMatch(comparand));
+        var result = filter.IsMatch(comparand);
 
         // Assert
-        exception.Should().BeNull();
         result.Should().BeFalse();
     }
 

@@ -15,13 +15,11 @@ public class NaiveKeyFiltersFactoryTests
     {
         // Arrange
         var factory = new NaiveKeyFiltersFactory<object>();
-        IDataFilter<object> result = null!;
 
         // Act
-        var exception = Record.Exception(() => result = factory.Create(FilterType.None, new(), new()));
+        var result = factory.Create(FilterType.None, new(), new());
 
         // Assert
-        exception.Should().BeNull();
         result.Should().BeOfType(typeof(DefaultFilter<object>));
     }
 
@@ -33,13 +31,11 @@ public class NaiveKeyFiltersFactoryTests
     {
         // Arrange
         var factory = new NaiveKeyFiltersFactory<object>();
-        IDataFilter<object> result = null!;
 
         // Act
-        var exception = Record.Exception(() => result = factory.Create(FilterType.Equals, keyType, new()));
+        var result = factory.Create(FilterType.Equals, keyType, new());
 
         // Assert
-        exception.Should().BeNull();
         result.Should().BeOfType(typeof(EqualsFilter<object>));
     }
 
@@ -49,14 +45,12 @@ public class NaiveKeyFiltersFactoryTests
     {
         // Arrange
         var factory = new NaiveKeyFiltersFactory<string>();
-        IDataFilter<string> result = null!;
         string value = "{\"value\": 1 }";
 
         // Act
-        var exception = Record.Exception(() => result = factory.Create(FilterType.Equals, KeyType.Json, value));
+        var result = factory.Create(FilterType.Equals, KeyType.Json, value);
 
         // Assert
-        exception.Should().BeNull();
         result.Should().BeOfType(typeof(JsonEqualsFilter));
     }
 
@@ -82,14 +76,12 @@ public class NaiveKeyFiltersFactoryTests
     {
         // Arrange
         var factory = new NaiveKeyFiltersFactory<string>();
-        IDataFilter<string> result = null!;
         string value = "data";
 
         // Act
-        var exception = Record.Exception(() => result = factory.Create(FilterType.Contains, KeyType.String, value));
+        var result = factory.Create(FilterType.Contains, KeyType.String, value);
 
         // Assert
-        exception.Should().BeNull();
         result.Should().BeOfType(typeof(StringContainsFilter));
     }
 

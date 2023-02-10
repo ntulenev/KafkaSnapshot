@@ -60,13 +60,11 @@ public class EqualsFilterTests
         TestedType value = new(1);
         var filter = new EqualsFilter<TestedType>(value);
         var comparand = new TestedType(1);
-        bool result = false;
 
         // Act
-        var exception = Record.Exception(() => result = filter.IsMatch(comparand));
+        var result = filter.IsMatch(comparand);
 
         // Assert
-        exception.Should().BeNull();
         result.Should().BeTrue();
     }
 
@@ -79,13 +77,11 @@ public class EqualsFilterTests
         TestedType value = new(1);
         var filter = new EqualsFilter<TestedType>(value);
         var comparand = new TestedType(2);
-        bool result = true;
 
         // Act
-        var exception = Record.Exception(() => result = filter.IsMatch(comparand));
+        var result = filter.IsMatch(comparand);
 
         // Assert
-        exception.Should().BeNull();
         result.Should().BeFalse();
     }
 }

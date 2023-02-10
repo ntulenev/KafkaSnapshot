@@ -15,13 +15,11 @@ public class NaiveValueFiltersFactoryTests
     {
         // Arrange
         var factory = new NaiveValueFiltersFactory<object>();
-        IDataFilter<object> result = null!;
 
         // Act
-        var exception = Record.Exception(() => result = factory.Create(FilterType.None, new(), new()));
+        var result = factory.Create(FilterType.None, new(), new());
 
         // Assert
-        exception.Should().BeNull();
         result.Should().BeOfType(typeof(DefaultFilter<object>));
     }
 
@@ -32,13 +30,11 @@ public class NaiveValueFiltersFactoryTests
     {
         // Arrange
         var factory = new NaiveValueFiltersFactory<object>();
-        IDataFilter<object> result = null!;
 
         // Act
-        var exception = Record.Exception(() => result = factory.Create(FilterType.Equals, messageType, new()));
+        var result = factory.Create(FilterType.Equals, messageType, new());
 
         // Assert
-        exception.Should().BeNull();
         result.Should().BeOfType(typeof(EqualsFilter<object>));
     }
 
@@ -48,14 +44,12 @@ public class NaiveValueFiltersFactoryTests
     {
         // Arrange
         var factory = new NaiveValueFiltersFactory<string>();
-        IDataFilter<string> result = null!;
         string value = "{\"value\": 1 }";
 
         // Act
-        var exception = Record.Exception(() => result = factory.Create(FilterType.Equals, ValueMessageType.Json, value));
+        var result = factory.Create(FilterType.Equals, ValueMessageType.Json, value);
 
         // Assert
-        exception.Should().BeNull();
         result.Should().BeOfType(typeof(JsonEqualsFilter));
     }
 

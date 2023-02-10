@@ -79,6 +79,26 @@ public class JsonFileDataExporterTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
+    [Fact(DisplayName = "JsonFileDataExporter can't be created without fileStreamProvider.")]
+    [Trait("Category", "Unit")]
+    public void JsonFileDataExporterCantBeCreatedWithoutStreamProvider()
+    {
+        // Arrange
+        var config = new Mock<IOptions<JsonFileDataExporterConfiguration>>(MockBehavior.Strict);
+        config.Setup(x => x.Value).Returns(new JsonFileDataExporterConfiguration());
+        var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>>>();
+        var fileSaver = new Mock<IFileSaver>(MockBehavior.Strict);
+        var serializer = new Mock<ISerializer<object, object, OriginalKeyMarker>>(MockBehavior.Strict);
+        var fileStreamProvider = (IFileStreamProvider)null!;
+
+        // Act
+        var exception = Record.Exception(() =>
+        _ = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(config.Object, logger.Object, fileSaver.Object, fileStreamProvider, serializer.Object));
+
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
+    }
+
     [Fact(DisplayName = "JsonFileDataExporter could be creates with valid params.")]
     [Trait("Category", "Unit")]
     public void JsonFileDataExporterCanBeCreated()
@@ -100,13 +120,15 @@ public class JsonFileDataExporterTests
         exception.Should().BeNull();
     }
 
-    [Fact(DisplayName = "JsonFileDataExporter can't export null data.")]
+    [Theory(DisplayName = "JsonFileDataExporter can't export null data.")]
     [Trait("Category", "Unit")]
-    public async Task JsonFileDataExporterCanExportNullDataAsync()
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task JsonFileDataExporterCanExportNullDataAsync(bool isStreaming)
     {
         // Arrange
         var config = new Mock<IOptions<JsonFileDataExporterConfiguration>>(MockBehavior.Strict);
-        config.Setup(x => x.Value).Returns(new JsonFileDataExporterConfiguration());
+        config.Setup(x => x.Value).Returns(new JsonFileDataExporterConfiguration() { UseFileStreaming = isStreaming });
         var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>>>();
         var fileSaver = new Mock<IFileSaver>(MockBehavior.Strict);
         var serializer = new Mock<ISerializer<object, object, OriginalKeyMarker>>(MockBehavior.Strict);
@@ -124,13 +146,15 @@ public class JsonFileDataExporterTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
-    [Fact(DisplayName = "JsonFileDataExporter can't export for null topic.")]
+    [Theory(DisplayName = "JsonFileDataExporter can't export for null topic.")]
     [Trait("Category", "Unit")]
-    public async Task JsonFileDataExporterCanExportNullTopic()
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task JsonFileDataExporterCanExportNullTopic(bool isStreaming)
     {
         // Arrange
         var config = new Mock<IOptions<JsonFileDataExporterConfiguration>>(MockBehavior.Strict);
-        config.Setup(x => x.Value).Returns(new JsonFileDataExporterConfiguration());
+        config.Setup(x => x.Value).Returns(new JsonFileDataExporterConfiguration() { UseFileStreaming = isStreaming });
         var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>>>();
         var fileSaver = new Mock<IFileSaver>(MockBehavior.Strict);
         var serializer = new Mock<ISerializer<object, object, OriginalKeyMarker>>(MockBehavior.Strict);
@@ -149,15 +173,15 @@ public class JsonFileDataExporterTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
-    [Theory(DisplayName = "JsonFileDataExporter can export data for any mode.")]
+    [Theory(DisplayName = "JsonFileDataExporter can export data with non stream mode.")]
     [Trait("Category", "Unit")]
     [InlineData(true)]
     [InlineData(false)]
-    public async Task JsonFileDataExporterCanExportData(bool isRawMessage)
+    public async Task JsonFileDataExporterCanExportDataNonStream(bool isRawMessage)
     {
         // Arrange
         var config = new Mock<IOptions<JsonFileDataExporterConfiguration>>(MockBehavior.Strict);
-        config.Setup(x => x.Value).Returns(new JsonFileDataExporterConfiguration());
+        config.Setup(x => x.Value).Returns(new JsonFileDataExporterConfiguration() { UseFileStreaming = false });
         var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>>>();
         var fileSaver = new Mock<IFileSaver>(MockBehavior.Strict);
 

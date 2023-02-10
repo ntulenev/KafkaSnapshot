@@ -209,4 +209,39 @@ public class JsonFileDataExporterTests
         // Assert
         fileSaverRunCount.Should().Be(1);
     }
+
+    [Theory(DisplayName = "JsonFileDataExporter can export data with stream mode.")]
+    [Trait("Category", "Unit")]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task JsonFileDataExporterCanExportDataWithStream(bool isRawMessage)
+    {
+        // Arrange
+        var config = new Mock<IOptions<JsonFileDataExporterConfiguration>>(MockBehavior.Strict);
+        config.Setup(x => x.Value).Returns(new JsonFileDataExporterConfiguration() { UseFileStreaming = true });
+        var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>>>();
+        var fileSaver = new Mock<IFileSaver>(MockBehavior.Strict);
+
+        var serializer = new Mock<ISerializer<object, object, OriginalKeyMarker>>(MockBehavior.Strict);
+        var fileStreamProvider = new Mock<IFileStreamProvider>(MockBehavior.Strict);
+        var exporter = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>
+            (config.Object, logger.Object, fileSaver.Object, fileStreamProvider.Object, serializer.Object);
+        var topic = new ExportedTopic("name", "filename", isRawMessage);
+        var data = new KeyValuePair<object, KafkaMessage<object>>[]
+        {
+            new KeyValuePair<object, KafkaMessage<object>>("test",new KafkaMessage<object>("value", new KafkaMetadata(DateTime.UtcNow,1,2)))
+        };
+        var testStream = new Mock<Stream>().Object;
+        fileStreamProvider.Setup(x => x.CreateFileStream(topic.ExportName)).Returns(() => testStream);
+        var fileSaverRunCount = 0;
+        serializer.Setup(x => x.Serialize(data, isRawMessage, testStream)).Callback(() => fileSaverRunCount++);
+        using var tcs = new CancellationTokenSource();
+        var token = tcs.Token;
+
+        // Act
+        await exporter.ExportAsync(data, topic, token).ConfigureAwait(false);
+
+        // Assert
+        fileSaverRunCount.Should().Be(1);
+    }
 }

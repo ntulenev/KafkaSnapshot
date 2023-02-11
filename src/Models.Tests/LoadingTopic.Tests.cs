@@ -4,7 +4,6 @@ using FluentAssertions;
 
 using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Filters;
-using KafkaSnapshot.Models.Sorting;
 
 namespace KafkaSnapshot.Models.Tests;
 

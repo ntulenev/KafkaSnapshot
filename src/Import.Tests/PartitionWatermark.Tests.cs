@@ -9,7 +9,6 @@ using Xunit;
 using KafkaSnapshot.Import.Watermarks;
 using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Filters;
-using KafkaSnapshot.Models.Sorting;
 
 namespace KafkaAsTable.Tests;
 
@@ -61,14 +60,10 @@ public class PartitionWatermarkTests
         var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
         var partition = new Partition(1);
 
-        PartitionWatermark result = null!;
-
         // Act
-        var exception = Record.Exception(() => result = new PartitionWatermark(topicName, offsets, partition));
+        var result = new PartitionWatermark(topicName, offsets, partition);
 
         // Assert
-        exception.Should().BeNull();
-
         result.Partition.Should().Be(partition);
         result.Offset.Should().Be(offsets);
         result.TopicName.Should().Be(topicName);
@@ -86,16 +81,12 @@ public class PartitionWatermarkTests
         var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!),partitionFilter);
         var offsets = new WatermarkOffsets(new Offset(startOffset), new Offset(endOffset));
         var partition = new Partition(1);
-
         var pw = new PartitionWatermark(topicName, offsets, partition);
-        var result = false;
 
         // Act
-        var exception = Record.Exception(() => result = pw.IsReadyToRead());
+        var result = pw.IsReadyToRead();
 
         // Assert
-        exception.Should().BeNull();
-
         result.Should().Be(condition);
     }
 
@@ -109,9 +100,7 @@ public class PartitionWatermarkTests
         var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!),partitionFilter);
         var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
         var partition = new Partition(1);
-
         ConsumeResult<object, object> result = null!;
-
         var pw = new PartitionWatermark(topicName, offsets, partition);
 
         // Act
@@ -131,20 +120,16 @@ public class PartitionWatermarkTests
         var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!),partitionFilter);
         var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
         var partition = new Partition(1);
-
         var result = new ConsumeResult<object, object>()
         {
             Offset = offsets.High
         };
-
         var pw = new PartitionWatermark(topicName, offsets, partition);
-        var status = false;
 
         // Act
-        var exception = Record.Exception(() => status = pw.IsWatermarkAchievedBy(result));
+        var status = pw.IsWatermarkAchievedBy(result);
 
         // Assert
-        exception.Should().BeNull();
         status.Should().BeTrue();
     }
 
@@ -158,20 +143,16 @@ public class PartitionWatermarkTests
         var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!),partitionFilter);
         var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
         var partition = new Partition(1);
-
         var result = new ConsumeResult<object, object>()
         {
             Offset = offsets.Low
         };
-
         var pw = new PartitionWatermark(topicName, offsets, partition);
-        var status = false;
 
         // Act
-        var exception = Record.Exception(() => status = pw.IsWatermarkAchievedBy(result));
+        var status = pw.IsWatermarkAchievedBy(result);
 
         // Assert
-        exception.Should().BeNull();
         status.Should().BeFalse();
     }
 
@@ -206,15 +187,13 @@ public class PartitionWatermarkTests
         var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
         var partition = new Partition(1);
         var pw = new PartitionWatermark(topicName, offsets, partition);
-
         var consumerMock = new Mock<IConsumer<object, object>>();
         var consumer = consumerMock.Object;
 
         // Act
-        var exception = Record.Exception(() => pw.AssingWithConsumer(consumer));
+        pw.AssingWithConsumer(consumer);
 
         // Assert
-        exception.Should().BeNull();
         consumerMock.Verify(x => x.Assign(It.Is<TopicPartition>(a => a.Topic == topicName.Value && a.Partition == partition)), Times.Once);
     }
 
@@ -239,12 +218,11 @@ public class PartitionWatermarkTests
            topicWithOffset
         });
         var consumer = consumerMock.Object;
-        var result = false;
+
         // Act
-        var exception = Record.Exception(() => result = pw.AssingWithConsumer(consumer, date, timeout));
+        var result = pw.AssingWithConsumer(consumer, date, timeout);
 
         // Assert
-        exception.Should().BeNull();
         result.Should().BeTrue();
         consumerMock.Verify(x => x.Assign(It.Is<TopicPartitionOffset>(a => a.Topic == topicName.Value && a.Partition == topicWithOffset.Partition)), Times.Once);
     }
@@ -269,12 +247,11 @@ public class PartitionWatermarkTests
            topicWithOffset
         });
         var consumer = consumerMock.Object;
-        var result = true;
+
         // Act
-        var exception = Record.Exception(() => result = pw.AssingWithConsumer(consumer, date, timeout));
+        var result = pw.AssingWithConsumer(consumer, date, timeout);
 
         // Assert
-        exception.Should().BeNull();
         result.Should().BeFalse();
         consumerMock.Verify(x => x.Assign(It.Is<TopicPartitionOffset>(a => a.Topic == topicName.Value && a.Partition == topicWithOffset.Partition)), Times.Never);
     }

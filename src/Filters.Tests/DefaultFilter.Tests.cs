@@ -14,13 +14,11 @@ public class DefaultFilterTests
         // Arrange
         object value = null!;
         var filter = new DefaultFilter<object>();
-        var result = false;
 
         // Act
-        var exception = Record.Exception(() => result = filter.IsMatch(value));
+        var result = filter.IsMatch(value);
 
         // Assert
-        exception.Should().BeNull();
         result.Should().BeTrue();
     }
 }

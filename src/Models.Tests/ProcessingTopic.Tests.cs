@@ -63,7 +63,7 @@ public class ProcessingTopicTests
         result.PartitionIdsFilter.Should().BeEquivalentTo(partitions);
     }
 
-    [Fact(DisplayName = "Can Create LoadingTipic from ProcessingTopic.")]
+    [Fact(DisplayName = "Can Create LoadingTopic from ProcessingTopic.")]
     [Trait("Category", "Unit")]
     public void CanCreateLoadingTopicFromProcessingTopic()
     {
@@ -86,7 +86,7 @@ public class ProcessingTopicTests
         exception.Should().BeNull();
     }
 
-    [Fact(DisplayName = "Can Create LoadingTipic from ProcessingTopic with correct params.")]
+    [Fact(DisplayName = "Can Create LoadingTopic from ProcessingTopic with correct params.")]
     [Trait("Category", "Unit")]
     public void CanCreateLoadingTopicFromProcessingTopicWithCorrectParams()
     {
@@ -114,7 +114,7 @@ public class ProcessingTopicTests
         result.PartitionFilter.Should().BeEquivalentTo(partitions);
     }
 
-    [Fact(DisplayName = "Can Create LoadingTipic from ProcessingTopic with correct params with dates.")]
+    [Fact(DisplayName = "Can Create LoadingTopic from ProcessingTopic with correct params with dates.")]
     [Trait("Category", "Unit")]
     public void CanCreateLoadingTopicFromProcessingTopicWithCorrectParamsWithDates()
     {
@@ -144,5 +144,53 @@ public class ProcessingTopicTests
         result.HasEndOffsetDate.Should().BeTrue();
         result.HasPartitionFilter.Should().BeTrue();
         result.PartitionFilter.Should().BeEquivalentTo(partitions);
+    }
+
+    [Fact(DisplayName = "Can Create ExportTopic from ProcessingTopic.")]
+    [Trait("Category", "Unit")]
+    public void CanCreateExportTopicFromProcessingTopic()
+    {
+        // Arrange
+        var name = "Test1";
+        var exName = "Test2";
+        var loadCompact = true;
+        var filterType = Filters.FilterType.Equals;
+        var keyType = Filters.KeyType.Long;
+        var dateRange = new Filters.DateFilterRange(null!, null!);
+        var filterKeyValue = 1;
+        var isRaw = true;
+        var partitions = new HashSet<int> { 1, 2, 3 };
+        var processingTopic = new ProcessingTopic<int>(name, exName, loadCompact, filterType, keyType, filterKeyValue, dateRange, isRaw, partitions);
+
+        // Act
+        var exception = Record.Exception(() => _ = processingTopic.CreateExportParams());
+
+        // Assert
+        exception.Should().BeNull();
+    }
+
+    [Fact(DisplayName = "Can Create ExportTopic from ProcessingTopic with correct params.")]
+    [Trait("Category", "Unit")]
+    public void CanCreateExportTopicFromProcessingTopicWithCorrectParams()
+    {
+        // Arrange
+        var name = "Test1";
+        var exName = "Test2";
+        var loadCompact = true;
+        var filterType = Filters.FilterType.Equals;
+        var keyType = Filters.KeyType.Long;
+        var dateRange = new Filters.DateFilterRange(null!, null!);
+        var filterKeyValue = 1;
+        var isRaw = true;
+        var partitions = new HashSet<int> { 1, 2, 3 };
+        var processingTopic = new ProcessingTopic<int>(name, exName, loadCompact, filterType, keyType, filterKeyValue, dateRange, isRaw, partitions);
+
+        // Act
+        var result = processingTopic.CreateExportParams();
+
+        // Assert
+        result.Name.Should().Be(name);
+        result.ExportName.Should().Be(exName);
+        result.ExportRawMessage.Should().Be(isRaw);
     }
 }

@@ -2,8 +2,6 @@
 
 using FluentAssertions;
 
-using Microsoft.Extensions.Options;
-
 using KafkaSnapshot.Import.Configuration.Validation;
 using KafkaSnapshot.Import.Configuration;
 
@@ -15,9 +13,6 @@ public class BootstrapServersConfigurationValidatorTests
     [Trait("Category", "Unit")]
     public void BootstrapServersConfigurationValidatorCanBeCreated()
     {
-
-        // Arrange
-
         // Act
         var exception = Record.Exception(() => new BootstrapServersConfigurationValidator());
 
@@ -29,11 +24,9 @@ public class BootstrapServersConfigurationValidatorTests
     [Trait("Category", "Unit")]
     public void BootstrapServersConfigurationValidatorCanBeValidated()
     {
-
         // Arrange
         var validator = new BootstrapServersConfigurationValidator();
         var name = "Test";
-        ValidateOptionsResult result = null!;
         var options = new BootstrapServersConfiguration
         {
             BootstrapServers = new List<string>
@@ -47,10 +40,9 @@ public class BootstrapServersConfigurationValidatorTests
         };
 
         // Act
-        var exception = Record.Exception(() => result = validator.Validate(name, options));
+        var result = validator.Validate(name, options);
 
         // Assert
-        exception.Should().BeNull();
         result.Succeeded.Should().BeTrue();
     }
 
@@ -58,11 +50,9 @@ public class BootstrapServersConfigurationValidatorTests
     [Trait("Category", "Unit")]
     public void BootstrapServersConfigurationValidatorCantBeValidatedWhitespace()
     {
-
         // Arrange
         var validator = new BootstrapServersConfigurationValidator();
         var name = "Test";
-        ValidateOptionsResult result = null!;
         var options = new BootstrapServersConfiguration
         {
             BootstrapServers = new List<string>
@@ -76,10 +66,9 @@ public class BootstrapServersConfigurationValidatorTests
         };
 
         // Act
-        var exception = Record.Exception(() => result = validator.Validate(name, options));
+        var result = validator.Validate(name, options);
 
         // Assert
-        exception.Should().BeNull();
         result.Succeeded.Should().BeFalse();
     }
 
@@ -87,11 +76,9 @@ public class BootstrapServersConfigurationValidatorTests
     [Trait("Category", "Unit")]
     public void BootstrapServersConfigurationValidatorCantBeValidatedEmpty()
     {
-
         // Arrange
         var validator = new BootstrapServersConfigurationValidator();
         var name = "Test";
-        ValidateOptionsResult result = null!;
         var options = new BootstrapServersConfiguration
         {
             BootstrapServers = new List<string>
@@ -105,10 +92,9 @@ public class BootstrapServersConfigurationValidatorTests
         };
 
         // Act
-        var exception = Record.Exception(() => result = validator.Validate(name, options));
+        var result = validator.Validate(name, options);
 
         // Assert
-        exception.Should().BeNull();
         result.Succeeded.Should().BeFalse();
     }
 
@@ -116,11 +102,9 @@ public class BootstrapServersConfigurationValidatorTests
     [Trait("Category", "Unit")]
     public void BootstrapServersConfigurationValidatorCantBeValidatedNull()
     {
-
         // Arrange
         var validator = new BootstrapServersConfigurationValidator();
         var name = "Test";
-        ValidateOptionsResult result = null!;
         var options = new BootstrapServersConfiguration
         {
             BootstrapServers = new List<string>
@@ -134,10 +118,9 @@ public class BootstrapServersConfigurationValidatorTests
         };
 
         // Act
-        var exception = Record.Exception(() => result = validator.Validate(name, options));
+        var result = validator.Validate(name, options);
 
         // Assert
-        exception.Should().BeNull();
         result.Succeeded.Should().BeFalse();
     }
 
@@ -145,11 +128,9 @@ public class BootstrapServersConfigurationValidatorTests
     [Trait("Category", "Unit")]
     public void BootstrapServersConfigurationValidatorCantBeValidatedNoItems()
     {
-
         // Arrange
         var validator = new BootstrapServersConfigurationValidator();
         var name = "Test";
-        ValidateOptionsResult result = null!;
         var options = new BootstrapServersConfiguration
         {
             BootstrapServers = new List<string>
@@ -162,10 +143,9 @@ public class BootstrapServersConfigurationValidatorTests
         };
 
         // Act
-        var exception = Record.Exception(() => result = validator.Validate(name, options));
+        var result = validator.Validate(name, options);
 
         // Assert
-        exception.Should().BeNull();
         result.Succeeded.Should().BeFalse();
     }
 
@@ -173,11 +153,9 @@ public class BootstrapServersConfigurationValidatorTests
     [Trait("Category", "Unit")]
     public void BootstrapServersConfigurationValidatorCantBeValidatedNullCollection()
     {
-
         // Arrange
         var validator = new BootstrapServersConfigurationValidator();
         var name = "Test";
-        ValidateOptionsResult result = null!;
         var options = new BootstrapServersConfiguration
         {
             BootstrapServers = null!,
@@ -188,10 +166,9 @@ public class BootstrapServersConfigurationValidatorTests
         };
 
         // Act
-        var exception = Record.Exception(() => result = validator.Validate(name, options));
+        var result = validator.Validate(name, options);
 
         // Assert
-        exception.Should().BeNull();
         result.Succeeded.Should().BeFalse();
     }
 }

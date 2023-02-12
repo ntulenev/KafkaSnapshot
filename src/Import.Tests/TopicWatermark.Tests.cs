@@ -34,11 +34,9 @@ public class TopicWatermarkTests
         var partitionWatermarks = (new Mock<IEnumerable<PartitionWatermark>>()).Object;
 
         // Act
-        TopicWatermark result = null!;
-        var exception = Record.Exception(() => result = new TopicWatermark(partitionWatermarks));
+        var result = new TopicWatermark(partitionWatermarks);
 
         // Assert
-        exception.Should().BeNull();
         result.Watermarks.Should().BeEquivalentTo(partitionWatermarks);
     }
 }

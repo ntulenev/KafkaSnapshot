@@ -16,7 +16,6 @@ using KafkaSnapshot.Models.Message;
 using KafkaSnapshot.Import.Watermarks;
 using KafkaSnapshot.Import.Configuration;
 using KafkaSnapshot.Models.Filters;
-using KafkaSnapshot.Models.Sorting;
 using KafkaSnapshot.Abstractions.Sorting;
 
 namespace KafkaSnapshot.Import.Tests;
@@ -30,17 +29,18 @@ public class SnapshotLoaderTests
 
         // Arrange
         var logger = (ILogger<SnapshotLoader<object, object>>)null!;
-        IConsumer<object, object> consumerFactory() => null!;
-        var topicLoaderMock = new Mock<ITopicWatermarkLoader>();
+        IConsumer<object, object> consumerFactory() => throw new NotImplementedException();
+        var topicLoaderMock = new Mock<ITopicWatermarkLoader>(MockBehavior.Strict);
         var topicLoader = topicLoaderMock.Object;
-        var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>();
+        var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>(MockBehavior.Strict);
         optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
         var options = optionsMock.Object;
-        var sorterMock = new Mock<IMessageSorter<object, object>>();
+        var sorterMock = new Mock<IMessageSorter<object, object>>(MockBehavior.Strict);
         var sorter = sorterMock.Object;
 
         // Act
-        var exception = Record.Exception(() => new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter));
+        var exception = Record.Exception(
+            () => new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -54,16 +54,42 @@ public class SnapshotLoaderTests
         // Arrange
         var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
         var logger = loggerMock.Object;
-        var topicLoaderMock = new Mock<ITopicWatermarkLoader>();
+        var topicLoaderMock = new Mock<ITopicWatermarkLoader>(MockBehavior.Strict);
         var topicLoader = topicLoaderMock.Object;
-        var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>();
+        var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>(MockBehavior.Strict);
         optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
         var options = optionsMock.Object;
-        var sorterMock = new Mock<IMessageSorter<object, object>>();
+        var sorterMock = new Mock<IMessageSorter<object, object>>(MockBehavior.Strict);
         var sorter = sorterMock.Object;
 
         // Act
-        var exception = Record.Exception(() => new SnapshotLoader<object, object>(logger, options, null!, topicLoader, sorter));
+        var exception = Record.Exception(
+            () => new SnapshotLoader<object, object>(logger, options, null!, topicLoader, sorter));
+
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
+    }
+
+    [Fact(DisplayName = "SnapshotLoader can't be created with null options.")]
+    [Trait("Category", "Unit")]
+    public void CantCreateSnapshotLoaderWithNullOptions()
+    {
+
+        // Arrange
+        var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
+        var logger = loggerMock.Object;
+        IConsumer<object, object> consumerFactory() => throw new NotImplementedException();
+        var topicLoaderMock = new Mock<ITopicWatermarkLoader>(MockBehavior.Strict);
+        var topicLoader = topicLoaderMock.Object;
+        var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>(MockBehavior.Strict);
+        optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
+        var options = optionsMock.Object;
+        var sorterMock = new Mock<IMessageSorter<object, object>>(MockBehavior.Strict);
+        var sorter = sorterMock.Object;
+
+        // Act
+        var exception = Record.Exception(
+            () => new SnapshotLoader<object, object>(logger, null!, consumerFactory, topicLoader, sorter));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -77,16 +103,16 @@ public class SnapshotLoaderTests
         // Arrange
         var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
         var logger = loggerMock.Object;
-        IConsumer<object, object> consumerFactory() => null!;
-        ITopicWatermarkLoader topicLoader = null!;
-        var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>();
+        IConsumer<object, object> consumerFactory() => throw new NotImplementedException();
+        var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>(MockBehavior.Strict);
         optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
         var options = optionsMock.Object;
-        var sorterMock = new Mock<IMessageSorter<object, object>>();
+        var sorterMock = new Mock<IMessageSorter<object, object>>(MockBehavior.Strict);
         var sorter = sorterMock.Object;
 
         // Act
-        var exception = Record.Exception(() => new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter));
+        var exception = Record.Exception(
+            () => new SnapshotLoader<object, object>(logger, options, consumerFactory, null!, sorter));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -98,17 +124,18 @@ public class SnapshotLoaderTests
     {
 
         // Arrange
-        var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
+        var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>(MockBehavior.Strict);
         var logger = loggerMock.Object;
-        IConsumer<object, object> consumerFactory() => null!;
-        var topicLoaderMock = new Mock<ITopicWatermarkLoader>();
+        IConsumer<object, object> consumerFactory() => throw new NotImplementedException();
+        var topicLoaderMock = new Mock<ITopicWatermarkLoader>(MockBehavior.Strict);
         var topicLoader = topicLoaderMock.Object;
-        var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>();
+        var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>(MockBehavior.Strict);
         optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
         var options = optionsMock.Object;
 
         // Act
-        var exception = Record.Exception(() => new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, null!));
+        var exception = Record.Exception(
+            () => new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, null!));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -122,17 +149,18 @@ public class SnapshotLoaderTests
         // Arrange
         var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
         var logger = loggerMock.Object;
-        IConsumer<object, object> consumerFactory() => null!;
-        var topicLoaderMock = new Mock<ITopicWatermarkLoader>();
+        IConsumer<object, object> consumerFactory() => throw new NotImplementedException();
+        var topicLoaderMock = new Mock<ITopicWatermarkLoader>(MockBehavior.Strict);
         var topicLoader = topicLoaderMock.Object;
-        var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>();
+        var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>(MockBehavior.Strict);
         optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
         var options = optionsMock.Object;
-        var sorterMock = new Mock<IMessageSorter<object, object>>();
+        var sorterMock = new Mock<IMessageSorter<object, object>>(MockBehavior.Strict);
         var sorter = sorterMock.Object;
 
         // Act
-        var exception = Record.Exception(() => new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter));
+        var exception = Record.Exception(
+            () => new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter));
 
         // Assert
         exception.Should().BeNull();

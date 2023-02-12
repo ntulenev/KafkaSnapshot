@@ -174,27 +174,24 @@ public class SnapshotLoaderTests
         // Arrange
         var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
         var logger = loggerMock.Object;
-        IConsumer<object, object> consumerFactory() => null!;
-        var topicLoaderMock = new Mock<ITopicWatermarkLoader>();
+        IConsumer<object, object> consumerFactory() => throw new NotImplementedException();
+        var topicLoaderMock = new Mock<ITopicWatermarkLoader>(MockBehavior.Strict);
         var topicLoader = topicLoaderMock.Object;
-        var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>();
+        var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>(MockBehavior.Strict);
         optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
         var options = optionsMock.Object;
-        var sorterMock = new Mock<IMessageSorter<object, object>>();
+        var sorterMock = new Mock<IMessageSorter<object, object>>(MockBehavior.Strict);
         var sorter = sorterMock.Object;
         var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter);
-        var topicName = (LoadingTopic)null!;
-
-        var filterKeyMock = new Mock<IDataFilter<object>>();
+        var filterKeyMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
         var keyFilter = filterKeyMock.Object;
-
-        var filterValueMock = new Mock<IDataFilter<object>>();
+        var filterValueMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
         var valueFilter = filterValueMock.Object;
-
 
         // Act
         var exception = await Record.ExceptionAsync(
-            async () => _ = await loader.LoadCompactSnapshotAsync(topicName, keyFilter, valueFilter, CancellationToken.None).ConfigureAwait(false));
+            async () => _ = await loader.LoadCompactSnapshotAsync(
+                null!, keyFilter, valueFilter, CancellationToken.None).ConfigureAwait(false));
 
 
         // Assert
@@ -209,28 +206,25 @@ public class SnapshotLoaderTests
         // Arrange
         var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
         var logger = loggerMock.Object;
-        IConsumer<object, object> consumerFactory() => null!;
-        var topicLoaderMock = new Mock<ITopicWatermarkLoader>();
+        IConsumer<object, object> consumerFactory() => throw new NotImplementedException();
+        var topicLoaderMock = new Mock<ITopicWatermarkLoader>(MockBehavior.Strict);
         var topicLoader = topicLoaderMock.Object;
-        var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>();
+        var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>(MockBehavior.Strict);
         optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
         var options = optionsMock.Object;
-        var sorterMock = new Mock<IMessageSorter<object, object>>();
+        var sorterMock = new Mock<IMessageSorter<object, object>>(MockBehavior.Strict);
         var sorter = sorterMock.Object;
         var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter);
         var withCompacting = true;
         HashSet<int> partitionFilter = null!;
         var topicParams = new LoadingTopic("test", withCompacting, new DateFilterRange(null!, null!), partitionFilter);
-        var keyFilter = (IDataFilter<object>)null!;
-
-
-        var filterValueMock = new Mock<IDataFilter<object>>();
+        var filterValueMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
         var valueFilter = filterValueMock.Object;
 
         // Act
         var exception = await Record.ExceptionAsync(
-            async () => _ = await loader.LoadCompactSnapshotAsync(topicParams, keyFilter, valueFilter, CancellationToken.None).ConfigureAwait(false));
-
+            async () => _ = await loader.LoadCompactSnapshotAsync(
+                topicParams, null!, valueFilter, CancellationToken.None).ConfigureAwait(false));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -245,28 +239,25 @@ public class SnapshotLoaderTests
         // Arrange
         var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
         var logger = loggerMock.Object;
-        IConsumer<object, object> consumerFactory() => null!;
-        var topicLoaderMock = new Mock<ITopicWatermarkLoader>();
+        IConsumer<object, object> consumerFactory() => throw new NotImplementedException();
+        var topicLoaderMock = new Mock<ITopicWatermarkLoader>(MockBehavior.Strict);
         var topicLoader = topicLoaderMock.Object;
-        var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>();
+        var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>(MockBehavior.Strict);
         optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
         var options = optionsMock.Object;
-        var sorterMock = new Mock<IMessageSorter<object, object>>();
+        var sorterMock = new Mock<IMessageSorter<object, object>>(MockBehavior.Strict);
         var sorter = sorterMock.Object;
         var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter);
         var withCompacting = true;
         HashSet<int> partitionFilter = null!;
         var topicParams = new LoadingTopic("test", withCompacting, new DateFilterRange(null!, null!), partitionFilter);
-
-        var filterKeyMock = new Mock<IDataFilter<object>>();
+        var filterKeyMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
         var keyFilter = filterKeyMock.Object;
-
-        var valueFilter = (IDataFilter<object>)null!;
 
         // Act
         var exception = await Record.ExceptionAsync(
-            async () => _ = await loader.LoadCompactSnapshotAsync(topicParams, keyFilter, valueFilter, CancellationToken.None).ConfigureAwait(false));
-
+            async () => _ = await loader.LoadCompactSnapshotAsync(
+                topicParams, keyFilter, null!, CancellationToken.None).ConfigureAwait(false));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -314,10 +305,11 @@ public class SnapshotLoaderTests
 
         var indexer = 0;
         var exceptedData = consumerData.Select((x, i) =>
-        new KeyValuePair<object, KafkaMessage<object>>(x.Message.Key, new KafkaMessage<object>(x.Message.Value, new Models.Message.KafkaMetadata(x.Message.Timestamp.UtcDateTime, 1, i)))
-
+        new KeyValuePair<object, KafkaMessage<object>>(
+            x.Message.Key, new KafkaMessage<object>(
+                x.Message.Value, new Models.Message.KafkaMetadata(
+                    x.Message.Timestamp.UtcDateTime, 1, i)))
         );
-
 
         var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
         var logger = loggerMock.Object;

@@ -31,7 +31,7 @@ public class TopicWatermarkTests
     {
 
         // Arrange
-        var partitionWatermarks = (new Mock<IEnumerable<PartitionWatermark>>()).Object;
+        var partitionWatermarks = (new Mock<IEnumerable<PartitionWatermark>>(MockBehavior.Strict)).Object;
 
         // Act
         var result = new TopicWatermark(partitionWatermarks);

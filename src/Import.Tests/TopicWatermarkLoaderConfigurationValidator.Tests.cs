@@ -16,8 +16,6 @@ public class TopicWatermarkLoaderConfigurationValidatorTests
     public void TopicWatermarkLoaderConfigurationValidatorCanBeCreated()
     {
 
-        // Arrange
-
         // Act
         var exception = Record.Exception(() => new TopicWatermarkLoaderConfigurationValidator());
 
@@ -37,13 +35,11 @@ public class TopicWatermarkLoaderConfigurationValidatorTests
         {
             AdminClientTimeout = TimeSpan.FromSeconds(1)
         };
-        ValidateOptionsResult result = null!;
 
         // Act
-        var exception = Record.Exception(() => result = validator.Validate(name, config));
+        var result = validator.Validate(name, config);
 
         // Assert
-        exception.Should().BeNull();
         result.Succeeded.Should().BeTrue();
     }
 
@@ -58,13 +54,11 @@ public class TopicWatermarkLoaderConfigurationValidatorTests
         var config = new TopicWatermarkLoaderConfiguration
         {
         };
-        ValidateOptionsResult result = null!;
 
         // Act
-        var exception = Record.Exception(() => result = validator.Validate(name, config));
+        var result = validator.Validate(name, config);
 
         // Assert
-        exception.Should().BeNull();
         result.Succeeded.Should().BeFalse();
     }
 }

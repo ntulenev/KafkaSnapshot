@@ -54,7 +54,6 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
         CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(topicParams);
-
         ArgumentNullException.ThrowIfNull(keyFilter);
         ArgumentNullException.ThrowIfNull(valueFilter);
 

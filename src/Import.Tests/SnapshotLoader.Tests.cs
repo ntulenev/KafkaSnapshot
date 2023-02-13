@@ -411,14 +411,14 @@ public class SnapshotLoaderTests
                                 x.Message.Value, new Models.Message.KafkaMetadata(x.Message.Timestamp.UtcDateTime, 1, i))));
         var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
         var logger = loggerMock.Object;
-        var consumerMock = new Mock<IConsumer<object, object>>();
+        var consumerMock = new Mock<IConsumer<object, object>>(MockBehavior.Strict);
         Func<IConsumer<object, object>> consumerFactory = () => consumerMock.Object;
-        var topicLoaderMock = new Mock<ITopicWatermarkLoader>();
+        var topicLoaderMock = new Mock<ITopicWatermarkLoader>(MockBehavior.Strict);
         var topicLoader = topicLoaderMock.Object;
-        var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>();
+        var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>(MockBehavior.Strict);
         optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
         var options = optionsMock.Object;
-        var sorterMock = new Mock<IMessageSorter<object, object>>();
+        var sorterMock = new Mock<IMessageSorter<object, object>>(MockBehavior.Strict);
         sorterMock.Setup(x => x.Sort(exceptedData)).Returns(exceptedData);
         var sorter = sorterMock.Object;
         var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter);
@@ -426,13 +426,12 @@ public class SnapshotLoaderTests
         var testDate = DateTime.UtcNow;
         HashSet<int> partitionFilter = null!;
         var topicName = new LoadingTopic("test", withCompacting, new DateFilterRange(testDate, null!), partitionFilter);
-        var keyFilterMock = new Mock<IDataFilter<object>>();
+        var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
         keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
         var keyFilter = keyFilterMock.Object;
-        var valueFilterMock = new Mock<IDataFilter<object>>();
+        var valueFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
         valueFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
         var valueFilter = valueFilterMock.Object;
-        IEnumerable<KeyValuePair<object, KafkaMessage<object>>> result = null!;
         var offset = new WatermarkOffsets(new Offset(0), new Offset(3));
         var partition = new Partition(1);
         var topicWatermark = new TopicWatermark(new[]
@@ -449,18 +448,23 @@ public class SnapshotLoaderTests
             }.ToList());
         topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, object>(consumerFactory, topicName, CancellationToken.None))
             .Returns(Task.FromResult(topicWatermark));
+        consumerMock.Setup(x => x.Assign(It.Is<TopicPartitionOffset>(x => x.Topic == topicName.Value && x.Partition == partition)));
         consumerMock.Setup(x => x.Consume(CancellationToken.None)).Returns(() =>
         {
             return consumerData[indexer++];
         });
+        var dispCount = 0;
+        var closeCount = 0;
+        consumerMock.Setup(x => x.Dispose()).Callback(() => dispCount++);
+        consumerMock.Setup(x => x.Close()).Callback(() => closeCount++);
 
         // Act
-        var exception = await Record.ExceptionAsync(
-            async () => result = await loader.LoadCompactSnapshotAsync(topicName, keyFilter, valueFilter, CancellationToken.None).ConfigureAwait(false));
+        var result = await loader.LoadCompactSnapshotAsync(topicName, keyFilter, valueFilter, CancellationToken.None).ConfigureAwait(false);
 
         // Assert
-        exception.Should().BeNull();
         result.Should().BeEquivalentTo(exceptedData);
+        dispCount.Should().Be(1);
+        closeCount.Should().Be(1);
     }
 
     [Theory(DisplayName = "SnapshotLoader skips load data on out of range date.")]

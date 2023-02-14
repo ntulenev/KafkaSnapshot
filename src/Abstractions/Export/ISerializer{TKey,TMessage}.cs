@@ -3,27 +3,27 @@
 namespace KafkaSnapshot.Abstractions.Export;
 
 /// <summary>
-/// Export data serializer.
+/// Interface for serializing data.
 /// </summary>
-/// <typeparam name="TKey">Message key.</typeparam>
-/// <typeparam name="TMessage">Message value.</typeparam>
-/// <typeparam name="TKeyMarker">Key Interpretation.</typeparam>
+/// <typeparam name="TKey">Type of the message key.</typeparam>
+/// <typeparam name="TMessage">Type of the message value.</typeparam>
+/// <typeparam name="TKeyMarker">Type for interpreting the message key.</typeparam>
 public interface ISerializer<TKey, TMessage, TKeyMarker> where TMessage : notnull
                                                          where TKeyMarker : IKeyRepresentationMarker
 {
     /// <summary>
-    /// Serializes data as string.
+    /// Serializes data to a string.
     /// </summary>
-    /// <param name="data">Data for serialization.</param>
-    /// <param name="exportRawMessage">Rule for message serialization.</param>
-    /// <returns>String data representation.</returns>
+    /// <param name="data">Data to be serialized.</param>
+    /// <param name="exportRawMessage">Specifies the message serialization rule.</param>
+    /// <returns>The serialized data as a string.</returns>
     public string Serialize(IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> data, bool exportRawMessage);
 
     /// <summary>
-    /// Serializes to stream.
+    /// Serializes data to a stream.
     /// </summary>
-    /// <param name="data">Data for serialization.</param>
-    /// <param name="exportRawMessage">Rule for message serialization.</param>
-    /// <param name="stream">Stream to store data.</param>
+    /// <param name="data">Data to be serialized.</param>
+    /// <param name="exportRawMessage">Specifies the message serialization rule.</param>
+    /// <param name="stream">The stream to which the data is written.</param>
     public void Serialize(IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> data, bool exportRawMessage, Stream stream);
 }

@@ -1,14 +1,14 @@
 ﻿namespace KafkaSnapshot.Abstractions.Export;
 
 /// <summary>
-/// Utility that provedes file stream for saving data.
+/// Interface for a file stream provider.
 /// </summary>
 public interface IFileStreamProvider
 {
     /// <summary>
-    /// Creates stream for saving data.
+    /// Creates a file stream for a given file name.
     /// </summary>
-    /// <param name="fileName">Name of file.</param>
-    /// <returns>File stream for saving data.</returns>
+    /// <param name="fileName">The name of the file to create a stream for.</param>
+    /// <returns>A stream object representing the created file.</returns>
     public Stream CreateFileStream(string fileName);
 }

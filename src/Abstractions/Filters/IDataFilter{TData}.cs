@@ -1,15 +1,15 @@
 ﻿namespace KafkaSnapshot.Abstractions.Filters;
 
 /// <summary>
-/// Filter for loading data from Kafka.
+/// Interface for filtering data loaded from Kafka.
 /// </summary>
-/// <typeparam name="TKey">Filtering data type type.</typeparam>
+/// <typeparam name="TData">The type of data being filtered.</typeparam>
 public interface IDataFilter<TData> where TData : notnull
 {
     /// <summary>
-    /// Check data on matching some creteria.
+    /// Determines if the provided data matches the filter criteria.
     /// </summary>
-    /// <param name="data">Message data.</param>
-    /// <returns>true is match.</returns>
+    /// <param name="data">The data to check against the filter.</param>
+    /// <returns>true if the data matches the filter criteria, false otherwise.</returns>
     public bool IsMatch(TData data);
 }

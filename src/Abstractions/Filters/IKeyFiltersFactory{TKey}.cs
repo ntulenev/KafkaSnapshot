@@ -3,17 +3,17 @@
 namespace KafkaSnapshot.Abstractions.Filters;
 
 /// <summary>
-/// Creates KeyFilter by condition.
+/// Defines an interface for creating filters on message keys.
 /// </summary>
-/// <typeparam name="TKey">Message key type.</typeparam>
+/// <typeparam name="TKey">The type of the message key.</typeparam>
 public interface IKeyFiltersFactory<TKey> where TKey : notnull
 {
     /// <summary>
-    /// Creates suitable filter for filter type and key type.
+    /// Creates a filter for the given key and filter types.
     /// </summary>
-    /// <param name="filterKeyType">Filter type.</param>
-    /// <param name="keyType">Key type.</param>
-    /// <param name="sample">Key value sample.</param>
-    /// <returns>Filter for this key type and filter type.</returns>
+    /// <param name="filterKeyType">The type of filter to create.</param>
+    /// <param name="keyType">The type of key being filtered.</param>
+    /// <param name="sample">A sample key value to use for creating the filter.</param>
+    /// <returns>A filter instance for the given key and filter types.</returns>
     public IDataFilter<TKey> Create(FilterType filterKeyType, KeyType keyType, TKey sample);
 }

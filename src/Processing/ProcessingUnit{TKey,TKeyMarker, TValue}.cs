@@ -45,8 +45,6 @@ public class ProcessingUnit<TKey, TKeyMarker, TValue> : IProcessingUnit where TK
         ArgumentNullException.ThrowIfNull(valueFilterFactory);
 
         _keyFilter = keyFilterFactory.Create(topic.FilterKeyType, topic.KeyType, topic.FilterKeyValue);
-        //Stub for value filters
-        //TODO Add params later
         _valueFilter = valueFilterFactory.Create(Models.Filters.FilterType.None, ValueMessageType.Raw, default!);
 
         _topicParams = topic.CreateLoadingParams();

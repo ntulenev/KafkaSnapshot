@@ -3,17 +3,17 @@
 namespace KafkaSnapshot.Abstractions.Sorting;
 
 /// <summary>
-/// Sort contract for Kafka messages.
+/// Defines a contract for sorting Kafka messages by key.
 /// </summary>
-/// <typeparam name="TKey">Kafka key type.</typeparam>
-/// <typeparam name="TValue">Kafka message type.</typeparam>
+/// <typeparam name="TKey">The type of the message key.</typeparam>
+/// <typeparam name="TValue">The type of the message value.</typeparam>
 public interface IMessageSorter<TKey, TValue> where TKey : notnull
                                               where TValue : notnull
 {
     /// <summary>
-    /// Sort Kafka messages.
+    /// Sorts the provided collection of Kafka messages by key in ascending order.
     /// </summary>
-    /// <param name="source">Kafka messages.</param>
-    /// <returns>Sorted kafka messages.</returns>
+    /// <param name="source">The collection of Kafka messages to sort.</param>
+    /// <returns>An enumerable of sorted Kafka messages.</returns>
     public IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> Sort(IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> source);
 }

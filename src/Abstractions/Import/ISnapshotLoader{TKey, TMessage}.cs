@@ -5,21 +5,21 @@ using KafkaSnapshot.Models.Message;
 namespace KafkaSnapshot.Abstractions.Import;
 
 /// <summary>
-/// Loader for Kafka topics. Loads topic as Dictionary with compacting per key.
+/// Interface for loading a compact snapshot of Kafka messages.
 /// </summary>
-/// <typeparam name="Key">Message key.</typeparam>
-/// <typeparam name="Message">Message value.</typeparam>
+/// <typeparam name="TKey">The type of the message key.</typeparam>
+/// <typeparam name="TMessage">The type of the message value.</typeparam>
 public interface ISnapshotLoader<TKey, TMessage> where TKey : notnull
                                                  where TMessage : notnull
 {
     /// <summary>
-    /// Loads topic as Dictionary with compacting per key.
+    /// Loads a compact snapshot of Kafka messages for the specified topic.
     /// </summary>
-    /// <param name="loadingTpic">loading topic config.</param>
-    /// <param name="keyFilter">filter for topic's keys.</param>
-    /// <param name="valueFilter">filter for topic's values.</param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>Topic's data.</returns>
+    /// <param name="loadingTopic">The loading topic.</param>
+    /// <param name="keyFilter">The key filter used to filter the snapshot by key.</param>
+    /// <param name="valueFilter">The value filter used to filter the snapshot by value.</param>
+    /// <param name="ct">The cancellation token.</param>
+    /// <returns>An enumerable collection of key-value pairs representing the loaded Kafka messages.</returns>
     public Task<IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>>> LoadCompactSnapshotAsync(
         LoadingTopic loadingTpic,
         IDataFilter<TKey> keyFilter,

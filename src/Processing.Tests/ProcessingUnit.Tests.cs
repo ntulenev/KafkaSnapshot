@@ -23,21 +23,21 @@ public class ProcessingUnitTests
     [Trait("Category", "Unit")]
     public void ProcessingUnitCantBeCreatedWithoutLogger()
     {
-        var markerMoq = new Mock<IKeyRepresentationMarker>();
-        var marker = markerMoq.Object;
 
         // Arrange
+        var markerMoq = new Mock<IKeyRepresentationMarker>();
+        var marker = markerMoq.Object;
         var logger = (ILogger<ProcessingUnit<object, IKeyRepresentationMarker, object>>)null!;
         var topic = new ProcessingTopic<object>
-                            ("test", "test", true, Models.Filters.FilterType.None, Models.Filters.KeyType.String, null!, new DateFilterRange(null!, null!), false);
-        var loaderMock = new Mock<ISnapshotLoader<object, object>>();
+                            ("test", "test", true, Models.Filters.FilterType.None, Models.Filters.KeyType.String, null!,
+                            new DateFilterRange(null!, null!), false);
+        var loaderMock = new Mock<ISnapshotLoader<object, object>>(MockBehavior.Strict);
         var loader = loaderMock.Object;
-        var exporterMock = new Mock<IDataExporter<object, IKeyRepresentationMarker, object, ExportedTopic>>();
+        var exporterMock = new Mock<IDataExporter<object, IKeyRepresentationMarker, object, ExportedTopic>>(MockBehavior.Strict);
         var exporter = exporterMock.Object;
-        var factoryMock = new Mock<IKeyFiltersFactory<object>>();
+        var factoryMock = new Mock<IKeyFiltersFactory<object>>(MockBehavior.Strict);
         var factory = factoryMock.Object;
-
-        var valueFactoryMock = new Mock<IValueFilterFactory<object>>();
+        var valueFactoryMock = new Mock<IValueFilterFactory<object>>(MockBehavior.Strict);
         var valueFactory = valueFactoryMock.Object;
 
         // Act
@@ -52,20 +52,20 @@ public class ProcessingUnitTests
     [Trait("Category", "Unit")]
     public void ProcessingUnitCantBeCreatedWithoutTopic()
     {
-        var markerMoq = new Mock<IKeyRepresentationMarker>();
-        var marker = markerMoq.Object;
 
         // Arrange
+        var markerMoq = new Mock<IKeyRepresentationMarker>(MockBehavior.Strict);
+        var marker = markerMoq.Object;
         var loggerMock = new Mock<ILogger<ProcessingUnit<object, IKeyRepresentationMarker, object>>>();
         var logger = loggerMock.Object;
         var topic = (ProcessingTopic<object>)null!;
-        var loaderMock = new Mock<ISnapshotLoader<object, object>>();
+        var loaderMock = new Mock<ISnapshotLoader<object, object>>(MockBehavior.Strict);
         var loader = loaderMock.Object;
-        var exporterMock = new Mock<IDataExporter<object, IKeyRepresentationMarker, object, ExportedTopic>>();
+        var exporterMock = new Mock<IDataExporter<object, IKeyRepresentationMarker, object, ExportedTopic>>(MockBehavior.Strict);
         var exporter = exporterMock.Object;
-        var factoryMock = new Mock<IKeyFiltersFactory<object>>();
+        var factoryMock = new Mock<IKeyFiltersFactory<object>>(MockBehavior.Strict);
         var factory = factoryMock.Object;
-        var valueFactoryMock = new Mock<IValueFilterFactory<object>>();
+        var valueFactoryMock = new Mock<IValueFilterFactory<object>>(MockBehavior.Strict);
         var valueFactory = valueFactoryMock.Object;
 
         // Act
@@ -80,20 +80,21 @@ public class ProcessingUnitTests
     [Trait("Category", "Unit")]
     public void ProcessingUnitCantBeCreatedWithoutLoader()
     {
-        var markerMoq = new Mock<IKeyRepresentationMarker>();
-        var marker = markerMoq.Object;
 
         // Arrange
+        var markerMoq = new Mock<IKeyRepresentationMarker>(MockBehavior.Strict);
+        var marker = markerMoq.Object;
         var loggerMock = new Mock<ILogger<ProcessingUnit<object, IKeyRepresentationMarker, object>>>();
         var logger = loggerMock.Object;
         var topic = new ProcessingTopic<object>
-                            ("test", "test", true, Models.Filters.FilterType.None, Models.Filters.KeyType.String, null!, new DateFilterRange(null!, null!), false);
+                            ("test", "test", true, Models.Filters.FilterType.None,
+                            Models.Filters.KeyType.String, null!, new DateFilterRange(null!, null!), false);
         var loader = (ISnapshotLoader<object, object>)null!;
-        var exporterMock = new Mock<IDataExporter<object, IKeyRepresentationMarker, object, ExportedTopic>>();
+        var exporterMock = new Mock<IDataExporter<object, IKeyRepresentationMarker, object, ExportedTopic>>(MockBehavior.Strict);
         var exporter = exporterMock.Object;
-        var factoryMock = new Mock<IKeyFiltersFactory<object>>();
+        var factoryMock = new Mock<IKeyFiltersFactory<object>>(MockBehavior.Strict);
         var factory = factoryMock.Object;
-        var valueFactoryMock = new Mock<IValueFilterFactory<object>>();
+        var valueFactoryMock = new Mock<IValueFilterFactory<object>>(MockBehavior.Strict);
         var valueFactory = valueFactoryMock.Object;
 
         // Act
@@ -108,18 +109,19 @@ public class ProcessingUnitTests
     [Trait("Category", "Unit")]
     public void ProcessingUnitCantBeCreatedWithoutExporter()
     {
-        var markerMoq = new Mock<IKeyRepresentationMarker>();
-        var marker = markerMoq.Object;
 
         // Arrange
+        var markerMoq = new Mock<IKeyRepresentationMarker>(MockBehavior.Strict);
+        var marker = markerMoq.Object;
         var loggerMock = new Mock<ILogger<ProcessingUnit<object, IKeyRepresentationMarker, object>>>();
         var logger = loggerMock.Object;
         var topic = new ProcessingTopic<object>
-                            ("test", "test", true, Models.Filters.FilterType.None, Models.Filters.KeyType.String, null!, new DateFilterRange(null!, null!), false);
-        var loaderMock = new Mock<ISnapshotLoader<object, object>>();
+                            ("test", "test", true, Models.Filters.FilterType.None, Models.Filters.KeyType.String, null!,
+                            new DateFilterRange(null!, null!), false);
+        var loaderMock = new Mock<ISnapshotLoader<object, object>>(MockBehavior.Strict);
         var loader = loaderMock.Object;
         var exporter = (IDataExporter<object, IKeyRepresentationMarker, object, ExportedTopic>)null!;
-        var factoryMock = new Mock<IKeyFiltersFactory<object>>();
+        var factoryMock = new Mock<IKeyFiltersFactory<object>>(MockBehavior.Strict);
         var factory = factoryMock.Object;
         var valueFactoryMock = new Mock<IValueFilterFactory<object>>();
         var valueFactory = valueFactoryMock.Object;
@@ -136,20 +138,21 @@ public class ProcessingUnitTests
     [Trait("Category", "Unit")]
     public void ProcessingUnitCantBeCreatedWithoutFiltersFactory()
     {
-        var markerMoq = new Mock<IKeyRepresentationMarker>();
-        var marker = markerMoq.Object;
 
         // Arrange
+        var markerMoq = new Mock<IKeyRepresentationMarker>(MockBehavior.Strict);
+        var marker = markerMoq.Object;
         var loggerMock = new Mock<ILogger<ProcessingUnit<object, IKeyRepresentationMarker, object>>>();
         var logger = loggerMock.Object;
         var topic = new ProcessingTopic<object>
-                            ("test", "test", true, Models.Filters.FilterType.None, Models.Filters.KeyType.String, null!, new DateFilterRange(null!,null!), false);
-        var loaderMock = new Mock<ISnapshotLoader<object, object>>();
+                            ("test", "test", true, Models.Filters.FilterType.None, Models.Filters.KeyType.String, null!,
+                            new DateFilterRange(null!, null!), false);
+        var loaderMock = new Mock<ISnapshotLoader<object, object>>(MockBehavior.Strict);
         var loader = loaderMock.Object;
-        var exporterMock = new Mock<IDataExporter<object, IKeyRepresentationMarker, object, ExportedTopic>>();
+        var exporterMock = new Mock<IDataExporter<object, IKeyRepresentationMarker, object, ExportedTopic>>(MockBehavior.Strict);
         var exporter = exporterMock.Object;
         var factory = (IKeyFiltersFactory<object>)null!;
-        var valueFactoryMock = new Mock<IValueFilterFactory<object>>();
+        var valueFactoryMock = new Mock<IValueFilterFactory<object>>(MockBehavior.Strict);
         var valueFactory = valueFactoryMock.Object;
 
         // Act
@@ -164,19 +167,20 @@ public class ProcessingUnitTests
     [Trait("Category", "Unit")]
     public void ProcessingUnitCantBeCreatedWithoutValueFiltersFactory()
     {
-        var markerMoq = new Mock<IKeyRepresentationMarker>();
-        var marker = markerMoq.Object;
 
         // Arrange
+        var markerMoq = new Mock<IKeyRepresentationMarker>(MockBehavior.Strict);
+        var marker = markerMoq.Object;
         var loggerMock = new Mock<ILogger<ProcessingUnit<object, IKeyRepresentationMarker, object>>>();
         var logger = loggerMock.Object;
         var topic = new ProcessingTopic<object>
-                            ("test", "test", true, Models.Filters.FilterType.None, Models.Filters.KeyType.String, null!, new DateFilterRange(null!, null!), false);
-        var loaderMock = new Mock<ISnapshotLoader<object, object>>();
+                            ("test", "test", true, Models.Filters.FilterType.None, Models.Filters.KeyType.String, null!,
+                            new DateFilterRange(null!, null!), false);
+        var loaderMock = new Mock<ISnapshotLoader<object, object>>(MockBehavior.Strict);
         var loader = loaderMock.Object;
-        var exporterMock = new Mock<IDataExporter<object, IKeyRepresentationMarker, object, ExportedTopic>>();
+        var exporterMock = new Mock<IDataExporter<object, IKeyRepresentationMarker, object, ExportedTopic>>(MockBehavior.Strict);
         var exporter = exporterMock.Object;
-        var factoryMock = new Mock<IKeyFiltersFactory<object>>();
+        var factoryMock = new Mock<IKeyFiltersFactory<object>>(MockBehavior.Strict);
         var factory = factoryMock.Object;
         var valueFactory = (IValueFilterFactory<object>)null!;
 
@@ -192,21 +196,27 @@ public class ProcessingUnitTests
     [Trait("Category", "Unit")]
     public void ProcessingUnitCouldBeCreatedWithValidParams()
     {
-        var markerMoq = new Mock<IKeyRepresentationMarker>();
-        var marker = markerMoq.Object;
-
         // Arrange
+        var factoryMock = new Mock<IKeyFiltersFactory<object>>(MockBehavior.Strict);
+        var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
+        var keyFilter = keyFilterMock.Object;
+        var valueFactoryMock = new Mock<IValueFilterFactory<object>>(MockBehavior.Strict);
+        var valueFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
+        var valueFilter = valueFilterMock.Object;
+        var markerMoq = new Mock<IKeyRepresentationMarker>(MockBehavior.Strict);
+        var marker = markerMoq.Object;
         var loggerMock = new Mock<ILogger<ProcessingUnit<object, IKeyRepresentationMarker, object>>>();
         var logger = loggerMock.Object;
         var topic = new ProcessingTopic<object>
-                            ("test", "test", true, Models.Filters.FilterType.None, Models.Filters.KeyType.String, null!, new DateFilterRange(null!, null!), false);
-        var loaderMock = new Mock<ISnapshotLoader<object, object>>();
+                            ("test", "test", true, Models.Filters.FilterType.None, Models.Filters.KeyType.String,
+                            null!, new DateFilterRange(null!, null!), false);
+        var loaderMock = new Mock<ISnapshotLoader<object, object>>(MockBehavior.Strict);
         var loader = loaderMock.Object;
-        var exporterMock = new Mock<IDataExporter<object, IKeyRepresentationMarker, object, ExportedTopic>>();
+        var exporterMock = new Mock<IDataExporter<object, IKeyRepresentationMarker, object, ExportedTopic>>(MockBehavior.Strict);
         var exporter = exporterMock.Object;
-        var factoryMock = new Mock<IKeyFiltersFactory<object>>();
+        factoryMock.Setup(x => x.Create(topic.FilterKeyType, topic.KeyType, topic.FilterKeyValue)).Returns(keyFilter);
         var factory = factoryMock.Object;
-        var valueFactoryMock = new Mock<IValueFilterFactory<object>>();
+        valueFactoryMock.Setup(x => x.Create(Models.Filters.FilterType.None, ValueMessageType.Raw, default!)).Returns(valueFilter);
         var valueFactory = valueFactoryMock.Object;
 
         // Act
@@ -217,55 +227,53 @@ public class ProcessingUnitTests
         exception.Should().BeNull();
     }
 
-    [Fact(DisplayName = "ProcessingUnit can process topuc.")]
+    [Fact(DisplayName = "ProcessingUnit can process topic.")]
     [Trait("Category", "Unit")]
     public async Task ProcessingUnitCanProcessTopic()
     {
-        var markerMoq = new Mock<IKeyRepresentationMarker>();
-        var marker = markerMoq.Object;
 
         // Arrange
+        using var cts = new CancellationTokenSource();
+        var markerMoq = new Mock<IKeyRepresentationMarker>(MockBehavior.Strict);
+        var marker = markerMoq.Object;
         var loggerMock = new Mock<ILogger<ProcessingUnit<object, IKeyRepresentationMarker, object>>>();
         var logger = loggerMock.Object;
         var valueObj = "test value";
         var topic = new ProcessingTopic<object>
-                            ("test", "exportTest", true, Models.Filters.FilterType.None, Models.Filters.KeyType.String, valueObj, new DateFilterRange(null!, null!), false);
-        var loaderMock = new Mock<ISnapshotLoader<object, object>>();
-        var exporterMock = new Mock<IDataExporter<object, IKeyRepresentationMarker, object, ExportedTopic>>();
-        var exporter = exporterMock.Object;
-        var factoryMock = new Mock<IKeyFiltersFactory<object>>();
-
-        var keyFilterMock = new Mock<IDataFilter<object>>();
+                            ("test", "exportTest", true, Models.Filters.FilterType.None, Models.Filters.KeyType.String,
+                            valueObj, new DateFilterRange(null!, null!), false);
+        var loaderMock = new Mock<ISnapshotLoader<object, object>>(MockBehavior.Strict);
+        var factoryMock = new Mock<IKeyFiltersFactory<object>>(MockBehavior.Strict);
+        var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
         var keyFilter = keyFilterMock.Object;
-
-        var valueFactoryMock = new Mock<IValueFilterFactory<object>>();
-        var valueFilterMock = new Mock<IDataFilter<object>>();
+        var valueFactoryMock = new Mock<IValueFilterFactory<object>>(MockBehavior.Strict);
+        var valueFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
         var valueFilter = valueFilterMock.Object;
-
-        var snapshotMock = new Mock<IEnumerable<KeyValuePair<object, KafkaMessage<object>>>>();
+        var snapshotMock = new Mock<IEnumerable<KeyValuePair<object, KafkaMessage<object>>>>(MockBehavior.Strict);
         var snapshot = snapshotMock.Object;
         factoryMock.Setup(x => x.Create(topic.FilterKeyType, topic.KeyType, topic.FilterKeyValue)).Returns(keyFilter);
-
         valueFactoryMock.Setup(x => x.Create(Models.Filters.FilterType.None, ValueMessageType.Raw, default!)).Returns(valueFilter);
         var valueFactory = valueFactoryMock.Object;
-
         loaderMock.Setup(x => x.LoadCompactSnapshotAsync(
                     It.Is<LoadingTopic>(n => n.Value == topic.Name),
-                    keyFilter, valueFilter, CancellationToken.None)).Returns(Task.FromResult(snapshot));
+                    keyFilter, valueFilter, cts.Token)).Returns(Task.FromResult(snapshot));
         var factory = factoryMock.Object;
         var loader = loaderMock.Object;
+        var exporterMock = new Mock<IDataExporter<object, IKeyRepresentationMarker, object, ExportedTopic>>(MockBehavior.Strict);
+        exporterMock.Setup(x => x.ExportAsync(snapshot,
+                                It.Is<ExportedTopic>(e => e.Name == topic.Name && e.ExportName == topic.ExportName),
+                                cts.Token)).Returns(() => Task.CompletedTask);
+        var exporter = exporterMock.Object;
         var unit = new ProcessingUnit<object, IKeyRepresentationMarker, object>(logger, topic, loader, exporter, factory, valueFactory);
 
         // Act
-        var exception = await Record.ExceptionAsync(async () =>
-            await unit.ProcessAsync(CancellationToken.None)).ConfigureAwait(false);
+        await unit.ProcessAsync(cts.Token).ConfigureAwait(false);
 
         // Assert
-        exception.Should().BeNull();
         exporterMock.Verify
             (x => x.ExportAsync(snapshot,
                                 It.Is<ExportedTopic>(e => e.Name == topic.Name && e.ExportName == topic.ExportName),
-                                CancellationToken.None), Times.Once);
+                                cts.Token), Times.Once);
 
     }
 }

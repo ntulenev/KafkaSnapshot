@@ -1,18 +1,19 @@
 ﻿namespace KafkaSnapshot.Abstractions.Processing;
 
 /// <summary>
-/// Single topic processor that loads data from Apache Kafka and exports to file.
+/// Defines an interface for a processing unit that consumes messages from a Kafka topic.
 /// </summary>
 public interface IProcessingUnit
 {
     /// <summary>
-    /// Start processing topic.
+    /// Processes messages from the Kafka topic.
     /// </summary>
-    /// <param name="ct">Token for canelling operation.</param>
+    /// <param name="ct">A cancellation token that can be used to stop the processing.</param>
+    /// <returns>A task that represents the asynchronous processing.</returns>
     public Task ProcessAsync(CancellationToken ct);
 
     /// <summary>
-    /// Processing topic information.
+    /// Gets the name of the Kafka topic that this processing unit is consuming messages from.
     /// </summary>
     public string TopicName { get; }
 }

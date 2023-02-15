@@ -37,12 +37,12 @@ public class LoaderTool : ILoaderTool
         {
             using var _ = _logger.BeginScope("topic {topic}", unit.TopicName);
 
-            ct.ThrowIfCancellationRequested();
-
             _logger.LogInformation("{indexer}/{count} Processing topic {topicName}", ++indexer, _units.Count, unit.TopicName);
 
             try
             {
+                ct.ThrowIfCancellationRequested();
+
                 await unit.ProcessAsync(ct).ConfigureAwait(false);
 
                 _logger.LogDebug("Finish processing topic.");

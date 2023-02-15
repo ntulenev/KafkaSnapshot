@@ -40,6 +40,8 @@ public class LoaderConcurrentTool : ILoaderTool
 
             try
             {
+                ct.ThrowIfCancellationRequested();
+
                 await unit.ProcessAsync(ct).ConfigureAwait(false);
 
                 _logger.LogInformation("Finish processing topic.");

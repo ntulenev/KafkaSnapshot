@@ -20,7 +20,7 @@ public class LoaderConcurrentToolTests
         var logger = (ILogger<LoaderConcurrentTool>)null!;
         var items = new[]
         {
-            (new Mock<IProcessingUnit>()).Object
+            (new Mock<IProcessingUnit>(MockBehavior.Strict)).Object
         };
 
         // Act
@@ -55,7 +55,7 @@ public class LoaderConcurrentToolTests
         var logger = loggerMock.Object;
         var items = new[]
         {
-            (new Mock<IProcessingUnit>()).Object
+            (new Mock<IProcessingUnit>(MockBehavior.Strict)).Object
         };
 
         // Act
@@ -70,10 +70,15 @@ public class LoaderConcurrentToolTests
     public async Task LoaderConcurrentToolProcessUnits()
     {
         // Arrange
+        using var cts = new CancellationTokenSource();
         var loggerMock = new Mock<ILogger<LoaderTool>>();
         var logger = loggerMock.Object;
-        var unit1 = new Mock<IProcessingUnit>();
-        var unit2 = new Mock<IProcessingUnit>();
+        var unit1 = new Mock<IProcessingUnit>(MockBehavior.Strict);
+        var unit2 = new Mock<IProcessingUnit>(MockBehavior.Strict);
+        unit1.Setup(x => x.TopicName).Returns(() => "unit1");
+        unit2.Setup(x => x.TopicName).Returns(() => "unit2");
+        unit1.Setup(x => x.ProcessAsync(cts.Token));
+        unit2.Setup(x => x.ProcessAsync(cts.Token));
         var items = new[]
         {
             unit1.Object,unit2.Object
@@ -81,11 +86,67 @@ public class LoaderConcurrentToolTests
         var tool = new LoaderTool(logger, items);
 
         // Act
-        var exception = await Record.ExceptionAsync(async () => await tool.ProcessAsync(CancellationToken.None).ConfigureAwait(false));
+        await tool.ProcessAsync(cts.Token).ConfigureAwait(false);
 
         // Assert
-        exception.Should().BeNull();
-        unit1.Verify(x => x.ProcessAsync(CancellationToken.None), Times.Once);
-        unit2.Verify(x => x.ProcessAsync(CancellationToken.None), Times.Once);
+        unit1.Verify(x => x.ProcessAsync(cts.Token), Times.Once);
+        unit2.Verify(x => x.ProcessAsync(cts.Token), Times.Once);
+    }
+
+    [Fact(DisplayName = "LoaderConcurrentTool can process units if any thorws error.")]
+    [Trait("Category", "Unit")]
+    public async Task LoaderConcurrentToolProcessUnitsWithError()
+    {
+        // Arrange
+        using var cts = new CancellationTokenSource();
+        var loggerMock = new Mock<ILogger<LoaderTool>>();
+        var logger = loggerMock.Object;
+        var unit1 = new Mock<IProcessingUnit>(MockBehavior.Strict);
+        var unit2 = new Mock<IProcessingUnit>(MockBehavior.Strict);
+        unit1.Setup(x => x.TopicName).Returns(() => "unit1");
+        unit2.Setup(x => x.TopicName).Returns(() => "unit2");
+        unit1.Setup(x => x.ProcessAsync(cts.Token)).Throws<Exception>();
+        unit2.Setup(x => x.ProcessAsync(cts.Token));
+        var items = new[]
+        {
+            unit1.Object,unit2.Object
+        };
+        var tool = new LoaderTool(logger, items);
+
+        // Act
+        await tool.ProcessAsync(cts.Token).ConfigureAwait(false);
+
+        // Assert
+        unit1.Verify(x => x.ProcessAsync(cts.Token), Times.Once);
+        unit2.Verify(x => x.ProcessAsync(cts.Token), Times.Once);
+    }
+
+    [Fact(DisplayName = "LoaderConcurrentTool cant process units if token is cancelled.")]
+    [Trait("Category", "Unit")]
+    public async Task LoaderConcurrentToolCantProcessUnitsWithCancelToken()
+    {
+        // Arrange
+        using var cts = new CancellationTokenSource();
+        var loggerMock = new Mock<ILogger<LoaderTool>>();
+        var logger = loggerMock.Object;
+        var unit1 = new Mock<IProcessingUnit>(MockBehavior.Strict);
+        var unit2 = new Mock<IProcessingUnit>(MockBehavior.Strict);
+        unit1.Setup(x => x.TopicName).Returns(() => "unit1");
+        unit2.Setup(x => x.TopicName).Returns(() => "unit2");
+        unit1.Setup(x => x.ProcessAsync(cts.Token));
+        unit2.Setup(x => x.ProcessAsync(cts.Token));
+        var items = new[]
+        {
+            unit1.Object,unit2.Object
+        };
+        var tool = new LoaderTool(logger, items);
+        cts.Cancel();
+
+        // Act
+        await tool.ProcessAsync(cts.Token).ConfigureAwait(false);
+
+        // Assert
+        unit1.Verify(x => x.ProcessAsync(cts.Token), Times.Never);
+        unit2.Verify(x => x.ProcessAsync(cts.Token), Times.Never);
     }
 }

@@ -16,6 +16,7 @@ public abstract class JsonSerializerBase
     /// Creates <see cref="JsonSerializerBase"/>.
     /// </summary>
     /// <param name="logger">Logger.</param>
+    /// <exception cref="ArgumentNullException">Thrown when logger is null.</exception>
     public JsonSerializerBase(ILogger<JsonSerializerBase> logger)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));

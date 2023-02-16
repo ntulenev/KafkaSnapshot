@@ -25,6 +25,7 @@ public class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> : IDataExpor
     /// </summary>
     /// <param name="logger">Logger for <see cref="JsonFileDataExporter{TKey, TKeyMarker, TValue, TTopic}"/>.</param>
     /// <param name="fileSaver">Utility that saves content to file.</param>
+    /// <exception cref="ArgumentNullException">Thrown if any of the constructor arguments are null.</exception>
     public JsonFileDataExporter(
                                 IOptions<JsonFileDataExporterConfiguration> config,
                                 ILogger<JsonFileDataExporter<TKey, TKeyMarker,
@@ -50,6 +51,7 @@ public class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> : IDataExpor
     }
 
     /// <inheritdoc/>
+    /// <exception cref="ArgumentNullException">Thrown if either <paramref name="data"/> or <paramref name="topic"/> is null.</exception>
     public async Task ExportAsync(IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> data, TTopic topic, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(data);

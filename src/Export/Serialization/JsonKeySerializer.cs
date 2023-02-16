@@ -18,6 +18,7 @@ public class JsonKeySerializer : JsonSerializerBase, ISerializer<string, string,
     /// Creates <see cref="JsonKeySerializer"/>.
     /// </summary>
     /// <param name="logger">Logger.</param>
+    /// <exception cref="ArgumentNullException">Thrown when logger is null.</exception>
     public JsonKeySerializer(ILogger<JsonKeySerializer> logger) : base(logger) { }
 
     private static object ProjectData(IEnumerable<KeyValuePair<string, KafkaMessage<string>>> data, bool exportRawMessage)
@@ -29,6 +30,7 @@ public class JsonKeySerializer : JsonSerializerBase, ISerializer<string, string,
         });
 
     /// <inheritdoc/>
+    /// <exception cref="ArgumentNullException">Thrown when data is null.</exception>
     public string Serialize(IEnumerable<KeyValuePair<string, KafkaMessage<string>>> data, bool exportRawMessage)
     {
         ArgumentNullException.ThrowIfNull(data);
@@ -37,6 +39,7 @@ public class JsonKeySerializer : JsonSerializerBase, ISerializer<string, string,
     }
 
     /// <inheritdoc/>
+    /// <exception cref="ArgumentNullException">Thrown when data or stream is null.</exception>
     public void Serialize(IEnumerable<KeyValuePair<string, KafkaMessage<string>>> data, bool exportRawMessage, Stream stream)
     {
         ArgumentNullException.ThrowIfNull(data);

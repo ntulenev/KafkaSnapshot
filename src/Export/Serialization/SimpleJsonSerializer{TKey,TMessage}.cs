@@ -18,9 +18,11 @@ public class SimpleJsonSerializer<TKey, TMessage> : JsonSerializerBase,
     /// Creates <see cref="SimpleJsonSerializer{TKey, TMessage}"/>.
     /// </summary>
     /// <param name="logger">Logger.</param>
+    /// <exception cref="ArgumentNullException">Thrown when logger is null.</exception>
     public SimpleJsonSerializer(ILogger<SimpleJsonSerializer<TKey, TMessage>> logger) : base(logger) { }
 
     /// <inheritdoc/>
+    /// <exception cref="ArgumentNullException">Thrown when data is null.</exception>
     public string Serialize(IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> data, bool exportRawMessage)
     {
         ArgumentNullException.ThrowIfNull(data);
@@ -31,6 +33,7 @@ public class SimpleJsonSerializer<TKey, TMessage> : JsonSerializerBase,
     }
 
     /// <inheritdoc/>
+    /// <exception cref="ArgumentNullException">Thrown when data or stream is null.</exception>
     public void Serialize(IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> data, bool exportRawMessage, Stream stream)
     {
         ArgumentNullException.ThrowIfNull(data);

@@ -56,7 +56,7 @@ public class PartitionWatermarkTests
 
         // Arrange
         HashSet<int> partitionFilter = null!;
-        var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!),partitionFilter);
+        var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!), partitionFilter);
         var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
         var partition = new Partition(1);
 
@@ -78,7 +78,7 @@ public class PartitionWatermarkTests
 
         // Arrange
         HashSet<int> partitionFilter = null!;
-        var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!),partitionFilter);
+        var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!), partitionFilter);
         var offsets = new WatermarkOffsets(new Offset(startOffset), new Offset(endOffset));
         var partition = new Partition(1);
         var pw = new PartitionWatermark(topicName, offsets, partition);
@@ -97,7 +97,7 @@ public class PartitionWatermarkTests
 
         // Arrange
         HashSet<int> partitionFilter = null!;
-        var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!),partitionFilter);
+        var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!), partitionFilter);
         var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
         var partition = new Partition(1);
         ConsumeResult<object, object> result = null!;
@@ -117,7 +117,7 @@ public class PartitionWatermarkTests
 
         // Arrange
         HashSet<int> partitionFilter = null!;
-        var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!),partitionFilter);
+        var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!), partitionFilter);
         var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
         var partition = new Partition(1);
         var result = new ConsumeResult<object, object>()
@@ -140,7 +140,7 @@ public class PartitionWatermarkTests
 
         // Arrange
         HashSet<int> partitionFilter = null!;
-        var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!),partitionFilter);
+        var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!), partitionFilter);
         var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
         var partition = new Partition(1);
         var result = new ConsumeResult<object, object>()
@@ -163,7 +163,7 @@ public class PartitionWatermarkTests
 
         // Arrange
         HashSet<int> partitionFilter = null!;
-        var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!),partitionFilter);
+        var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!), partitionFilter);
         var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
         var partition = new Partition(1);
         var pw = new PartitionWatermark(topicName, offsets, partition);
@@ -183,11 +183,12 @@ public class PartitionWatermarkTests
 
         // Arrange
         HashSet<int> partitionFilter = null!;
-        var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!),partitionFilter);
+        var topicName = new LoadingTopic("Test", true, new DateFilterRange(null!, null!), partitionFilter);
         var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
         var partition = new Partition(1);
         var pw = new PartitionWatermark(topicName, offsets, partition);
-        var consumerMock = new Mock<IConsumer<object, object>>();
+        var consumerMock = new Mock<IConsumer<object, object>>(MockBehavior.Strict);
+        consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(a => a.Topic == topicName.Value && a.Partition == partition)));
         var consumer = consumerMock.Object;
 
         // Act
@@ -207,12 +208,13 @@ public class PartitionWatermarkTests
         HashSet<int> partitionFilter = null!;
         var date = DateTime.UtcNow;
         var timeout = TimeSpan.FromSeconds(10);
-        var topicName = new LoadingTopic("Test", true, new DateFilterRange(date, null!),partitionFilter);
+        var topicName = new LoadingTopic("Test", true, new DateFilterRange(date, null!), partitionFilter);
         var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
         var partition = new Partition(1);
         var pw = new PartitionWatermark(topicName, offsets, partition);
-        var consumerMock = new Mock<IConsumer<object, object>>();
+        var consumerMock = new Mock<IConsumer<object, object>>(MockBehavior.Strict);
         var topicWithOffset = new TopicPartitionOffset(new TopicPartition(topicName.Value, new Partition()), new Offset(1));
+        consumerMock.Setup(x => x.Assign(It.Is<TopicPartitionOffset>(a => a.Topic == topicName.Value && a.Partition == topicWithOffset.Partition)));
         consumerMock.Setup(x => x.OffsetsForTimes(It.IsAny<IEnumerable<TopicPartitionTimestamp>>(), timeout)).Returns(new List<TopicPartitionOffset>
         {
            topicWithOffset
@@ -236,11 +238,11 @@ public class PartitionWatermarkTests
         HashSet<int> partitionFilter = null!;
         var date = DateTime.UtcNow;
         var timeout = TimeSpan.FromSeconds(10);
-        var topicName = new LoadingTopic("Test", true, new DateFilterRange(date, null!),partitionFilter);
+        var topicName = new LoadingTopic("Test", true, new DateFilterRange(date, null!), partitionFilter);
         var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
         var partition = new Partition(1);
         var pw = new PartitionWatermark(topicName, offsets, partition);
-        var consumerMock = new Mock<IConsumer<object, object>>();
+        var consumerMock = new Mock<IConsumer<object, object>>(MockBehavior.Strict);
         var topicWithOffset = new TopicPartitionOffset(new TopicPartition(topicName.Value, new Partition()), new Offset(Offset.End));
         consumerMock.Setup(x => x.OffsetsForTimes(It.IsAny<IEnumerable<TopicPartitionTimestamp>>(), timeout)).Returns(new List<TopicPartitionOffset>
         {

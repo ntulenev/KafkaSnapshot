@@ -8,7 +8,8 @@ namespace KafkaSnapshot.Export.File.Common
     public class FileStreamProvider : IFileStreamProvider
     {
         /// <inheritdoc/>
-        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="ArgumentNullException">Thrown when fileName is null.</exception>
+        /// <exception cref="ArgumentException">Thrown when fileName is empty or consists of whitespaces.</exception>
         public Stream CreateFileStream(string fileName)
         {
             ArgumentNullException.ThrowIfNull(fileName);

@@ -17,8 +17,6 @@ using KafkaSnapshot.Import.Watermarks;
 using KafkaSnapshot.Import.Configuration;
 using KafkaSnapshot.Models.Filters;
 using KafkaSnapshot.Abstractions.Sorting;
-using System.Configuration;
-using System.Collections.Concurrent;
 
 namespace KafkaSnapshot.Import.Tests;
 

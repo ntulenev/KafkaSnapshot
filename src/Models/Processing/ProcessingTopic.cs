@@ -1,6 +1,7 @@
 using KafkaSnapshot.Models.Export;
 using KafkaSnapshot.Models.Filters;
 using KafkaSnapshot.Models.Import;
+using KafkaSnapshot.Models.Names;
 
 namespace KafkaSnapshot.Models.Processing;
 
@@ -16,7 +17,7 @@ namespace KafkaSnapshot.Models.Processing;
 /// <param name="DateRange">Date interval for offsets.</param>
 /// <param name="ExportRawMessage">Use raw string for message or json.</param>
 public record ProcessingTopic<TKey>(string Name,
-                                    string ExportName,
+                                    FileName ExportName,
                                     bool LoadWithCompacting,
                                     FilterType FilterKeyType,
                                     KeyType KeyType,

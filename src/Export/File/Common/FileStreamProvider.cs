@@ -1,4 +1,5 @@
 ﻿using KafkaSnapshot.Abstractions.Export;
+using KafkaSnapshot.Models.Names;
 
 namespace KafkaSnapshot.Export.File.Common
 {
@@ -10,17 +11,11 @@ namespace KafkaSnapshot.Export.File.Common
         /// <inheritdoc/>
         /// <exception cref="ArgumentNullException">Thrown when fileName is null.</exception>
         /// <exception cref="ArgumentException">Thrown when fileName is empty or consists of whitespaces.</exception>
-        public Stream CreateFileStream(string fileName)
+        public Stream CreateFileStream(FileName fileName)
         {
             ArgumentNullException.ThrowIfNull(fileName);
 
-            if (string.IsNullOrWhiteSpace(fileName))
-            {
-                throw new ArgumentException(
-                    "File name cannot be empty or consist of whitespaces.", nameof(fileName));
-            }
-
-            return System.IO.File.Create(fileName);
+            return System.IO.File.Create(fileName.FullName);
         }
     }
 }

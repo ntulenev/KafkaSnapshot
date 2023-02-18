@@ -1,4 +1,6 @@
-﻿namespace KafkaSnapshot.Abstractions.Export;
+﻿using KafkaSnapshot.Models.Names;
+
+namespace KafkaSnapshot.Abstractions.Export;
 
 
 /// <summary>
@@ -13,5 +15,5 @@ public interface IFileSaver
     /// <param name="content">The content to save to the file.</param>
     /// <param name="ct">The cancellation token to cancel the operation if needed.</param>
     /// <returns>A task that represents the asynchronous save operation.</returns>
-    public Task SaveAsync(string fileName, string content, CancellationToken ct);
+    public Task SaveAsync(FileName fileName, string content, CancellationToken ct);
 }

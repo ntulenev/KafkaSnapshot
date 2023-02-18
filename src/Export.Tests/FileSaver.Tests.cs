@@ -3,6 +3,7 @@ using FluentAssertions;
 using Xunit;
 
 using KafkaSnapshot.Export.File.Common;
+using KafkaSnapshot.Models.Names;
 
 namespace KafkaSnapshot.Export.Tests;
 
@@ -25,7 +26,7 @@ public class FileSaverTests
     {
         // Arrange
         var fileSaver = new FileSaver();
-        var fileName = (string)null!;
+        var fileName = (FileName)null!;
         var content = "123";
 
         // Act
@@ -35,45 +36,13 @@ public class FileSaverTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
-    [Fact(DisplayName = "File saver cant save file with empty name.")]
-    [Trait("Category", "Unit")]
-    public async Task CantSaveWithEmptyFileName()
-    {
-        // Arrange
-        var fileSaver = new FileSaver();
-        var fileName = string.Empty;
-        var content = "123";
-
-        // Act
-        var exception = await Record.ExceptionAsync(async () => await fileSaver.SaveAsync(fileName, content, CancellationToken.None).ConfigureAwait(false));
-
-        // Assert
-        exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
-    }
-
-    [Fact(DisplayName = "File saver cant save file with witespaces name.")]
-    [Trait("Category", "Unit")]
-    public async Task CantSaveWithSpacesFileName()
-    {
-        // Arrange
-        var fileSaver = new FileSaver();
-        var fileName = "    ";
-        var content = "123";
-
-        // Act
-        var exception = await Record.ExceptionAsync(async () => await fileSaver.SaveAsync(fileName, content, CancellationToken.None).ConfigureAwait(false));
-
-        // Assert
-        exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
-    }
-
     [Fact(DisplayName = "File saver cant save file with null content.")]
     [Trait("Category", "Unit")]
     public async Task CantSaveWithNullContent()
     {
         // Arrange
         var fileSaver = new FileSaver();
-        var fileName = "123";
+        var fileName = new FileName("123");
         var content = (string)null!;
 
         // Act

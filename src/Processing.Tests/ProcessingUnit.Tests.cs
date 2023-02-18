@@ -14,6 +14,7 @@ using KafkaSnapshot.Models.Processing;
 using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Message;
 using KafkaSnapshot.Models.Filters;
+using KafkaSnapshot.Models.Names;
 
 namespace KafkaSnapshot.Processing.Tests;
 
@@ -29,7 +30,7 @@ public class ProcessingUnitTests
         var marker = markerMoq.Object;
         var logger = (ILogger<ProcessingUnit<object, IKeyRepresentationMarker, object>>)null!;
         var topic = new ProcessingTopic<object>
-                            ("test", "test", true, Models.Filters.FilterType.None, Models.Filters.KeyType.String, null!,
+                            ("test", new FileName("test"), true, Models.Filters.FilterType.None, Models.Filters.KeyType.String, null!,
                             new DateFilterRange(null!, null!), false);
         var loaderMock = new Mock<ISnapshotLoader<object, object>>(MockBehavior.Strict);
         var loader = loaderMock.Object;
@@ -87,7 +88,7 @@ public class ProcessingUnitTests
         var loggerMock = new Mock<ILogger<ProcessingUnit<object, IKeyRepresentationMarker, object>>>();
         var logger = loggerMock.Object;
         var topic = new ProcessingTopic<object>
-                            ("test", "test", true, Models.Filters.FilterType.None,
+                            ("test", new FileName("test"), true, Models.Filters.FilterType.None,
                             Models.Filters.KeyType.String, null!, new DateFilterRange(null!, null!), false);
         var loader = (ISnapshotLoader<object, object>)null!;
         var exporterMock = new Mock<IDataExporter<object, IKeyRepresentationMarker, object, ExportedTopic>>(MockBehavior.Strict);
@@ -116,7 +117,7 @@ public class ProcessingUnitTests
         var loggerMock = new Mock<ILogger<ProcessingUnit<object, IKeyRepresentationMarker, object>>>();
         var logger = loggerMock.Object;
         var topic = new ProcessingTopic<object>
-                            ("test", "test", true, Models.Filters.FilterType.None, Models.Filters.KeyType.String, null!,
+                            ("test", new FileName("test"), true, Models.Filters.FilterType.None, Models.Filters.KeyType.String, null!,
                             new DateFilterRange(null!, null!), false);
         var loaderMock = new Mock<ISnapshotLoader<object, object>>(MockBehavior.Strict);
         var loader = loaderMock.Object;
@@ -145,7 +146,7 @@ public class ProcessingUnitTests
         var loggerMock = new Mock<ILogger<ProcessingUnit<object, IKeyRepresentationMarker, object>>>();
         var logger = loggerMock.Object;
         var topic = new ProcessingTopic<object>
-                            ("test", "test", true, Models.Filters.FilterType.None, Models.Filters.KeyType.String, null!,
+                            ("test", new FileName("test"), true, Models.Filters.FilterType.None, Models.Filters.KeyType.String, null!,
                             new DateFilterRange(null!, null!), false);
         var loaderMock = new Mock<ISnapshotLoader<object, object>>(MockBehavior.Strict);
         var loader = loaderMock.Object;
@@ -174,7 +175,7 @@ public class ProcessingUnitTests
         var loggerMock = new Mock<ILogger<ProcessingUnit<object, IKeyRepresentationMarker, object>>>();
         var logger = loggerMock.Object;
         var topic = new ProcessingTopic<object>
-                            ("test", "test", true, Models.Filters.FilterType.None, Models.Filters.KeyType.String, null!,
+                            ("test", new FileName("test"), true, Models.Filters.FilterType.None, Models.Filters.KeyType.String, null!,
                             new DateFilterRange(null!, null!), false);
         var loaderMock = new Mock<ISnapshotLoader<object, object>>(MockBehavior.Strict);
         var loader = loaderMock.Object;
@@ -208,7 +209,7 @@ public class ProcessingUnitTests
         var loggerMock = new Mock<ILogger<ProcessingUnit<object, IKeyRepresentationMarker, object>>>();
         var logger = loggerMock.Object;
         var topic = new ProcessingTopic<object>
-                            ("test", "test", true, Models.Filters.FilterType.None, Models.Filters.KeyType.String,
+                            ("test", new FileName("test"), true, Models.Filters.FilterType.None, Models.Filters.KeyType.String,
                             null!, new DateFilterRange(null!, null!), false);
         var loaderMock = new Mock<ISnapshotLoader<object, object>>(MockBehavior.Strict);
         var loader = loaderMock.Object;
@@ -240,7 +241,7 @@ public class ProcessingUnitTests
         var logger = loggerMock.Object;
         var valueObj = "test value";
         var topic = new ProcessingTopic<object>
-                            ("test", "exportTest", true, Models.Filters.FilterType.None, Models.Filters.KeyType.String,
+                            ("test", new FileName("exportTest"), true, Models.Filters.FilterType.None, Models.Filters.KeyType.String,
                             valueObj, new DateFilterRange(null!, null!), false);
         var loaderMock = new Mock<ISnapshotLoader<object, object>>(MockBehavior.Strict);
         var factoryMock = new Mock<IKeyFiltersFactory<object>>(MockBehavior.Strict);

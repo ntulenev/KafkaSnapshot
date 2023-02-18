@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 
 using KafkaSnapshot.Export.File.Common;
+using KafkaSnapshot.Models.Names;
 
 using Xunit;
 
@@ -25,43 +26,13 @@ namespace KafkaSnapshot.Export.Tests
         {
             // Arrange
             var provider = new FileStreamProvider();
-            var fileName = (string)null!;
+            var fileName = (FileName)null!;
 
             // Act
             var exception = Record.Exception(() => provider.CreateFileStream(fileName));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
-        }
-
-        [Fact(DisplayName = "FileStreamProvider cant create stream for empty name.")]
-        [Trait("Category", "Unit")]
-        public void CantCreateStreamWithEmptyFileName()
-        {
-            // Arrange
-            var provider = new FileStreamProvider();
-            var fileName = string.Empty;
-
-            // Act
-            var exception = Record.Exception(() => provider.CreateFileStream(fileName));
-
-            // Assert
-            exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
-        }
-
-        [Fact(DisplayName = "FileStreamProvider cant create stream for spaces name.")]
-        [Trait("Category", "Unit")]
-        public void CantCreateStreamWithSpacesFileName()
-        {
-            // Arrange
-            var provider = new FileStreamProvider();
-            var fileName = "   ";
-
-            // Act
-            var exception = Record.Exception(() => provider.CreateFileStream(fileName));
-
-            // Assert
-            exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using KafkaSnapshot.Models.Filters;
+using KafkaSnapshot.Models.Names;
 using KafkaSnapshot.Models.Processing;
 
 namespace KafkaSnapshot.Processing.Configuration;
@@ -72,7 +73,7 @@ public class TopicConfiguration
         var dateRange = new DateFilterRange(OffsetStartDate, OffsetEndDate);
 
         return new ProcessingTopic<TKey>(Name,
-                                         ExportFileName,
+                                         new FileName(ExportFileName),
                                          Compacting == CompactingMode.On,
                                          FilterKeyType,
                                          KeyType,

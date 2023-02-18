@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-
+using KafkaSnapshot.Models.Names;
 using KafkaSnapshot.Models.Processing;
 
 using Xunit;
@@ -14,7 +14,7 @@ public class ProcessingTopicTests
     {
         // Arrange
         var name = "Test1";
-        var exName = "Test2";
+        var exName = new FileName("Test2");
         var loadCompact = true;
         var filterType = Filters.FilterType.Equals;
         var keyType = Filters.KeyType.Long;
@@ -37,7 +37,7 @@ public class ProcessingTopicTests
     {
         // Arrange
         var name = "Test1";
-        var exName = "Test2";
+        var exName = new FileName("Test2");
         var loadCompact = true;
         var filterType = Filters.FilterType.Equals;
         var keyType = Filters.KeyType.Long;
@@ -69,7 +69,7 @@ public class ProcessingTopicTests
     {
         // Arrange
         var name = "Test1";
-        var exName = "Test2";
+        var exName = new FileName("Test2");
         var loadCompact = true;
         var filterType = Filters.FilterType.Equals;
         var keyType = Filters.KeyType.Long;
@@ -92,7 +92,7 @@ public class ProcessingTopicTests
     {
         // Arrange
         var name = "Test1";
-        var exName = "Test2";
+        var exName = new FileName("Test2");
         var loadCompact = true;
         var filterType = Filters.FilterType.Equals;
         var keyType = Filters.KeyType.Long;
@@ -120,7 +120,7 @@ public class ProcessingTopicTests
     {
         // Arrange
         var name = "Test1";
-        var exName = "Test2";
+        var exName = new FileName("Test2");
         var loadCompact = true;
         var filterType = Filters.FilterType.Equals;
         var keyType = Filters.KeyType.Long;
@@ -152,7 +152,7 @@ public class ProcessingTopicTests
     {
         // Arrange
         var name = "Test1";
-        var exName = "Test2";
+        var exName = new FileName("Test2");
         var loadCompact = true;
         var filterType = Filters.FilterType.Equals;
         var keyType = Filters.KeyType.Long;
@@ -175,7 +175,7 @@ public class ProcessingTopicTests
     {
         // Arrange
         var name = "Test1";
-        var exName = "Test2";
+        var exName = new FileName("Test2");
         var loadCompact = true;
         var filterType = Filters.FilterType.Equals;
         var keyType = Filters.KeyType.Long;

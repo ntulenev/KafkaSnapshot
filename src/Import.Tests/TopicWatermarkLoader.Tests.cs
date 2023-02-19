@@ -12,6 +12,7 @@ using KafkaSnapshot.Import.Configuration;
 using KafkaSnapshot.Import.Metadata;
 using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Filters;
+using KafkaSnapshot.Models.Names;
 
 namespace KafkaAsTable.Tests;
 
@@ -106,7 +107,7 @@ public class TopicWatermarkLoaderTests
         var loader = new TopicWatermarkLoader(client, options.Object);
         var consumerFactory = (Func<IConsumer<string, string>>)null!;
         HashSet<int> partitionFilter = null!;
-        var topicName = new LoadingTopic("test", true, new DateFilterRange(null!, null!), partitionFilter);
+        var topicName = new LoadingTopic(new TopicName("test"), true, new DateFilterRange(null!, null!), partitionFilter);
 
         // Act
         var exception = await Record.ExceptionAsync(async () =>
@@ -151,7 +152,7 @@ public class TopicWatermarkLoaderTests
         //Arrange
         using var cts = new CancellationTokenSource();
         HashSet<int> partitionFilter = null!;
-        var topic = new LoadingTopic("test", true, new DateFilterRange(null!, null!), partitionFilter);
+        var topic = new LoadingTopic(new TopicName("test"), true, new DateFilterRange(null!, null!), partitionFilter);
         var clientMock = new Mock<IAdminClient>(MockBehavior.Strict);
         var client = clientMock.Object;
         var timeout = 1;
@@ -163,16 +164,16 @@ public class TopicWatermarkLoaderTests
         var loader = new TopicWatermarkLoader(client, options.Object);
         var consumerMock = new Mock<IConsumer<object, object>>(MockBehavior.Strict);
         IConsumer<object, object> consumerFactory() => consumerMock!.Object;
-        var adminClientPartition = new TopicPartition(topic.Value, new Partition(1));
+        var adminClientPartition = new TopicPartition(topic.Value.Name, new Partition(1));
         var adminParitions = new[] { adminClientPartition };
         var borkerMeta = new BrokerMetadata(1, "testHost", 1000);
         var partitionMeta = new PartitionMetadata(1, 1, new[] { 1 }, new[] { 1 }, null);
-        var topicMeta = new TopicMetadata(topic.Value, new[] { partitionMeta }.ToList(), null);
+        var topicMeta = new TopicMetadata(topic.Value.Name, new[] { partitionMeta }.ToList(), null);
         var meta = new Confluent.Kafka.Metadata(
                 new[] { borkerMeta }.ToList(),
                 new[] { topicMeta }.ToList(), 1, "test"
                 );
-        clientMock.Setup(c => c.GetMetadata(topic.Value, TimeSpan.FromSeconds(timeout))).Returns(meta);
+        clientMock.Setup(c => c.GetMetadata(topic.Value.Name, TimeSpan.FromSeconds(timeout))).Returns(meta);
         var offets = new WatermarkOffsets(new Offset(1), new Offset(2));
         consumerMock.Setup(x => x.QueryWatermarkOffsets(adminClientPartition, TimeSpan.FromSeconds(timeout))).Returns(offets);
         consumerMock.Setup(x => x.Dispose());
@@ -187,7 +188,7 @@ public class TopicWatermarkLoaderTests
         result.Should().NotBeNull();
         var watermarks = result.Watermarks.ToList();
         watermarks.Should().ContainSingle();
-        clientMock.Verify(c => c.GetMetadata(topic.Value, TimeSpan.FromSeconds(timeout)), Times.Once);
+        clientMock.Verify(c => c.GetMetadata(topic.Value.Name, TimeSpan.FromSeconds(timeout)), Times.Once);
         consumerMock.Verify(x => x.QueryWatermarkOffsets(adminClientPartition, TimeSpan.FromSeconds(timeout)), Times.Once);
         watermarks.Single().TopicName.Should().Be(topic);
         watermarks.Single().Partition.Value.Should().Be(partitionMeta.PartitionId);
@@ -200,7 +201,7 @@ public class TopicWatermarkLoaderTests
     {
         //Arrange
         using var cts = new CancellationTokenSource();
-        var topic = new LoadingTopic("test", true, new DateFilterRange(null!, null!), new HashSet<int>(new[] { 2 }));
+        var topic = new LoadingTopic(new TopicName("test"), true, new DateFilterRange(null!, null!), new HashSet<int>(new[] { 2 }));
         var clientMock = new Mock<IAdminClient>(MockBehavior.Strict);
         var client = clientMock.Object;
         var timeout = 1;
@@ -212,18 +213,18 @@ public class TopicWatermarkLoaderTests
         var loader = new TopicWatermarkLoader(client, options.Object);
         var consumerMock = new Mock<IConsumer<object, object>>(MockBehavior.Strict);
         IConsumer<object, object> consumerFactory() => consumerMock!.Object;
-        var adminClientPartition1 = new TopicPartition(topic.Value, new Partition(1));
-        var adminClientPartition2 = new TopicPartition(topic.Value, new Partition(2));
+        var adminClientPartition1 = new TopicPartition(topic.Value.Name, new Partition(1));
+        var adminClientPartition2 = new TopicPartition(topic.Value.Name, new Partition(2));
         var adminParitions = new[] { adminClientPartition1, adminClientPartition2 };
         var borkerMeta = new BrokerMetadata(1, "testHost", 1000);
         var partitionMeta1 = new PartitionMetadata(1, 1, new[] { 1 }, new[] { 1 }, null);
         var partitionMeta2 = new PartitionMetadata(2, 1, new[] { 1 }, new[] { 1 }, null);
-        var topicMeta = new TopicMetadata(topic.Value, new[] { partitionMeta1, partitionMeta2 }.ToList(), null);
+        var topicMeta = new TopicMetadata(topic.Value.Name, new[] { partitionMeta1, partitionMeta2 }.ToList(), null);
         var meta = new Confluent.Kafka.Metadata(
                 new[] { borkerMeta }.ToList(),
                 new[] { topicMeta }.ToList(), 1, "test"
                 );
-        clientMock.Setup(c => c.GetMetadata(topic.Value, TimeSpan.FromSeconds(timeout))).Returns(meta);
+        clientMock.Setup(c => c.GetMetadata(topic.Value.Name, TimeSpan.FromSeconds(timeout))).Returns(meta);
         var offets = new WatermarkOffsets(new Offset(1), new Offset(2));
         consumerMock.Setup(x => x.QueryWatermarkOffsets(adminClientPartition1, TimeSpan.FromSeconds(timeout))).Returns(offets);
         consumerMock.Setup(x => x.QueryWatermarkOffsets(adminClientPartition2, TimeSpan.FromSeconds(timeout))).Returns(offets);
@@ -239,7 +240,7 @@ public class TopicWatermarkLoaderTests
         result.Should().NotBeNull();
         var watermarks = result.Watermarks.ToList();
         watermarks.Should().ContainSingle();
-        clientMock.Verify(c => c.GetMetadata(topic.Value, TimeSpan.FromSeconds(timeout)), Times.Once);
+        clientMock.Verify(c => c.GetMetadata(topic.Value.Name, TimeSpan.FromSeconds(timeout)), Times.Once);
         consumerMock.Verify(x => x.QueryWatermarkOffsets(adminClientPartition1, TimeSpan.FromSeconds(timeout)), Times.Never);
         consumerMock.Verify(x => x.QueryWatermarkOffsets(adminClientPartition2, TimeSpan.FromSeconds(timeout)), Times.Once);
         watermarks.Single().TopicName.Should().Be(topic);

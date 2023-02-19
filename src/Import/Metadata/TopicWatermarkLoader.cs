@@ -35,7 +35,7 @@ public class TopicWatermarkLoader : ITopicWatermarkLoader
 
     private IEnumerable<TopicPartition> SplitTopicOnPartitions(LoadingTopic loadingTopic)
     {
-        var topicMeta = _adminClient.GetMetadata(loadingTopic.Value, _metaTimeout);
+        var topicMeta = _adminClient.GetMetadata(loadingTopic.Value.Name, _metaTimeout);
 
         IEnumerable<PartitionMetadata> partitions = topicMeta.Topics.Single().Partitions;
 
@@ -44,7 +44,7 @@ public class TopicWatermarkLoader : ITopicWatermarkLoader
             partitions = partitions.Where(x => loadingTopic.PartitionFilter.Contains(x.PartitionId));
         }
 
-        return partitions.Select(partition => new TopicPartition(loadingTopic.Value, new Partition(partition.PartitionId)));
+        return partitions.Select(partition => new TopicPartition(loadingTopic.Value.Name, new Partition(partition.PartitionId)));
     }
 
     private PartitionWatermark CreatePartitionWatermark<Key, Value>

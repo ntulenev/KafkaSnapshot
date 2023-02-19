@@ -8,6 +8,7 @@ using KafkaSnapshot.Models.Export;
 using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Abstractions.Filters;
 using KafkaSnapshot.Models.Filters;
+using KafkaSnapshot.Models.Names;
 
 namespace KafkaSnapshot.Processing;
 
@@ -70,7 +71,7 @@ public class ProcessingUnit<TKey, TKeyMarker, TValue> : IProcessingUnit where TK
     }
 
     /// <inheritdoc/>
-    public string TopicName => _topicParams.Value;
+    public TopicName TopicName => _topicParams.Value;
 
     private readonly ISnapshotLoader<TKey, TValue> _kafkaLoader;
     private readonly IDataExporter<TKey, TKeyMarker, TValue, ExportedTopic> _exporter;

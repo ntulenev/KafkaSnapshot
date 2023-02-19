@@ -35,7 +35,7 @@ public class LoaderTool : ILoaderTool
 
         foreach (var unit in _units)
         {
-            using var _ = _logger.BeginScope("topic {topic}", unit.TopicName);
+            using var _ = _logger.BeginScope("topic {topic}", unit.TopicName.Name);
 
             _logger.LogInformation("{indexer}/{count} Processing topic {topicName}", ++indexer, _units.Count, unit.TopicName);
 

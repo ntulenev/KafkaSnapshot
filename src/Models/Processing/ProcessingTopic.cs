@@ -16,7 +16,7 @@ namespace KafkaSnapshot.Models.Processing;
 /// <param name="FilterKeyValue">Filter key value.</param>
 /// <param name="DateRange">Date interval for offsets.</param>
 /// <param name="ExportRawMessage">Use raw string for message or json.</param>
-public record ProcessingTopic<TKey>(string Name,
+public record ProcessingTopic<TKey>(TopicName TopicName,
                                     FileName ExportName,
                                     bool LoadWithCompacting,
                                     FilterType FilterKeyType,
@@ -31,7 +31,7 @@ public record ProcessingTopic<TKey>(string Name,
     /// </summary>
     public LoadingTopic CreateLoadingParams()
     {
-        return new LoadingTopic(Name, LoadWithCompacting, DateRange, PartitionIdsFilter);
+        return new LoadingTopic(TopicName, LoadWithCompacting, DateRange, PartitionIdsFilter);
     }
 
     /// <summary>
@@ -39,6 +39,6 @@ public record ProcessingTopic<TKey>(string Name,
     /// </summary>
     public ExportedTopic CreateExportParams()
     {
-        return new ExportedTopic(Name, ExportName, ExportRawMessage);
+        return new ExportedTopic(TopicName, ExportName, ExportRawMessage);
     }
 }

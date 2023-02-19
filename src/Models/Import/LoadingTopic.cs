@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 
 using KafkaSnapshot.Models.Filters;
+using KafkaSnapshot.Models.Names;
 
 namespace KafkaSnapshot.Models.Import;
 
@@ -10,9 +11,9 @@ namespace KafkaSnapshot.Models.Import;
 public class LoadingTopic
 {
     /// <summary>
-    /// Validated topic name.
+    /// Topic name.
     /// </summary>
-    public string Value { get; }
+    public TopicName Value { get; }
 
     /// <summary>
     /// Need to compact results by key.
@@ -58,13 +59,12 @@ public class LoadingTopic
     /// <param name="loadWithCompacting">Flag for compacting.</param>
     /// <param name="dateParams">date filter for initial offset.</param>
     /// <param name="partitionFilter">filtered partition ids.</param>
-    public LoadingTopic(string name,
+    public LoadingTopic(TopicName topicName,
                         bool loadWithCompacting,
                         DateFilterRange dateParams,
                         HashSet<int>? partitionFilter)
     {
-        ValidateTopicName(name);
-        Value = name;
+        Value = topicName ?? throw new ArgumentNullException(nameof(topicName));
         LoadWithCompacting = loadWithCompacting;
 
         ArgumentNullException.ThrowIfNull(dateParams);
@@ -87,48 +87,7 @@ public class LoadingTopic
         }
     }
 
-    /// <summary>
-    /// Validates topic name.
-    /// </summary>
-    /// <param name="topicName">Topic name.</param>
-    private static void ValidateTopicName(string topicName)
-    {
-        ArgumentNullException.ThrowIfNull(topicName);
-
-        if (string.IsNullOrWhiteSpace(topicName))
-        {
-            throw new ArgumentException(
-                "The topic name cannot be empty or consist of whitespaces.", nameof(topicName));
-        }
-
-        if (topicName.Any(character => char.IsWhiteSpace(character)))
-        {
-            throw new ArgumentException(
-                "The topic name cannot contain whitespaces.", nameof(topicName));
-        }
-
-        if (topicName.Length > MAX_TOPIC_NAME_LENGTH)
-        {
-            throw new ArgumentException(
-                "The name of a topic is too long.", nameof(topicName));
-        }
-
-        if (!_topicNameCharacters.IsMatch(topicName))
-        {
-            throw new ArgumentException(
-                "The topic name may consist of characters 'a' to 'z', 'A' to 'Z', digits, and minus signs.", nameof(topicName));
-        }
-    }
-
     private readonly DateTime? _offsetDate;
-
     private readonly DateTime? _endOffsetDate;
-
     private readonly IReadOnlySet<int> _partitionFilter;
-
-    private static readonly Regex _topicNameCharacters = new(
-       "^[a-zA-Z0-9\\-]*$",
-       RegexOptions.Compiled);
-
-    private const int MAX_TOPIC_NAME_LENGTH = 249;
 }

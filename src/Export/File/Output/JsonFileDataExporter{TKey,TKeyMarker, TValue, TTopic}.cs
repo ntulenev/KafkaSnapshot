@@ -69,7 +69,7 @@ public class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> : IDataExpor
 
     private async Task InnerFileExportAsync(IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> data, TTopic topic, CancellationToken ct)
     {
-        using var _ = _logger.BeginScope("Data from topic {topic} to File {file}", topic.Name, topic.ExportName);
+        using var _ = _logger.BeginScope("Data from topic {topic} to File {file}", topic.TopicName.Name, topic.ExportName);
 
         _logger.LogDebug("Starting saving data.");
 
@@ -80,7 +80,7 @@ public class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> : IDataExpor
 
     private async Task InnerStreamExportAsync(IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> data, TTopic topic, CancellationToken ct)
     {
-        using var _ = _logger.BeginScope("Data from topic {topic} to File {file} with stream", topic.Name, topic.ExportName);
+        using var _ = _logger.BeginScope("Data from topic {topic} to File {file} with stream", topic.TopicName.Name, topic.ExportName);
 
         using var stream = _streamProvider.CreateFileStream(topic.ExportName);
 

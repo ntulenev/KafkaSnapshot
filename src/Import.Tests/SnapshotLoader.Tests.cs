@@ -17,6 +17,7 @@ using KafkaSnapshot.Import.Watermarks;
 using KafkaSnapshot.Import.Configuration;
 using KafkaSnapshot.Models.Filters;
 using KafkaSnapshot.Abstractions.Sorting;
+using KafkaSnapshot.Models.Names;
 
 namespace KafkaSnapshot.Import.Tests;
 
@@ -217,7 +218,7 @@ public class SnapshotLoaderTests
         var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter);
         var withCompacting = true;
         HashSet<int> partitionFilter = null!;
-        var topicParams = new LoadingTopic("test", withCompacting, new DateFilterRange(null!, null!), partitionFilter);
+        var topicParams = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(null!, null!), partitionFilter);
         var filterValueMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
         var valueFilter = filterValueMock.Object;
 
@@ -250,7 +251,7 @@ public class SnapshotLoaderTests
         var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter);
         var withCompacting = true;
         HashSet<int> partitionFilter = null!;
-        var topicParams = new LoadingTopic("test", withCompacting, new DateFilterRange(null!, null!), partitionFilter);
+        var topicParams = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(null!, null!), partitionFilter);
         var filterKeyMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
         var keyFilter = filterKeyMock.Object;
 
@@ -324,7 +325,7 @@ public class SnapshotLoaderTests
         var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter);
         var withCompacting = false;
         HashSet<int> partitionFilter = null!;
-        var topicName = new LoadingTopic("test", withCompacting, new DateFilterRange(null!, null!), partitionFilter);
+        var topicName = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(null!, null!), partitionFilter);
         var filterKeyMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
         filterKeyMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
         var keyFilter = filterKeyMock.Object;
@@ -339,7 +340,7 @@ public class SnapshotLoaderTests
         });
         topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, object>(consumerFactory, topicName, CancellationToken.None))
             .Returns(Task.FromResult(topicWatermark));
-        consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(x => x.Topic == topicName.Value && x.Partition == partition)));
+        consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(x => x.Topic == topicName.Value.Name && x.Partition == partition)));
         consumerMock.Setup(x => x.Consume(CancellationToken.None)).Returns(() =>
         {
             return consumerData[indexer++];
@@ -358,12 +359,6 @@ public class SnapshotLoaderTests
         dispCount.Should().Be(1);
         closeCount.Should().Be(1);
     }
-
-    //if (_config.SearchSinglePartition)
-    //if (topicParams.HasOffsetDate)
-    //isFinalOffsetDateReached
-    //if (keyFilter.IsMatch(result.Message.Key) && valueFilter.IsMatch(result.Message.Value))
-
 
     [Fact(DisplayName = "SnapshotLoader can load data without compacting on date.")]
     [Trait("Category", "Unit")]
@@ -424,7 +419,7 @@ public class SnapshotLoaderTests
         var withCompacting = false;
         var testDate = DateTime.UtcNow;
         HashSet<int> partitionFilter = null!;
-        var topicName = new LoadingTopic("test", withCompacting, new DateFilterRange(testDate, null!), partitionFilter);
+        var topicName = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(testDate, null!), partitionFilter);
         var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
         keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
         var keyFilter = keyFilterMock.Object;
@@ -437,7 +432,7 @@ public class SnapshotLoaderTests
         {
             new PartitionWatermark(topicName,offset,partition)
         });
-        var topicPartition = new TopicPartition(topicName.Value, partition);
+        var topicPartition = new TopicPartition(topicName.Value.Name, partition);
         var partitionWithTime = new TopicPartitionTimestamp(topicPartition, new Timestamp(testDate));
         consumerMock.Setup(x => x.OffsetsForTimes(
             It.Is<IEnumerable<TopicPartitionTimestamp>>(x => x.Single() == partitionWithTime),
@@ -447,7 +442,7 @@ public class SnapshotLoaderTests
             }.ToList());
         topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, object>(consumerFactory, topicName, CancellationToken.None))
             .Returns(Task.FromResult(topicWatermark));
-        consumerMock.Setup(x => x.Assign(It.Is<TopicPartitionOffset>(x => x.Topic == topicName.Value && x.Partition == partition)));
+        consumerMock.Setup(x => x.Assign(It.Is<TopicPartitionOffset>(x => x.Topic == topicName.Value.Name && x.Partition == partition)));
         consumerMock.Setup(x => x.Consume(CancellationToken.None)).Returns(() =>
         {
             return consumerData[indexer++];
@@ -490,7 +485,7 @@ public class SnapshotLoaderTests
         var withCompacting = compacting;
         var testDate = DateTime.UtcNow;
         HashSet<int> partitionFilter = null!;
-        var topicName = new LoadingTopic("test", withCompacting, new DateFilterRange(testDate, null!), partitionFilter);
+        var topicName = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(testDate, null!), partitionFilter);
         var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
         keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
         var keyFilter = keyFilterMock.Object;
@@ -503,7 +498,7 @@ public class SnapshotLoaderTests
         {
             new PartitionWatermark(topicName,offset,partition)
         });
-        var topicPartition = new TopicPartition(topicName.Value, partition);
+        var topicPartition = new TopicPartition(topicName.Value.Name, partition);
         var partitionWithTime = new TopicPartitionTimestamp(topicPartition, new Timestamp(testDate));
         consumerMock.Setup(x => x.OffsetsForTimes(
             It.Is<IEnumerable<TopicPartitionTimestamp>>(x => x.Single() == partitionWithTime),
@@ -585,7 +580,7 @@ public class SnapshotLoaderTests
         var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter);
         var withCompacting = true;
         HashSet<int> partitionFilter = null!;
-        var topicName = new LoadingTopic("test", withCompacting, new DateFilterRange(null!, null!), partitionFilter);
+        var topicName = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(null!, null!), partitionFilter);
         var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
         keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
         var keyFilter = keyFilterMock.Object;
@@ -600,7 +595,7 @@ public class SnapshotLoaderTests
         });
         topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, object>(consumerFactory, topicName, CancellationToken.None))
             .Returns(Task.FromResult(topicWatermark));
-        consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(x => x.Topic == topicName.Value && x.Partition == partition)));
+        consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(x => x.Topic == topicName.Value.Name && x.Partition == partition)));
         consumerMock.Setup(x => x.Consume(CancellationToken.None)).Returns(() =>
         {
             return consumerData[indexer++];
@@ -677,7 +672,7 @@ public class SnapshotLoaderTests
         var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter);
         var withCompacting = true;
         HashSet<int> partitionFilter = null!;
-        var topicName = new LoadingTopic("test", withCompacting, new DateFilterRange(null!, null!), partitionFilter);
+        var topicName = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(null!, null!), partitionFilter);
         var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
         keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
 
@@ -692,7 +687,7 @@ public class SnapshotLoaderTests
             new PartitionWatermark(topicName,offset,partition)
         });
         var testDate = DateTime.UtcNow;
-        var topicPartition = new TopicPartition(topicName.Value, partition);
+        var topicPartition = new TopicPartition(topicName.Value.Name, partition);
         var partitionWithTime = new TopicPartitionTimestamp(topicPartition, new Timestamp(testDate));
         consumerMock.Setup(x => x.OffsetsForTimes(
             It.Is<IEnumerable<TopicPartitionTimestamp>>(x => x.Single() == partitionWithTime),
@@ -702,7 +697,7 @@ public class SnapshotLoaderTests
             }.ToList());
         topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, object>(consumerFactory, topicName, CancellationToken.None))
             .Returns(Task.FromResult(topicWatermark));
-        consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(x => x.Topic == topicName.Value && x.Partition == partition)));
+        consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(x => x.Topic == topicName.Value.Name && x.Partition == partition)));
         consumerMock.Setup(x => x.Consume(CancellationToken.None)).Returns(() =>
         {
             return consumerData[indexer++];
@@ -745,7 +740,7 @@ public class SnapshotLoaderTests
         var withCompacting = compacting;
         var testDate = DateTime.UtcNow;
         HashSet<int> partitionFilter = null!;
-        var topicName = new LoadingTopic("test", withCompacting, new DateFilterRange(null!, testDate), partitionFilter);
+        var topicName = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(null!, testDate), partitionFilter);
         var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
         keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
         var keyFilter = keyFilterMock.Object;
@@ -758,7 +753,7 @@ public class SnapshotLoaderTests
         {
             new PartitionWatermark(topicName,offset,partition)
         });
-        var topicPartition = new TopicPartition(topicName.Value, partition);
+        var topicPartition = new TopicPartition(topicName.Value.Name, partition);
         var partitionWithTime = new TopicPartitionTimestamp(topicPartition, new Timestamp(testDate));
         consumerMock.Setup(x => x.Consume(It.IsAny<CancellationToken>())).Returns(new ConsumeResult<object, object>
         {
@@ -769,7 +764,7 @@ public class SnapshotLoaderTests
         });
         topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, object>(consumerFactory, topicName, CancellationToken.None))
             .Returns(Task.FromResult(topicWatermark));
-        consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(x => x.Topic == topicName.Value && x.Partition == partition)));
+        consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(x => x.Topic == topicName.Value.Name && x.Partition == partition)));
         var dispCount = 0;
         var closeCount = 0;
         consumerMock.Setup(x => x.Dispose()).Callback(() => dispCount++);
@@ -844,7 +839,7 @@ public class SnapshotLoaderTests
         var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter);
         var withCompacting = false;
         HashSet<int> partitionFilter = null!;
-        var topicName = new LoadingTopic("test", withCompacting, new DateFilterRange(null!, testDate), partitionFilter);
+        var topicName = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(null!, testDate), partitionFilter);
         var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
         keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
         var keyfilter = keyFilterMock.Object;
@@ -857,7 +852,7 @@ public class SnapshotLoaderTests
         {
             new PartitionWatermark(topicName,offset,partition)
         });
-        var topicPartition = new TopicPartition(topicName.Value, partition);
+        var topicPartition = new TopicPartition(topicName.Value.Name, partition);
         var partitionWithTime = new TopicPartitionTimestamp(topicPartition, new Timestamp(testDate));
         consumerMock.Setup(x => x.Consume(CancellationToken.None)).Returns(() =>
         {
@@ -865,7 +860,7 @@ public class SnapshotLoaderTests
         });
         topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, object>(consumerFactory, topicName, CancellationToken.None))
             .Returns(Task.FromResult(topicWatermark));
-        consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(x => x.Topic == topicName.Value && x.Partition == partition)));
+        consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(x => x.Topic == topicName.Value.Name && x.Partition == partition)));
         var dispCount = 0;
         var closeCount = 0;
         consumerMock.Setup(x => x.Dispose()).Callback(() => dispCount++);

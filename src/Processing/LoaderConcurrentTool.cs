@@ -34,7 +34,7 @@ public class LoaderConcurrentTool : ILoaderTool
 
         await Task.WhenAll(_units.Select(async unit =>
         {
-            using var _ = _logger.BeginScope("Topic {topic}", unit.TopicName);
+            using var _ = _logger.BeginScope("Topic {topic}", unit.TopicName.Name);
 
             _logger.LogInformation("Start processing topic.");
 

@@ -63,7 +63,7 @@ public class PartitionWatermark
     {
         ArgumentNullException.ThrowIfNull(consumer);
 
-        consumer.Assign(new TopicPartition(_topicName.Value, _partition));
+        consumer.Assign(new TopicPartition(_topicName.Value.Name, _partition));
 
     }
 
@@ -79,7 +79,7 @@ public class PartitionWatermark
     {
         ArgumentNullException.ThrowIfNull(consumer);
 
-        var topicPartition = new TopicPartition(_topicName.Value, _partition);
+        var topicPartition = new TopicPartition(_topicName.Value.Name, _partition);
 
         var partitionTimestamp = new TopicPartitionTimestamp(topicPartition, new Timestamp(startDate));
 

@@ -13,7 +13,7 @@ public class ProcessingTopicTests
     public void CanCreateProcessingTopic()
     {
         // Arrange
-        var name = "Test1";
+        var name = new TopicName("Test1");
         var exName = new FileName("Test2");
         var loadCompact = true;
         var filterType = Filters.FilterType.Equals;
@@ -36,7 +36,7 @@ public class ProcessingTopicTests
     public void CanCreateProcessingTopicWithValidParams()
     {
         // Arrange
-        var name = "Test1";
+        var name = new TopicName("Test1");
         var exName = new FileName("Test2");
         var loadCompact = true;
         var filterType = Filters.FilterType.Equals;
@@ -51,7 +51,7 @@ public class ProcessingTopicTests
         new ProcessingTopic<int>(name, exName, loadCompact, filterType, keyType, filterKeyValue, dateRange, isRaw, partitions);
 
         // Assert
-        result.Name.Should().Be(name);
+        result.TopicName.Should().Be(name);
         result.ExportName.Should().Be(exName);
         result.LoadWithCompacting.Should().Be(loadCompact);
         result.FilterKeyType.Should().Be(filterType);
@@ -68,7 +68,7 @@ public class ProcessingTopicTests
     public void CanCreateLoadingTopicFromProcessingTopic()
     {
         // Arrange
-        var name = "Test1";
+        var name = new TopicName("Test1");
         var exName = new FileName("Test2");
         var loadCompact = true;
         var filterType = Filters.FilterType.Equals;
@@ -91,7 +91,7 @@ public class ProcessingTopicTests
     public void CanCreateLoadingTopicFromProcessingTopicWithCorrectParams()
     {
         // Arrange
-        var name = "Test1";
+        var name = new TopicName("Test1");
         var exName = new FileName("Test2");
         var loadCompact = true;
         var filterType = Filters.FilterType.Equals;
@@ -119,7 +119,7 @@ public class ProcessingTopicTests
     public void CanCreateLoadingTopicFromProcessingTopicWithCorrectParamsWithDates()
     {
         // Arrange
-        var name = "Test1";
+        var name = new TopicName("Test1");
         var exName = new FileName("Test2");
         var loadCompact = true;
         var filterType = Filters.FilterType.Equals;
@@ -151,7 +151,7 @@ public class ProcessingTopicTests
     public void CanCreateExportTopicFromProcessingTopic()
     {
         // Arrange
-        var name = "Test1";
+        var name = new TopicName("Test1");
         var exName = new FileName("Test2");
         var loadCompact = true;
         var filterType = Filters.FilterType.Equals;
@@ -174,7 +174,7 @@ public class ProcessingTopicTests
     public void CanCreateExportTopicFromProcessingTopicWithCorrectParams()
     {
         // Arrange
-        var name = "Test1";
+        var name = new TopicName("Test1");
         var exName = new FileName("Test2");
         var loadCompact = true;
         var filterType = Filters.FilterType.Equals;
@@ -189,7 +189,7 @@ public class ProcessingTopicTests
         var result = processingTopic.CreateExportParams();
 
         // Assert
-        result.Name.Should().Be(name);
+        result.TopicName.Should().Be(name);
         result.ExportName.Should().Be(exName);
         result.ExportRawMessage.Should().Be(isRaw);
     }

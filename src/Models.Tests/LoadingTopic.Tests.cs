@@ -4,6 +4,7 @@ using FluentAssertions;
 
 using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Filters;
+using KafkaSnapshot.Models.Names;
 
 namespace KafkaSnapshot.Models.Tests;
 
@@ -17,7 +18,7 @@ public class LoadingTopicTests
     {
 
         // Arrange
-        string name = null!;
+        TopicName name = null!;
         HashSet<int> partitionFilter = null!;
 
         // Act
@@ -25,204 +26,6 @@ public class LoadingTopicTests
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
-    }
-
-    [Theory(DisplayName = "Topic name can't be null 2.")]
-    [Trait("Category", "Unit")]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void CantCreateNullTopicName2(bool compactingRule)
-    {
-
-        // Arrange
-        string name = null!;
-        HashSet<int> partitionFilter = null!;
-
-        // Act
-        var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!), partitionFilter));
-
-        // Assert
-        exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
-    }
-
-    [Theory(DisplayName = "Topic name can't be empty.")]
-    [Trait("Category", "Unit")]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void CantCreateEmptyTopicName(bool compactingRule)
-    {
-
-        // Arrange
-        var name = string.Empty;
-        HashSet<int> partitionFilter = null!;
-
-        // Act
-        var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!), partitionFilter));
-
-        // Assert
-        exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
-    }
-
-    [Theory(DisplayName = "Topic name can't be empty 2.")]
-    [Trait("Category", "Unit")]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void CantCreateEmptyTopicName2(bool compactingRule)
-    {
-
-        // Arrange
-        var name = string.Empty;
-        HashSet<int> partitionFilter = null!;
-
-        // Act
-        var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!), partitionFilter));
-
-        // Assert
-        exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
-    }
-
-    [Theory(DisplayName = "Topic name can't be whitespaces.")]
-    [Trait("Category", "Unit")]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void CantCreateWhitespacesTopicName(bool compactingRule)
-    {
-
-        // Arrange
-        var name = "     ";
-        HashSet<int> partitionFilter = null!;
-
-        // Act
-        var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!), partitionFilter));
-
-        // Assert
-        exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
-    }
-
-    [Theory(DisplayName = "Topic name can't be whitespaces 2.")]
-    [Trait("Category", "Unit")]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void CantCreateWhitespacesTopicName2(bool compactingRule)
-    {
-
-        // Arrange
-        var name = "     ";
-        HashSet<int> partitionFilter = null!;
-
-        // Act
-        var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!), partitionFilter));
-
-        // Assert
-        exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
-    }
-
-    [Theory(DisplayName = "Topic name can't have any whitespaces.")]
-    [Trait("Category", "Unit")]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void CantCreateAnyWhitespacesTopicName(bool compactingRule)
-    {
-
-        // Arrange
-        var name = "topic name";
-        HashSet<int> partitionFilter = null!;
-
-        // Act
-        var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!), partitionFilter));
-
-        // Assert
-        exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
-    }
-
-    [Theory(DisplayName = "Topic name can't have any whitespaces 2.")]
-    [Trait("Category", "Unit")]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void CantCreateAnyWhitespacesTopicName2(bool compactingRule)
-    {
-
-        // Arrange
-        var name = "topic name";
-        HashSet<int> partitionFilter = null!;
-
-        // Act
-        var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!), partitionFilter));
-
-        // Assert
-        exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
-    }
-
-    [Theory(DisplayName = "Topic name can't have long names.")]
-    [Trait("Category", "Unit")]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void CantCreateLongTopicName(bool compactingRule)
-    {
-
-        // Arrange
-        var name = new string('x', 250);
-        HashSet<int> partitionFilter = null!;
-
-        // Act
-        var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!), partitionFilter));
-
-        // Assert
-        exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
-    }
-
-    [Theory(DisplayName = "Topic name can't have long names 2.")]
-    [Trait("Category", "Unit")]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void CantCreateLongTopicName2(bool compactingRule)
-    {
-
-        // Arrange
-        var name = new string('x', 250);
-        HashSet<int> partitionFilter = null!;
-
-        // Act
-        var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!), partitionFilter));
-
-        // Assert
-        exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
-    }
-
-    [Theory(DisplayName = "Topic name can't have bad symbols names.")]
-    [Trait("Category", "Unit")]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void CantCreateBadTopicName(bool compactingRule)
-    {
-
-        // Arrange
-        var name = "ы?:%";
-        HashSet<int> partitionFilter = null!;
-
-        // Act
-        var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!), partitionFilter));
-
-        // Assert
-        exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
-    }
-
-    [Theory(DisplayName = "Topic name can't have bad symbols names 2.")]
-    [Trait("Category", "Unit")]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void CantCreateBadTopicName2(bool compactingRule)
-    {
-
-        // Arrange
-        var name = "ы?:%";
-        HashSet<int> partitionFilter = null!;
-
-        // Act
-        var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!), partitionFilter));
-
-        // Assert
-        exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
     }
 
     [Theory(DisplayName = "Topic with valid name can be created.")]
@@ -233,7 +36,7 @@ public class LoadingTopicTests
     {
 
         // Arrange
-        var name = "test";
+        var name = new TopicName("test");
         LoadingTopic item = null!;
         HashSet<int> partitionFilter = null!;
 
@@ -256,7 +59,7 @@ public class LoadingTopicTests
     {
 
         // Arrange
-        var name = "test";
+        var name = new TopicName("test");
         LoadingTopic item = null!;
         HashSet<int> partitionFilter = null!;
 
@@ -277,7 +80,7 @@ public class LoadingTopicTests
     {
 
         // Arrange
-        var name = "test";
+        var name = new TopicName("test");
         HashSet<int> partitionFilter = null!;
         var topic = new LoadingTopic(name, true, new DateFilterRange(null!, DateTime.UtcNow), partitionFilter);
 
@@ -296,7 +99,7 @@ public class LoadingTopicTests
 
         // Arrange
         var date = DateTime.UtcNow;
-        var name = "test";
+        var name = new TopicName("test");
         HashSet<int> partitionFilter = null!;
         var topic = new LoadingTopic(name, true, new DateFilterRange(date, null!), partitionFilter);
         DateTime resultedDate = default;
@@ -315,7 +118,7 @@ public class LoadingTopicTests
     {
 
         // Arrange
-        var name = "test";
+        var name = new TopicName("test");
         HashSet<int> partitionFilter = null!;
         var topic = new LoadingTopic(name, true, new DateFilterRange(DateTime.UtcNow, null!), partitionFilter);
 
@@ -333,7 +136,7 @@ public class LoadingTopicTests
 
         // Arrange
         var date = DateTime.UtcNow;
-        var name = "test";
+        var name = new TopicName("test");
         HashSet<int> partitionFilter = null!;
         var topic = new LoadingTopic(name, true, new DateFilterRange(null!, date), partitionFilter);
         DateTime resultedDate = default;
@@ -352,7 +155,7 @@ public class LoadingTopicTests
     {
 
         // Arrange
-        var name = "test";
+        var name = new TopicName("test");
 
         // Act
         var exception = Record.Exception(() => new LoadingTopic(name, true, new DateFilterRange(DateTime.UtcNow, DateTime.UtcNow.AddDays(1)), new HashSet<int>()));
@@ -367,7 +170,7 @@ public class LoadingTopicTests
     {
 
         // Arrange
-        var name = "test";
+        var name = new TopicName("test");
 
         // Act
         var exception = Record.Exception(() => new LoadingTopic(name, true, new DateFilterRange(DateTime.UtcNow, DateTime.UtcNow.AddDays(1)), new HashSet<int>(new[] { 1, 2, 3 })));
@@ -384,7 +187,7 @@ public class LoadingTopicTests
         // Arrange
         var items = new[] { 1, 2, 3 };
         var date = DateTime.UtcNow;
-        var name = "test";
+        var name = new TopicName("test");
 
         // Act
         var topic = new LoadingTopic(name, true, new DateFilterRange(date, date), new HashSet<int>(items));

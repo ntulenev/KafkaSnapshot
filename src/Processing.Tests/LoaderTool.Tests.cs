@@ -7,6 +7,7 @@ using Moq;
 using Xunit;
 
 using KafkaSnapshot.Abstractions.Processing;
+using KafkaSnapshot.Models.Names;
 
 namespace KafkaSnapshot.Processing.Tests;
 
@@ -77,8 +78,8 @@ public class LoaderToolTests
         var unit2 = new Mock<IProcessingUnit>(MockBehavior.Strict);
         unit1.Setup(x => x.ProcessAsync(cts.Token));
         unit2.Setup(x => x.ProcessAsync(cts.Token));
-        unit1.Setup(x => x.TopicName).Returns(() => "unit1");
-        unit2.Setup(x => x.TopicName).Returns(() => "unit2");
+        unit1.Setup(x => x.TopicName).Returns(() => new TopicName("unit1"));
+        unit2.Setup(x => x.TopicName).Returns(() => new TopicName("unit2"));
         var items = new[]
         {
             unit1.Object,unit2.Object
@@ -102,10 +103,10 @@ public class LoaderToolTests
         var loggerMock = new Mock<ILogger<LoaderTool>>();
         var logger = loggerMock.Object;
         var unit1 = new Mock<IProcessingUnit>(MockBehavior.Strict);
-        unit1.Setup(x => x.TopicName).Returns(() => "unit1");
+        unit1.Setup(x => x.TopicName).Returns(() => new TopicName("unit1"));
         unit1.Setup(x => x.ProcessAsync(cts.Token)).Throws(new Exception());
         var unit2 = new Mock<IProcessingUnit>(MockBehavior.Strict);
-        unit2.Setup(x => x.TopicName).Returns(() => "unit2");
+        unit2.Setup(x => x.TopicName).Returns(() => new TopicName("unit2"));
         unit2.Setup(x => x.ProcessAsync(cts.Token));
         var items = new[]
         {
@@ -131,8 +132,8 @@ public class LoaderToolTests
         var logger = loggerMock.Object;
         var unit1 = new Mock<IProcessingUnit>(MockBehavior.Strict);
         var unit2 = new Mock<IProcessingUnit>(MockBehavior.Strict);
-        unit1.Setup(x => x.TopicName).Returns(() => "unit1");
-        unit2.Setup(x => x.TopicName).Returns(() => "unit2");
+        unit1.Setup(x => x.TopicName).Returns(() => new TopicName("unit1"));
+        unit2.Setup(x => x.TopicName).Returns(() => new TopicName("unit2"));
         var items = new[]
         {
             unit1.Object,unit2.Object

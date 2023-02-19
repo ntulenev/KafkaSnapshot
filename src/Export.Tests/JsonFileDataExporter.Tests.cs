@@ -136,7 +136,7 @@ public class JsonFileDataExporterTests
         var fileStreamProvider = new Mock<IFileStreamProvider>(MockBehavior.Strict);
         var exporter = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>
             (config.Object, logger.Object, fileSaver.Object, fileStreamProvider.Object, serializer.Object);
-        var topic = new ExportedTopic("name", new FileName("filename"), true);
+        var topic = new ExportedTopic(new TopicName("name"), new FileName("filename"), true);
         var data = (IEnumerable<KeyValuePair<object, KafkaMessage<object>>>)null!;
 
         // Act
@@ -190,7 +190,7 @@ public class JsonFileDataExporterTests
         var fileStreamProvider = new Mock<IFileStreamProvider>(MockBehavior.Strict);
         var exporter = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>
             (config.Object, logger.Object, fileSaver.Object, fileStreamProvider.Object, serializer.Object);
-        var topic = new ExportedTopic("name", new FileName("filename"), isRawMessage);
+        var topic = new ExportedTopic(new TopicName("name"), new FileName("filename"), isRawMessage);
         var data = new KeyValuePair<object, KafkaMessage<object>>[]
         {
             new KeyValuePair<object, KafkaMessage<object>>("test",new KafkaMessage<object>("value", new KafkaMetadata(DateTime.UtcNow,1,2)))
@@ -227,7 +227,7 @@ public class JsonFileDataExporterTests
         var fileStreamProvider = new Mock<IFileStreamProvider>(MockBehavior.Strict);
         var exporter = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>
             (config.Object, logger.Object, fileSaver.Object, fileStreamProvider.Object, serializer.Object);
-        var topic = new ExportedTopic("name", new FileName("filename"), isRawMessage);
+        var topic = new ExportedTopic(new TopicName("name"), new FileName("filename"), isRawMessage);
         var data = new KeyValuePair<object, KafkaMessage<object>>[]
         {
             new KeyValuePair<object, KafkaMessage<object>>("test",new KafkaMessage<object>("value", new KafkaMetadata(DateTime.UtcNow,1,2)))

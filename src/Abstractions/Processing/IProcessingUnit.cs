@@ -1,4 +1,6 @@
-﻿namespace KafkaSnapshot.Abstractions.Processing;
+﻿using KafkaSnapshot.Models.Names;
+
+namespace KafkaSnapshot.Abstractions.Processing;
 
 /// <summary>
 /// Defines an interface for a processing unit that consumes messages from a Kafka topic.
@@ -15,5 +17,5 @@ public interface IProcessingUnit
     /// <summary>
     /// Gets the name of the Kafka topic that this processing unit is consuming messages from.
     /// </summary>
-    public string TopicName { get; }
+    public TopicName TopicName { get; }
 }

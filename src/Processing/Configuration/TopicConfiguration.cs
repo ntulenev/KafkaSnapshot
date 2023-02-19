@@ -72,7 +72,7 @@ public class TopicConfiguration
 
         var dateRange = new DateFilterRange(OffsetStartDate, OffsetEndDate);
 
-        return new ProcessingTopic<TKey>(Name,
+        return new ProcessingTopic<TKey>(new TopicName(Name),
                                          new FileName(ExportFileName),
                                          Compacting == CompactingMode.On,
                                          FilterKeyType,

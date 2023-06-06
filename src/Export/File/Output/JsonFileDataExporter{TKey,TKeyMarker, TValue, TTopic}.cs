@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Models.Export;
 using KafkaSnapshot.Models.Message;
-using Microsoft.Extensions.Options;
 using KafkaSnapshot.Export.Configuration;
 
 namespace KafkaSnapshot.Export.File.Output;

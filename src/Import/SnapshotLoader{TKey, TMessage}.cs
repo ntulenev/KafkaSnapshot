@@ -29,10 +29,14 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
                           IMessageSorter<TKey, TMessage> sorter
                          )
     {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _topicWatermarkLoader = topicWatermarkLoader ?? throw new ArgumentNullException(nameof(topicWatermarkLoader));
-        _consumerFactory = consumerFactory ?? throw new ArgumentNullException(nameof(consumerFactory));
-        _sorter = sorter ?? throw new ArgumentNullException(nameof(sorter));
+        _logger = logger
+            ?? throw new ArgumentNullException(nameof(logger));
+        _topicWatermarkLoader = topicWatermarkLoader
+            ?? throw new ArgumentNullException(nameof(topicWatermarkLoader));
+        _consumerFactory = consumerFactory
+            ?? throw new ArgumentNullException(nameof(consumerFactory));
+        _sorter = sorter
+            ?? throw new ArgumentNullException(nameof(sorter));
 
         ArgumentNullException.ThrowIfNull(config);
 
@@ -63,7 +67,12 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
                                     .ConfigureAwait(false);
 
         _logger.LogDebug("Loading initial state");
-        var initialState = await ConsumeInitialAsync(topicWatermark, topicParams, keyFilter, valueFilter, ct)
+        var initialState = await ConsumeInitialAsync(
+                                    topicWatermark,
+                                    topicParams,
+                                    keyFilter,
+                                    valueFilter,
+                                    ct)
                                 .ConfigureAwait(false);
 
         _logger.LogDebug("Creating compacting state");
@@ -82,7 +91,12 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
         {
             foreach (var watermark in topicWatermark.Watermarks)
             {
-                var result = ConsumeToWatermark(watermark, topicParams, keyFilter, valueFilter, ct);
+                var result = ConsumeToWatermark(
+                                watermark,
+                                topicParams,
+                                keyFilter,
+                                valueFilter,
+                                ct);
 
                 if (result.Any())
                 {
@@ -96,7 +110,13 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
         {
             var consumedEntities = await Task.WhenAll(topicWatermark.Watermarks
             .Select(watermark =>
-                        Task.Run(() => ConsumeToWatermark(watermark, topicParams, keyFilter, valueFilter, ct))
+                        Task.Run(() =>
+                                    ConsumeToWatermark(
+                                        watermark,
+                                        topicParams,
+                                        keyFilter,
+                                        valueFilter,
+                                        ct))
                    )
             ).ConfigureAwait(false);
 
@@ -114,7 +134,9 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
     {
         using var _ = _logger.BeginScope("Partition {Partition}", watermark.Partition.Value);
 
-        _logger.LogInformation("Watermarks: Low {Low}, High {High}", watermark.Offset.Low, watermark.Offset.High);
+        _logger.LogInformation("Watermarks: Low {Low}, High {High}",
+                    watermark.Offset.Low,
+                    watermark.Offset.High);
 
         using var consumer = _consumerFactory();
 
@@ -123,9 +145,13 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
 
             if (topicParams.HasOffsetDate)
             {
-                _logger.LogInformation("Searching for messages after date {Date}", topicParams.OffsetDate);
+                _logger.LogInformation("Searching for messages after date {Date}",
+                            topicParams.OffsetDate);
 
-                if (!watermark.AssingWithConsumer(consumer, topicParams.OffsetDate, _config.DateOffsetTimeout))
+                if (!watermark.AssingWithConsumer(
+                            consumer,
+                            topicParams.OffsetDate,
+                            _config.DateOffsetTimeout))
                 {
                     _logger.LogWarning("No actual offset for date {Date}", topicParams.OffsetDate);
                     yield break;
@@ -139,7 +165,8 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
             ConsumeResult<TKey, TMessage> result;
 
             bool isFinalOffsetDateReached() => topicParams.HasEndOffsetDate &&
-                                               result.Message.Timestamp.UtcDateTime > topicParams.EndOffsetDate.ToUniversalTime();
+                                               result.Message.Timestamp.UtcDateTime >
+                                               topicParams.EndOffsetDate.ToUniversalTime();
 
             do
             {
@@ -147,16 +174,28 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
 
                 if (isFinalOffsetDateReached())
                 {
-                    _logger.LogInformation("Final date offset {date} reached", topicParams.EndOffsetDate);
+                    _logger.LogInformation("Final date offset {date} reached",
+                                topicParams.EndOffsetDate);
                     break;
                 }
 
-                if (keyFilter.IsMatch(result.Message.Key) && valueFilter.IsMatch(result.Message.Value))
+                if (keyFilter.IsMatch(result.Message.Key) &&
+                    valueFilter.IsMatch(result.Message.Value))
                 {
-                    _logger.LogTrace("Loading {Key} - {Value}", result.Message.Key, result.Message.Value);
-                    var meta = new Models.Message.KafkaMetadata(result.Message.Timestamp.UtcDateTime, watermark.Partition.Value, result.Offset.Value);
+                    _logger.LogTrace("Loading {Key} - {Value}",
+                            result.Message.Key,
+                            result.Message.Value);
+
+                    var meta = new KafkaMetadata(
+                            result.Message.Timestamp.UtcDateTime,
+                            watermark.Partition.Value,
+                            result.Offset.Value);
+
                     var message = new KafkaMessage<TMessage>(result.Message.Value, meta);
-                    yield return new KeyValuePair<TKey, KafkaMessage<TMessage>>(result.Message.Key, message);
+
+                    yield return new KeyValuePair<TKey, KafkaMessage<TMessage>>(
+                        result.Message.Key,
+                        message);
                 }
 
             } while (watermark.IsWatermarkAchievedBy(result));
@@ -167,7 +206,9 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
         }
     }
 
-    private IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> CreateSnapshot(IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> items, bool withCompacting)
+    private IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> CreateSnapshot(
+                IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> items,
+                bool withCompacting)
     {
         IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> result = null!;
 

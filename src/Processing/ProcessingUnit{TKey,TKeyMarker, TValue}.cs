@@ -58,7 +58,7 @@ public class ProcessingUnit<TKey, TKeyMarker, TValue> : IProcessingUnit where TK
     public async Task ProcessAsync(CancellationToken ct)
     {
         _logger.LogDebug("Start loading data from Kafka.");
-        var items = await _kafkaLoader.LoadCompactSnapshotAsync(
+        var items = await _kafkaLoader.LoadSnapshotAsync(
             _topicParams,
             _keyFilter,
             _valueFilter,

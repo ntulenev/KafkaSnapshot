@@ -191,7 +191,7 @@ public class SnapshotLoaderTests
 
         // Act
         var exception = await Record.ExceptionAsync(
-            async () => _ = await loader.LoadCompactSnapshotAsync(
+            async () => _ = await loader.LoadSnapshotAsync(
                 null!, keyFilter, valueFilter, CancellationToken.None).ConfigureAwait(false));
 
 
@@ -224,7 +224,7 @@ public class SnapshotLoaderTests
 
         // Act
         var exception = await Record.ExceptionAsync(
-            async () => _ = await loader.LoadCompactSnapshotAsync(
+            async () => _ = await loader.LoadSnapshotAsync(
                 topicParams, null!, valueFilter, CancellationToken.None).ConfigureAwait(false));
 
         // Assert
@@ -257,7 +257,7 @@ public class SnapshotLoaderTests
 
         // Act
         var exception = await Record.ExceptionAsync(
-            async () => _ = await loader.LoadCompactSnapshotAsync(
+            async () => _ = await loader.LoadSnapshotAsync(
                 topicParams, keyFilter, null!, CancellationToken.None).ConfigureAwait(false));
 
         // Assert
@@ -351,7 +351,7 @@ public class SnapshotLoaderTests
         consumerMock.Setup(x => x.Close()).Callback(() => closeCount++);
 
         // Act
-        var result = await loader.LoadCompactSnapshotAsync(
+        var result = await loader.LoadSnapshotAsync(
                 topicName, keyFilter, valueFilter, CancellationToken.None).ConfigureAwait(false);
 
         // Assert
@@ -453,7 +453,7 @@ public class SnapshotLoaderTests
         consumerMock.Setup(x => x.Close()).Callback(() => closeCount++);
 
         // Act
-        var result = await loader.LoadCompactSnapshotAsync(topicName, keyFilter, valueFilter, CancellationToken.None).ConfigureAwait(false);
+        var result = await loader.LoadSnapshotAsync(topicName, keyFilter, valueFilter, CancellationToken.None).ConfigureAwait(false);
 
         // Assert
         result.Should().BeEquivalentTo(exceptedData);
@@ -514,7 +514,7 @@ public class SnapshotLoaderTests
         consumerMock.Setup(x => x.Close()).Callback(() => closeCount++);
 
         // Act
-        var result = await loader.LoadCompactSnapshotAsync(topicName, keyFilter, valueFilter, CancellationToken.None).ConfigureAwait(false);
+        var result = await loader.LoadSnapshotAsync(topicName, keyFilter, valueFilter, CancellationToken.None).ConfigureAwait(false);
 
         // Assert
         result.Should().BeEquivalentTo(Enumerable.Empty<KeyValuePair<object, KafkaMessage<object>>>());
@@ -606,7 +606,7 @@ public class SnapshotLoaderTests
         consumerMock.Setup(x => x.Close()).Callback(() => closeCount++);
 
         // Act
-        var result = await loader.LoadCompactSnapshotAsync(topicName, keyFilter, valueFilter, CancellationToken.None).ConfigureAwait(false);
+        var result = await loader.LoadSnapshotAsync(topicName, keyFilter, valueFilter, CancellationToken.None).ConfigureAwait(false);
 
         // Assert
         result.Should().BeEquivalentTo(exceptedData);
@@ -708,7 +708,7 @@ public class SnapshotLoaderTests
         consumerMock.Setup(x => x.Close()).Callback(() => closeCount++);
 
         // Act
-        var result = await loader.LoadCompactSnapshotAsync(topicName, keyFilter, valueFilter, CancellationToken.None).ConfigureAwait(false);
+        var result = await loader.LoadSnapshotAsync(topicName, keyFilter, valueFilter, CancellationToken.None).ConfigureAwait(false);
 
         // Assert
         result.Should().BeEquivalentTo(exceptedData);
@@ -771,7 +771,7 @@ public class SnapshotLoaderTests
         consumerMock.Setup(x => x.Close()).Callback(() => closeCount++);
 
         // Act
-        var result = await loader.LoadCompactSnapshotAsync(topicName, keyFilter, valueFilter, CancellationToken.None)
+        var result = await loader.LoadSnapshotAsync(topicName, keyFilter, valueFilter, CancellationToken.None)
             .ConfigureAwait(false);
 
         // Assert
@@ -867,7 +867,7 @@ public class SnapshotLoaderTests
         consumerMock.Setup(x => x.Close()).Callback(() => closeCount++);
 
         // Act
-        var result = await loader.LoadCompactSnapshotAsync(topicName, keyfilter, valueFilter, CancellationToken.None)
+        var result = await loader.LoadSnapshotAsync(topicName, keyfilter, valueFilter, CancellationToken.None)
             .ConfigureAwait(false);
 
         // Assert

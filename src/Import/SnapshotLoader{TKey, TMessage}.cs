@@ -51,7 +51,7 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
     }
 
     ///<inheritdoc/>
-    public async Task<IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>>> LoadCompactSnapshotAsync(
+    public async Task<IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>>> LoadSnapshotAsync(
         LoadingTopic topicParams,
         IDataFilter<TKey> keyFilter,
         IDataFilter<TMessage> valueFilter,

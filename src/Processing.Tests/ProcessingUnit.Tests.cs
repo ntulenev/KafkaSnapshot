@@ -255,7 +255,7 @@ public class ProcessingUnitTests
         factoryMock.Setup(x => x.Create(topic.FilterKeyType, topic.KeyType, topic.FilterKeyValue)).Returns(keyFilter);
         valueFactoryMock.Setup(x => x.Create(Models.Filters.FilterType.None, ValueMessageType.Raw, default!)).Returns(valueFilter);
         var valueFactory = valueFactoryMock.Object;
-        loaderMock.Setup(x => x.LoadCompactSnapshotAsync(
+        loaderMock.Setup(x => x.LoadSnapshotAsync(
                     It.Is<LoadingTopic>(n => n.Value.Name == topic.TopicName.Name),
                     keyFilter, valueFilter, cts.Token)).Returns(Task.FromResult(snapshot));
         var factory = factoryMock.Object;

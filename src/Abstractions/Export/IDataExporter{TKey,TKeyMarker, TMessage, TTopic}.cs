@@ -10,9 +10,10 @@ namespace KafkaSnapshot.Abstractions.Export;
 /// <typeparam name="TKeyMarker">A marker interface for TKey.</typeparam>
 /// <typeparam name="TMessage">The type of the message value.</typeparam>
 /// <typeparam name="TTopic">The type of the Kafka topic object to be exported.</typeparam>
-public interface IDataExporter<TKey, TKeyMarker, TMessage, TTopic> where TTopic : ExportedTopic
-                                                                   where TKeyMarker : IKeyRepresentationMarker
-                                                                   where TMessage : notnull
+public interface IDataExporter<TKey, TKeyMarker, TMessage, TTopic>
+    where TTopic : ExportedTopic
+    where TKeyMarker : IKeyRepresentationMarker
+    where TMessage : notnull
 {
     /// <summary>
     /// Exports the data to a file.
@@ -21,5 +22,8 @@ public interface IDataExporter<TKey, TKeyMarker, TMessage, TTopic> where TTopic 
     /// <param name="topic">The Kafka topic description.</param>
     /// <param name="ct">The token for cancelling the operation.</param>
     /// <returns>A task representing the asynchronous export operation.</returns>
-    public Task ExportAsync(IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> data, TTopic topic, CancellationToken ct);
+    public Task ExportAsync(
+        IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> data,
+        TTopic topic,
+        CancellationToken ct);
 }

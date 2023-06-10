@@ -19,7 +19,8 @@ public interface ISnapshotLoader<TKey, TMessage> where TKey : notnull
     /// <param name="keyFilter">The key filter used to filter the snapshot by key.</param>
     /// <param name="valueFilter">The value filter used to filter the snapshot by value.</param>
     /// <param name="ct">The cancellation token.</param>
-    /// <returns>An enumerable collection of key-value pairs representing the loaded Kafka messages.</returns>
+    /// <returns>An enumerable collection of key-value pairs 
+    /// representing the loaded Kafka messages.</returns>
     public Task<IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>>> LoadSnapshotAsync(
         LoadingTopic loadingTpic,
         IDataFilter<TKey> keyFilter,

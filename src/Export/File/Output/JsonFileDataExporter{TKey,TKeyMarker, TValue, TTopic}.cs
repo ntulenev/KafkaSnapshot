@@ -15,7 +15,8 @@ namespace KafkaSnapshot.Export.File.Output;
 /// <typeparam name="TKeyMarker">Key marker.</typeparam>
 /// <typeparam name="TValue">Message Value.</typeparam>
 /// <typeparam name="TTopic">Topic object.</typeparam>
-public class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> : IDataExporter<TKey, TKeyMarker, TValue, TTopic>
+public class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> :
+                    IDataExporter<TKey, TKeyMarker, TValue, TTopic>
                     where TTopic : ExportedTopic
                     where TKeyMarker : IKeyRepresentationMarker
                     where TValue : notnull
@@ -23,9 +24,11 @@ public class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> : IDataExpor
     /// <summary>
     /// Creates <see cref="JsonFileDataExporter{TKey, TKeyMarker, TValue, TTopic}"/>.
     /// </summary>
-    /// <param name="logger">Logger for <see cref="JsonFileDataExporter{TKey, TKeyMarker, TValue, TTopic}"/>.</param>
+    /// <param name="logger">Logger for 
+    /// <see cref="JsonFileDataExporter{TKey, TKeyMarker, TValue, TTopic}"/>.</param>
     /// <param name="fileSaver">Utility that saves content to file.</param>
-    /// <exception cref="ArgumentNullException">Thrown if any of the constructor arguments are null.</exception>
+    /// <exception cref="ArgumentNullException">Thrown if any of the 
+    /// constructor arguments are null.</exception>
     public JsonFileDataExporter(
                                 IOptions<JsonFileDataExporterConfiguration> config,
                                 ILogger<JsonFileDataExporter<TKey, TKeyMarker,
@@ -51,8 +54,12 @@ public class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> : IDataExpor
     }
 
     /// <inheritdoc/>
-    /// <exception cref="ArgumentNullException">Thrown if either <paramref name="data"/> or <paramref name="topic"/> is null.</exception>
-    public async Task ExportAsync(IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> data, TTopic topic, CancellationToken ct)
+    /// <exception cref="ArgumentNullException">Thrown if either <paramref name="data"/> 
+    /// or <paramref name="topic"/> is null.</exception>
+    public async Task ExportAsync(
+        IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> data,
+        TTopic topic,
+        CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(data);
         ArgumentNullException.ThrowIfNull(topic);
@@ -67,20 +74,34 @@ public class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> : IDataExpor
         }
     }
 
-    private async Task InnerFileExportAsync(IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> data, TTopic topic, CancellationToken ct)
+    private async Task InnerFileExportAsync(
+        IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> data, 
+        TTopic topic, 
+        CancellationToken ct)
     {
-        using var _ = _logger.BeginScope("Data from topic {topic} to File {file}", topic.TopicName.Name, topic.ExportName);
+        using var _ = _logger.BeginScope("Data from topic {topic} to File {file}", 
+                            topic.TopicName.Name, 
+                            topic.ExportName);
 
         _logger.LogDebug("Starting saving data.");
 
-        await _fileSaver.SaveAsync(topic.ExportName, _serializer.Serialize(data, topic.ExportRawMessage), ct).ConfigureAwait(false);
+        await _fileSaver.SaveAsync(
+                    topic.ExportName, 
+                    _serializer.Serialize(data, topic.ExportRawMessage), 
+                    ct)
+                    .ConfigureAwait(false);
 
         _logger.LogDebug("Data saved successfully.");
     }
 
-    private async Task InnerStreamExportAsync(IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> data, TTopic topic, CancellationToken ct)
+    private async Task InnerStreamExportAsync(
+            IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> data, 
+            TTopic topic, 
+            CancellationToken ct)
     {
-        using var _ = _logger.BeginScope("Data from topic {topic} to File {file} with stream", topic.TopicName.Name, topic.ExportName);
+        using var _ = _logger.BeginScope("Data from topic {topic} to File {file} with stream",
+                        topic.TopicName.Name, 
+                        topic.ExportName);
 
         using var stream = _streamProvider.CreateFileStream(topic.ExportName);
 

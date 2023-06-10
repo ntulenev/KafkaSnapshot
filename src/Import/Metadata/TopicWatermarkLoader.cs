@@ -41,10 +41,15 @@ public class TopicWatermarkLoader : ITopicWatermarkLoader
 
         if (loadingTopic.HasPartitionFilter)
         {
-            partitions = partitions.Where(x => loadingTopic.PartitionFilter.Contains(x.PartitionId));
+            partitions = partitions.Where(
+                x => loadingTopic.PartitionFilter.Contains(x.PartitionId));
         }
 
-        return partitions.Select(partition => new TopicPartition(loadingTopic.Value.Name, new Partition(partition.PartitionId)));
+        return partitions.Select(
+            partition =>
+                new TopicPartition(
+                    loadingTopic.Value.Name,
+                    new Partition(partition.PartitionId)));
     }
 
     private PartitionWatermark CreatePartitionWatermark<Key, Value>

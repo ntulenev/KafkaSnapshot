@@ -12,7 +12,8 @@ namespace KafkaSnapshot.Export.Serialization;
 /// Serializer for data with keys of <typeparamref name="TKey"/> type.
 /// </summary>
 /// <typeparam name="TKey">Data key type.</typeparam>
-public class OriginalKeySerializer<TKey> : JsonSerializerBase, ISerializer<TKey, string, OriginalKeyMarker>
+public class OriginalKeySerializer<TKey> :
+             JsonSerializerBase, ISerializer<TKey, string, OriginalKeyMarker>
 {
     /// <summary>
     /// Creates <see cref="OriginalKeySerializer{TKey}"/>.
@@ -22,7 +23,9 @@ public class OriginalKeySerializer<TKey> : JsonSerializerBase, ISerializer<TKey,
     public OriginalKeySerializer(ILogger<OriginalKeySerializer<TKey>> logger) : base(logger) { }
 
 
-    private static object ProjectData(IEnumerable<KeyValuePair<TKey, KafkaMessage<string>>> data, bool exportRawMessage)
+    private static object ProjectData(
+                IEnumerable<KeyValuePair<TKey, KafkaMessage<string>>> data, 
+                bool exportRawMessage)
         => data.Select(x => new
         {
             x.Key,
@@ -32,7 +35,9 @@ public class OriginalKeySerializer<TKey> : JsonSerializerBase, ISerializer<TKey,
 
     /// <inheritdoc/>
     /// <exception cref="ArgumentNullException">Thrown when data is null.</exception>
-    public string Serialize(IEnumerable<KeyValuePair<TKey, KafkaMessage<string>>> data, bool exportRawMessage)
+    public string Serialize(
+                IEnumerable<KeyValuePair<TKey, KafkaMessage<string>>> data, 
+                bool exportRawMessage)
     {
         ArgumentNullException.ThrowIfNull(data);
 
@@ -41,7 +46,10 @@ public class OriginalKeySerializer<TKey> : JsonSerializerBase, ISerializer<TKey,
 
     /// <inheritdoc/>
     /// <exception cref="ArgumentNullException">Thrown when data or stream is null.</exception>
-    public void Serialize(IEnumerable<KeyValuePair<TKey, KafkaMessage<string>>> data, bool exportRawMessage, Stream stream)
+    public void Serialize(
+                IEnumerable<KeyValuePair<TKey, KafkaMessage<string>>> data, 
+                bool exportRawMessage, 
+                Stream stream)
     {
         ArgumentNullException.ThrowIfNull(data);
         ArgumentNullException.ThrowIfNull(stream);

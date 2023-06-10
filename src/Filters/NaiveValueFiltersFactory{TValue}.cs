@@ -10,18 +10,21 @@ namespace KafkaSnapshot.Filters;
 public class NaiveValueFiltersFactory<TValue> : IValueFilterFactory<TValue> where TValue : notnull
 {
     ///// <inheritdoc/>
-    public IDataFilter<TValue> Create(FilterType filterValueType, ValueMessageType valueType, TValue sample)
+    public IDataFilter<TValue> Create(
+        FilterType filterValueType,
+        ValueMessageType valueType,
+        TValue sample)
+    => (filterValueType, valueType, sample) switch
     {
-        IDataFilter<TValue> filter = (filterValueType, valueType, sample) switch
-        {
-            (FilterType.None, _, _) => _default,
-            (FilterType.Equals, ValueMessageType.Raw, _) => new EqualsFilter<TValue>(sample),
-            (FilterType.Equals, ValueMessageType.Json, string json) => (IDataFilter<TValue>)new JsonEqualsFilter(json),
-            _ => throw new ArgumentException($"Invalid filter type {filterValueType} for value type {valueType} with sample type {typeof(TValue).Name}.", nameof(filterValueType)),
-        };
-
-        return filter;
-    }
-
+        (FilterType.None, _, _) 
+            => _default,
+        (FilterType.Equals, ValueMessageType.Raw, _) 
+            => new EqualsFilter<TValue>(sample),
+        (FilterType.Equals, ValueMessageType.Json, string json) 
+            => (IDataFilter<TValue>)new JsonEqualsFilter(json),
+        
+        _ => throw new ArgumentException($"Invalid filter type {filterValueType} " +
+        $"for value type {valueType} with sample type {typeof(TValue).Name}.", nameof(filterValueType)),
+    };
     private readonly DefaultFilter<TValue> _default = new();
 }

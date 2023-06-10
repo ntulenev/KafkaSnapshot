@@ -16,18 +16,23 @@ public class FileName
     public string Extension => _extension;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="FileName"/> class with the specified file name.
+    /// Initializes a new instance of the <see cref="FileName"/> 
+    /// class with the specified file name.
     /// </summary>
     /// <param name="fileName">The file name, including the extension.</param>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="fileName"/> is null.</exception>
-    /// <exception cref="ArgumentException">Thrown if <paramref name="fileName"/> is null, empty, or whitespace.</exception>
+    /// <exception cref="ArgumentNullException">Thrown 
+    /// if <paramref name="fileName"/> is null.</exception>
+    /// <exception cref="ArgumentException">Thrown 
+    /// if <paramref name="fileName"/> is null, empty, or whitespace.</exception>
     public FileName(string fileName)
     {
         ArgumentNullException.ThrowIfNull(fileName);
 
         if (string.IsNullOrWhiteSpace(fileName))
         {
-            throw new ArgumentException("File name cannot be null, empty or whitespace.", nameof(fileName));
+            throw new ArgumentException(
+                        "File name cannot be null, empty or whitespace.", 
+                        nameof(fileName));
         }
 
         _fullName = fileName;

@@ -10,7 +10,8 @@ public class TopicName
     /// </summary>
     /// <param name="name">The name of the Kafka topic.</param>
     /// <exception cref="ArgumentNullException">Thrown if the topic name is null</exception>
-    /// <exception cref="ArgumentException">Thrown if the topic name is empty, or has only spaces, or name is tool longer, or contains invalid characters.</exception>
+    /// <exception cref="ArgumentException">Thrown if the topic name is empty, or has only spaces, 
+    /// or name is tool longer, or contains invalid characters.</exception>
     public TopicName(string name)
     {
         ArgumentNullException.ThrowIfNull(name);
@@ -22,7 +23,9 @@ public class TopicName
 
         if (name.Length > MAX_TOPIC_NAME_LENGTH)
         {
-            throw new ArgumentException($"Topic name cannot be longer than {MAX_TOPIC_NAME_LENGTH} characters", nameof(name));
+            throw new ArgumentException(
+                $"Topic name cannot be longer than {MAX_TOPIC_NAME_LENGTH} characters", 
+                nameof(name));
         }
 
         if (!IsValidTopicName(name))

@@ -8,9 +8,11 @@ namespace KafkaSnapshot.Processing.Configuration.Validation;
 /// <summary>
 /// Validator for <see cref="LoaderToolConfiguration"/>.
 /// </summary>
-public class LoaderToolConfigurationValidator : IValidateOptions<LoaderToolConfiguration>
+public partial class LoaderToolConfigurationValidator : IValidateOptions<LoaderToolConfiguration>
 {
-    private static bool TryFailOnTopicRules(TopicConfiguration topic, [NotNullWhen(returnValue: true)] out ValidateOptionsResult result)
+    private static bool TryFailOnTopicRules(
+        TopicConfiguration topic, 
+        [NotNullWhen(returnValue: true)] out ValidateOptionsResult result)
     {
         if (topic.Name is null)
         {
@@ -42,7 +44,9 @@ public class LoaderToolConfigurationValidator : IValidateOptions<LoaderToolConfi
         if (!_topicNameCharacters.IsMatch(topic.Name))
         {
             result = ValidateOptionsResult.Fail(
-               $"Incorrect topic name {topic.Name}. The topic name may consist of characters 'a' to 'z', 'A' to 'Z', digits, and minus signs.");
+               $"Incorrect topic name {topic.Name}. " +
+               $"The topic name may consist of characters 'a' to 'z', 'A' to 'Z', " +
+               $"digits, and minus signs.");
             return true;
         }
 
@@ -63,14 +67,17 @@ public class LoaderToolConfigurationValidator : IValidateOptions<LoaderToolConfi
         {
             if (topic.FilterKeyValue is null)
             {
-                result = ValidateOptionsResult.Fail($"Filter value does not set for topic {topic.Name}.");
+                result = ValidateOptionsResult.Fail(
+                    $"Filter value does not set for topic {topic.Name}.");
                 return true;
             }
         }
 
-        if (topic.KeyType == Models.Filters.KeyType.Ignored && topic.Compacting == CompactingMode.On)
+        if (topic.KeyType == Models.Filters.KeyType.Ignored && 
+            topic.Compacting == CompactingMode.On)
         {
-            result = ValidateOptionsResult.Fail($"Compacting is not supported for ignored keys. Topic {topic.Name}.");
+            result = ValidateOptionsResult.Fail(
+                $"Compacting is not supported for ignored keys. Topic {topic.Name}.");
             return true;
         }
 
@@ -78,7 +85,9 @@ public class LoaderToolConfigurationValidator : IValidateOptions<LoaderToolConfi
         {
             if (topic.OffsetStartDate > topic.OffsetEndDate)
             {
-                result = ValidateOptionsResult.Fail($"Topic start date ({topic.OffsetStartDate}) is greater than end date ({topic.OffsetEndDate}). Topic {topic.Name}.");
+                result = ValidateOptionsResult.Fail(
+                    $"Topic start date ({topic.OffsetStartDate}) is greater than " +
+                    $"end date ({topic.OffsetEndDate}). Topic {topic.Name}.");
                 return true;
             }
         }
@@ -87,8 +96,9 @@ public class LoaderToolConfigurationValidator : IValidateOptions<LoaderToolConfi
         return false;
     }
 
-    private static bool TryFailOnEmptyConfig(LoaderToolConfiguration options,
-                                      [NotNullWhen(returnValue: true)] out ValidateOptionsResult result)
+    private static bool TryFailOnEmptyConfig(
+        LoaderToolConfiguration options,
+        [NotNullWhen(returnValue: true)] out ValidateOptionsResult result)
     {
         if (options is null)
         {
@@ -112,18 +122,22 @@ public class LoaderToolConfigurationValidator : IValidateOptions<LoaderToolConfi
         return false;
     }
 
-    private static bool TryFailOnDuplicateFiles(LoaderToolConfiguration options,
-                                               [NotNullWhen(returnValue: true)] out ValidateOptionsResult result)
+    private static bool TryFailOnDuplicateFiles(
+        LoaderToolConfiguration options,
+        [NotNullWhen(returnValue: true)] out ValidateOptionsResult result)
     {
-        var fileDuplicates = options.Topics.GroupBy(x => x.ExportFileName, StringComparer.CurrentCultureIgnoreCase)
-                                          .Where(x => x.Count() > 1)
-                                          .Select(x => x.Key)
-                                          .ToList();
+        var fileDuplicates = options.Topics
+                                    .GroupBy(x => x.ExportFileName, 
+                                             StringComparer.CurrentCultureIgnoreCase)
+                                    .Where(x => x.Count() > 1)
+                                    .Select(x => x.Key)
+                                    .ToList();
 
         if (fileDuplicates.Any())
         {
             var duplicates = string.Join(",", fileDuplicates);
-            result = ValidateOptionsResult.Fail($"Files names duplicate in several topics ({duplicates}).");
+            result = ValidateOptionsResult.Fail(
+                     $"Files names duplicate in several topics ({duplicates}).");
             return true;
         }
 
@@ -157,9 +171,9 @@ public class LoaderToolConfigurationValidator : IValidateOptions<LoaderToolConfi
         return ValidateOptionsResult.Success;
     }
 
-    private static readonly Regex _topicNameCharacters = new(
-        "^[a-zA-Z0-9\\-]*$",
-        RegexOptions.Compiled);
-
+    private static readonly Regex _topicNameCharacters = CreateKafkaRegex();
     private const int MAX_TOPIC_NAME_LENGTH = 249;
+
+    [GeneratedRegex("^[a-zA-Z0-9\\-]*$", RegexOptions.Compiled)]
+    private static partial Regex CreateKafkaRegex();
 }

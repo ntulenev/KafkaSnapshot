@@ -16,7 +16,9 @@ public class LoaderConcurrentTool : ILoaderTool
     /// <param name="logger">Logger.</param>
     /// <param name="units">Processors for topics.</param>
     /// <exception cref="ArgumentNullException"></exception>
-    public LoaderConcurrentTool(ILogger<LoaderConcurrentTool> logger, IReadOnlyCollection<IProcessingUnit> units)
+    public LoaderConcurrentTool(
+            ILogger<LoaderConcurrentTool> logger, 
+            IReadOnlyCollection<IProcessingUnit> units)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _units = units ?? throw new ArgumentNullException(nameof(units));
@@ -30,7 +32,9 @@ public class LoaderConcurrentTool : ILoaderTool
     /// <param name="ct">Token for cancelling.</param>
     public async Task ProcessAsync(CancellationToken ct)
     {
-        _logger.LogInformation("The utility starts loading {count} Apache Kafka topics concurrently...", _units.Count);
+        _logger.LogInformation(
+            "The utility starts loading {count} Apache Kafka topics concurrently...", 
+            _units.Count);
 
         await Task.WhenAll(_units.Select(async unit =>
         {

@@ -18,14 +18,16 @@ namespace KafkaSnapshot.Processing;
 /// <typeparam name="TKey">Message Key.</typeparam>
 /// <typeparam name="TKeyMarker">Message Key marker.</typeparam>
 /// <typeparam name="TValue">Message Value.</typeparam>
-public class ProcessingUnit<TKey, TKeyMarker, TValue> : IProcessingUnit where TKey : notnull
-                                                                        where TKeyMarker : IKeyRepresentationMarker
-                                                                        where TValue : notnull
+public class ProcessingUnit<TKey, TKeyMarker, TValue> : IProcessingUnit
+    where TKey : notnull
+    where TKeyMarker : IKeyRepresentationMarker
+    where TValue : notnull
 {
     /// <summary>
     /// Creates <see cref="ProcessingUnit{TKey,TKeyMarker, TValue}"/>.
     /// </summary>
-    /// <param name="logger">Creates logger for <see cref="ProcessingUnit{TKey, TKeyMarker, TValue}"/>.</param>
+    /// <param name="logger">Creates logger 
+    /// for <see cref="ProcessingUnit{TKey, TKeyMarker, TValue}"/>.</param>
     /// <param name="topic">Apahe Kafka topic.</param>
     /// <param name="kafkaLoader">Kafka topic loader.</param>
     /// <param name="exporter">Data exporter.</param>
@@ -45,8 +47,15 @@ public class ProcessingUnit<TKey, TKeyMarker, TValue> : IProcessingUnit where TK
         ArgumentNullException.ThrowIfNull(keyFilterFactory);
         ArgumentNullException.ThrowIfNull(valueFilterFactory);
 
-        _keyFilter = keyFilterFactory.Create(topic.FilterKeyType, topic.KeyType, topic.FilterKeyValue);
-        _valueFilter = valueFilterFactory.Create(Models.Filters.FilterType.None, ValueMessageType.Raw, default!);
+        _keyFilter = keyFilterFactory.Create(
+            topic.FilterKeyType, 
+            topic.KeyType, 
+            topic.FilterKeyValue);
+
+        _valueFilter = valueFilterFactory.Create(
+            FilterType.None, 
+            ValueMessageType.Raw, 
+            default!);
 
         _topicParams = topic.CreateLoadingParams();
         _exportedTopic = topic.CreateExportParams();

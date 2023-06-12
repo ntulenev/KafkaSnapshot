@@ -88,7 +88,9 @@ public static class StartupHelper
     /// <summary>
     /// Add topic loaders.
     /// </summary>
-    public static void AddTopicLoaders(this IServiceCollection services, HostBuilderContext hostContext)
+    public static void AddTopicLoaders(
+        this IServiceCollection services, 
+        HostBuilderContext hostContext)
     {
         services.AddSingleton<IKeyFiltersFactory<long>, NaiveKeyFiltersFactory<long>>();
         services.AddSingleton<IKeyFiltersFactory<string>, NaiveKeyFiltersFactory<string>>();
@@ -139,22 +141,26 @@ public static class StartupHelper
             return new ConsumerBuilder<Key, string>(conf).Build();
         }
 
-        services.AddSingleton<Func<IConsumer<string, string>>>(sp => () => createConsumer<string>(sp));
-        services.AddSingleton<Func<IConsumer<long, string>>>(sp => () => createConsumer<long>(sp));
+        services.AddSingleton<Func<IConsumer<string, string>>>(
+            sp => () => createConsumer<string>(sp));
+        services.AddSingleton<Func<IConsumer<long, string>>>(
+            sp => () => createConsumer<long>(sp));
         services.AddSingleton(typeof(ISnapshotLoader<,>), typeof(SnapshotLoader<,>));
 
         IMessageSorter<TKey, TValue> createSorter<TKey, TValue>(IServiceProvider sp)
             where TKey : notnull where TValue : notnull
         {
             var config = sp.GetLoaderConfig(hostContext.Configuration);
-            return new MessageSorter<TKey, TValue>
-                (new Models.Sorting.SortingParams(config.GlobalMessageSort, config.GlobalSortOrder));
+            return new MessageSorter<TKey, TValue>(
+                new Models.Sorting.SortingParams(config.GlobalMessageSort, config.GlobalSortOrder));
         }
         services.AddSingleton(sp => createSorter<string, string>(sp));
         services.AddSingleton(sp => createSorter<long, string>(sp));
     }
 
-    private static IReadOnlyCollection<IProcessingUnit> CreateTopicLoaders(IServiceProvider sp, IConfiguration configuration)
+    private static IReadOnlyCollection<IProcessingUnit> CreateTopicLoaders(
+        IServiceProvider sp, 
+        IConfiguration configuration)
     {
         var config = sp.GetLoaderConfig(configuration);
 
@@ -164,7 +170,8 @@ public static class StartupHelper
             KeyType.Json => InitUnit<string, JsonKeyMarker>(topic, sp),
             KeyType.String => InitUnit<string, OriginalKeyMarker>(topic, sp),
             KeyType.Long => InitUnit<long, OriginalKeyMarker>(topic, sp),
-            _ => throw new InvalidOperationException($"Invalid Key type {topic.KeyType} for processing.")
+            _ => throw new InvalidOperationException($"Invalid Key type " +
+            $"{topic.KeyType} for processing.")
         }).ToList();
     }
 
@@ -172,6 +179,8 @@ public static class StartupHelper
                             TopicConfiguration topic,
                             IServiceProvider provider)
                             where TKey : notnull where TMarker : IKeyRepresentationMarker
-       => ActivatorUtilities.CreateInstance<ProcessingUnit<TKey, TMarker, string>>(provider, topic.ConvertToProcess<TKey>());
+       => ActivatorUtilities.CreateInstance<ProcessingUnit<TKey, TMarker, string>>(
+           provider, 
+           topic.ConvertToProcess<TKey>());
 
 }

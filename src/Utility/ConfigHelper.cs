@@ -21,7 +21,9 @@ public static class ConfigHelper
     /// <summary>
     /// Gets configuration for Kafka servers.
     /// </summary>
-    public static BootstrapServersConfiguration GetBootstrapConfig(this IServiceProvider sp, IConfiguration configuration)
+    public static BootstrapServersConfiguration GetBootstrapConfig(
+        this IServiceProvider sp, 
+        IConfiguration configuration)
     {
         var section = configuration.GetSection(nameof(BootstrapServersConfiguration));
         var config = section.Get<BootstrapServersConfiguration>();
@@ -34,8 +36,10 @@ public static class ConfigHelper
         var validationResult = validator.Validate(string.Empty, config);
         if (validationResult.Failed)
         {
-            throw new OptionsValidationException
-                (string.Empty, typeof(BootstrapServersConfiguration), new[] { validationResult.FailureMessage });
+            throw new OptionsValidationException(
+                string.Empty, 
+                typeof(BootstrapServersConfiguration), 
+                new[] { validationResult.FailureMessage });
         }
 
         return config;
@@ -44,7 +48,9 @@ public static class ConfigHelper
     /// <summary>
     /// Gets configuration for Kafka topics.
     /// </summary>
-    public static LoaderToolConfiguration GetLoaderConfig(this IServiceProvider sp, IConfiguration configuration)
+    public static LoaderToolConfiguration GetLoaderConfig(
+        this IServiceProvider sp, 
+        IConfiguration configuration)
     {
         var section = configuration.GetSection(nameof(LoaderToolConfiguration));
         var config = section.Get<LoaderToolConfiguration>();
@@ -57,8 +63,10 @@ public static class ConfigHelper
         var validationResult = validator.Validate(string.Empty, config);
         if (validationResult.Failed)
         {
-            throw new OptionsValidationException
-                (string.Empty, typeof(LoaderToolConfiguration), new[] { validationResult.FailureMessage });
+            throw new OptionsValidationException(
+                string.Empty, 
+                typeof(LoaderToolConfiguration),
+                new[] { validationResult.FailureMessage });
         }
 
         return config;
@@ -67,31 +75,44 @@ public static class ConfigHelper
     /// <summary>
     /// Confugures <see cref="LoaderToolConfiguration"/>
     /// </summary>
-    public static IServiceCollection ConfigureLoaderTool(this IServiceCollection services, HostBuilderContext hostContext)
+    public static IServiceCollection ConfigureLoaderTool(
+        this IServiceCollection services, 
+        HostBuilderContext hostContext)
     {
-        services.Configure<LoaderToolConfiguration>(hostContext.Configuration.GetSection(nameof(LoaderToolConfiguration)));
-        services.AddSingleton<IValidateOptions<LoaderToolConfiguration>, LoaderToolConfigurationValidator>();
+        services.Configure<LoaderToolConfiguration>(
+            hostContext.Configuration.GetSection(nameof(LoaderToolConfiguration)));
+        services.AddSingleton<IValidateOptions<LoaderToolConfiguration>, 
+                                               LoaderToolConfigurationValidator>();
         return services;
     }
 
     /// <summary>
     /// Confugures <see cref="JsonFileDataExporterConfiguration"/>
     /// </summary>
-    public static IServiceCollection ConfigureExport(this IServiceCollection services, HostBuilderContext hostContext)
+    public static IServiceCollection ConfigureExport(
+        this IServiceCollection services, 
+        HostBuilderContext hostContext)
     {
-        services.Configure<JsonFileDataExporterConfiguration>(hostContext.Configuration.GetSection(nameof(JsonFileDataExporterConfiguration)));
+        services.Configure<JsonFileDataExporterConfiguration>(
+            hostContext.Configuration.GetSection(nameof(JsonFileDataExporterConfiguration)));
         return services;
     }
 
     /// <summary>
     /// Configures Kafka import settings.
     /// </summary>
-    public static IServiceCollection ConfigureImport(this IServiceCollection services, HostBuilderContext hostContext)
+    public static IServiceCollection ConfigureImport(
+        this IServiceCollection services, 
+        HostBuilderContext hostContext)
     {
-        services.Configure<TopicWatermarkLoaderConfiguration>(hostContext.Configuration.GetSection(nameof(TopicWatermarkLoaderConfiguration)));
-        services.AddSingleton<IValidateOptions<BootstrapServersConfiguration>, BootstrapServersConfigurationValidator>();
-        services.AddSingleton<IValidateOptions<TopicWatermarkLoaderConfiguration>, TopicWatermarkLoaderConfigurationValidator>();
-        services.Configure<SnapshotLoaderConfiguration>(hostContext.Configuration.GetSection(nameof(SnapshotLoaderConfiguration)));
+        services.Configure<TopicWatermarkLoaderConfiguration>(
+            hostContext.Configuration.GetSection(nameof(TopicWatermarkLoaderConfiguration)));
+        services.AddSingleton<IValidateOptions<BootstrapServersConfiguration>, 
+                                               BootstrapServersConfigurationValidator>();
+        services.AddSingleton<IValidateOptions<TopicWatermarkLoaderConfiguration>, 
+                                               TopicWatermarkLoaderConfigurationValidator>();
+        services.Configure<SnapshotLoaderConfiguration>(
+            hostContext.Configuration.GetSection(nameof(SnapshotLoaderConfiguration)));
         return services;
     }
 

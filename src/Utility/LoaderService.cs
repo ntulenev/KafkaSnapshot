@@ -12,13 +12,19 @@ namespace KafkaSnapshot.Utility
         /// <summary>
         /// Initializes a new instance of the LoaderService.
         /// </summary>
-        /// <param name="tool">A tool that implements the ILoaderTool interface for processing data from Kafka.</param>
-        /// <param name="hostApplicationLifetime">An object that provides a way to interact with the lifetime of the host application.</param>
-        /// <exception cref="System.ArgumentNullException">Thrown when the tool or hostApplicationLifetime parameter is null.</exception>
-        public LoaderService(ILoaderTool tool, IHostApplicationLifetime hostApplicationLifetime)
+        /// <param name="tool">A tool that implements the ILoaderTool interface 
+        /// for processing data from Kafka.</param>
+        /// <param name="hostApplicationLifetime">An object that provides a way 
+        /// to interact with the lifetime of the host application.</param>
+        /// <exception cref="System.ArgumentNullException">Thrown when the tool 
+        /// or hostApplicationLifetime parameter is null.</exception>
+        public LoaderService(
+            ILoaderTool tool, 
+            IHostApplicationLifetime hostApplicationLifetime)
         {
             _tool = tool ?? throw new ArgumentNullException(nameof(tool));
-            _hostApplicationLifetime = hostApplicationLifetime ?? throw new ArgumentNullException(nameof(hostApplicationLifetime));
+            _hostApplicationLifetime = hostApplicationLifetime ?? 
+                throw new ArgumentNullException(nameof(hostApplicationLifetime));
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)

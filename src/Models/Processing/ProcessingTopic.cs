@@ -24,14 +24,16 @@ public record ProcessingTopic<TKey>(TopicName TopicName,
                                     TKey FilterKeyValue,
                                     DateFilterRange DateRange,
                                     bool ExportRawMessage,
-                                    HashSet<int>? PartitionIdsFilter = null)
+                                    EncoderRules ValueEncoderRule,
+                                    HashSet<int>? PartitionIdsFilter = null
+                                    )
 {
     /// <summary>
     /// Creates <see cref="LoadingTopic"/>.
     /// </summary>
     public LoadingTopic CreateLoadingParams()
     {
-        return new LoadingTopic(TopicName, LoadWithCompacting, DateRange, PartitionIdsFilter);
+        return new LoadingTopic(TopicName, LoadWithCompacting, DateRange, ValueEncoderRule,PartitionIdsFilter);
     }
 
     /// <summary>

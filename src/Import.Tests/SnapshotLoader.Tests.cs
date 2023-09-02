@@ -263,7 +263,7 @@ public class SnapshotLoaderTests
         var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter, encoder);
         var withCompacting = true;
         HashSet<int> partitionFilter = null!;
-        var topicParams = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(null!, null!), partitionFilter);
+        var topicParams = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(null!, null!), EncoderRules.String, partitionFilter);
         var filterValueMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
         var valueFilter = filterValueMock.Object;
 
@@ -299,7 +299,7 @@ public class SnapshotLoaderTests
         var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter, encoder);
         var withCompacting = true;
         HashSet<int> partitionFilter = null!;
-        var topicParams = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(null!, null!), partitionFilter);
+        var topicParams = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(null!, null!), EncoderRules.String, partitionFilter);
         var filterKeyMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
         var keyFilter = filterKeyMock.Object;
 
@@ -376,7 +376,7 @@ public class SnapshotLoaderTests
         var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter, encoder);
         var withCompacting = false;
         HashSet<int> partitionFilter = null!;
-        var topicName = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(null!, null!), partitionFilter);
+        var topicName = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(null!, null!), EncoderRules.String, partitionFilter);
         var filterKeyMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
         filterKeyMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
         var keyFilter = filterKeyMock.Object;
@@ -473,7 +473,7 @@ public class SnapshotLoaderTests
         var withCompacting = false;
         var testDate = DateTime.UtcNow;
         HashSet<int> partitionFilter = null!;
-        var topicName = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(testDate, null!), partitionFilter);
+        var topicName = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(testDate, null!), EncoderRules.String, partitionFilter);
         var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
         keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
         var keyFilter = keyFilterMock.Object;
@@ -542,7 +542,7 @@ public class SnapshotLoaderTests
         var withCompacting = compacting;
         var testDate = DateTime.UtcNow;
         HashSet<int> partitionFilter = null!;
-        var topicName = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(testDate, null!), partitionFilter);
+        var topicName = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(testDate, null!), EncoderRules.String, partitionFilter);
         var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
         keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
         var keyFilter = keyFilterMock.Object;
@@ -640,7 +640,7 @@ public class SnapshotLoaderTests
         var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter, encoder);
         var withCompacting = true;
         HashSet<int> partitionFilter = null!;
-        var topicName = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(null!, null!), partitionFilter);
+        var topicName = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(null!, null!), EncoderRules.String, partitionFilter);
         var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
         keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
         var keyFilter = keyFilterMock.Object;
@@ -735,7 +735,7 @@ public class SnapshotLoaderTests
         var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter, encoder);
         var withCompacting = true;
         HashSet<int> partitionFilter = null!;
-        var topicName = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(null!, null!), partitionFilter);
+        var topicName = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(null!, null!), EncoderRules.String, partitionFilter);
         var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
         keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
 
@@ -806,7 +806,7 @@ public class SnapshotLoaderTests
         var withCompacting = compacting;
         var testDate = DateTime.UtcNow;
         HashSet<int> partitionFilter = null!;
-        var topicName = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(null!, testDate), partitionFilter);
+        var topicName = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(null!, testDate), EncoderRules.String, partitionFilter);
         var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
         keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
         var keyFilter = keyFilterMock.Object;
@@ -908,7 +908,7 @@ public class SnapshotLoaderTests
         var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter, encoder);
         var withCompacting = false;
         HashSet<int> partitionFilter = null!;
-        var topicName = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(null!, testDate), partitionFilter);
+        var topicName = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(null!, testDate), EncoderRules.String, partitionFilter);
         var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
         keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
         var keyfilter = keyFilterMock.Object;

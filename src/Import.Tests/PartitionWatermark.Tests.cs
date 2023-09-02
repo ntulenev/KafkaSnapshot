@@ -39,7 +39,7 @@ public class PartitionWatermarkTests
 
         // Arrange
         HashSet<int> partitionFilter = null!;
-        var topicName = new LoadingTopic(new TopicName("Test"), true, new DateFilterRange(null!, null!), partitionFilter);
+        var topicName = new LoadingTopic(new TopicName("Test"), true, new DateFilterRange(null!, null!), EncoderRules.String, partitionFilter);
         WatermarkOffsets offsets = null!;
         var partition = new Partition(1);
 
@@ -57,7 +57,7 @@ public class PartitionWatermarkTests
 
         // Arrange
         HashSet<int> partitionFilter = null!;
-        var topicName = new LoadingTopic(new TopicName("Test"), true, new DateFilterRange(null!, null!), partitionFilter);
+        var topicName = new LoadingTopic(new TopicName("Test"), true, new DateFilterRange(null!, null!), EncoderRules.String, partitionFilter);
         var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
         var partition = new Partition(1);
 
@@ -79,7 +79,7 @@ public class PartitionWatermarkTests
 
         // Arrange
         HashSet<int> partitionFilter = null!;
-        var topicName = new LoadingTopic(new TopicName("Test"), true, new DateFilterRange(null!, null!), partitionFilter);
+        var topicName = new LoadingTopic(new TopicName("Test"), true, new DateFilterRange(null!, null!), EncoderRules.String, partitionFilter);
         var offsets = new WatermarkOffsets(new Offset(startOffset), new Offset(endOffset));
         var partition = new Partition(1);
         var pw = new PartitionWatermark(topicName, offsets, partition);
@@ -98,7 +98,7 @@ public class PartitionWatermarkTests
 
         // Arrange
         HashSet<int> partitionFilter = null!;
-        var topicName = new LoadingTopic(new TopicName("Test"), true, new DateFilterRange(null!, null!), partitionFilter);
+        var topicName = new LoadingTopic(new TopicName("Test"), true, new DateFilterRange(null!, null!), EncoderRules.String, partitionFilter);
         var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
         var partition = new Partition(1);
         ConsumeResult<object, object> result = null!;
@@ -118,7 +118,7 @@ public class PartitionWatermarkTests
 
         // Arrange
         HashSet<int> partitionFilter = null!;
-        var topicName = new LoadingTopic(new TopicName("Test"), true, new DateFilterRange(null!, null!), partitionFilter);
+        var topicName = new LoadingTopic(new TopicName("Test"), true, new DateFilterRange(null!, null!), EncoderRules.String, partitionFilter);
         var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
         var partition = new Partition(1);
         var result = new ConsumeResult<object, object>()
@@ -141,7 +141,7 @@ public class PartitionWatermarkTests
 
         // Arrange
         HashSet<int> partitionFilter = null!;
-        var topicName = new LoadingTopic(new TopicName("Test"), true, new DateFilterRange(null!, null!), partitionFilter);
+        var topicName = new LoadingTopic(new TopicName("Test"), true, new DateFilterRange(null!, null!), EncoderRules.String, partitionFilter);
         var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
         var partition = new Partition(1);
         var result = new ConsumeResult<object, object>()
@@ -164,7 +164,7 @@ public class PartitionWatermarkTests
 
         // Arrange
         HashSet<int> partitionFilter = null!;
-        var topicName = new LoadingTopic(new TopicName("Test"), true, new DateFilterRange(null!, null!), partitionFilter);
+        var topicName = new LoadingTopic(new TopicName("Test"), true, new DateFilterRange(null!, null!), EncoderRules.String, partitionFilter);
         var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
         var partition = new Partition(1);
         var pw = new PartitionWatermark(topicName, offsets, partition);
@@ -184,7 +184,7 @@ public class PartitionWatermarkTests
 
         // Arrange
         HashSet<int> partitionFilter = null!;
-        var topicName = new LoadingTopic(new TopicName("Test"), true, new DateFilterRange(null!, null!), partitionFilter);
+        var topicName = new LoadingTopic(new TopicName("Test"), true, new DateFilterRange(null!, null!), EncoderRules.String, partitionFilter);
         var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
         var partition = new Partition(1);
         var pw = new PartitionWatermark(topicName, offsets, partition);
@@ -209,7 +209,7 @@ public class PartitionWatermarkTests
         HashSet<int> partitionFilter = null!;
         var date = DateTime.UtcNow;
         var timeout = TimeSpan.FromSeconds(10);
-        var topicName = new LoadingTopic(new TopicName("Test"), true, new DateFilterRange(date, null!), partitionFilter);
+        var topicName = new LoadingTopic(new TopicName("Test"), true, new DateFilterRange(date, null!), EncoderRules.String, partitionFilter);
         var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
         var partition = new Partition(1);
         var pw = new PartitionWatermark(topicName, offsets, partition);
@@ -239,7 +239,7 @@ public class PartitionWatermarkTests
         HashSet<int> partitionFilter = null!;
         var date = DateTime.UtcNow;
         var timeout = TimeSpan.FromSeconds(10);
-        var topicName = new LoadingTopic(new TopicName("Test"), true, new DateFilterRange(date, null!), partitionFilter);
+        var topicName = new LoadingTopic(new TopicName("Test"), true, new DateFilterRange(date, null!), EncoderRules.String, partitionFilter);
         var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
         var partition = new Partition(1);
         var pw = new PartitionWatermark(topicName, offsets, partition);

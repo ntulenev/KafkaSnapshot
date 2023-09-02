@@ -184,7 +184,7 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
                     break;
                 }
 
-                var messageValue = _encoder.Encode(result.Message.Value, EncoderRules.MessagePack);
+                var messageValue = _encoder.Encode(result.Message.Value, topicParams.TopicValueEncoderRule);
 
                 if (keyFilter.IsMatch(result.Message.Key) &&
                     valueFilter.IsMatch(messageValue))

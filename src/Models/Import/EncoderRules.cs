@@ -2,7 +2,7 @@
 {
     public enum EncoderRules
     {
-       Nothing,
+       String,
        MessagePack
     }
 }

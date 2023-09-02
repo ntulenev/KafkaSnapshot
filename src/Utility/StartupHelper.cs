@@ -23,6 +23,7 @@ using KafkaSnapshot.Models.Filters;
 using KafkaSnapshot.Export.Serialization;
 using KafkaSnapshot.Abstractions.Sorting;
 using KafkaSnapshot.Sorting;
+using KafkaSnapshot.Import.Encoders;
 
 namespace KafkaSnapshot.Utility;
 
@@ -89,7 +90,7 @@ public static class StartupHelper
     /// Add topic loaders.
     /// </summary>
     public static void AddTopicLoaders(
-        this IServiceCollection services, 
+        this IServiceCollection services,
         HostBuilderContext hostContext)
     {
         services.AddSingleton<IKeyFiltersFactory<long>, NaiveKeyFiltersFactory<long>>();
@@ -104,6 +105,8 @@ public static class StartupHelper
     public static void AddImport(this IServiceCollection services, HostBuilderContext hostContext)
     {
         services.ConfigureImport(hostContext);
+
+        services.AddSingleton<IMessageEncoder<byte[], string>, ByteMessageEncoder>();
 
         services.AddSingleton(sp =>
         {
@@ -122,7 +125,7 @@ public static class StartupHelper
 
         services.AddSingleton<ITopicWatermarkLoader, TopicWatermarkLoader>();
 
-        IConsumer<Key, string> createConsumer<Key>(IServiceProvider sp)
+        IConsumer<Key, byte[]> createConsumer<Key>(IServiceProvider sp)
         {
             var config = sp.GetBootstrapConfig(hostContext.Configuration);
             var servers = string.Join(",", config.BootstrapServers);
@@ -138,12 +141,12 @@ public static class StartupHelper
                 SaslPassword = config.Password
             };
 
-            return new ConsumerBuilder<Key, string>(conf).Build();
+            return new ConsumerBuilder<Key, byte[]>(conf).Build();
         }
 
-        services.AddSingleton<Func<IConsumer<string, string>>>(
+        services.AddSingleton<Func<IConsumer<string, byte[]>>>(
             sp => () => createConsumer<string>(sp));
-        services.AddSingleton<Func<IConsumer<long, string>>>(
+        services.AddSingleton<Func<IConsumer<long, byte[]>>>(
             sp => () => createConsumer<long>(sp));
         services.AddSingleton(typeof(ISnapshotLoader<,>), typeof(SnapshotLoader<,>));
 
@@ -159,7 +162,7 @@ public static class StartupHelper
     }
 
     private static IReadOnlyCollection<IProcessingUnit> CreateTopicLoaders(
-        IServiceProvider sp, 
+        IServiceProvider sp,
         IConfiguration configuration)
     {
         var config = sp.GetLoaderConfig(configuration);
@@ -180,7 +183,7 @@ public static class StartupHelper
                             IServiceProvider provider)
                             where TKey : notnull where TMarker : IKeyRepresentationMarker
        => ActivatorUtilities.CreateInstance<ProcessingUnit<TKey, TMarker, string>>(
-           provider, 
+           provider,
            topic.ConvertToProcess<TKey>());
 
 }

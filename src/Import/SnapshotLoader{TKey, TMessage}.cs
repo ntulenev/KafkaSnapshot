@@ -26,9 +26,10 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
     /// </summary>
     public SnapshotLoader(ILogger<SnapshotLoader<TKey, TMessage>> logger,
                           IOptions<SnapshotLoaderConfiguration> config,
-                          Func<IConsumer<TKey, TMessage>> consumerFactory,
+                          Func<IConsumer<TKey, byte[]>> consumerFactory,
                           ITopicWatermarkLoader topicWatermarkLoader,
-                          IMessageSorter<TKey, TMessage> sorter
+                          IMessageSorter<TKey, TMessage> sorter,
+                          IMessageEncoder<byte[], TMessage> encoder
                          )
     {
         _logger = logger
@@ -39,6 +40,8 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
             ?? throw new ArgumentNullException(nameof(consumerFactory));
         _sorter = sorter
             ?? throw new ArgumentNullException(nameof(sorter));
+        _encoder = encoder
+            ?? throw new ArgumentNullException(nameof(encoder));
 
         ArgumentNullException.ThrowIfNull(config);
 
@@ -164,7 +167,7 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
                 watermark.AssingWithConsumer(consumer);
             }
 
-            ConsumeResult<TKey, TMessage> result;
+            ConsumeResult<TKey, byte[]> result;
 
             bool isFinalOffsetDateReached() => topicParams.HasEndOffsetDate &&
                                                result.Message.Timestamp.UtcDateTime >
@@ -181,21 +184,21 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
                     break;
                 }
 
-                
+                var messageValue = _encoder.Encode(result.Message.Value, EncoderRules.MessagePack);
 
                 if (keyFilter.IsMatch(result.Message.Key) &&
-                    valueFilter.IsMatch(result.Message.Value))
+                    valueFilter.IsMatch(messageValue))
                 {
                     _logger.LogTrace("Loading {Key} - {Value}",
                             result.Message.Key,
-                            result.Message.Value);
+                            messageValue);
 
                     var meta = new KafkaMetadata(
                             result.Message.Timestamp.UtcDateTime,
                             watermark.Partition.Value,
                             result.Offset.Value);
 
-                    var message = new KafkaMessage<TMessage>(result.Message.Value, meta);
+                    var message = new KafkaMessage<TMessage>(messageValue, meta);
 
                     yield return new KeyValuePair<TKey, KafkaMessage<TMessage>>(
                         result.Message.Key,
@@ -242,8 +245,9 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
 
     private readonly SnapshotLoaderConfiguration _config;
     private readonly ITopicWatermarkLoader _topicWatermarkLoader;
-    private readonly Func<IConsumer<TKey, TMessage>> _consumerFactory;
+    private readonly Func<IConsumer<TKey, byte[]>> _consumerFactory;
     private readonly ILogger<SnapshotLoader<TKey, TMessage>> _logger;
     private readonly IMessageSorter<TKey, TMessage> _sorter;
+    private readonly IMessageEncoder<byte[], TMessage> _encoder;
 }
 

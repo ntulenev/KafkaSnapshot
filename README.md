@@ -96,6 +96,18 @@ Config example:
         "FilterKeyType": "GreaterOrEquals",
         "FilterKeyValue": 3,
         "ExportFileName": "topic7.json"
+      },
+      {
+        "Name": "topic8",
+        "KeyType": "Long",
+        "ExportFileName": "topic8.json",
+        "MessageEncoderRule": "MessagePack"
+      },
+      {
+        "Name": "topic9",
+        "KeyType": "Long",
+        "ExportFileName": "topic9.json",
+        "MessageEncoderRule": "MessagePackLz4Block"
       }
 ```
 Config params:

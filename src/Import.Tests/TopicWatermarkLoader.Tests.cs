@@ -107,7 +107,7 @@ public class TopicWatermarkLoaderTests
         var loader = new TopicWatermarkLoader(client, options.Object);
         var consumerFactory = (Func<IConsumer<string, string>>)null!;
         HashSet<int> partitionFilter = null!;
-        var topicName = new LoadingTopic(new TopicName("test"), true, new DateFilterRange(null!, null!), partitionFilter);
+        var topicName = new LoadingTopic(new TopicName("test"), true, new DateFilterRange(null!, null!), EncoderRules.String, partitionFilter);
 
         // Act
         var exception = await Record.ExceptionAsync(async () =>
@@ -152,7 +152,7 @@ public class TopicWatermarkLoaderTests
         //Arrange
         using var cts = new CancellationTokenSource();
         HashSet<int> partitionFilter = null!;
-        var topic = new LoadingTopic(new TopicName("test"), true, new DateFilterRange(null!, null!), partitionFilter);
+        var topic = new LoadingTopic(new TopicName("test"), true, new DateFilterRange(null!, null!), EncoderRules.String, partitionFilter);
         var clientMock = new Mock<IAdminClient>(MockBehavior.Strict);
         var client = clientMock.Object;
         var timeout = 1;
@@ -201,7 +201,7 @@ public class TopicWatermarkLoaderTests
     {
         //Arrange
         using var cts = new CancellationTokenSource();
-        var topic = new LoadingTopic(new TopicName("test"), true, new DateFilterRange(null!, null!), new HashSet<int>(new[] { 2 }));
+        var topic = new LoadingTopic(new TopicName("test"), true, new DateFilterRange(null!, null!), EncoderRules.String, new HashSet<int>(new[] { 2 }));
         var clientMock = new Mock<IAdminClient>(MockBehavior.Strict);
         var client = clientMock.Object;
         var timeout = 1;

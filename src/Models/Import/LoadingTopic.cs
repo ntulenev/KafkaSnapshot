@@ -1,5 +1,6 @@
 ﻿using KafkaSnapshot.Models.Filters;
 using KafkaSnapshot.Models.Names;
+using System.Data;
 
 namespace KafkaSnapshot.Models.Import;
 
@@ -12,6 +13,8 @@ public class LoadingTopic
     /// Topic name.
     /// </summary>
     public TopicName Value { get; }
+
+    public EncoderRules TopicValueEncoderRule { get; }
 
     /// <summary>
     /// Need to compact results by key.
@@ -60,7 +63,9 @@ public class LoadingTopic
     public LoadingTopic(TopicName topicName,
                         bool loadWithCompacting,
                         DateFilterRange dateParams,
-                        HashSet<int>? partitionFilter)
+                        EncoderRules valueEncoderRule,
+                        HashSet<int>? partitionFilter
+                        )
     {
         Value = topicName ?? throw new ArgumentNullException(nameof(topicName));
         LoadWithCompacting = loadWithCompacting;
@@ -83,6 +88,13 @@ public class LoadingTopic
         {
             _partitionFilter = new HashSet<int>();
         }
+
+        if (!Enum.IsDefined(typeof(EncoderRules), valueEncoderRule))
+        {
+            throw new ArgumentException($"Invalid EncoderRules value {valueEncoderRule}", nameof(valueEncoderRule));
+        }
+
+        TopicValueEncoderRule = valueEncoderRule;
     }
 
     private readonly DateTime? _offsetDate;

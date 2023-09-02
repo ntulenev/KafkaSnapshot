@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Names;
 using KafkaSnapshot.Models.Processing;
 
@@ -25,7 +26,7 @@ public class ProcessingTopicTests
 
         // Act
         var exception = Record.Exception(() => _ =
-        new ProcessingTopic<int>(name, exName, loadCompact, filterType, keyType, filterKeyValue, dateRange, isRaw, partitions));
+        new ProcessingTopic<int>(name, exName, loadCompact, filterType, keyType, filterKeyValue, dateRange, isRaw, EncoderRules.String, partitions));
 
         // Assert
         exception.Should().BeNull();
@@ -48,7 +49,7 @@ public class ProcessingTopicTests
 
         // Act
         var result =
-        new ProcessingTopic<int>(name, exName, loadCompact, filterType, keyType, filterKeyValue, dateRange, isRaw, partitions);
+        new ProcessingTopic<int>(name, exName, loadCompact, filterType, keyType, filterKeyValue, dateRange, isRaw, EncoderRules.String, partitions);
 
         // Assert
         result.TopicName.Should().Be(name);
@@ -77,7 +78,7 @@ public class ProcessingTopicTests
         var filterKeyValue = 1;
         var isRaw = true;
         var partitions = new HashSet<int> { 1, 2, 3 };
-        var processingTopic = new ProcessingTopic<int>(name, exName, loadCompact, filterType, keyType, filterKeyValue, dateRange, isRaw, partitions);
+        var processingTopic = new ProcessingTopic<int>(name, exName, loadCompact, filterType, keyType, filterKeyValue, dateRange, isRaw, EncoderRules.String, partitions);
 
         // Act
         var exception = Record.Exception(() => _ = processingTopic.CreateLoadingParams());
@@ -100,7 +101,7 @@ public class ProcessingTopicTests
         var filterKeyValue = 1;
         var isRaw = true;
         var partitions = new HashSet<int> { 1, 2, 3 };
-        var processingTopic = new ProcessingTopic<int>(name, exName, loadCompact, filterType, keyType, filterKeyValue, dateRange, isRaw, partitions);
+        var processingTopic = new ProcessingTopic<int>(name, exName, loadCompact, filterType, keyType, filterKeyValue, dateRange, isRaw, EncoderRules.String, partitions);
 
         // Act
         var result = processingTopic.CreateLoadingParams();
@@ -130,7 +131,7 @@ public class ProcessingTopicTests
         var filterKeyValue = 1;
         var isRaw = true;
         var partitions = new HashSet<int> { 1, 2, 3 };
-        var processingTopic = new ProcessingTopic<int>(name, exName, loadCompact, filterType, keyType, filterKeyValue, dateRange, isRaw, partitions);
+        var processingTopic = new ProcessingTopic<int>(name, exName, loadCompact, filterType, keyType, filterKeyValue, dateRange, isRaw, EncoderRules.String, partitions);
 
         // Act
         var result = processingTopic.CreateLoadingParams();
@@ -160,7 +161,7 @@ public class ProcessingTopicTests
         var filterKeyValue = 1;
         var isRaw = true;
         var partitions = new HashSet<int> { 1, 2, 3 };
-        var processingTopic = new ProcessingTopic<int>(name, exName, loadCompact, filterType, keyType, filterKeyValue, dateRange, isRaw, partitions);
+        var processingTopic = new ProcessingTopic<int>(name, exName, loadCompact, filterType, keyType, filterKeyValue, dateRange, isRaw, EncoderRules.String, partitions);
 
         // Act
         var exception = Record.Exception(() => _ = processingTopic.CreateExportParams());
@@ -183,7 +184,7 @@ public class ProcessingTopicTests
         var filterKeyValue = 1;
         var isRaw = true;
         var partitions = new HashSet<int> { 1, 2, 3 };
-        var processingTopic = new ProcessingTopic<int>(name, exName, loadCompact, filterType, keyType, filterKeyValue, dateRange, isRaw, partitions);
+        var processingTopic = new ProcessingTopic<int>(name, exName, loadCompact, filterType, keyType, filterKeyValue, dateRange, isRaw, EncoderRules.String, partitions);
 
         // Act
         var result = processingTopic.CreateExportParams();

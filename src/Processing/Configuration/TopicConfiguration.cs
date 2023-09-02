@@ -1,4 +1,5 @@
 ﻿using KafkaSnapshot.Models.Filters;
+using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Names;
 using KafkaSnapshot.Models.Processing;
 
@@ -59,6 +60,9 @@ public class TopicConfiguration
     /// </summary>
     public HashSet<int>? PartitionsIds { get; set; }
 
+
+    public EncoderRules MessageEncoderRule { get; set; } = EncoderRules.String;
+
     /// <summary>
     /// Converts configuration to <see cref="ProcessingTopic{TKey}"/>.
     /// </summary>
@@ -80,6 +84,7 @@ public class TopicConfiguration
                                          typedFilterKeyValue!,
                                          dateRange,
                                          ExportRawMessage,
+                                         MessageEncoderRule,
                                          PartitionsIds);
     }
 }

@@ -22,7 +22,7 @@ public class LoadingTopicTests
         HashSet<int> partitionFilter = null!;
 
         // Act
-        var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!), partitionFilter));
+        var exception = Record.Exception(() => new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!), EncoderRules.String, partitionFilter));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -41,7 +41,7 @@ public class LoadingTopicTests
         HashSet<int> partitionFilter = null!;
 
         // Act
-        var exception = Record.Exception(() => item = new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!), partitionFilter));
+        var exception = Record.Exception(() => item = new LoadingTopic(name, compactingRule, new DateFilterRange(null!, null!), EncoderRules.String, partitionFilter));
 
         // Assert
         exception.Should().BeNull();
@@ -64,7 +64,7 @@ public class LoadingTopicTests
         HashSet<int> partitionFilter = null!;
 
         // Act
-        var exception = Record.Exception(() => item = new LoadingTopic(name, compactingRule, new DateFilterRange(DateTime.UtcNow, DateTime.UtcNow), partitionFilter));
+        var exception = Record.Exception(() => item = new LoadingTopic(name, compactingRule, new DateFilterRange(DateTime.UtcNow, DateTime.UtcNow), EncoderRules.String, partitionFilter));
 
         // Assert
         exception.Should().BeNull();
@@ -82,7 +82,7 @@ public class LoadingTopicTests
         // Arrange
         var name = new TopicName("test");
         HashSet<int> partitionFilter = null!;
-        var topic = new LoadingTopic(name, true, new DateFilterRange(null!, DateTime.UtcNow), partitionFilter);
+        var topic = new LoadingTopic(name, true, new DateFilterRange(null!, DateTime.UtcNow), EncoderRules.String, partitionFilter);
 
 
         // Act
@@ -101,7 +101,7 @@ public class LoadingTopicTests
         var date = DateTime.UtcNow;
         var name = new TopicName("test");
         HashSet<int> partitionFilter = null!;
-        var topic = new LoadingTopic(name, true, new DateFilterRange(date, null!), partitionFilter);
+        var topic = new LoadingTopic(name, true, new DateFilterRange(date, null!), EncoderRules.String, partitionFilter);
         DateTime resultedDate = default;
 
         // Act
@@ -120,7 +120,7 @@ public class LoadingTopicTests
         // Arrange
         var name = new TopicName("test");
         HashSet<int> partitionFilter = null!;
-        var topic = new LoadingTopic(name, true, new DateFilterRange(DateTime.UtcNow, null!), partitionFilter);
+        var topic = new LoadingTopic(name, true, new DateFilterRange(DateTime.UtcNow, null!), EncoderRules.String, partitionFilter);
 
         // Act
         var exception = Record.Exception(() => topic.EndOffsetDate);
@@ -138,7 +138,7 @@ public class LoadingTopicTests
         var date = DateTime.UtcNow;
         var name = new TopicName("test");
         HashSet<int> partitionFilter = null!;
-        var topic = new LoadingTopic(name, true, new DateFilterRange(null!, date), partitionFilter);
+        var topic = new LoadingTopic(name, true, new DateFilterRange(null!, date), EncoderRules.String, partitionFilter);
         DateTime resultedDate = default;
 
         // Act
@@ -158,7 +158,7 @@ public class LoadingTopicTests
         var name = new TopicName("test");
 
         // Act
-        var exception = Record.Exception(() => new LoadingTopic(name, true, new DateFilterRange(DateTime.UtcNow, DateTime.UtcNow.AddDays(1)), new HashSet<int>()));
+        var exception = Record.Exception(() => new LoadingTopic(name, true, new DateFilterRange(DateTime.UtcNow, DateTime.UtcNow.AddDays(1)), EncoderRules.String, new HashSet<int>()));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -173,7 +173,7 @@ public class LoadingTopicTests
         var name = new TopicName("test");
 
         // Act
-        var exception = Record.Exception(() => new LoadingTopic(name, true, new DateFilterRange(DateTime.UtcNow, DateTime.UtcNow.AddDays(1)), new HashSet<int>(new[] { 1, 2, 3 })));
+        var exception = Record.Exception(() => new LoadingTopic(name, true, new DateFilterRange(DateTime.UtcNow, DateTime.UtcNow.AddDays(1)), EncoderRules.String, new HashSet<int>(new[] { 1, 2, 3 })));
 
         // Assert
         exception.Should().BeNull();
@@ -190,7 +190,7 @@ public class LoadingTopicTests
         var name = new TopicName("test");
 
         // Act
-        var topic = new LoadingTopic(name, true, new DateFilterRange(date, date), new HashSet<int>(items));
+        var topic = new LoadingTopic(name, true, new DateFilterRange(date, date), EncoderRules.String, new HashSet<int>(items));
 
         // Assert
         topic.HasPartitionFilter.Should().BeTrue();

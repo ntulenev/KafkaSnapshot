@@ -10,6 +10,7 @@ Supports:
 * Multi-partition topics
 * SASL authentication mechanism
 * Message sorting
+* Message payload in MessagePack with auto converting to JSON Array
 
 By default messages should contains JSON data. Simple strings also supported (see ExportRawMessage parameter).
 
@@ -136,6 +137,7 @@ Config params:
 | ExportRawMessage | If true - export will write message as raw string without converting to formatted json (optional)|
 | PartitionsIds | Partitions ids filter (optional)|
 | UseFileStreaming | Serializes loaded data to file directly via FileStream (Avoids OOM issue for large amounts of data). Better effect with disabled sorting (GlobalSortOrder No)|
+|MessageEncoderRule| Allows you to choose the format in which the message body is received. By default, a String is expected, but you can choose MessagePack or MessagePackLz4Block.|
 
 Filter restrictions:
 * 'Contains' key filter could be applied only to string keys.

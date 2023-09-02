@@ -11,6 +11,8 @@ using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Message;
 using KafkaSnapshot.Import.Configuration;
 using KafkaSnapshot.Abstractions.Sorting;
+using System.Collections;
+using System.Text;
 
 namespace KafkaSnapshot.Import;
 
@@ -178,6 +180,8 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
                                 topicParams.EndOffsetDate);
                     break;
                 }
+
+                
 
                 if (keyFilter.IsMatch(result.Message.Key) &&
                     valueFilter.IsMatch(result.Message.Value))

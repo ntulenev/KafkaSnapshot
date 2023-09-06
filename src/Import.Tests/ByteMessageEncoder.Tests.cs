@@ -13,6 +13,7 @@ public class ByteMessageEncoderTests
     [Trait("Category", "Unit")]
     [Theory(DisplayName = "Encode should convert byte array to string based on specified rules")]
     [InlineData(new byte[] { 72, 101, 108, 108, 111 }, EncoderRules.String, "Hello")]
+    [InlineData(new byte[] { 147, 164, 74, 111, 104, 110, 192, 30 }, EncoderRules.MessagePack, "[\"John\",null,30]")]
     public void EncodeConvertsByteArrayToString(byte[] inputBytes, EncoderRules rule, string expectedOutput)
     {
         // Arrange

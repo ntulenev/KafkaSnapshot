@@ -3,17 +3,39 @@
 using KafkaSnapshot.Import.Encoders;
 
 using KafkaSnapshot.Models.Import;
-
+using MessagePack;
 using Xunit;
 
 namespace KafkaSnapshot.Import.Tests;
 
 public class ByteMessageEncoderTests
 {
+    public static IEnumerable<object[]> TestData()
+    {
+        var strData1 = new string('A', 100);
+        var strData2 = new string('B', 100);
+        var testObject = new ByteMessageTestType
+        {
+            Field1 = strData1,
+            Field2 = strData2
+        };
+
+        var result = "[\"" + strData1 + "\",0,\"" + strData2 + "\"]";
+
+        var parametersNone = MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.None);
+        byte[] serializedDataNone = MessagePackSerializer.Serialize(testObject, parametersNone);
+
+        var parametersLZ4 = MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4Block);
+        byte[] serializedDataLZ4 = MessagePackSerializer.Serialize(testObject, parametersNone);
+
+        yield return new object[] { new byte[] { 72, 101, 108, 108, 111 }, EncoderRules.String, "Hello" };
+        yield return new object[] { serializedDataNone, EncoderRules.MessagePack, result };
+        yield return new object[] { serializedDataLZ4, EncoderRules.MessagePackLz4Block, result };
+    }
+
     [Trait("Category", "Unit")]
     [Theory(DisplayName = "Encode should convert byte array to string based on specified rules")]
-    [InlineData(new byte[] { 72, 101, 108, 108, 111 }, EncoderRules.String, "Hello")]
-    [InlineData(new byte[] { 147, 164, 74, 111, 104, 110, 192, 30 }, EncoderRules.MessagePack, "[\"John\",null,30]")]
+    [MemberData(nameof(TestData))]
     public void EncodeConvertsByteArrayToString(byte[] inputBytes, EncoderRules rule, string expectedOutput)
     {
         // Arrange

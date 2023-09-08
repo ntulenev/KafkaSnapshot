@@ -1,9 +1,10 @@
 ﻿using FluentAssertions;
 
 using KafkaSnapshot.Import.Encoders;
-
 using KafkaSnapshot.Models.Import;
+
 using MessagePack;
+
 using Xunit;
 
 namespace KafkaSnapshot.Import.Tests;

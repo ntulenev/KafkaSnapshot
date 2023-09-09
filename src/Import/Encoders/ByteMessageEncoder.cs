@@ -9,7 +9,8 @@ namespace KafkaSnapshot.Import.Encoders;
 
 
 /// <summary>
-/// Encoder for converting byte array messages to string format based on specified rules.
+/// Encoder for converting byte array messages 
+/// to string format based on specified rules.
 /// </summary>
 public class ByteMessageEncoder : IMessageEncoder<byte[], string>
 {

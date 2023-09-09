@@ -6,7 +6,9 @@ namespace KafkaSnapshot.Filters;
 /// Check data on equality with sample.
 /// </summary>
 /// <typeparam name="TKey">Message data type.</typeparam>
-public class EqualsFilter<TData> : IDataFilter<TData> where TData : notnull
+public class EqualsFilter<TData> : 
+    IDataFilter<TData> 
+    where TData : notnull
 {
     /// <summary>
     /// Creates <see cref="EqualsFilter{TKey}"/>.

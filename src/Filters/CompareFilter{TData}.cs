@@ -2,7 +2,9 @@
 
 namespace KafkaSnapshot.Filters;
 
-public class CompareFilter<TData> : IDataFilter<TData> where TData : IComparable<TData>
+public class CompareFilter<TData> : 
+    IDataFilter<TData> 
+    where TData : IComparable<TData>
 {
     public CompareFilter(TData sample, bool greater)
     {

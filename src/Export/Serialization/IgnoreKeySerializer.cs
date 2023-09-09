@@ -11,7 +11,9 @@ namespace KafkaSnapshot.Export.Serialization;
 /// <summary>
 /// Serializer for data with no keys.
 /// </summary>
-public class IgnoreKeySerializer : JsonSerializerBase, ISerializer<string, string, IgnoreKeyMarker>
+public class IgnoreKeySerializer : 
+    JsonSerializerBase, 
+    ISerializer<string, string, IgnoreKeyMarker>
 {
     /// <summary>
     /// Creates <see cref="IgnoreKeySerializer"/>.

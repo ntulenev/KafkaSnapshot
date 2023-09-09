@@ -18,7 +18,8 @@ public interface IDataExporter<TKey, TKeyMarker, TMessage, TTopic>
     /// <summary>
     /// Exports the data to a file.
     /// </summary>
-    /// <param name="data">The data to be exported as an enumerable collection of key-value pairs.</param>
+    /// <param name="data">The data to be exported as an enumerable collection of key-value 
+    /// pairs.</param>
     /// <param name="topic">The Kafka topic description.</param>
     /// <param name="ct">The token for cancelling the operation.</param>
     /// <returns>A task representing the asynchronous export operation.</returns>

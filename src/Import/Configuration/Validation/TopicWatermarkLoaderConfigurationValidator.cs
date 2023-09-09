@@ -7,12 +7,14 @@ namespace KafkaSnapshot.Import.Configuration.Validation;
 /// <summary>
 /// Validator for <see cref="TopicWatermarkLoaderConfiguration"/>.
 /// </summary>
-public class TopicWatermarkLoaderConfigurationValidator : IValidateOptions<TopicWatermarkLoaderConfiguration>
+public class TopicWatermarkLoaderConfigurationValidator : 
+    IValidateOptions<TopicWatermarkLoaderConfiguration>
 {
     /// <summary>
     /// Validates <see cref="TopicWatermarkLoaderConfiguration"/>.
     /// </summary>
-    public ValidateOptionsResult Validate(string name, TopicWatermarkLoaderConfiguration options)
+    public ValidateOptionsResult Validate(string name, 
+                                          TopicWatermarkLoaderConfiguration options)
     {
         Debug.Assert(name is not null);
         Debug.Assert(options is not null);

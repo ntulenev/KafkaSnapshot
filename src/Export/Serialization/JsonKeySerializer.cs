@@ -11,7 +11,9 @@ namespace KafkaSnapshot.Export.Serialization;
 /// <summary>
 /// Serializer for data with json keys.
 /// </summary>
-public class JsonKeySerializer : JsonSerializerBase, ISerializer<string, string, JsonKeyMarker>
+public class JsonKeySerializer :
+    JsonSerializerBase,
+    ISerializer<string, string, JsonKeyMarker>
 {
 
     /// <summary>
@@ -22,7 +24,7 @@ public class JsonKeySerializer : JsonSerializerBase, ISerializer<string, string,
     public JsonKeySerializer(ILogger<JsonKeySerializer> logger) : base(logger) { }
 
     private static object ProjectData(
-                IEnumerable<KeyValuePair<string, KafkaMessage<string>>> data, 
+                IEnumerable<KeyValuePair<string, KafkaMessage<string>>> data,
                 bool exportRawMessage)
         => data.Select(x => new
         {
@@ -34,7 +36,7 @@ public class JsonKeySerializer : JsonSerializerBase, ISerializer<string, string,
     /// <inheritdoc/>
     /// <exception cref="ArgumentNullException">Thrown when data is null.</exception>
     public string Serialize(
-            IEnumerable<KeyValuePair<string, KafkaMessage<string>>> data, 
+            IEnumerable<KeyValuePair<string, KafkaMessage<string>>> data,
             bool exportRawMessage)
     {
         ArgumentNullException.ThrowIfNull(data);
@@ -45,8 +47,8 @@ public class JsonKeySerializer : JsonSerializerBase, ISerializer<string, string,
     /// <inheritdoc/>
     /// <exception cref="ArgumentNullException">Thrown when data or stream is null.</exception>
     public void Serialize(
-            IEnumerable<KeyValuePair<string, KafkaMessage<string>>> data, 
-            bool exportRawMessage, 
+            IEnumerable<KeyValuePair<string, KafkaMessage<string>>> data,
+            bool exportRawMessage,
             Stream stream)
     {
         ArgumentNullException.ThrowIfNull(data);

@@ -13,7 +13,8 @@ namespace KafkaSnapshot.Export.Serialization;
 /// </summary>
 /// <typeparam name="TKey">Data key type.</typeparam>
 public class OriginalKeySerializer<TKey> :
-             JsonSerializerBase, ISerializer<TKey, string, OriginalKeyMarker>
+             JsonSerializerBase, 
+             ISerializer<TKey, string, OriginalKeyMarker>
 {
     /// <summary>
     /// Creates <see cref="OriginalKeySerializer{TKey}"/>.

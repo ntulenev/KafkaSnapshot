@@ -7,7 +7,9 @@ namespace KafkaSnapshot.Filters;
 /// Simple value filter factory.
 /// </summary>
 /// <typeparam name="TKey">Message value type.</typeparam>
-public class NaiveValueFiltersFactory<TValue> : IValueFilterFactory<TValue> where TValue : notnull
+public class NaiveValueFiltersFactory<TValue> : 
+    IValueFilterFactory<TValue> 
+    where TValue : notnull
 {
     ///// <inheritdoc/>
     public IDataFilter<TValue> Create(

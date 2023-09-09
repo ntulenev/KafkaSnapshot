@@ -91,7 +91,8 @@ public class LoadingTopic
 
         if (!Enum.IsDefined(typeof(EncoderRules), valueEncoderRule))
         {
-            throw new ArgumentException($"Invalid EncoderRules value {valueEncoderRule}", nameof(valueEncoderRule));
+            throw new ArgumentException(
+                $"Invalid EncoderRules value {valueEncoderRule}", nameof(valueEncoderRule));
         }
 
         TopicValueEncoderRule = valueEncoderRule;

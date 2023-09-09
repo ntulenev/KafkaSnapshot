@@ -10,9 +10,10 @@ namespace KafkaSnapshot.Export.Serialization;
 /// Basic serializer.
 /// </summary>
 /// <typeparam name="TKey">Data key type.</typeparam>
-public class SimpleJsonSerializer<TKey, TMessage> : JsonSerializerBase,
-                                                    ISerializer<TKey, TMessage, OriginalKeyMarker>
-                                                    where TMessage : notnull
+public class SimpleJsonSerializer<TKey, TMessage> : 
+    JsonSerializerBase,
+    ISerializer<TKey, TMessage, OriginalKeyMarker>
+    where TMessage : notnull
 {
     /// <summary>
     /// Creates <see cref="SimpleJsonSerializer{TKey, TMessage}"/>.

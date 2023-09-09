@@ -4,7 +4,8 @@ namespace KafkaSnapshot.Abstractions.Import
 {
 
     /// <summary>
-    /// Interface for encoding input messages into output messages based on specified rules.
+    /// Interface for encoding input messages into output messages based 
+    /// on specified rules.
     /// </summary>
     /// <typeparam name="TMessageIn">The type of input message.</typeparam>
     /// <typeparam name="TMessageOut">The type of output message.</typeparam>

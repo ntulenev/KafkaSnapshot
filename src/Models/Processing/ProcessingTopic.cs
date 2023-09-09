@@ -33,7 +33,11 @@ public record ProcessingTopic<TKey>(TopicName TopicName,
     /// </summary>
     public LoadingTopic CreateLoadingParams()
     {
-        return new LoadingTopic(TopicName, LoadWithCompacting, DateRange, ValueEncoderRule,PartitionIdsFilter);
+        return new LoadingTopic(TopicName,
+                                LoadWithCompacting,
+                                DateRange,
+                                ValueEncoderRule,
+                                PartitionIdsFilter);
     }
 
     /// <summary>

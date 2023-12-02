@@ -13,55 +13,54 @@ public class TopicConfiguration
     /// <summary>
     /// Topic name in Apache Kafka.
     /// </summary>
-    public string Name { get; set; } = default!;
+    public required string Name { get; init; }
 
     /// <summary>
     /// Topic Key Type.
     /// </summary>
-    public KeyType KeyType { get; set; }
+    public KeyType KeyType { get; init; }
 
     /// <summary>
     /// Setting to On or Off compacting.
     /// </summary>
-    public CompactingMode Compacting { get; set; } = CompactingMode.On;
+    public CompactingMode Compacting { get; init; } = CompactingMode.On;
 
     /// <summary>
     /// Exported file name for topic data.
     /// </summary>
-    public string ExportFileName { get; set; } = default!;
-
+    public required string ExportFileName { get; init; }
     /// <summary>
     /// Topic filter key type.
     /// </summary>
-    public FilterType FilterKeyType { get; set; } = FilterType.None;
+    public FilterType FilterKeyType { get; init; } = FilterType.None;
 
     /// <summary>
     /// Date and time for starting offset.
     /// </summary>
-    public DateTime? OffsetStartDate { get; set; }
+    public DateTime? OffsetStartDate { get; init; }
 
     /// <summary>
     /// Date and time for final offset.
     /// </summary>
-    public DateTime? OffsetEndDate { get; set; }
+    public DateTime? OffsetEndDate { get; init; }
 
     /// <summary>
     /// Message format in export JSON.
     /// </summary>
-    public bool ExportRawMessage { get; set; }
+    public bool ExportRawMessage { get; init; }
 
     /// <summary>
     /// Optional filter key value.
     /// </summary>
-    public object? FilterKeyValue { get; set; }
+    public object? FilterKeyValue { get; init; }
 
     /// <summary>
     /// Partition ids filter.
     /// </summary>
-    public HashSet<int>? PartitionsIds { get; set; }
+    public HashSet<int>? PartitionsIds { get; init; }
 
 
-    public EncoderRules MessageEncoderRule { get; set; } = EncoderRules.String;
+    public EncoderRules MessageEncoderRule { get; init; } = EncoderRules.String;
 
     /// <summary>
     /// Converts configuration to <see cref="ProcessingTopic{TKey}"/>.

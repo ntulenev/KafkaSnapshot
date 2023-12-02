@@ -26,10 +26,7 @@ public class LoaderConcurrentTool : ILoaderTool
         _logger.LogDebug("Instance created for {count} unit(s).", _units.Count);
     }
 
-    /// <summary>
-    /// Runs processing of topics.
-    /// </summary>
-    /// <param name="ct">Token for cancelling.</param>
+    /// <inheritdoc/>
     public async Task ProcessAsync(CancellationToken ct)
     {
         _logger.LogInformation(

@@ -23,14 +23,11 @@ public class LoaderTool : ILoaderTool
         _logger.LogDebug("Instance created for {count} unit(s).", _units.Count);
     }
 
-    /// <summary>
-    /// Runs processing of topics.
-    /// </summary>
-    /// <param name="ct">Token for cancelling.</param>
+    /// <inheritdoc/>
     public async Task ProcessAsync(CancellationToken ct)
     {
         _logger.LogInformation(
-            "The utility starts loading {count} Apache Kafka topics...", 
+            "The utility starts loading {count} Apache Kafka topics...",
             _units.Count);
 
         int indexer = 0;
@@ -40,9 +37,9 @@ public class LoaderTool : ILoaderTool
             using var _ = _logger.BeginScope("topic {topic}", unit.TopicName.Name);
 
             _logger.LogInformation(
-                "{indexer}/{count} Processing topic {topicName}", 
-                ++indexer, 
-                _units.Count, 
+                "{indexer}/{count} Processing topic {topicName}",
+                ++indexer,
+                _units.Count,
                 unit.TopicName);
 
             try

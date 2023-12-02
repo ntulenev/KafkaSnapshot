@@ -1,6 +1,9 @@
 ﻿using KafkaSnapshot.Models.Filters;
 using KafkaSnapshot.Models.Names;
-using System.Data;
+
+using System.Collections.Frozen;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace KafkaSnapshot.Models.Import;
 
@@ -14,6 +17,9 @@ public class LoadingTopic
     /// </summary>
     public TopicName Value { get; }
 
+    /// <summary>
+    /// Specifies the rules for encoding messages.
+    /// </summary>
     public EncoderRules TopicValueEncoderRule { get; }
 
     /// <summary>
@@ -64,7 +70,7 @@ public class LoadingTopic
                         bool loadWithCompacting,
                         DateFilterRange dateParams,
                         EncoderRules valueEncoderRule,
-                        HashSet<int>? partitionFilter
+                        IReadOnlySet<int>? partitionFilter
                         )
     {
         Value = topicName ?? throw new ArgumentNullException(nameof(topicName));
@@ -82,11 +88,11 @@ public class LoadingTopic
                 throw new ArgumentException("Filter is not set", nameof(partitionFilter));
             }
 
-            _partitionFilter = new HashSet<int>(partitionFilter);
+            _partitionFilter = partitionFilter.ToFrozenSet();
         }
         else
         {
-            _partitionFilter = new HashSet<int>();
+            _partitionFilter = new HashSet<int>().ToFrozenSet();
         }
 
         if (!Enum.IsDefined(typeof(EncoderRules), valueEncoderRule))

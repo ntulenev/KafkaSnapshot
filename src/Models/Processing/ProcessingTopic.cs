@@ -25,7 +25,7 @@ public record ProcessingTopic<TKey>(TopicName TopicName,
                                     DateFilterRange DateRange,
                                     bool ExportRawMessage,
                                     EncoderRules ValueEncoderRule,
-                                    HashSet<int>? PartitionIdsFilter = null
+                                    IReadOnlySet<int>? PartitionIdsFilter = null
                                     )
 {
     /// <summary>

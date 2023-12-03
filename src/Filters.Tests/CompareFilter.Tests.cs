@@ -37,7 +37,7 @@ public class CompareFilterTests
         var result = new CompareFilter<string>(value, side);
 
         // Assert
-        result.IsGreaterWay.Should().Be(side);
+        result.IsGreaterOrEquals.Should().Be(side);
     }
 
     [Theory(DisplayName = "Unable to create Compare filter with null match.")]
@@ -65,11 +65,11 @@ public class CompareFilterTests
     [InlineData(false, 1, 2, false)]
     [InlineData(false, 2, 2, true)]
     [InlineData(false, 3, 2, true)]
-    public void FilterCanCompareData(bool isGreater, int sample, int data, bool targetResult)
+    public void FilterCanCompareData(bool isGreaterOrEquals, int sample, int data, bool targetResult)
     {
 
         // Arrange
-        var filters = new CompareFilter<int>(sample, greater: isGreater);
+        var filters = new CompareFilter<int>(sample, greaterOrEquals: isGreaterOrEquals);
 
         // Act
         bool result = filters.IsMatch(data);

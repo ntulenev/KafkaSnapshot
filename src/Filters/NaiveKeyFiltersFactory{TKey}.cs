@@ -19,9 +19,9 @@ public class NaiveKeyFiltersFactory<TKey> :
             (FilterType.None, _, _)
                     => _default,
             (FilterType.GreaterOrEquals, KeyType.Long, long longSample)
-                    => (IDataFilter<TKey>)new CompareFilter<long>(longSample, greater: true),
+                    => (IDataFilter<TKey>)new CompareFilter<long>(longSample, greaterOrEquals: true),
             (FilterType.LessOrEquals, KeyType.Long, long longSample)
-                    => (IDataFilter<TKey>)new CompareFilter<long>(longSample, greater: false),
+                    => (IDataFilter<TKey>)new CompareFilter<long>(longSample, greaterOrEquals: false),
             (FilterType.Equals, KeyType.Long or KeyType.String, _)
                     => new EqualsFilter<TKey>(sample),
             (FilterType.Equals, KeyType.Json, string json)

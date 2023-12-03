@@ -5,10 +5,10 @@ public class SnapshotLoaderConfiguration
     /// <summary>
     /// Timout for searching date offset.
     /// </summary>
-    public TimeSpan DateOffsetTimeout { get; set; }
+    public TimeSpan DateOffsetTimeout { get; init; }
 
     /// <summary>
     /// If true stops search after finds any data in any partition.
     /// </summary>
-    public bool SearchSinglePartition { get; set; }
+    public bool SearchSinglePartition { get; init; }
 }

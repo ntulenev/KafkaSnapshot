@@ -10,7 +10,7 @@ public class BootstrapServersConfiguration
     /// <summary>
     /// List of bootstrap servers.
     /// </summary>
-    public List<string> BootstrapServers { get; set; } = default!;
+    public required List<string> BootstrapServers { get; init; }
 
     /// <summary>
     /// Kafka user name, is any.
@@ -20,15 +20,15 @@ public class BootstrapServersConfiguration
     /// <summary>
     /// Kafka password name, is any.
     /// </summary>
-    public string? Password { get; set; }
+    public string? Password { get; init; }
 
     /// <summary>
     /// Kafka security protocol.
     /// </summary>
-    public SecurityProtocol SecurityProtocol { get; set; } = SecurityProtocol.Plaintext;
+    public SecurityProtocol SecurityProtocol { get; init; } = SecurityProtocol.Plaintext;
 
     /// <summary>
     /// Kafka security protocol mechanism.
     /// </summary>
-    public SaslMechanism? SASLMechanism { get; set; }
+    public SaslMechanism? SASLMechanism { get; init; }
 }

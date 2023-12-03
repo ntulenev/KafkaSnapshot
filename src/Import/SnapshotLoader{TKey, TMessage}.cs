@@ -11,8 +11,8 @@ using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Message;
 using KafkaSnapshot.Import.Configuration;
 using KafkaSnapshot.Abstractions.Sorting;
-using System.Collections;
-using System.Text;
+
+using System.Collections.Frozen;
 
 namespace KafkaSnapshot.Import;
 
@@ -229,7 +229,7 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
                 {
                     d[e.Key] = e.Value;
                     return d;
-                });
+                }).ToFrozenDictionary();
 
             _logger.LogDebug("Created compacting state for {items} item(s)", result.Count());
         }

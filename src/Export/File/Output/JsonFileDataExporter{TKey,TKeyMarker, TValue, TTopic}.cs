@@ -66,7 +66,7 @@ public class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> :
 
         if (_isStreamingMode)
         {
-            await InnerStreamExportAsync(data, topic, ct);
+            await InnerStreamExportAsync(data, topic);
         }
         else
         {
@@ -75,39 +75,38 @@ public class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> :
     }
 
     private async Task InnerFileExportAsync(
-        IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> data, 
-        TTopic topic, 
+        IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> data,
+        TTopic topic,
         CancellationToken ct)
     {
-        using var _ = _logger.BeginScope("Data from topic {topic} to File {file}", 
-                            topic.TopicName.Name, 
+        using var _ = _logger.BeginScope("Data from topic {topic} to File {file}",
+                            topic.TopicName.Name,
                             topic.ExportName);
 
         _logger.LogDebug("Starting saving data.");
 
         await _fileSaver.SaveAsync(
-                    topic.ExportName, 
-                    _serializer.Serialize(data, topic.ExportRawMessage), 
+                    topic.ExportName,
+                    _serializer.Serialize(data, topic.ExportRawMessage),
                     ct)
                     .ConfigureAwait(false);
 
         _logger.LogDebug("Data saved successfully.");
     }
 
-    private async Task InnerStreamExportAsync(
-            IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> data, 
-            TTopic topic, 
-            CancellationToken ct)
+    private Task InnerStreamExportAsync(
+            IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> data,
+            TTopic topic)
     {
         using var _ = _logger.BeginScope("Data from topic {topic} to File {file} with stream",
-                        topic.TopicName.Name, 
+                        topic.TopicName.Name,
                         topic.ExportName);
 
         using var stream = _streamProvider.CreateFileStream(topic.ExportName);
 
         _serializer.Serialize(data, topic.ExportRawMessage, stream);
 
-        await Task.CompletedTask;
+        return Task.CompletedTask;
     }
 
     private readonly ILogger<JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic>> _logger;

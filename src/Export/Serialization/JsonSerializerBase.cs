@@ -38,7 +38,7 @@ public abstract class JsonSerializerBase
 
         _logger.LogTrace("Finish serializing data.");
 
-        return sb.ToString(); //TODO Change on Stream. OOM on big count of data.
+        return sb.ToString();
     }
 
     protected void SerializeDataToStream(object data, Stream stream)

@@ -63,7 +63,11 @@ public class NaiveValueFiltersFactoryTests
         IDataFilter<object> result = null!;
 
         // Act
-        var exception = Record.Exception(() => result = factory.Create(FilterType.Equals, messageType, new()));
+        var exception = Record.Exception(() => 
+                            result = factory.Create(
+                                        FilterType.Equals, 
+                                        messageType, 
+                                        new()));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -80,7 +84,11 @@ public class NaiveValueFiltersFactoryTests
         IDataFilter<object> result = null!;
 
         // Act
-        var exception = Record.Exception(() => result = factory.Create(FilterType.GreaterOrEquals, messageType, new()));
+        var exception = Record.Exception(() => 
+                            result = factory.Create(
+                                        FilterType.GreaterOrEquals, 
+                                        messageType, 
+                                        new()));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -97,7 +105,11 @@ public class NaiveValueFiltersFactoryTests
         IDataFilter<object> result = null!;
 
         // Act
-        var exception = Record.Exception(() => result = factory.Create(FilterType.LessOrEquals, messageType, new()));
+        var exception = Record.Exception(() => 
+                            result = factory.Create(
+                                        FilterType.LessOrEquals, 
+                                        messageType, 
+                                        new()));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentException>();

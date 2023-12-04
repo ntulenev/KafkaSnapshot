@@ -64,7 +64,11 @@ public class NaiveKeyFiltersFactoryTests
         string value = "{\"value\": 1 }";
 
         // Act
-        var exception = Record.Exception(() => result = factory.Create(FilterType.Equals, KeyType.Ignored, value));
+        var exception = Record.Exception(() => 
+                            result = factory.Create(
+                                        FilterType.Equals, 
+                                        KeyType.Ignored, 
+                                        value));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -98,7 +102,11 @@ public class NaiveKeyFiltersFactoryTests
         string value = "data";
 
         // Act
-        var exception = Record.Exception(() => result = factory.Create(FilterType.Contains, keyType, value));
+        var exception = Record.Exception(() => 
+                            result = factory.Create(
+                                        FilterType.Contains, 
+                                        keyType, 
+                                        value));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentException>();

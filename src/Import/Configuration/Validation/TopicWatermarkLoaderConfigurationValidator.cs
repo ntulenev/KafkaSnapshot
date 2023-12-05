@@ -13,7 +13,7 @@ public class TopicWatermarkLoaderConfigurationValidator :
     /// <summary>
     /// Validates <see cref="TopicWatermarkLoaderConfiguration"/>.
     /// </summary>
-    public ValidateOptionsResult Validate(string name, 
+    public ValidateOptionsResult Validate(string? name, 
                                           TopicWatermarkLoaderConfiguration options)
     {
         Debug.Assert(name is not null);

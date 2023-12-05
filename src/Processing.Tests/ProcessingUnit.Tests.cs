@@ -268,7 +268,7 @@ public class ProcessingUnitTests
         var unit = new ProcessingUnit<object, IKeyRepresentationMarker, object>(logger, topic, loader, exporter, factory, valueFactory);
 
         // Act
-        await unit.ProcessAsync(cts.Token).ConfigureAwait(false);
+        await unit.ProcessAsync(cts.Token);
 
         // Assert
         exporterMock.Verify

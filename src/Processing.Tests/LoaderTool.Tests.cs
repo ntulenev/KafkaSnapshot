@@ -87,7 +87,7 @@ public class LoaderToolTests
         var tool = new LoaderTool(logger, items);
 
         // Act
-        await tool.ProcessAsync(cts.Token).ConfigureAwait(false);
+        await tool.ProcessAsync(cts.Token);
 
         // Assert
         unit1.Verify(x => x.ProcessAsync(cts.Token), Times.Once);
@@ -115,7 +115,7 @@ public class LoaderToolTests
         var tool = new LoaderTool(logger, items);
 
         // Act
-        await tool.ProcessAsync(cts.Token).ConfigureAwait(false);
+        await tool.ProcessAsync(cts.Token);
 
         // Assert
         unit1.Verify(x => x.ProcessAsync(cts.Token), Times.Once);
@@ -142,7 +142,7 @@ public class LoaderToolTests
         cts.Cancel();
 
         // Act
-        await tool.ProcessAsync(cts.Token).ConfigureAwait(false);
+        await tool.ProcessAsync(cts.Token);
 
         // Assert
         unit1.Verify(x => x.ProcessAsync(cts.Token), Times.Never);

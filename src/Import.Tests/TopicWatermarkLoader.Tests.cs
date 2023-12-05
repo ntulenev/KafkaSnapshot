@@ -111,8 +111,7 @@ public class TopicWatermarkLoaderTests
 
         // Act
         var exception = await Record.ExceptionAsync(async () =>
-        await loader.LoadWatermarksAsync(consumerFactory, topicName, cts.Token).ConfigureAwait(false)
-        );
+        await loader.LoadWatermarksAsync(consumerFactory, topicName, cts.Token));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -137,8 +136,7 @@ public class TopicWatermarkLoaderTests
 
         // Act
         var exception = await Record.ExceptionAsync(async () =>
-        await loader.LoadWatermarksAsync(consumerFactory, topicName, cts.Token).ConfigureAwait(false)
-        );
+        await loader.LoadWatermarksAsync(consumerFactory, topicName, cts.Token));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -180,7 +178,7 @@ public class TopicWatermarkLoaderTests
         consumerMock.Setup(x => x.Close());
 
         // Act
-        var result = await loader.LoadWatermarksAsync(consumerFactory, topic, cts.Token).ConfigureAwait(false);
+        var result = await loader.LoadWatermarksAsync(consumerFactory, topic, cts.Token);
 
         // Assert
         consumerMock.Verify(x => x.Close(), Times.Once);
@@ -232,7 +230,7 @@ public class TopicWatermarkLoaderTests
         consumerMock.Setup(x => x.Close());
 
         // Act
-        var result = await loader.LoadWatermarksAsync(consumerFactory, topic, cts.Token).ConfigureAwait(false);
+        var result = await loader.LoadWatermarksAsync(consumerFactory, topic, cts.Token);
 
         // Assert
         consumerMock.Verify(x => x.Close(), Times.Once);

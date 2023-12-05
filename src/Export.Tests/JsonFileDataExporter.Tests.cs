@@ -141,7 +141,7 @@ public class JsonFileDataExporterTests
 
         // Act
         var exception = await Record.ExceptionAsync(async () =>
-            await exporter.ExportAsync(data, topic, CancellationToken.None).ConfigureAwait(false));
+            await exporter.ExportAsync(data, topic, CancellationToken.None));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -167,8 +167,7 @@ public class JsonFileDataExporterTests
 
         // Act
         var exception = await Record.ExceptionAsync(async () =>
-        await exporter.ExportAsync(data, topic, CancellationToken.None).ConfigureAwait(false)
-            );
+            await exporter.ExportAsync(data, topic, CancellationToken.None));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -205,7 +204,7 @@ public class JsonFileDataExporterTests
             .Callback(() => fileSaverRunCount++);
 
         // Act
-        await exporter.ExportAsync(data, topic, token).ConfigureAwait(false);
+        await exporter.ExportAsync(data, topic, token);
 
         // Assert
         fileSaverRunCount.Should().Be(1);
@@ -240,7 +239,7 @@ public class JsonFileDataExporterTests
         var token = tcs.Token;
 
         // Act
-        await exporter.ExportAsync(data, topic, token).ConfigureAwait(false);
+        await exporter.ExportAsync(data, topic, token);
 
         // Assert
         fileSaverRunCount.Should().Be(1);

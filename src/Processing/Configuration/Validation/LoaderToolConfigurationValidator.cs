@@ -149,7 +149,7 @@ public partial class LoaderToolConfigurationValidator :
     /// <summary>
     /// Validates <see cref="LoaderToolConfiguration"/>.
     /// </summary>
-    public ValidateOptionsResult Validate(string name, LoaderToolConfiguration options)
+    public ValidateOptionsResult Validate(string? name, LoaderToolConfiguration options)
     {
         if (TryFailOnEmptyConfig(options, out var error))
         {

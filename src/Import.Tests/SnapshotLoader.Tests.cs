@@ -235,7 +235,7 @@ public class SnapshotLoaderTests
         // Act
         var exception = await Record.ExceptionAsync(
             async () => _ = await loader.LoadSnapshotAsync(
-                null!, keyFilter, valueFilter, CancellationToken.None).ConfigureAwait(false));
+                null!, keyFilter, valueFilter, CancellationToken.None));
 
 
         // Assert
@@ -271,7 +271,7 @@ public class SnapshotLoaderTests
         // Act
         var exception = await Record.ExceptionAsync(
             async () => _ = await loader.LoadSnapshotAsync(
-                topicParams, null!, valueFilter, CancellationToken.None).ConfigureAwait(false));
+                topicParams, null!, valueFilter, CancellationToken.None));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -307,7 +307,7 @@ public class SnapshotLoaderTests
         // Act
         var exception = await Record.ExceptionAsync(
             async () => _ = await loader.LoadSnapshotAsync(
-                topicParams, keyFilter, null!, CancellationToken.None).ConfigureAwait(false));
+                topicParams, keyFilter, null!, CancellationToken.None));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -575,7 +575,7 @@ public class SnapshotLoaderTests
         consumerMock.Setup(x => x.Close()).Callback(() => closeCount++);
 
         // Act
-        var result = await loader.LoadSnapshotAsync(topicName, keyFilter, valueFilter, CancellationToken.None).ConfigureAwait(false);
+        var result = await loader.LoadSnapshotAsync(topicName, keyFilter, valueFilter, CancellationToken.None);
 
         // Assert
         result.Should().BeEquivalentTo(Enumerable.Empty<KeyValuePair<object, KafkaMessage<object>>>());
@@ -670,7 +670,7 @@ public class SnapshotLoaderTests
         consumerMock.Setup(x => x.Close()).Callback(() => closeCount++);
 
         // Act
-        var result = await loader.LoadSnapshotAsync(topicName, keyFilter, valueFilter, CancellationToken.None).ConfigureAwait(false);
+        var result = await loader.LoadSnapshotAsync(topicName, keyFilter, valueFilter, CancellationToken.None);
 
         // Assert
         //TODO Fix with add encoder mock setup
@@ -777,7 +777,7 @@ public class SnapshotLoaderTests
         consumerMock.Setup(x => x.Close()).Callback(() => closeCount++);
 
         // Act
-        var result = await loader.LoadSnapshotAsync(topicName, keyFilter, valueFilter, CancellationToken.None).ConfigureAwait(false);
+        var result = await loader.LoadSnapshotAsync(topicName, keyFilter, valueFilter, CancellationToken.None);
 
         // Assert
         //TODO Fix with add encoder mock setup
@@ -845,8 +845,7 @@ public class SnapshotLoaderTests
         consumerMock.Setup(x => x.Close()).Callback(() => closeCount++);
 
         // Act
-        var result = await loader.LoadSnapshotAsync(topicName, keyFilter, valueFilter, CancellationToken.None)
-            .ConfigureAwait(false);
+        var result = await loader.LoadSnapshotAsync(topicName, keyFilter, valueFilter, CancellationToken.None);
 
         // Assert
         result.Should().BeEquivalentTo(Enumerable.Empty<KeyValuePair<object, KafkaMessage<object>>>());

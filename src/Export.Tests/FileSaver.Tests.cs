@@ -30,7 +30,8 @@ public class FileSaverTests
         var content = "123";
 
         // Act
-        var exception = await Record.ExceptionAsync(async () => await fileSaver.SaveAsync(fileName, content, CancellationToken.None).ConfigureAwait(false));
+        var exception = await Record.ExceptionAsync(
+            async () => await fileSaver.SaveAsync(fileName, content, CancellationToken.None));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -46,7 +47,8 @@ public class FileSaverTests
         var content = (string)null!;
 
         // Act
-        var exception = await Record.ExceptionAsync(async () => await fileSaver.SaveAsync(fileName, content, CancellationToken.None)).ConfigureAwait(false);
+        var exception = await Record.ExceptionAsync(
+            async () => await fileSaver.SaveAsync(fileName, content, CancellationToken.None));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();

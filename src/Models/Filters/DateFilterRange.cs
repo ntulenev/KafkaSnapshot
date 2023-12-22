@@ -5,7 +5,7 @@
 /// </summary>
 /// <param name="StartDate">Start offset date.</param>
 /// <param name="EndDate">End offset date.</param>
-public class DateFilterRange
+public sealed class DateFilterRange
 {
     /// <summary>
     /// Start offset date.

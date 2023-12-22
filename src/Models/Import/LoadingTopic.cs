@@ -10,7 +10,7 @@ namespace KafkaSnapshot.Models.Import;
 /// <summary>
 /// Represents Kafka topics attributes.
 /// </summary>
-public class LoadingTopic
+public sealed class LoadingTopic
 {
     /// <summary>
     /// Topic name.

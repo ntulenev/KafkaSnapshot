@@ -16,7 +16,7 @@ namespace KafkaSnapshot.Models.Processing;
 /// <param name="FilterKeyValue">Filter key value.</param>
 /// <param name="DateRange">Date interval for offsets.</param>
 /// <param name="ExportRawMessage">Use raw string for message or json.</param>
-public record ProcessingTopic<TKey>(TopicName TopicName,
+public sealed record ProcessingTopic<TKey>(TopicName TopicName,
                                     FileName ExportName,
                                     bool LoadWithCompacting,
                                     FilterType FilterKeyType,

@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents a file name with its extension.
 /// </summary>
-public class FileName
+public sealed class FileName
 {
     /// <summary>
     /// Gets the full name of the file, including the extension.

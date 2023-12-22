@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents a Kafka topic name.
 /// </summary>
-public class TopicName
+public sealed class TopicName
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="TopicName"/> class with the specified name.

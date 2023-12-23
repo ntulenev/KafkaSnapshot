@@ -9,7 +9,7 @@ namespace KafkaSnapshot.Sorting;
 /// </summary>
 /// <typeparam name="TKey">Kafka message key type.</typeparam>
 /// <typeparam name="TValue">Kafka message value type.</typeparam>
-public class MessageSorter<TKey, TValue> : IMessageSorter<TKey, TValue>
+public sealed class MessageSorter<TKey, TValue> : IMessageSorter<TKey, TValue>
                                          where TKey : notnull
                                          where TValue : notnull
 {

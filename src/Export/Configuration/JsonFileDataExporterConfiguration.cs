@@ -3,7 +3,7 @@
 /// <summary>
 /// Configuration class for exporting data to a JSON file.
 /// </summary>
-public class JsonFileDataExporterConfiguration
+public sealed class JsonFileDataExporterConfiguration
 {
     /// <summary>
     /// Gets or sets a value indicating whether to use file streaming.

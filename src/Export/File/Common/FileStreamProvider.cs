@@ -6,7 +6,7 @@ namespace KafkaSnapshot.Export.File.Common;
 /// <summary>
 /// Provider to create filestreams to write data.
 /// </summary>
-public class FileStreamProvider : IFileStreamProvider
+public sealed class FileStreamProvider : IFileStreamProvider
 {
     /// <inheritdoc/>
     /// <exception cref="ArgumentNullException">Thrown when fileName is null.</exception>

@@ -7,7 +7,7 @@ namespace KafkaSnapshot.Filters;
 /// Simple key filter factory.
 /// </summary>
 /// <typeparam name="TKey">Message key type.</typeparam>
-public class NaiveKeyFiltersFactory<TKey> : 
+public sealed class NaiveKeyFiltersFactory<TKey> : 
     IKeyFiltersFactory<TKey> 
     where TKey : notnull
 {

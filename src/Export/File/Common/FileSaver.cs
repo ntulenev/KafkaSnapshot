@@ -4,7 +4,7 @@ using KafkaSnapshot.Models.Names;
 namespace KafkaSnapshot.Export.File.Common;
 
 /// <inheritdoc/>
-public class FileSaver : IFileSaver
+public sealed class FileSaver : IFileSaver
 {
     /// <inheritdoc/>
     /// <exception cref="ArgumentNullException">Thrown if fileName 

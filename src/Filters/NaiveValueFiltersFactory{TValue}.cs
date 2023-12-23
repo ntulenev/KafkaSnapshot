@@ -7,7 +7,7 @@ namespace KafkaSnapshot.Filters;
 /// Simple value filter factory.
 /// </summary>
 /// <typeparam name="TKey">Message value type.</typeparam>
-public class NaiveValueFiltersFactory<TValue> : 
+public sealed class NaiveValueFiltersFactory<TValue> : 
     IValueFilterFactory<TValue> 
     where TValue : notnull
 {

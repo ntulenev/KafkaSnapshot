@@ -15,7 +15,7 @@ namespace KafkaSnapshot.Export.File.Output;
 /// <typeparam name="TKeyMarker">Key marker.</typeparam>
 /// <typeparam name="TValue">Message Value.</typeparam>
 /// <typeparam name="TTopic">Topic object.</typeparam>
-public class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> :
+public sealed class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> :
                     IDataExporter<TKey, TKeyMarker, TValue, TTopic>
                     where TTopic : ExportedTopic
                     where TKeyMarker : IKeyRepresentationMarker

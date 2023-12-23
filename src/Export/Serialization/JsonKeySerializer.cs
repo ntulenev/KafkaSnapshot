@@ -11,7 +11,7 @@ namespace KafkaSnapshot.Export.Serialization;
 /// <summary>
 /// Serializer for data with json keys.
 /// </summary>
-public class JsonKeySerializer :
+public sealed class JsonKeySerializer :
     JsonSerializerBase,
     ISerializer<string, string, JsonKeyMarker>
 {

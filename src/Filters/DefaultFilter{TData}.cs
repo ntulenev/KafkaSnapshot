@@ -6,7 +6,7 @@ namespace KafkaSnapshot.Filters;
 /// Default filter for message (match for any data).
 /// </summary>
 /// <typeparam name="TData">Data type.</typeparam>
-public class DefaultFilter<TData> : 
+public sealed class DefaultFilter<TData> : 
     IDataFilter<TData> 
     where TData : notnull
 {

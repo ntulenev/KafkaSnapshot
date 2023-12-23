@@ -8,7 +8,7 @@ namespace KafkaSnapshot.Processing.Configuration.Validation;
 /// <summary>
 /// Validator for <see cref="LoaderToolConfiguration"/>.
 /// </summary>
-public partial class LoaderToolConfigurationValidator : 
+public sealed partial class LoaderToolConfigurationValidator : 
     IValidateOptions<LoaderToolConfiguration>
 {
     private static bool TryFailOnTopicRules(

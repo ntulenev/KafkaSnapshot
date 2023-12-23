@@ -5,7 +5,7 @@ namespace KafkaSnapshot.Processing.Configuration;
 /// <summary>
 /// Application configuration.
 /// </summary>
-public class LoaderToolConfiguration
+public sealed class LoaderToolConfiguration
 {
     /// <summary>
     /// List of  topics with string Key.

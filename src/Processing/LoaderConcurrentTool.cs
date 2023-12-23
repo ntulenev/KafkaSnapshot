@@ -7,7 +7,7 @@ namespace KafkaSnapshot.Processing;
 /// <summary>
 /// Tool that process topics from Apache Kafka (in concurrent mode).
 /// </summary>
-public class LoaderConcurrentTool : ILoaderTool
+public sealed class LoaderConcurrentTool : ILoaderTool
 {
 
     /// <summary>

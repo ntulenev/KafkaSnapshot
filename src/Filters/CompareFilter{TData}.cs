@@ -2,16 +2,10 @@
 
 namespace KafkaSnapshot.Filters;
 
-public class CompareFilter<TData> : 
+public class CompareFilter<TData>(TData sample, bool greaterOrEquals) : 
     IDataFilter<TData> 
     where TData : IComparable<TData>
 {
-    public CompareFilter(TData sample, bool greaterOrEquals)
-    {
-        _sample = sample ?? throw new ArgumentNullException(nameof(sample));
-        _greaterOrEquals = greaterOrEquals;
-    }
-
     public bool IsMatch(TData data)
     {
         ArgumentNullException.ThrowIfNull(data);
@@ -30,7 +24,8 @@ public class CompareFilter<TData> :
 
     public bool IsGreaterOrEquals => _greaterOrEquals;
 
-    private readonly bool _greaterOrEquals;
-    private readonly TData _sample;
+    private readonly bool _greaterOrEquals = greaterOrEquals;
+    private readonly TData _sample = sample 
+        ?? throw new ArgumentNullException(nameof(sample));
 
 }

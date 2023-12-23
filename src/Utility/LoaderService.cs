@@ -7,7 +7,7 @@ namespace KafkaSnapshot.Utility
     /// <summary>
     /// Service wrapper for application logic.
     /// </summary>
-    public class LoaderService : BackgroundService
+    public sealed class LoaderService : BackgroundService
     {
         /// <summary>
         /// Initializes a new instance of the LoaderService.

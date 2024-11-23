@@ -22,7 +22,7 @@ public interface ISnapshotLoader<TKey, TMessage> where TKey : notnull
     /// <returns>An enumerable collection of key-value pairs 
     /// representing the loaded Kafka messages.</returns>
     public Task<IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>>> LoadSnapshotAsync(
-        LoadingTopic loadingTpic,
+        LoadingTopic loadingTopic,
         IDataFilter<TKey> keyFilter,
         IDataFilter<TMessage> valueFilter,
         CancellationToken ct);

@@ -109,7 +109,7 @@ public sealed class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> :
         return Task.CompletedTask;
     }
 
-    private readonly ILogger<JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic>> _logger;
+    private readonly ILogger _logger;
     private readonly IFileSaver _fileSaver;
     private readonly IFileStreamProvider _streamProvider;
     private readonly ISerializer<TKey, TValue, TKeyMarker> _serializer;

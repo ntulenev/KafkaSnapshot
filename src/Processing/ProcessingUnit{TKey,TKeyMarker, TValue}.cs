@@ -84,7 +84,7 @@ public sealed class ProcessingUnit<TKey, TKeyMarker, TValue> : IProcessingUnit
 
     private readonly ISnapshotLoader<TKey, TValue> _kafkaLoader;
     private readonly IDataExporter<TKey, TKeyMarker, TValue, ExportedTopic> _exporter;
-    private readonly ILogger<ProcessingUnit<TKey, TKeyMarker, TValue>> _logger;
+    private readonly ILogger _logger;
     private readonly IDataFilter<TKey> _keyFilter;
     private readonly IDataFilter<TValue> _valueFilter;
     private readonly LoadingTopic _topicParams;

@@ -57,5 +57,5 @@ public abstract class JsonSerializerBase
     }
 
     private readonly JsonSerializer _serializer = new() { Formatting = Formatting.Indented };
-    protected readonly ILogger<JsonSerializerBase> _logger;
+    protected readonly ILogger _logger;
 }

@@ -245,7 +245,7 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
     private readonly SnapshotLoaderConfiguration _config;
     private readonly ITopicWatermarkLoader _topicWatermarkLoader;
     private readonly Func<IConsumer<TKey, byte[]>> _consumerFactory;
-    private readonly ILogger<SnapshotLoader<TKey, TMessage>> _logger;
+    private readonly ILogger _logger;
     private readonly IMessageSorter<TKey, TMessage> _sorter;
     private readonly IMessageEncoder<byte[], TMessage> _encoder;
 }

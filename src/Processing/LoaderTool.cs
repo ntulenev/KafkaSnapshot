@@ -65,6 +65,6 @@ public sealed class LoaderTool : ILoaderTool
     }
 
     private readonly IReadOnlyCollection<IProcessingUnit> _units;
-    private readonly ILogger<LoaderTool> _logger;
+    private readonly ILogger _logger;
 
 }

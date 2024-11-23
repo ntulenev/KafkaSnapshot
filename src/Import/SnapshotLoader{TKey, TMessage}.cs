@@ -109,7 +109,7 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
                 }
             }
 
-            return Enumerable.Empty<KeyValuePair<TKey, KafkaMessage<TMessage>>>();
+            return [];
         }
         else
         {
@@ -124,9 +124,8 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
                                         ct))
                    )
             ).ConfigureAwait(false);
-
-            return consumedEntities.SelectMany(сonsumerResults => сonsumerResults);
-
+            
+            return consumedEntities.SelectMany(consumerResults => consumerResults);
         }
     }
 
@@ -153,7 +152,7 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
                 _logger.LogInformation("Searching for messages after date {Date}",
                             topicParams.OffsetDate);
 
-                if (!watermark.AssingWithConsumer(
+                if (!watermark.AssignWithConsumer(
                             consumer,
                             topicParams.OffsetDate,
                             _config.DateOffsetTimeout))
@@ -164,7 +163,7 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
             }
             else
             {
-                watermark.AssingWithConsumer(consumer);
+                watermark.AssignWithConsumer(consumer);
             }
 
             ConsumeResult<TKey, byte[]> result;

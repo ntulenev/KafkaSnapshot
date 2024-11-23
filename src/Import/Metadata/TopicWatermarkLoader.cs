@@ -16,7 +16,7 @@ public class TopicWatermarkLoader : ITopicWatermarkLoader
     /// <summary>
     /// Creates <see cref="TopicWatermarkLoader"/>.
     /// </summary>
-    /// <param name="adminClient">Kafla admin client.</param>
+    /// <param name="adminClient">Kafka admin client.</param>
     /// <param name="intTimeoutSeconds">Timeout in seconds for loading watermarks.</param>
     public TopicWatermarkLoader(IAdminClient adminClient,
                                 IOptions<TopicWatermarkLoaderConfiguration> options)

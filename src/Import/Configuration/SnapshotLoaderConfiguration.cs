@@ -3,7 +3,7 @@
 public class SnapshotLoaderConfiguration
 {
     /// <summary>
-    /// Timout for searching date offset.
+    /// Timeout for searching date offset.
     /// </summary>
     public TimeSpan DateOffsetTimeout { get; init; }
 

@@ -171,7 +171,7 @@ public class PartitionWatermarkTests
         IConsumer<object, object> consumer = null!;
 
         // Act
-        var exception = Record.Exception(() => pw.AssingWithConsumer(consumer));
+        var exception = Record.Exception(() => pw.AssignWithConsumer(consumer));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -193,7 +193,7 @@ public class PartitionWatermarkTests
         var consumer = consumerMock.Object;
 
         // Act
-        pw.AssingWithConsumer(consumer);
+        pw.AssignWithConsumer(consumer);
 
         // Assert
         consumerMock.Verify(x => x.Assign(It.Is<TopicPartition>(a => a.Topic == topicName.Value.Name && a.Partition == partition)), Times.Once);
@@ -223,7 +223,7 @@ public class PartitionWatermarkTests
         var consumer = consumerMock.Object;
 
         // Act
-        var result = pw.AssingWithConsumer(consumer, date, timeout);
+        var result = pw.AssignWithConsumer(consumer, date, timeout);
 
         // Assert
         result.Should().BeTrue();
@@ -252,7 +252,7 @@ public class PartitionWatermarkTests
         var consumer = consumerMock.Object;
 
         // Act
-        var result = pw.AssingWithConsumer(consumer, date, timeout);
+        var result = pw.AssignWithConsumer(consumer, date, timeout);
 
         // Assert
         result.Should().BeFalse();

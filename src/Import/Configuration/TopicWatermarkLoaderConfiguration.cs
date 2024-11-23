@@ -6,7 +6,7 @@
 public class TopicWatermarkLoaderConfiguration
 {
     /// <summary>
-    /// Timout for metadata request.
+    /// Timeout for metadata request.
     /// </summary>
     public TimeSpan AdminClientTimeout { get; init; }
 }

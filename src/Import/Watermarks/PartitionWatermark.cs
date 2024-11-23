@@ -19,8 +19,8 @@ public class PartitionWatermark
     /// Creates partition offset watermark.
     /// </summary>
     /// <param name="topicName">Name of the topic.</param>
-    /// <param name="offset">Raw kafka offset representation.</param>
-    /// <param name="partition">Raw kafka partition representation.</param>
+    /// <param name="offset">Raw Kafka offset representation.</param>
+    /// <param name="partition">Raw Kafka partition representation.</param>
     public PartitionWatermark(LoadingTopic topicName,
                               WatermarkOffsets offset,
                               Partition partition)
@@ -54,12 +54,12 @@ public class PartitionWatermark
     }
 
     /// <summary>
-    /// Assing consumer to a partition as topic.
+    /// Assign consumer to a partition as topic.
     /// </summary>
     /// <typeparam name="TKey">Message key.</typeparam>
     /// <typeparam name="TValue">Message value.</typeparam>
     /// <param name="consumer">Consumer.</param>
-    public void AssingWithConsumer<TKey, TValue>(IConsumer<TKey, TValue> consumer)
+    public void AssignWithConsumer<TKey, TValue>(IConsumer<TKey, TValue> consumer)
     {
         ArgumentNullException.ThrowIfNull(consumer);
 
@@ -68,14 +68,14 @@ public class PartitionWatermark
     }
 
     /// <summary>
-    ///  Assing consumer to a partition as topic with offset started from <paramref name="startDate"/>.
+    ///  Assign consumer to a partition as topic with offset started from <paramref name="startDate"/>.
     /// </summary>
     /// <typeparam name="TKey">Message key.</typeparam>
     /// <typeparam name="TValue">Message value.</typeparam>
     /// <param name="consumer">Consumer.</param>
     /// <param name="startDate">Start date for offset</param>
     /// <param name="timeout">Timeout for offset searching</param>
-    public bool AssingWithConsumer<TKey, TValue>(IConsumer<TKey, TValue> consumer, DateTime startDate, TimeSpan timeout)
+    public bool AssignWithConsumer<TKey, TValue>(IConsumer<TKey, TValue> consumer, DateTime startDate, TimeSpan timeout)
     {
         ArgumentNullException.ThrowIfNull(consumer);
 
@@ -83,7 +83,7 @@ public class PartitionWatermark
 
         var partitionTimestamp = new TopicPartitionTimestamp(topicPartition, new Timestamp(startDate));
 
-        var offsets = consumer.OffsetsForTimes(new[] { partitionTimestamp }, timeout);
+        var offsets = consumer.OffsetsForTimes([partitionTimestamp], timeout);
 
         var singleOffset = offsets.Single();
 

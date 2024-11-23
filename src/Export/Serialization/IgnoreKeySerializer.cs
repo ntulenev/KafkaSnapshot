@@ -11,17 +11,15 @@ namespace KafkaSnapshot.Export.Serialization;
 /// <summary>
 /// Serializer for data with no keys.
 /// </summary>
-public sealed class IgnoreKeySerializer : 
-    JsonSerializerBase, 
+/// <remarks>
+/// Creates <see cref="IgnoreKeySerializer"/>.
+/// </remarks>
+/// <param name="logger">Logger.</param>
+/// <exception cref="ArgumentNullException">Thrown when logger is null.</exception>
+public sealed class IgnoreKeySerializer(ILogger<IgnoreKeySerializer> logger) : 
+    JsonSerializerBase(logger), 
     ISerializer<string, string, IgnoreKeyMarker>
 {
-    /// <summary>
-    /// Creates <see cref="IgnoreKeySerializer"/>.
-    /// </summary>
-    /// <param name="logger">Logger.</param>
-    /// <exception cref="ArgumentNullException">Thrown when logger is null.</exception>
-    public IgnoreKeySerializer(ILogger<IgnoreKeySerializer> logger) : base(logger) { }
-
     private object ProjectData(
                     IEnumerable<KeyValuePair<string, KafkaMessage<string>>> data, 
                     bool exportRawMessage)

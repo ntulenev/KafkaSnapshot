@@ -12,18 +12,15 @@ namespace KafkaSnapshot.Export.Serialization;
 /// Serializer for data with keys of <typeparamref name="TKey"/> type.
 /// </summary>
 /// <typeparam name="TKey">Data key type.</typeparam>
-public sealed class OriginalKeySerializer<TKey> :
-             JsonSerializerBase, 
+/// <remarks>
+/// Creates <see cref="OriginalKeySerializer{TKey}"/>.
+/// </remarks>
+/// <param name="logger">Logger.</param>
+/// <exception cref="ArgumentNullException">Thrown when logger is null.</exception>
+public sealed class OriginalKeySerializer<TKey>(ILogger<OriginalKeySerializer<TKey>> logger) :
+             JsonSerializerBase(logger), 
              ISerializer<TKey, string, OriginalKeyMarker>
 {
-    /// <summary>
-    /// Creates <see cref="OriginalKeySerializer{TKey}"/>.
-    /// </summary>
-    /// <param name="logger">Logger.</param>
-    /// <exception cref="ArgumentNullException">Thrown when logger is null.</exception>
-    public OriginalKeySerializer(ILogger<OriginalKeySerializer<TKey>> logger) : base(logger) { }
-
-
     private static object ProjectData(
                 IEnumerable<KeyValuePair<TKey, KafkaMessage<string>>> data, 
                 bool exportRawMessage)

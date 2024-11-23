@@ -11,18 +11,15 @@ namespace KafkaSnapshot.Export.Serialization;
 /// <summary>
 /// Serializer for data with json keys.
 /// </summary>
-public sealed class JsonKeySerializer :
-    JsonSerializerBase,
+/// <remarks>
+/// Creates <see cref="JsonKeySerializer"/>.
+/// </remarks>
+/// <param name="logger">Logger.</param>
+/// <exception cref="ArgumentNullException">Thrown when logger is null.</exception>
+public sealed class JsonKeySerializer(ILogger<JsonKeySerializer> logger) :
+    JsonSerializerBase(logger),
     ISerializer<string, string, JsonKeyMarker>
 {
-
-    /// <summary>
-    /// Creates <see cref="JsonKeySerializer"/>.
-    /// </summary>
-    /// <param name="logger">Logger.</param>
-    /// <exception cref="ArgumentNullException">Thrown when logger is null.</exception>
-    public JsonKeySerializer(ILogger<JsonKeySerializer> logger) : base(logger) { }
-
     private static object ProjectData(
                 IEnumerable<KeyValuePair<string, KafkaMessage<string>>> data,
                 bool exportRawMessage)

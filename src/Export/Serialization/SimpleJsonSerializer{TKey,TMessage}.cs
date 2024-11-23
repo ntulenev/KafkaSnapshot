@@ -10,18 +10,16 @@ namespace KafkaSnapshot.Export.Serialization;
 /// Basic serializer.
 /// </summary>
 /// <typeparam name="TKey">Data key type.</typeparam>
-public sealed class SimpleJsonSerializer<TKey, TMessage> : 
-    JsonSerializerBase,
+/// <remarks>
+/// Creates <see cref="SimpleJsonSerializer{TKey, TMessage}"/>.
+/// </remarks>
+/// <param name="logger">Logger.</param>
+/// <exception cref="ArgumentNullException">Thrown when logger is null.</exception>
+public sealed class SimpleJsonSerializer<TKey, TMessage>(ILogger<SimpleJsonSerializer<TKey, TMessage>> logger) : 
+    JsonSerializerBase(logger),
     ISerializer<TKey, TMessage, OriginalKeyMarker>
     where TMessage : notnull
 {
-    /// <summary>
-    /// Creates <see cref="SimpleJsonSerializer{TKey, TMessage}"/>.
-    /// </summary>
-    /// <param name="logger">Logger.</param>
-    /// <exception cref="ArgumentNullException">Thrown when logger is null.</exception>
-    public SimpleJsonSerializer(ILogger<SimpleJsonSerializer<TKey, TMessage>> logger) : 
-            base(logger) { }
 
     /// <inheritdoc/>
     /// <exception cref="ArgumentNullException">Thrown when data is null.</exception>

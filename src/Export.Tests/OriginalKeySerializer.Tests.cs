@@ -92,7 +92,9 @@ public class OriginalKeySerializerTests
         var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
         var data = new[]
         {
-            new KeyValuePair<object, KafkaMessage<string>>(1,new KafkaMessage<string>("{\"Test\":42}",new KafkaMetadata(dateTime,1,2)))
+            new KeyValuePair<object, KafkaMessage<string>>(1,
+                new KafkaMessage<string>("{\"Test\":42}",
+                    new KafkaMetadata(dateTime,1,2)))
         };
 
         // Act
@@ -113,7 +115,9 @@ public class OriginalKeySerializerTests
         var isRaw = false;
         var data = new[]
         {
-            new KeyValuePair<object, KafkaMessage<string>>(1,new KafkaMessage<string>("{\"Test\":42}",new KafkaMetadata(dateTime,1,2)))
+            new KeyValuePair<object, KafkaMessage<string>>(1,
+                new KafkaMessage<string>("{\"Test\":42}",
+                    new KafkaMetadata(dateTime,1,2)))
         };
 
         // Act
@@ -134,7 +138,9 @@ public class OriginalKeySerializerTests
         var isRaw = false;
         var data = new[]
         {
-            new KeyValuePair<object, KafkaMessage<string>>(1,new KafkaMessage<string>("{\"Test\":42}",new KafkaMetadata(dateTime,1,2)))
+            new KeyValuePair<object, KafkaMessage<string>>(1,
+                new KafkaMessage<string>("{\"Test\":42}",
+                    new KafkaMetadata(dateTime,1,2)))
         };
 
         using var stream = new MemoryStream();
@@ -158,7 +164,9 @@ public class OriginalKeySerializerTests
         var isRaw = false;
         var data = new[]
         {
-            new KeyValuePair<object, KafkaMessage<string>>(1,new KafkaMessage<string>("Test",new KafkaMetadata(dateTime,1,2)))
+            new KeyValuePair<object, KafkaMessage<string>>(1,
+                new KafkaMessage<string>("Test",
+                    new KafkaMetadata(dateTime,1,2)))
         };
         string result = null!;
 
@@ -180,7 +188,9 @@ public class OriginalKeySerializerTests
         var isRaw = false;
         var data = new[]
         {
-            new KeyValuePair<object, KafkaMessage<string>>(1,new KafkaMessage<string>("Test",new KafkaMetadata(dateTime,1,2)))
+            new KeyValuePair<object, KafkaMessage<string>>(1,
+                new KafkaMessage<string>("Test",
+                    new KafkaMetadata(dateTime,1,2)))
         };
         using var stream = new MemoryStream();
 
@@ -202,7 +212,9 @@ public class OriginalKeySerializerTests
         var isRaw = true;
         var data = new[]
         {
-            new KeyValuePair<object, KafkaMessage<string>>(1,new KafkaMessage<string>("Test",new KafkaMetadata(dateTime,1,2)))
+            new KeyValuePair<object, KafkaMessage<string>>(1,
+                new KafkaMessage<string>("Test",
+                    new KafkaMetadata(dateTime,1,2)))
         };
 
         // Act
@@ -223,7 +235,9 @@ public class OriginalKeySerializerTests
         var isRaw = true;
         var data = new[]
         {
-            new KeyValuePair<object, KafkaMessage<string>>(1,new KafkaMessage<string>("Test",new KafkaMetadata(dateTime,1,2)))
+            new KeyValuePair<object, KafkaMessage<string>>(1,
+                new KafkaMessage<string>("Test",
+                    new KafkaMetadata(dateTime,1,2)))
         };
         using var stream = new MemoryStream();
 

@@ -54,7 +54,12 @@ public class JsonFileDataExporterTests
 
         // Act
         var exception = Record.Exception(() =>
-        _ = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(config.Object, logger.Object, fileSaver.Object, fileStreamProvider.Object, serializer));
+        _ = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(
+                config.Object, 
+                logger.Object, 
+                fileSaver.Object, 
+                fileStreamProvider.Object, 
+                serializer));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -74,7 +79,12 @@ public class JsonFileDataExporterTests
 
         // Act
         var exception = Record.Exception(() =>
-        _ = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(config.Object, logger.Object, fileSaver, fileStreamProvider.Object, serializer.Object));
+        _ = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(
+                config.Object, 
+                logger.Object, 
+                fileSaver, 
+                fileStreamProvider.Object, 
+                serializer.Object));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -94,7 +104,12 @@ public class JsonFileDataExporterTests
 
         // Act
         var exception = Record.Exception(() =>
-        _ = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(config.Object, logger.Object, fileSaver.Object, fileStreamProvider, serializer.Object));
+        _ = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(
+                config.Object, 
+                logger.Object, 
+                fileSaver.Object, 
+                fileStreamProvider, 
+                serializer.Object));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -115,7 +130,11 @@ public class JsonFileDataExporterTests
         // Act
         var exception = Record.Exception(() =>
         _ = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(
-            config.Object, logger.Object, fileSaver.Object, fileStreamProvider.Object, serializer.Object));
+                config.Object, 
+                logger.Object, 
+                fileSaver.Object, 
+                fileStreamProvider.Object, 
+                serializer.Object));
 
         // Assert
         exception.Should().BeNull();
@@ -192,7 +211,9 @@ public class JsonFileDataExporterTests
         var topic = new ExportedTopic(new TopicName("name"), new FileName("filename"), isRawMessage);
         var data = new KeyValuePair<object, KafkaMessage<object>>[]
         {
-            new KeyValuePair<object, KafkaMessage<object>>("test",new KafkaMessage<object>("value", new KafkaMetadata(DateTime.UtcNow,1,2)))
+            new("test",
+                new KafkaMessage<object>("value", 
+                    new KafkaMetadata(DateTime.UtcNow,1,2)))
         };
         var jsonData = "testJson";
         serializer.Setup(x => x.Serialize(data, isRawMessage)).Returns(jsonData);
@@ -229,7 +250,9 @@ public class JsonFileDataExporterTests
         var topic = new ExportedTopic(new TopicName("name"), new FileName("filename"), isRawMessage);
         var data = new KeyValuePair<object, KafkaMessage<object>>[]
         {
-            new KeyValuePair<object, KafkaMessage<object>>("test",new KafkaMessage<object>("value", new KafkaMetadata(DateTime.UtcNow,1,2)))
+            new("test",
+                new KafkaMessage<object>("value", 
+                    new KafkaMetadata(DateTime.UtcNow,1,2)))
         };
         var testStream = new Mock<Stream>().Object;
         fileStreamProvider.Setup(x => x.CreateFileStream(topic.ExportName)).Returns(() => testStream);

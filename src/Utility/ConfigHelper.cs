@@ -39,7 +39,7 @@ public static class ConfigHelper
             throw new OptionsValidationException(
                 string.Empty, 
                 typeof(BootstrapServersConfiguration), 
-                new[] { validationResult.FailureMessage });
+                [validationResult.FailureMessage]);
         }
 
         return config;
@@ -66,14 +66,14 @@ public static class ConfigHelper
             throw new OptionsValidationException(
                 string.Empty, 
                 typeof(LoaderToolConfiguration),
-                new[] { validationResult.FailureMessage });
+                [validationResult.FailureMessage]);
         }
 
         return config;
     }
 
     /// <summary>
-    /// Confugures <see cref="LoaderToolConfiguration"/>
+    /// Configures <see cref="LoaderToolConfiguration"/>
     /// </summary>
     public static IServiceCollection ConfigureLoaderTool(
         this IServiceCollection services, 
@@ -87,7 +87,7 @@ public static class ConfigHelper
     }
 
     /// <summary>
-    /// Confugures <see cref="JsonFileDataExporterConfiguration"/>
+    /// Configures <see cref="JsonFileDataExporterConfiguration"/>
     /// </summary>
     public static IServiceCollection ConfigureExport(
         this IServiceCollection services, 

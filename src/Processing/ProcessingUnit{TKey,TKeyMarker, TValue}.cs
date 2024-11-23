@@ -28,7 +28,7 @@ public sealed class ProcessingUnit<TKey, TKeyMarker, TValue> : IProcessingUnit
     /// </summary>
     /// <param name="logger">Creates logger 
     /// for <see cref="ProcessingUnit{TKey, TKeyMarker, TValue}"/>.</param>
-    /// <param name="topic">Apahe Kafka topic.</param>
+    /// <param name="topic">Apache Kafka topic.</param>
     /// <param name="kafkaLoader">Kafka topic loader.</param>
     /// <param name="exporter">Data exporter.</param>
     public ProcessingUnit(ILogger<ProcessingUnit<TKey, TKeyMarker, TValue>> logger,

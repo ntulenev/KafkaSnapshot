@@ -6,7 +6,7 @@ using KafkaSnapshot.Models.Processing;
 namespace KafkaSnapshot.Processing.Configuration;
 
 /// <summary>
-/// Topic representatin in configuration <see cref="LoaderToolConfiguration"/>.
+/// Topic representation in configuration <see cref="LoaderToolConfiguration"/>.
 /// </summary>
 public sealed class TopicConfiguration
 {

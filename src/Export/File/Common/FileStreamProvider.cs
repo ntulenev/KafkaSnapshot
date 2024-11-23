@@ -4,7 +4,7 @@ using KafkaSnapshot.Models.Names;
 namespace KafkaSnapshot.Export.File.Common;
 
 /// <summary>
-/// Provider to create filestreams to write data.
+/// Provider to create file streams to write data.
 /// </summary>
 public sealed class FileStreamProvider : IFileStreamProvider
 {

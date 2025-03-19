@@ -20,6 +20,7 @@ public class ByteMessageEncoderTests
             Field1 = strData1,
             Field2 = strData2
         };
+        var helloBytes = "Hello"u8.ToArray();
 
         var result = "[\"" + strData1 + "\",0,\"" + strData2 + "\"]";
 
@@ -27,11 +28,12 @@ public class ByteMessageEncoderTests
         byte[] serializedDataNone = MessagePackSerializer.Serialize(testObject, parametersNone);
 
         var parametersLZ4 = MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4Block);
-        byte[] serializedDataLZ4 = MessagePackSerializer.Serialize(testObject, parametersNone);
+        byte[] serializedDataLZ4 = MessagePackSerializer.Serialize(testObject, parametersLZ4);
 
-        yield return new object[] { new byte[] { 72, 101, 108, 108, 111 }, EncoderRules.String, "Hello" };
+        yield return new object[] { helloBytes, EncoderRules.String, "Hello" };
         yield return new object[] { serializedDataNone, EncoderRules.MessagePack, result };
         yield return new object[] { serializedDataLZ4, EncoderRules.MessagePackLz4Block, result };
+        yield return new object[] { helloBytes, EncoderRules.Base64, "SGVsbG8=" };
     }
 
     [Trait("Category", "Unit")]

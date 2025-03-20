@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Buffers.Text;
+using System.Text;
 
 using KafkaSnapshot.Abstractions.Import;
 using KafkaSnapshot.Models.Import;
@@ -28,25 +29,14 @@ public class ByteMessageEncoder : IMessageEncoder<byte[], string>
             throw new ArgumentException($"Invalid EncoderRules value {rule}", nameof(rule));
         }
 
-        switch (rule)
+        return rule switch
         {
-            case EncoderRules.String:
-                {
-                    return Encoding.UTF8.GetString(message);
-                }
-            case EncoderRules.MessagePack:
-                {
-                    return MessagePackSerializer.ConvertToJson(message);
-                }
-            case EncoderRules.MessagePackLz4Block:
-                {
-                    return MessagePackSerializer.ConvertToJson(
-                        message,
-                        MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4Block));
-                }
-
-            default: throw new NotSupportedException($"Unsupported encoding rule: {rule}");
-
-        }
+            EncoderRules.String => Encoding.UTF8.GetString(message),
+            EncoderRules.MessagePack => MessagePackSerializer.ConvertToJson(message),
+            EncoderRules.MessagePackLz4Block => MessagePackSerializer.ConvertToJson(message,
+                MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4Block)),
+            EncoderRules.Base64 => Convert.ToBase64String(message),
+            _ => throw new NotSupportedException($"Unsupported encoding rule: {rule}")
+        };
     }
 }

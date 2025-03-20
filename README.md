@@ -11,6 +11,7 @@ Supports:
 * SASL authentication mechanism
 * Message sorting
 * Message payload in MessagePack with auto converting to JSON Array
+* Message converting to Base64
 
 By default messages should contains JSON data. Simple strings also supported (see ExportRawMessage parameter).
 
@@ -109,35 +110,42 @@ Config example:
         "KeyType": "Long",
         "ExportFileName": "topic9.json",
         "MessageEncoderRule": "MessagePackLz4Block"
+      },
+      {
+        "Name": topic10,
+        "KeyType": "Long",
+        "ExportRawMessage": true,
+        "MessageEncoderRule": "Base64",
+        "ExportFileName": "topic10.json"
       }
 ```
 Config params:
 
-| Parameter name | Description   |
-| -------------- | ------------- |
-| AdminClientTimeout | Cluster metadata loading timeout |
-| DateOffsetTimeout | Searching offset by date timeout |
-| SearchSinglePartition | Stops traversing partitions after the first partition with suitable data |
-| BootstrapServers | List of kafka cluster servers, like "kafka-test:9092"  |
-| Username | SASL username (optional)  |
-| Password | SASL password (optional)  |
-| SecurityProtocol | Protocol used to communicate with brokers (Plaintext,Ssl,SaslPlaintext,SaslSsl) (optional)  |
-| SASLMechanism | SASL mechanism to use for authentication (Gssapi,Plain,ScramSha256,ScramSha512,OAuthBearer) (optional)  |
-| UseConcurrentLoad | Loads data in concurrent mode or one by one |
-| GlobalMessageSort | Message meta field for sorting (Time, Partition) (optional). Applies only for topics without Compacting. |
-| GlobalSortOrder | GlobalMessageSort order (Ask, Desk, No) (optional). Applies only for topics without Compacting.|
-| Name           | Apache Kafka topic name |
-| KeyType        | Apache Kafka topic key representation (Json,String,Long,Ignored) |
-| Compacting     | Use compacting by key or not (On,Off). Not supported for Ignored keyType |
-| ExportFileName | File name for exported data  |
-| FilterKeyType | Equals, Contains or None (optional)  |
-| FilterKeyValue | Sample value for filtering (if FilterKeyType sets as 'Equals', 'Contains','GreaterOrEquals' or 'LessOrEquals') |
-| OffsetStartDate | First message date (optional). Use to skip old messages in large topics. Format MM.DD.YYYY HH:MM:SS (Local timezone)|
-| OffsetEndDate | Message date top limit (optional). Use to limit filtering messages in large topics. Format MM.DD.YYYY HH:MM:SS (Local timezone)|
-| ExportRawMessage | If true - export will write message as raw string without converting to formatted json (optional)|
-| PartitionsIds | Partitions ids filter (optional)|
-| UseFileStreaming | Serializes loaded data to file directly via FileStream (Avoids OOM issue for large amounts of data). Better effect with disabled sorting (GlobalSortOrder No)|
-|MessageEncoderRule| Allows you to choose the format in which the message body is received. By default, a String is expected, but you can choose MessagePack or MessagePackLz4Block.|
+| Parameter name | Description                                                                                                                                                             |
+| -------------- |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| AdminClientTimeout | Cluster metadata loading timeout                                                                                                                                        |
+| DateOffsetTimeout | Searching offset by date timeout                                                                                                                                        |
+| SearchSinglePartition | Stops traversing partitions after the first partition with suitable data                                                                                                |
+| BootstrapServers | List of kafka cluster servers, like "kafka-test:9092"                                                                                                                   |
+| Username | SASL username (optional)                                                                                                                                                |
+| Password | SASL password (optional)                                                                                                                                                |
+| SecurityProtocol | Protocol used to communicate with brokers (Plaintext,Ssl,SaslPlaintext,SaslSsl) (optional)                                                                              |
+| SASLMechanism | SASL mechanism to use for authentication (Gssapi,Plain,ScramSha256,ScramSha512,OAuthBearer) (optional)                                                                  |
+| UseConcurrentLoad | Loads data in concurrent mode or one by one                                                                                                                             |
+| GlobalMessageSort | Message meta field for sorting (Time, Partition) (optional). Applies only for topics without Compacting.                                                                |
+| GlobalSortOrder | GlobalMessageSort order (Ask, Desk, No) (optional). Applies only for topics without Compacting.                                                                         |
+| Name           | Apache Kafka topic name                                                                                                                                                 |
+| KeyType        | Apache Kafka topic key representation (Json,String,Long,Ignored)                                                                                                        |
+| Compacting     | Use compacting by key or not (On,Off). Not supported for Ignored keyType                                                                                                |
+| ExportFileName | File name for exported data                                                                                                                                             |
+| FilterKeyType | Equals, Contains or None (optional)                                                                                                                                     |
+| FilterKeyValue | Sample value for filtering (if FilterKeyType sets as 'Equals', 'Contains','GreaterOrEquals' or 'LessOrEquals')                                                          |
+| OffsetStartDate | First message date (optional). Use to skip old messages in large topics. Format MM.DD.YYYY HH:MM:SS (Local timezone)                                                    |
+| OffsetEndDate | Message date top limit (optional). Use to limit filtering messages in large topics. Format MM.DD.YYYY HH:MM:SS (Local timezone)                                         |
+| ExportRawMessage | If true - export will write message as raw string without converting to formatted json (optional)                                                                       |
+| PartitionsIds | Partitions ids filter (optional)                                                                                                                                        |
+| UseFileStreaming | Serializes loaded data to file directly via FileStream (Avoids OOM issue for large amounts of data). Better effect with disabled sorting (GlobalSortOrder No)           |
+|MessageEncoderRule| Allows you to choose the format in which the message body is received. By default, a String is expected, but you can choose MessagePack, MessagePackLz4Block or Base64. |
 
 Filter restrictions:
 * 'Contains' key filter could be applied only to string keys.

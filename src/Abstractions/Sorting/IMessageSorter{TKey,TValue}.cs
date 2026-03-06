@@ -1,4 +1,4 @@
-﻿using KafkaSnapshot.Models.Message;
+using KafkaSnapshot.Models.Message;
 
 namespace KafkaSnapshot.Abstractions.Sorting;
 
@@ -15,6 +15,6 @@ public interface IMessageSorter<TKey, TValue> where TKey : notnull
     /// </summary>
     /// <param name="source">The collection of Kafka messages to sort.</param>
     /// <returns>An enumerable of sorted Kafka messages.</returns>
-    public IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> Sort(
-                IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> source);
+    IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> Sort(
+        IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> source);
 }

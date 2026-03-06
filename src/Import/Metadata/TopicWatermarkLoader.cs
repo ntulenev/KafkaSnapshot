@@ -17,7 +17,7 @@ public class TopicWatermarkLoader : ITopicWatermarkLoader
     /// Creates <see cref="TopicWatermarkLoader"/>.
     /// </summary>
     /// <param name="adminClient">Kafka admin client.</param>
-    /// <param name="intTimeoutSeconds">Timeout in seconds for loading watermarks.</param>
+    /// <param name="options">Loader options.</param>
     public TopicWatermarkLoader(IAdminClient adminClient,
                                 IOptions<TopicWatermarkLoaderConfiguration> options)
     {
@@ -64,7 +64,7 @@ public class TopicWatermarkLoader : ITopicWatermarkLoader
         return new PartitionWatermark(topicName, watermarkOffsets, topicPartition.Partition);
     }
 
-    /// <inheritdoc/>>
+    /// <inheritdoc />
     public async Task<TopicWatermark> LoadWatermarksAsync<TKey, TValue>(
                         Func<IConsumer<TKey, TValue>> consumerFactory,
                         LoadingTopic loadingTopic,

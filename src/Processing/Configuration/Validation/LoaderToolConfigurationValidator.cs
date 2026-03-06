@@ -8,11 +8,11 @@ namespace KafkaSnapshot.Processing.Configuration.Validation;
 /// <summary>
 /// Validator for <see cref="LoaderToolConfiguration"/>.
 /// </summary>
-public sealed partial class LoaderToolConfigurationValidator : 
+public sealed partial class LoaderToolConfigurationValidator :
     IValidateOptions<LoaderToolConfiguration>
 {
     private static bool TryFailOnTopicRules(
-        TopicConfiguration topic, 
+        TopicConfiguration topic,
         [NotNullWhen(returnValue: true)] out ValidateOptionsResult result)
     {
         if (topic.Name is null)
@@ -28,7 +28,7 @@ public sealed partial class LoaderToolConfigurationValidator :
             return true;
         }
 
-        if (topic.Name.Any(character => char.IsWhiteSpace(character)))
+        if (topic.Name.Any(char.IsWhiteSpace))
         {
             result = ValidateOptionsResult.Fail(
                 $"The topic name {topic.Name} cannot contain whitespaces.");
@@ -74,7 +74,7 @@ public sealed partial class LoaderToolConfigurationValidator :
             }
         }
 
-        if (topic.KeyType == Models.Filters.KeyType.Ignored && 
+        if (topic.KeyType == Models.Filters.KeyType.Ignored &&
             topic.Compacting == CompactingMode.On)
         {
             result = ValidateOptionsResult.Fail(
@@ -128,7 +128,7 @@ public sealed partial class LoaderToolConfigurationValidator :
         [NotNullWhen(returnValue: true)] out ValidateOptionsResult result)
     {
         var fileDuplicates = options.Topics
-                                    .GroupBy(x => x.ExportFileName, 
+                                    .GroupBy(x => x.ExportFileName,
                                              StringComparer.CurrentCultureIgnoreCase)
                                     .Where(x => x.Count() > 1)
                                     .Select(x => x.Key)
@@ -151,6 +151,8 @@ public sealed partial class LoaderToolConfigurationValidator :
     /// </summary>
     public ValidateOptionsResult Validate(string? name, LoaderToolConfiguration options)
     {
+        ArgumentNullException.ThrowIfNull(options);
+
         if (TryFailOnEmptyConfig(options, out var error))
         {
             return error;

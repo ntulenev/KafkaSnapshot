@@ -1,4 +1,4 @@
-﻿using KafkaSnapshot.Abstractions.Filters;
+using KafkaSnapshot.Abstractions.Filters;
 
 namespace KafkaSnapshot.Filters;
 
@@ -6,8 +6,8 @@ namespace KafkaSnapshot.Filters;
 /// Default filter for message (match for any data).
 /// </summary>
 /// <typeparam name="TData">Data type.</typeparam>
-public sealed class DefaultFilter<TData> : 
-    IDataFilter<TData> 
+public sealed class DefaultFilter<TData> :
+    IDataFilter<TData>
     where TData : notnull
 {
     /// <inheritdoc/>

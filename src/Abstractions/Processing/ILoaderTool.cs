@@ -1,6 +1,6 @@
-﻿namespace KafkaSnapshot.Abstractions.Processing;
+namespace KafkaSnapshot.Abstractions.Processing;
 
-//// <summary>
+/// <summary>
 /// Interface for a loader tool that performs processing main app logic.
 /// </summary>
 public interface ILoaderTool
@@ -10,5 +10,5 @@ public interface ILoaderTool
     /// </summary>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task representing the asynchronous operation.</returns>
-    public Task ProcessAsync(CancellationToken ct);
+    Task ProcessAsync(CancellationToken ct);
 }

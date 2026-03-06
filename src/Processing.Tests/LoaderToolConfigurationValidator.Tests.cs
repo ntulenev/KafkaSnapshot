@@ -1,4 +1,4 @@
-﻿using Xunit;
+using Xunit;
 
 using Microsoft.Extensions.Options;
 

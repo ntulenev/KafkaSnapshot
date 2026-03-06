@@ -18,7 +18,7 @@ public interface ITopicWatermarkLoader
     /// <param name="consumerFactory">Factory delegate for creating consumer.</param>
     /// <param name="loadingTopic">Kafka topic data.</param>
     /// <param name="ct">Cancellation token.</param>
-    public Task<TopicWatermark> LoadWatermarksAsync<TKey, TValue>(
+    Task<TopicWatermark> LoadWatermarksAsync<TKey, TValue>(
         Func<IConsumer<TKey, TValue>> consumerFactory,
         LoadingTopic loadingTopic,
         CancellationToken ct);

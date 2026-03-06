@@ -1,4 +1,4 @@
-﻿using Confluent.Kafka;
+using Confluent.Kafka;
 
 namespace KafkaSnapshot.Import.Configuration;
 
@@ -10,7 +10,7 @@ public class BootstrapServersConfiguration
     /// <summary>
     /// List of bootstrap servers.
     /// </summary>
-    public required List<string> BootstrapServers { get; init; }
+    public required IReadOnlyList<string> BootstrapServers { get; init; }
 
     /// <summary>
     /// Kafka user name, is any.

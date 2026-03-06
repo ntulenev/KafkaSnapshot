@@ -1,9 +1,9 @@
-﻿using Xunit;
-
 using FluentAssertions;
 
 using KafkaSnapshot.Abstractions.Filters;
 using KafkaSnapshot.Models.Filters;
+
+using Xunit;
 
 namespace KafkaSnapshot.Filters.Tests;
 
@@ -63,10 +63,10 @@ public class NaiveValueFiltersFactoryTests
         IDataFilter<object> result = null!;
 
         // Act
-        var exception = Record.Exception(() => 
+        var exception = Record.Exception(() =>
                             result = factory.Create(
-                                        FilterType.Equals, 
-                                        messageType, 
+                                        FilterType.Equals,
+                                        messageType,
                                         new()));
 
         // Assert
@@ -84,10 +84,10 @@ public class NaiveValueFiltersFactoryTests
         IDataFilter<object> result = null!;
 
         // Act
-        var exception = Record.Exception(() => 
+        var exception = Record.Exception(() =>
                             result = factory.Create(
-                                        FilterType.GreaterOrEquals, 
-                                        messageType, 
+                                        FilterType.GreaterOrEquals,
+                                        messageType,
                                         new()));
 
         // Assert
@@ -105,10 +105,10 @@ public class NaiveValueFiltersFactoryTests
         IDataFilter<object> result = null!;
 
         // Act
-        var exception = Record.Exception(() => 
+        var exception = Record.Exception(() =>
                             result = factory.Create(
-                                        FilterType.LessOrEquals, 
-                                        messageType, 
+                                        FilterType.LessOrEquals,
+                                        messageType,
                                         new()));
 
         // Assert

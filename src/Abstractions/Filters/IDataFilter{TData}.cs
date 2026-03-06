@@ -1,4 +1,4 @@
-﻿namespace KafkaSnapshot.Abstractions.Filters;
+namespace KafkaSnapshot.Abstractions.Filters;
 
 /// <summary>
 /// Interface for filtering data loaded from Kafka.
@@ -11,5 +11,5 @@ public interface IDataFilter<TData> where TData : notnull
     /// </summary>
     /// <param name="data">The data to check against the filter.</param>
     /// <returns>true if the data matches the filter criteria, false otherwise.</returns>
-    public bool IsMatch(TData data);
+    bool IsMatch(TData data);
 }

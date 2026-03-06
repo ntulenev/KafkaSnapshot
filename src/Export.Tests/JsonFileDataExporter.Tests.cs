@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 using Moq;
@@ -55,10 +55,10 @@ public class JsonFileDataExporterTests
         // Act
         var exception = Record.Exception(() =>
         _ = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(
-                config.Object, 
-                logger.Object, 
-                fileSaver.Object, 
-                fileStreamProvider.Object, 
+                config.Object,
+                logger.Object,
+                fileSaver.Object,
+                fileStreamProvider.Object,
                 serializer));
 
         // Assert
@@ -80,10 +80,10 @@ public class JsonFileDataExporterTests
         // Act
         var exception = Record.Exception(() =>
         _ = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(
-                config.Object, 
-                logger.Object, 
-                fileSaver, 
-                fileStreamProvider.Object, 
+                config.Object,
+                logger.Object,
+                fileSaver,
+                fileStreamProvider.Object,
                 serializer.Object));
 
         // Assert
@@ -105,10 +105,10 @@ public class JsonFileDataExporterTests
         // Act
         var exception = Record.Exception(() =>
         _ = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(
-                config.Object, 
-                logger.Object, 
-                fileSaver.Object, 
-                fileStreamProvider, 
+                config.Object,
+                logger.Object,
+                fileSaver.Object,
+                fileStreamProvider,
                 serializer.Object));
 
         // Assert
@@ -130,10 +130,10 @@ public class JsonFileDataExporterTests
         // Act
         var exception = Record.Exception(() =>
         _ = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(
-                config.Object, 
-                logger.Object, 
-                fileSaver.Object, 
-                fileStreamProvider.Object, 
+                config.Object,
+                logger.Object,
+                fileSaver.Object,
+                fileStreamProvider.Object,
                 serializer.Object));
 
         // Assert
@@ -212,7 +212,7 @@ public class JsonFileDataExporterTests
         var data = new KeyValuePair<object, KafkaMessage<object>>[]
         {
             new("test",
-                new KafkaMessage<object>("value", 
+                new KafkaMessage<object>("value",
                     new KafkaMetadata(DateTime.UtcNow,1,2)))
         };
         var jsonData = "testJson";
@@ -251,7 +251,7 @@ public class JsonFileDataExporterTests
         var data = new KeyValuePair<object, KafkaMessage<object>>[]
         {
             new("test",
-                new KafkaMessage<object>("value", 
+                new KafkaMessage<object>("value",
                     new KafkaMetadata(DateTime.UtcNow,1,2)))
         };
         var testStream = new Mock<Stream>().Object;

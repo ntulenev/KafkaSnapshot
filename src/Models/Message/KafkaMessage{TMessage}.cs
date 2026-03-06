@@ -1,4 +1,4 @@
-﻿namespace KafkaSnapshot.Models.Message;
+namespace KafkaSnapshot.Models.Message;
 
 /// <summary>
 /// Kafka message with metadata.

@@ -1,0 +1,8 @@
+<Project>
+	<PropertyGroup Condition="'$(IsTestProject)' == 'true'">
+		<NoWarn>$(NoWarn);CS1591;IDE0058;IDE1006</NoWarn>
+		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+		<CodeAnalysisTreatWarningsAsErrors>false</CodeAnalysisTreatWarningsAsErrors>
+		<EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
+	</PropertyGroup>
+</Project>

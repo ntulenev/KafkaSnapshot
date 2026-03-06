@@ -1,4 +1,4 @@
-﻿namespace KafkaSnapshot.Import.Watermarks;
+namespace KafkaSnapshot.Import.Watermarks;
 
 /// <summary>
 /// Offset watermark for a topic.

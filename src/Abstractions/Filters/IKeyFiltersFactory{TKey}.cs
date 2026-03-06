@@ -1,4 +1,4 @@
-﻿using KafkaSnapshot.Models.Filters;
+using KafkaSnapshot.Models.Filters;
 
 namespace KafkaSnapshot.Abstractions.Filters;
 
@@ -15,5 +15,5 @@ public interface IKeyFiltersFactory<TKey> where TKey : notnull
     /// <param name="keyType">The type of key being filtered.</param>
     /// <param name="sample">A sample key value to use for creating the filter.</param>
     /// <returns>A filter instance for the given key and filter types.</returns>
-    public IDataFilter<TKey> Create(FilterType filterKeyType, KeyType keyType, TKey sample);
+    IDataFilter<TKey> Create(FilterType filterKeyType, KeyType keyType, TKey sample);
 }

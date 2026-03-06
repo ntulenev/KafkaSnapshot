@@ -1,4 +1,4 @@
-﻿namespace KafkaSnapshot.Models.Filters;
+namespace KafkaSnapshot.Models.Filters;
 
 /// <summary>
 /// Type of data filter.

@@ -1,4 +1,4 @@
-﻿using KafkaSnapshot.Models.Export;
+using KafkaSnapshot.Models.Export;
 using KafkaSnapshot.Models.Message;
 
 namespace KafkaSnapshot.Abstractions.Export;
@@ -23,7 +23,7 @@ public interface IDataExporter<TKey, TKeyMarker, TMessage, TTopic>
     /// <param name="topic">The Kafka topic description.</param>
     /// <param name="ct">The token for cancelling the operation.</param>
     /// <returns>A task representing the asynchronous export operation.</returns>
-    public Task ExportAsync(
+    Task ExportAsync(
         IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> data,
         TTopic topic,
         CancellationToken ct);

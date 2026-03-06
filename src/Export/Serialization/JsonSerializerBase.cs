@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Text;
 
 using Microsoft.Extensions.Logging;
@@ -17,11 +17,16 @@ public abstract class JsonSerializerBase
     /// </summary>
     /// <param name="logger">Logger.</param>
     /// <exception cref="ArgumentNullException">Thrown when logger is null.</exception>
-    public JsonSerializerBase(ILogger<JsonSerializerBase> logger)
+    protected JsonSerializerBase(ILogger<JsonSerializerBase> logger)
     {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        Logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
+    /// <summary>
+    /// Serializes data into JSON string.
+    /// </summary>
+    /// <param name="data">Data to serialize.</param>
+    /// <returns>Serialized JSON.</returns>
     protected string SerializeData(object data)
     {
         Debug.Assert(data is not null);
@@ -32,15 +37,20 @@ public abstract class JsonSerializerBase
 
         using var jsonWriter = new JsonTextWriter(textWriter);
 
-        _logger.LogTrace("Start serializing data.");
+        Logger.LogTrace("Start serializing data.");
 
         _serializer.Serialize(jsonWriter, data);
 
-        _logger.LogTrace("Finish serializing data.");
+        Logger.LogTrace("Finish serializing data.");
 
         return sb.ToString();
     }
 
+    /// <summary>
+    /// Serializes data into the provided stream.
+    /// </summary>
+    /// <param name="data">Data to serialize.</param>
+    /// <param name="stream">Destination stream.</param>
     protected void SerializeDataToStream(object data, Stream stream)
     {
         Debug.Assert(data is not null);
@@ -49,13 +59,16 @@ public abstract class JsonSerializerBase
         using var sw = new StreamWriter(stream);
         using var jsonWriter = new JsonTextWriter(sw);
 
-        _logger.LogTrace("Start serializing data.");
+        Logger.LogTrace("Start serializing data.");
 
         _serializer.Serialize(jsonWriter, data);
 
-        _logger.LogTrace("Finish serializing data.");
+        Logger.LogTrace("Finish serializing data.");
     }
 
     private readonly JsonSerializer _serializer = new() { Formatting = Formatting.Indented };
-    protected readonly ILogger _logger;
+    /// <summary>
+    /// Logger instance.
+    /// </summary>
+    protected ILogger Logger { get; }
 }

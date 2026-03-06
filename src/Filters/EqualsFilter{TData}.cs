@@ -1,17 +1,17 @@
-﻿using KafkaSnapshot.Abstractions.Filters;
+using KafkaSnapshot.Abstractions.Filters;
 
 namespace KafkaSnapshot.Filters;
 
 /// <summary>
 /// Check data on equality with sample.
 /// </summary>
-/// <typeparam name="TKey">Message data type.</typeparam>
+/// <typeparam name="TData">Message data type.</typeparam>
 /// <remarks>
-/// Creates <see cref="EqualsFilter{TKey}"/>.
+/// Creates <see cref="EqualsFilter{TData}"/>.
 /// </remarks>
 /// <param name="sample">Data sample.</param>
-public sealed class EqualsFilter<TData>(TData sample) : 
-    IDataFilter<TData> 
+public sealed class EqualsFilter<TData>(TData sample) :
+    IDataFilter<TData>
     where TData : notnull
 {
 
@@ -23,6 +23,6 @@ public sealed class EqualsFilter<TData>(TData sample) :
         return data.Equals(_sample);
     }
 
-    private readonly TData _sample = sample ?? 
+    private readonly TData _sample = sample ??
         throw new ArgumentNullException(nameof(sample));
 }

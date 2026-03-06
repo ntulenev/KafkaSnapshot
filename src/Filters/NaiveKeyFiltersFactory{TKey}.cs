@@ -1,4 +1,4 @@
-﻿using KafkaSnapshot.Abstractions.Filters;
+using KafkaSnapshot.Abstractions.Filters;
 using KafkaSnapshot.Models.Filters;
 
 namespace KafkaSnapshot.Filters;
@@ -7,8 +7,8 @@ namespace KafkaSnapshot.Filters;
 /// Simple key filter factory.
 /// </summary>
 /// <typeparam name="TKey">Message key type.</typeparam>
-public sealed class NaiveKeyFiltersFactory<TKey> : 
-    IKeyFiltersFactory<TKey> 
+public sealed class NaiveKeyFiltersFactory<TKey> :
+    IKeyFiltersFactory<TKey>
     where TKey : notnull
 {
     /// <inheritdoc/>

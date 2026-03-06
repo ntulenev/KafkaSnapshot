@@ -9,11 +9,20 @@ namespace KafkaSnapshot.Import.Watermarks;
 /// </summary>
 public class PartitionWatermark
 {
-    public Partition Partition => _partition;
+    /// <summary>
+    /// Topic partition.
+    /// </summary>
+    public Partition Partition { get; }
 
-    public WatermarkOffsets Offset => _offset;
+    /// <summary>
+    /// Partition watermark offsets.
+    /// </summary>
+    public WatermarkOffsets Offset { get; }
 
-    public LoadingTopic TopicName => _topicName;
+    /// <summary>
+    /// Loading topic configuration.
+    /// </summary>
+    public LoadingTopic TopicName { get; }
 
     /// <summary>
     /// Creates partition offset watermark.
@@ -28,17 +37,17 @@ public class PartitionWatermark
         ArgumentNullException.ThrowIfNull(topicName);
         ArgumentNullException.ThrowIfNull(offset);
 
-        _topicName = topicName;
+        TopicName = topicName;
 
-        _offset = offset;
+        Offset = offset;
 
-        _partition = partition;
+        Partition = partition;
     }
 
     /// <summary>
     /// Checks that partition if valid for reading.
     /// </summary>
-    public bool IsReadyToRead() => _offset.High > _offset.Low;
+    public bool IsReadyToRead() => Offset.High > Offset.Low;
 
     /// <summary>
     /// Checks that end of the partition is achieved by consumer.
@@ -50,7 +59,7 @@ public class PartitionWatermark
     {
         ArgumentNullException.ThrowIfNull(consumeResult);
 
-        return consumeResult.Offset != _offset.High - 1;
+        return consumeResult.Offset != Offset.High - 1;
     }
 
     /// <summary>
@@ -63,7 +72,7 @@ public class PartitionWatermark
     {
         ArgumentNullException.ThrowIfNull(consumer);
 
-        consumer.Assign(new TopicPartition(_topicName.Value.Name, _partition));
+        consumer.Assign(new TopicPartition(TopicName.Value.Name, Partition));
 
     }
 
@@ -79,7 +88,7 @@ public class PartitionWatermark
     {
         ArgumentNullException.ThrowIfNull(consumer);
 
-        var topicPartition = new TopicPartition(_topicName.Value.Name, _partition);
+        var topicPartition = new TopicPartition(TopicName.Value.Name, Partition);
 
         var partitionTimestamp = new TopicPartitionTimestamp(topicPartition, new Timestamp(startDate));
 
@@ -96,9 +105,5 @@ public class PartitionWatermark
 
         return true;
     }
-
-    private readonly Partition _partition;
-    private readonly WatermarkOffsets _offset;
-    private readonly LoadingTopic _topicName;
 
 }

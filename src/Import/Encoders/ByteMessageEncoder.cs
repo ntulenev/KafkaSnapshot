@@ -1,4 +1,3 @@
-﻿using System.Buffers.Text;
 using System.Text;
 
 using KafkaSnapshot.Abstractions.Import;
@@ -16,7 +15,7 @@ namespace KafkaSnapshot.Import.Encoders;
 public class ByteMessageEncoder : IMessageEncoder<byte[], string>
 {
 
-    /// <inheritdoc>/>
+    /// <inheritdoc />
     /// <exception cref="ArgumentNullException">Thrown when the input message is null.</exception>
     /// <exception cref="ArgumentException">Thrown when an invalid EncoderRules value is provided.</exception>
     /// <exception cref="NotSupportedException">Thrown when an unsupported encoding rule is provided.</exception>
@@ -24,7 +23,7 @@ public class ByteMessageEncoder : IMessageEncoder<byte[], string>
     {
         ArgumentNullException.ThrowIfNull(message);
 
-        if (!Enum.IsDefined(typeof(EncoderRules), rule))
+        if (!Enum.IsDefined(rule))
         {
             throw new ArgumentException($"Invalid EncoderRules value {rule}", nameof(rule));
         }

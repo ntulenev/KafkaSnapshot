@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 
 using KafkaSnapshot.Abstractions.Processing;
 
@@ -20,45 +20,51 @@ public sealed class LoaderTool : ILoaderTool
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _units = units ?? throw new ArgumentNullException(nameof(units));
 
-        _logger.LogDebug("Instance created for {count} unit(s).", _units.Count);
+        if (_logger.IsEnabled(LogLevel.Debug))
+        {
+            _logger.LogDebug("Instance created for {Count} unit(s).", _units.Count);
+        }
     }
 
     /// <inheritdoc/>
     public async Task ProcessAsync(CancellationToken ct)
     {
-        _logger.LogInformation(
-            "The utility starts loading {count} Apache Kafka topics...",
-            _units.Count);
+        if (_logger.IsEnabled(LogLevel.Information))
+        {
+            _logger.LogInformation(
+                "The utility starts loading {Count} Apache Kafka topics...",
+                _units.Count);
+        }
 
-        int indexer = 0;
+        var indexer = 0;
 
         foreach (var unit in _units)
         {
-            using var _ = _logger.BeginScope("topic {topic}", unit.TopicName.Name);
+            var logScope = _logger.IsEnabled(LogLevel.Information)
+                ? _logger.BeginScope("Topic {Topic}", unit.TopicName.Name)
+                : null;
 
-            _logger.LogInformation(
-                "{indexer}/{count} Processing topic {topicName}",
-                ++indexer,
-                _units.Count,
-                unit.TopicName);
-
-            try
+            using (logScope)
             {
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation(
+                        "{Indexer}/{Count} Processing topic {TopicName}",
+                        ++indexer,
+                        _units.Count,
+                        unit.TopicName.Name);
+                }
+                else
+                {
+                    indexer++;
+                }
+
                 ct.ThrowIfCancellationRequested();
 
                 await unit.ProcessAsync(ct).ConfigureAwait(false);
 
                 _logger.LogDebug("Finish processing topic.");
             }
-            catch (OperationCanceledException)
-            {
-
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error on processing topic {name}", unit.TopicName);
-            }
-
         }
 
         _logger.LogInformation("Done.");

@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 
 using Microsoft.Extensions.Options;
 
@@ -7,13 +7,13 @@ namespace KafkaSnapshot.Import.Configuration.Validation;
 /// <summary>
 /// Validator for <see cref="BootstrapServersConfiguration"/>.
 /// </summary>
-public class BootstrapServersConfigurationValidator : 
+public class BootstrapServersConfigurationValidator :
     IValidateOptions<BootstrapServersConfiguration>
 {
     /// <summary>
     /// Validates <see cref="BootstrapServersConfiguration"/>.
     /// </summary>
-    public ValidateOptionsResult Validate(string? name, 
+    public ValidateOptionsResult Validate(string? name,
                                           BootstrapServersConfiguration options)
     {
         Debug.Assert(name is not null);
@@ -29,12 +29,12 @@ public class BootstrapServersConfigurationValidator :
             return ValidateOptionsResult.Fail("BootstrapServers section is empty.");
         }
 
-        if (options.BootstrapServers.Any(x => String.IsNullOrEmpty(x)))
+        if (options.BootstrapServers.Any(string.IsNullOrEmpty))
         {
             return ValidateOptionsResult.Fail("BootstrapServers section contains empty string.");
         }
 
-        if (options.BootstrapServers.Any(x => String.IsNullOrWhiteSpace(x)))
+        if (options.BootstrapServers.Any(string.IsNullOrWhiteSpace))
         {
             return ValidateOptionsResult.Fail("BootstrapServers section contains " +
                 "empty string of whitespaces.");

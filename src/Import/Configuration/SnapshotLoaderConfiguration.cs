@@ -1,5 +1,8 @@
-﻿namespace KafkaSnapshot.Import.Configuration;
+namespace KafkaSnapshot.Import.Configuration;
 
+/// <summary>
+/// Snapshot loader settings.
+/// </summary>
 public class SnapshotLoaderConfiguration
 {
     /// <summary>

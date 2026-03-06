@@ -1,4 +1,4 @@
-﻿namespace KafkaSnapshot.Models.Sorting;
+namespace KafkaSnapshot.Models.Sorting;
 
 /// <summary>
 /// Sorting parameters.

@@ -1,4 +1,4 @@
-﻿namespace KafkaSnapshot.Models.Names;
+namespace KafkaSnapshot.Models.Names;
 
 /// <summary>
 /// Represents a Kafka topic name.

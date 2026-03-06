@@ -1,56 +1,52 @@
+using Confluent.Kafka;
+
+using KafkaSnapshot.Abstractions.Export;
+using KafkaSnapshot.Abstractions.Filters;
+using KafkaSnapshot.Abstractions.Import;
+using KafkaSnapshot.Abstractions.Processing;
+using KafkaSnapshot.Abstractions.Sorting;
+using KafkaSnapshot.Export.File.Common;
+using KafkaSnapshot.Export.File.Output;
+using KafkaSnapshot.Export.Markers;
+using KafkaSnapshot.Export.Serialization;
+using KafkaSnapshot.Filters;
+using KafkaSnapshot.Import;
+using KafkaSnapshot.Import.Encoders;
+using KafkaSnapshot.Import.Metadata;
+using KafkaSnapshot.Models.Filters;
+using KafkaSnapshot.Processing;
+using KafkaSnapshot.Processing.Configuration;
+using KafkaSnapshot.Sorting;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-using Confluent.Kafka;
-
 using Serilog;
-
-using KafkaSnapshot.Import;
-using KafkaSnapshot.Import.Metadata;
-using KafkaSnapshot.Processing;
-using KafkaSnapshot.Processing.Configuration;
-using KafkaSnapshot.Abstractions.Export;
-using KafkaSnapshot.Abstractions.Processing;
-using KafkaSnapshot.Export.File.Output;
-using KafkaSnapshot.Export.File.Common;
-using KafkaSnapshot.Export.Markers;
-using KafkaSnapshot.Abstractions.Filters;
-using KafkaSnapshot.Abstractions.Import;
-using KafkaSnapshot.Filters;
-using KafkaSnapshot.Models.Filters;
-using KafkaSnapshot.Export.Serialization;
-using KafkaSnapshot.Abstractions.Sorting;
-using KafkaSnapshot.Sorting;
-using KafkaSnapshot.Import.Encoders;
 
 namespace KafkaSnapshot.Utility;
 
 /// <summary>
 /// Helper utility class with services registration methods.
 /// </summary>
-public static class StartupHelper
+internal static class StartupHelper
 {
     /// <summary>
     /// Register configuration and entry point of application.
     /// </summary>
     public static void AddTools(this IServiceCollection services, HostBuilderContext hostContext)
     {
-        services.ConfigureLoaderTool(hostContext);
-        services.AddScoped<LoaderTool>();
-        services.AddScoped<LoaderConcurrentTool>();
-        services.AddScoped<ILoaderTool>(sp =>
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(hostContext);
+
+        _ = services.ConfigureLoaderTool(hostContext);
+        _ = services.AddScoped<LoaderTool>();
+        _ = services.AddScoped<LoaderConcurrentTool>();
+        _ = services.AddScoped<ILoaderTool>(sp =>
         {
             var config = sp.GetLoaderConfig(hostContext.Configuration);
-            if (config.UseConcurrentLoad)
-            {
-                return sp.GetRequiredService<LoaderConcurrentTool>();
-            }
-            else
-            {
-                return sp.GetRequiredService<LoaderTool>();
-            }
+            return config.UseConcurrentLoad ? sp.GetRequiredService<LoaderConcurrentTool>() : sp.GetRequiredService<LoaderTool>();
         });
     }
 
@@ -59,15 +55,18 @@ public static class StartupHelper
     /// </summary>
     public static void AddExport(this IServiceCollection services, HostBuilderContext hostContext)
     {
-        services.ConfigureExport(hostContext);
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(hostContext);
 
-        services.AddSingleton<ISerializer<string, string, IgnoreKeyMarker>, IgnoreKeySerializer>();
-        services.AddSingleton<ISerializer<string, string, JsonKeyMarker>, JsonKeySerializer>();
-        services.AddSingleton<ISerializer<string, string, OriginalKeyMarker>, OriginalKeySerializer<string>>();
-        services.AddSingleton<ISerializer<long, string, OriginalKeyMarker>, OriginalKeySerializer<long>>();
-        services.AddSingleton(typeof(IDataExporter<,,,>), typeof(JsonFileDataExporter<,,,>));
-        services.AddSingleton<IFileSaver, FileSaver>();
-        services.AddSingleton<IFileStreamProvider, FileStreamProvider>();
+        _ = services.ConfigureExport(hostContext);
+
+        _ = services.AddSingleton<ISerializer<string, string, IgnoreKeyMarker>, IgnoreKeySerializer>();
+        _ = services.AddSingleton<ISerializer<string, string, JsonKeyMarker>, JsonKeySerializer>();
+        _ = services.AddSingleton<ISerializer<string, string, OriginalKeyMarker>, OriginalKeySerializer<string>>();
+        _ = services.AddSingleton<ISerializer<long, string, OriginalKeyMarker>, OriginalKeySerializer<long>>();
+        _ = services.AddSingleton(typeof(IDataExporter<,,,>), typeof(JsonFileDataExporter<,,,>));
+        _ = services.AddSingleton<IFileSaver, FileSaver>();
+        _ = services.AddSingleton<IFileStreamProvider, FileStreamProvider>();
     }
 
     /// <summary>
@@ -75,14 +74,17 @@ public static class StartupHelper
     /// </summary>
     public static void AddLogging(this IServiceCollection services, HostBuilderContext hostContext)
     {
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(hostContext);
+
         var logger = new LoggerConfiguration()
                          .ReadFrom.Configuration(hostContext.Configuration)
                          .CreateLogger();
 
-        services.AddLogging(x =>
+        _ = services.AddLogging(x =>
         {
-            x.SetMinimumLevel(LogLevel.Information);
-            x.AddSerilog(logger: logger, dispose: true);
+            _ = x.SetMinimumLevel(LogLevel.Information);
+            _ = x.AddSerilog(logger: logger, dispose: true);
         });
     }
 
@@ -93,10 +95,13 @@ public static class StartupHelper
         this IServiceCollection services,
         HostBuilderContext hostContext)
     {
-        services.AddSingleton<IKeyFiltersFactory<long>, NaiveKeyFiltersFactory<long>>();
-        services.AddSingleton<IKeyFiltersFactory<string>, NaiveKeyFiltersFactory<string>>();
-        services.AddSingleton<IValueFilterFactory<string>, NaiveValueFiltersFactory<string>>();
-        services.AddSingleton(sp => CreateTopicLoaders(sp, hostContext.Configuration));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(hostContext);
+
+        _ = services.AddSingleton<IKeyFiltersFactory<long>, NaiveKeyFiltersFactory<long>>();
+        _ = services.AddSingleton<IKeyFiltersFactory<string>, NaiveKeyFiltersFactory<string>>();
+        _ = services.AddSingleton<IValueFilterFactory<string>, NaiveValueFiltersFactory<string>>();
+        _ = services.AddSingleton(sp => CreateTopicLoaders(sp, hostContext.Configuration));
     }
 
     /// <summary>
@@ -104,11 +109,14 @@ public static class StartupHelper
     /// </summary>
     public static void AddImport(this IServiceCollection services, HostBuilderContext hostContext)
     {
-        services.ConfigureImport(hostContext);
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(hostContext);
 
-        services.AddSingleton<IMessageEncoder<byte[], string>, ByteMessageEncoder>();
+        _ = services.ConfigureImport(hostContext);
 
-        services.AddSingleton(sp =>
+        _ = services.AddSingleton<IMessageEncoder<byte[], string>, ByteMessageEncoder>();
+
+        _ = services.AddSingleton(sp =>
         {
             var config = sp.GetBootstrapConfig(hostContext.Configuration);
             var servers = string.Join(",", config.BootstrapServers);
@@ -123,7 +131,7 @@ public static class StartupHelper
             return new AdminClientBuilder(adminConfig).Build();
         });
 
-        services.AddSingleton<ITopicWatermarkLoader, TopicWatermarkLoader>();
+        _ = services.AddSingleton<ITopicWatermarkLoader, TopicWatermarkLoader>();
 
         IConsumer<Key, byte[]> createConsumer<Key>(IServiceProvider sp)
         {
@@ -144,11 +152,11 @@ public static class StartupHelper
             return new ConsumerBuilder<Key, byte[]>(conf).Build();
         }
 
-        services.AddSingleton<Func<IConsumer<string, byte[]>>>(
+        _ = services.AddSingleton<Func<IConsumer<string, byte[]>>>(
             sp => () => createConsumer<string>(sp));
-        services.AddSingleton<Func<IConsumer<long, byte[]>>>(
+        _ = services.AddSingleton<Func<IConsumer<long, byte[]>>>(
             sp => () => createConsumer<long>(sp));
-        services.AddSingleton(typeof(ISnapshotLoader<,>), typeof(SnapshotLoader<,>));
+        _ = services.AddSingleton(typeof(ISnapshotLoader<,>), typeof(SnapshotLoader<,>));
 
         IMessageSorter<TKey, TValue> createSorter<TKey, TValue>(IServiceProvider sp)
             where TKey : notnull where TValue : notnull
@@ -157,8 +165,8 @@ public static class StartupHelper
             return new MessageSorter<TKey, TValue>(
                 new Models.Sorting.SortingParams(config.GlobalMessageSort, config.GlobalSortOrder));
         }
-        services.AddSingleton(sp => createSorter<string, string>(sp));
-        services.AddSingleton(sp => createSorter<long, string>(sp));
+        _ = services.AddSingleton(createSorter<string, string>);
+        _ = services.AddSingleton(createSorter<long, string>);
     }
 
     private static IReadOnlyCollection<IProcessingUnit> CreateTopicLoaders(
@@ -167,18 +175,18 @@ public static class StartupHelper
     {
         var config = sp.GetLoaderConfig(configuration);
 
-        return config.Topics.Select(topic => topic.KeyType switch
+        return [.. config.Topics.Select(topic => topic.KeyType switch
         {
-            KeyType.Ignored => InitUnit<string, IgnoreKeyMarker>(topic, sp),
+            KeyType.Ignored => (IProcessingUnit)InitUnit<string, IgnoreKeyMarker>(topic, sp),
             KeyType.Json => InitUnit<string, JsonKeyMarker>(topic, sp),
             KeyType.String => InitUnit<string, OriginalKeyMarker>(topic, sp),
             KeyType.Long => InitUnit<long, OriginalKeyMarker>(topic, sp),
             _ => throw new InvalidOperationException($"Invalid Key type " +
             $"{topic.KeyType} for processing.")
-        }).ToList();
+        })];
     }
 
-    private static IProcessingUnit InitUnit<TKey, TMarker>(
+    private static ProcessingUnit<TKey, TMarker, string> InitUnit<TKey, TMarker>(
                             TopicConfiguration topic,
                             IServiceProvider provider)
                             where TKey : notnull where TMarker : IKeyRepresentationMarker

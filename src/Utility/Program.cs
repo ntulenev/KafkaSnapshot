@@ -1,6 +1,6 @@
-using Microsoft.Extensions.Hosting;
-
 using KafkaSnapshot.Utility;
 
-var host = HostBuildHelper.CreateHost();
+using Microsoft.Extensions.Hosting;
+
+using var host = HostBuildHelper.CreateHost();
 await host.RunAsync();

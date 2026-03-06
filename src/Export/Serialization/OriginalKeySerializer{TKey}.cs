@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Linq;
 
 using Microsoft.Extensions.Logging;
 
@@ -18,11 +18,11 @@ namespace KafkaSnapshot.Export.Serialization;
 /// <param name="logger">Logger.</param>
 /// <exception cref="ArgumentNullException">Thrown when logger is null.</exception>
 public sealed class OriginalKeySerializer<TKey>(ILogger<OriginalKeySerializer<TKey>> logger) :
-             JsonSerializerBase(logger), 
+             JsonSerializerBase(logger),
              ISerializer<TKey, string, OriginalKeyMarker>
 {
     private static object ProjectData(
-                IEnumerable<KeyValuePair<TKey, KafkaMessage<string>>> data, 
+                IEnumerable<KeyValuePair<TKey, KafkaMessage<string>>> data,
                 bool exportRawMessage)
         => data.Select(x => new
         {
@@ -34,7 +34,7 @@ public sealed class OriginalKeySerializer<TKey>(ILogger<OriginalKeySerializer<TK
     /// <inheritdoc/>
     /// <exception cref="ArgumentNullException">Thrown when data is null.</exception>
     public string Serialize(
-                IEnumerable<KeyValuePair<TKey, KafkaMessage<string>>> data, 
+                IEnumerable<KeyValuePair<TKey, KafkaMessage<string>>> data,
                 bool exportRawMessage)
     {
         ArgumentNullException.ThrowIfNull(data);
@@ -45,8 +45,8 @@ public sealed class OriginalKeySerializer<TKey>(ILogger<OriginalKeySerializer<TK
     /// <inheritdoc/>
     /// <exception cref="ArgumentNullException">Thrown when data or stream is null.</exception>
     public void Serialize(
-                IEnumerable<KeyValuePair<TKey, KafkaMessage<string>>> data, 
-                bool exportRawMessage, 
+                IEnumerable<KeyValuePair<TKey, KafkaMessage<string>>> data,
+                bool exportRawMessage,
                 Stream stream)
     {
         ArgumentNullException.ThrowIfNull(data);

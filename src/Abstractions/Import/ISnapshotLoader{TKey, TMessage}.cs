@@ -1,4 +1,4 @@
-﻿using KafkaSnapshot.Abstractions.Filters;
+using KafkaSnapshot.Abstractions.Filters;
 using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Message;
 
@@ -21,7 +21,7 @@ public interface ISnapshotLoader<TKey, TMessage> where TKey : notnull
     /// <param name="ct">The cancellation token.</param>
     /// <returns>An enumerable collection of key-value pairs 
     /// representing the loaded Kafka messages.</returns>
-    public Task<IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>>> LoadSnapshotAsync(
+    Task<IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>>> LoadSnapshotAsync(
         LoadingTopic loadingTopic,
         IDataFilter<TKey> keyFilter,
         IDataFilter<TMessage> valueFilter,

@@ -1,6 +1,6 @@
-using Xunit;
-
 using FluentAssertions;
+
+using Xunit;
 
 namespace KafkaSnapshot.Filters.Tests;
 

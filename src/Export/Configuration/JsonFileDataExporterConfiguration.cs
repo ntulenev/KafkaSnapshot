@@ -1,4 +1,4 @@
-﻿namespace KafkaSnapshot.Export.Configuration;
+namespace KafkaSnapshot.Export.Configuration;
 
 /// <summary>
 /// Configuration class for exporting data to a JSON file.

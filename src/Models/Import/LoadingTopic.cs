@@ -1,4 +1,4 @@
-﻿using KafkaSnapshot.Models.Filters;
+using KafkaSnapshot.Models.Filters;
 using KafkaSnapshot.Models.Names;
 
 using System.Collections.Frozen;

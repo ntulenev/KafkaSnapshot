@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 
 using KafkaSnapshot.Models.Message;
 using KafkaSnapshot.Models.Sorting;
@@ -45,12 +45,12 @@ public class MessageSorterTests
     public void MessageSorterCanSkipSorting(SortingType type)
     {
         // Arrange 
-        IEnumerable<KeyValuePair<int, KafkaMessage<int>>> data = new[]
-        {
+        IEnumerable<KeyValuePair<int, KafkaMessage<int>>> data =
+        [
              new KeyValuePair<int, KafkaMessage<int>>(1,new KafkaMessage<int>(1,new KafkaMetadata(DateTime.UtcNow,1,1))),
              new KeyValuePair<int, KafkaMessage<int>>(2,new KafkaMessage<int>(2,new KafkaMetadata(DateTime.UtcNow,1,1))),
              new KeyValuePair<int, KafkaMessage<int>>(3,new KafkaMessage<int>(3,new KafkaMetadata(DateTime.UtcNow,1,1))),
-        };
+        ];
 
         var sorter = new MessageSorter<int, int>(new Models.Sorting.SortingParams(type, SortingOrder.No));
 
@@ -75,7 +75,7 @@ public class MessageSorterTests
         var sorter = new MessageSorter<int, int>(new Models.Sorting.SortingParams(SortingType.Partition, SortingOrder.Ask));
 
         // Act
-        var result = sorter.Sort(new[] { msg3, msg1, msg2 });
+        var result = sorter.Sort([msg3, msg1, msg2]);
 
         // Assert
         result.Should().BeEquivalentTo(new[] { msg1, msg2, msg3 });
@@ -95,7 +95,7 @@ public class MessageSorterTests
         var sorter = new MessageSorter<int, int>(new Models.Sorting.SortingParams(SortingType.Partition, SortingOrder.Ask));
 
         // Act
-        var result = sorter.Sort(new[] { msg3, msg1, msg2 });
+        var result = sorter.Sort([msg3, msg1, msg2]);
 
         // Assert
         result.Should().BeEquivalentTo(new[] { msg3, msg2, msg1 });
@@ -117,7 +117,7 @@ public class MessageSorterTests
         var sorter = new MessageSorter<int, int>(new Models.Sorting.SortingParams(SortingType.Partition, SortingOrder.Ask));
 
         // Act
-        var result = sorter.Sort(new[] { msg3, msg1, msg2 });
+        var result = sorter.Sort([msg3, msg1, msg2]);
 
         // Assert
         result.Should().BeEquivalentTo(new[] { msg1, msg2, msg3 });
@@ -139,7 +139,7 @@ public class MessageSorterTests
         var sorter = new MessageSorter<int, int>(new Models.Sorting.SortingParams(SortingType.Partition, SortingOrder.Ask));
 
         // Act
-        var result = sorter.Sort(new[] { msg3, msg1, msg2 });
+        var result = sorter.Sort([msg3, msg1, msg2]);
 
         // Assert
         result.Should().BeEquivalentTo(new[] { msg3, msg2, msg1 });

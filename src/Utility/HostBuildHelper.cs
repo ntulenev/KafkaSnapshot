@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics.CodeAnalysis;
+
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace KafkaSnapshot.Utility;
@@ -6,6 +8,7 @@ namespace KafkaSnapshot.Utility;
 /// <summary>
 /// Helper class for IHost creation.
 /// </summary>
+[SuppressMessage("Performance", "CA1515")]
 public static class HostBuildHelper
 {
     /// <summary>
@@ -14,10 +17,7 @@ public static class HostBuildHelper
     public static IHost CreateHost()
     {
         var builder = new HostBuilder()
-               .ConfigureAppConfiguration((hostingContext, config) =>
-               {
-                   config.RegisterApplicationSettings();
-               })
+               .ConfigureAppConfiguration((hostingContext, config) => config.RegisterApplicationSettings())
                .ConfigureServices((hostContext, services) =>
                {
                    services.AddTools(hostContext);
@@ -25,7 +25,7 @@ public static class HostBuildHelper
                    services.AddExport(hostContext);
                    services.AddTopicLoaders(hostContext);
                    services.AddLogging(hostContext);
-                   services.AddHostedService<LoaderService>();
+                   _ = services.AddHostedService<LoaderService>();
                });
 
         return builder.Build();

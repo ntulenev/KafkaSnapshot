@@ -31,6 +31,8 @@ public sealed class ProcessingUnit<TKey, TKeyMarker, TValue> : IProcessingUnit
     /// <param name="topic">Apache Kafka topic.</param>
     /// <param name="kafkaLoader">Kafka topic loader.</param>
     /// <param name="exporter">Data exporter.</param>
+    /// <param name="keyFilterFactory">Factory for key filters.</param>
+    /// <param name="valueFilterFactory">Factory for value filters.</param>
     public ProcessingUnit(ILogger<ProcessingUnit<TKey, TKeyMarker, TValue>> logger,
                           ProcessingTopic<TKey> topic,
                           ISnapshotLoader<TKey, TValue> kafkaLoader,
@@ -48,19 +50,22 @@ public sealed class ProcessingUnit<TKey, TKeyMarker, TValue> : IProcessingUnit
         ArgumentNullException.ThrowIfNull(valueFilterFactory);
 
         _keyFilter = keyFilterFactory.Create(
-            topic.FilterKeyType, 
-            topic.KeyType, 
+            topic.FilterKeyType,
+            topic.KeyType,
             topic.FilterKeyValue);
 
         _valueFilter = valueFilterFactory.Create(
-            FilterType.None, 
-            ValueMessageType.Raw, 
+            FilterType.None,
+            ValueMessageType.Raw,
             default!);
 
         _topicParams = topic.CreateLoadingParams();
         _exportedTopic = topic.CreateExportParams();
 
-        _logger.LogDebug("Instance created for topic {@topic}.", topic);
+        if (_logger.IsEnabled(LogLevel.Debug))
+        {
+            _logger.LogDebug("Instance created for topic {Topic}.", topic.TopicName.Name);
+        }
     }
 
     /// <inheritdoc/>

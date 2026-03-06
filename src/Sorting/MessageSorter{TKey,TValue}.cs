@@ -1,4 +1,4 @@
-﻿using KafkaSnapshot.Abstractions.Sorting;
+using KafkaSnapshot.Abstractions.Sorting;
 using KafkaSnapshot.Models.Message;
 using KafkaSnapshot.Models.Sorting;
 
@@ -32,7 +32,7 @@ public sealed class MessageSorter<TKey, TValue> : IMessageSorter<TKey, TValue>
     {
         ArgumentNullException.ThrowIfNull(source);
 
-        return (_sortingRules) switch
+        return _sortingRules switch
         {
             { Order: SortingOrder.No, Type: _ } => source,
             { Order: SortingOrder.Ask, Type: SortingType.Time } =>

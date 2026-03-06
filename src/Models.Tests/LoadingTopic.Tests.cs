@@ -1,4 +1,4 @@
-﻿using Xunit;
+using Xunit;
 
 using FluentAssertions;
 
@@ -22,12 +22,12 @@ public class LoadingTopicTests
         HashSet<int> partitionFilter = null!;
 
         // Act
-        var exception = Record.Exception(() => 
+        var exception = Record.Exception(() =>
                 new LoadingTopic(
-                        name, 
-                        compactingRule, 
-                        new DateFilterRange(null!, null!), 
-                        EncoderRules.String, 
+                        name,
+                        compactingRule,
+                        new DateFilterRange(null!, null!),
+                        EncoderRules.String,
                         partitionFilter));
 
         // Assert
@@ -47,12 +47,12 @@ public class LoadingTopicTests
         HashSet<int> partitionFilter = null!;
 
         // Act
-        var exception = Record.Exception(() => 
+        var exception = Record.Exception(() =>
                             item = new LoadingTopic(
-                                name, 
-                                compactingRule, 
-                                new DateFilterRange(null!, null!), 
-                                EncoderRules.String, 
+                                name,
+                                compactingRule,
+                                new DateFilterRange(null!, null!),
+                                EncoderRules.String,
                                 partitionFilter));
 
         // Assert
@@ -76,12 +76,12 @@ public class LoadingTopicTests
         HashSet<int> partitionFilter = null!;
 
         // Act
-        var exception = Record.Exception(() => 
+        var exception = Record.Exception(() =>
                             item = new LoadingTopic(
-                                name, 
-                                compactingRule, 
-                                new DateFilterRange(DateTime.UtcNow, DateTime.UtcNow), 
-                                EncoderRules.String, 
+                                name,
+                                compactingRule,
+                                new DateFilterRange(DateTime.UtcNow, DateTime.UtcNow),
+                                EncoderRules.String,
                                 partitionFilter));
 
         // Assert
@@ -101,10 +101,10 @@ public class LoadingTopicTests
         var name = new TopicName("test");
         HashSet<int> partitionFilter = null!;
         var topic = new LoadingTopic(
-                name, 
-                true, 
-                new DateFilterRange(null!, DateTime.UtcNow), 
-                EncoderRules.String, 
+                name,
+                true,
+                new DateFilterRange(null!, DateTime.UtcNow),
+                EncoderRules.String,
                 partitionFilter);
 
 
@@ -125,10 +125,10 @@ public class LoadingTopicTests
         var name = new TopicName("test");
         HashSet<int> partitionFilter = null!;
         var topic = new LoadingTopic(
-                name, 
-                true, 
-                new DateFilterRange(date, null!), 
-                EncoderRules.String, 
+                name,
+                true,
+                new DateFilterRange(date, null!),
+                EncoderRules.String,
                 partitionFilter);
         DateTime resultedDate = default;
 
@@ -149,10 +149,10 @@ public class LoadingTopicTests
         var name = new TopicName("test");
         HashSet<int> partitionFilter = null!;
         var topic = new LoadingTopic(
-                name, 
-                true, 
-                new DateFilterRange(DateTime.UtcNow, null!), 
-                EncoderRules.String, 
+                name,
+                true,
+                new DateFilterRange(DateTime.UtcNow, null!),
+                EncoderRules.String,
                 partitionFilter);
 
         // Act
@@ -172,10 +172,10 @@ public class LoadingTopicTests
         var name = new TopicName("test");
         HashSet<int> partitionFilter = null!;
         var topic = new LoadingTopic(
-                name, 
-                true, 
-                new DateFilterRange(null!, date), 
-                EncoderRules.String, 
+                name,
+                true,
+                new DateFilterRange(null!, date),
+                EncoderRules.String,
                 partitionFilter);
         DateTime resultedDate = default;
 
@@ -196,12 +196,12 @@ public class LoadingTopicTests
         var name = new TopicName("test");
 
         // Act
-        var exception = Record.Exception(() => 
+        var exception = Record.Exception(() =>
                 new LoadingTopic(
-                        name, 
-                        true, 
-                        new DateFilterRange(DateTime.UtcNow, DateTime.UtcNow.AddDays(1)), 
-                        EncoderRules.String, 
+                        name,
+                        true,
+                        new DateFilterRange(DateTime.UtcNow, DateTime.UtcNow.AddDays(1)),
+                        EncoderRules.String,
                         new HashSet<int>()));
 
         // Assert
@@ -217,13 +217,13 @@ public class LoadingTopicTests
         var name = new TopicName("test");
 
         // Act
-        var exception = Record.Exception(() => 
+        var exception = Record.Exception(() =>
                     new LoadingTopic(
-                            name, 
-                            true, 
-                            new DateFilterRange(DateTime.UtcNow, DateTime.UtcNow.AddDays(1)), 
-                            EncoderRules.String, 
-                            new HashSet<int>(new[] { 1, 2, 3 })));
+                            name,
+                            true,
+                            new DateFilterRange(DateTime.UtcNow, DateTime.UtcNow.AddDays(1)),
+                            EncoderRules.String,
+                            new HashSet<int> { 1, 2, 3 }));
 
         // Assert
         exception.Should().BeNull();
@@ -241,10 +241,10 @@ public class LoadingTopicTests
 
         // Act
         var topic = new LoadingTopic(
-                            name, 
-                            true, 
-                            new DateFilterRange(date, date), 
-                            EncoderRules.String, 
+                            name,
+                            true,
+                            new DateFilterRange(date, date),
+                            EncoderRules.String,
                             new HashSet<int>(items));
 
         // Assert

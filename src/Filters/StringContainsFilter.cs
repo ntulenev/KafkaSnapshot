@@ -1,4 +1,4 @@
-﻿using KafkaSnapshot.Abstractions.Filters;
+using KafkaSnapshot.Abstractions.Filters;
 
 namespace KafkaSnapshot.Filters;
 
@@ -32,7 +32,7 @@ public class StringContainsFilter : IDataFilter<string>
     {
         ArgumentNullException.ThrowIfNull(data);
 
-        return data.Contains(_sample);
+        return data.Contains(_sample, StringComparison.Ordinal);
     }
 
     private readonly string _sample;

@@ -1,4 +1,4 @@
-﻿using KafkaSnapshot.Models.Names;
+using KafkaSnapshot.Models.Names;
 
 namespace KafkaSnapshot.Abstractions.Processing;
 
@@ -12,10 +12,10 @@ public interface IProcessingUnit
     /// </summary>
     /// <param name="ct">A cancellation token that can be used to stop the processing.</param>
     /// <returns>A task that represents the asynchronous processing.</returns>
-    public Task ProcessAsync(CancellationToken ct);
+    Task ProcessAsync(CancellationToken ct);
 
     /// <summary>
     /// Gets the name of the Kafka topic that this processing unit is consuming messages from.
     /// </summary>
-    public TopicName TopicName { get; }
+    TopicName TopicName { get; }
 }

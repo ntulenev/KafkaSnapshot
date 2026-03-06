@@ -1,4 +1,4 @@
-﻿using KafkaSnapshot.Models.Names;
+using KafkaSnapshot.Models.Names;
 
 namespace KafkaSnapshot.Abstractions.Export;
 
@@ -12,5 +12,5 @@ public interface IFileStreamProvider
     /// </summary>
     /// <param name="fileName">The name of the file to create a stream for.</param>
     /// <returns>A stream object representing the created file.</returns>
-    public Stream CreateFileStream(FileName fileName);
+    Stream CreateFileStream(FileName fileName);
 }

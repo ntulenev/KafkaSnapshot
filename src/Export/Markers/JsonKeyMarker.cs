@@ -1,4 +1,4 @@
-﻿using KafkaSnapshot.Abstractions.Export;
+using KafkaSnapshot.Abstractions.Export;
 
 namespace KafkaSnapshot.Export.Markers;
 
@@ -7,4 +7,6 @@ namespace KafkaSnapshot.Export.Markers;
 /// </summary>
 public sealed class JsonKeyMarker : IKeyRepresentationMarker
 {
+    /// <inheritdoc />
+    public string Representation => nameof(JsonKeyMarker);
 }

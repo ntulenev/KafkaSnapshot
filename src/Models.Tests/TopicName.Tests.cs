@@ -1,7 +1,9 @@
-﻿using Xunit;
+using Xunit;
 
 using FluentAssertions;
-namespace KafkaSnapshot.Models.Names.Tests;
+using KafkaSnapshot.Models.Names;
+
+namespace KafkaSnapshot.Models.Tests;
 
 public class TopicNameTests
 {

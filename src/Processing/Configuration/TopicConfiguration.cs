@@ -1,4 +1,6 @@
-﻿using KafkaSnapshot.Models.Filters;
+using System.Globalization;
+
+using KafkaSnapshot.Models.Filters;
 using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Names;
 using KafkaSnapshot.Models.Processing;
@@ -59,7 +61,9 @@ public sealed class TopicConfiguration
     /// </summary>
     public HashSet<int>? PartitionsIds { get; init; }
 
-
+    /// <summary>
+    /// Message value encoder rule.
+    /// </summary>
     public EncoderRules MessageEncoderRule { get; init; } = EncoderRules.String;
 
     /// <summary>
@@ -69,7 +73,7 @@ public sealed class TopicConfiguration
     public ProcessingTopic<TKey> ConvertToProcess<TKey>()
     {
         var typedFilterKeyValue = FilterKeyValue is not null ?
-                              (TKey)Convert.ChangeType(FilterKeyValue, typeof(TKey))
+                              (TKey)Convert.ChangeType(FilterKeyValue, typeof(TKey), CultureInfo.InvariantCulture)
                               :
                               default;
 

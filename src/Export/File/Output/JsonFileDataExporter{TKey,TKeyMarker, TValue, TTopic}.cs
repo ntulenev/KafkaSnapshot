@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 using KafkaSnapshot.Abstractions.Export;
@@ -24,9 +24,12 @@ public sealed class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> :
     /// <summary>
     /// Creates <see cref="JsonFileDataExporter{TKey, TKeyMarker, TValue, TTopic}"/>.
     /// </summary>
+    /// <param name="config">Exporter configuration.</param>
     /// <param name="logger">Logger for 
     /// <see cref="JsonFileDataExporter{TKey, TKeyMarker, TValue, TTopic}"/>.</param>
     /// <param name="fileSaver">Utility that saves content to file.</param>
+    /// <param name="streamProvider">Utility that provides output streams.</param>
+    /// <param name="serializer">Serializer for export payload.</param>
     /// <exception cref="ArgumentNullException">Thrown if any of the 
     /// constructor arguments are null.</exception>
     public JsonFileDataExporter(
@@ -79,7 +82,7 @@ public sealed class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> :
         TTopic topic,
         CancellationToken ct)
     {
-        using var _ = _logger.BeginScope("Data from topic {topic} to File {file}",
+        using var _ = _logger.BeginScope("Data from topic {Topic} to File {File}",
                             topic.TopicName.Name,
                             topic.ExportName);
 
@@ -98,7 +101,7 @@ public sealed class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> :
             IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> data,
             TTopic topic)
     {
-        using var _ = _logger.BeginScope("Data from topic {topic} to File {file} with stream",
+        using var _ = _logger.BeginScope("Data from topic {Topic} to File {File} with stream",
                         topic.TopicName.Name,
                         topic.ExportName);
 

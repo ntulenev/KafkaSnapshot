@@ -1,4 +1,4 @@
-﻿using Confluent.Kafka;
+using Confluent.Kafka;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -57,24 +57,24 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
 
     ///<inheritdoc/>
     public async Task<IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>>> LoadSnapshotAsync(
-        LoadingTopic topicParams,
+        LoadingTopic loadingTopic,
         IDataFilter<TKey> keyFilter,
         IDataFilter<TMessage> valueFilter,
         CancellationToken ct)
     {
-        ArgumentNullException.ThrowIfNull(topicParams);
+        ArgumentNullException.ThrowIfNull(loadingTopic);
         ArgumentNullException.ThrowIfNull(keyFilter);
         ArgumentNullException.ThrowIfNull(valueFilter);
 
         _logger.LogDebug("Loading topic watermark");
         var topicWatermark = await _topicWatermarkLoader
-                                    .LoadWatermarksAsync(_consumerFactory, topicParams, ct)
+                                    .LoadWatermarksAsync(_consumerFactory, loadingTopic, ct)
                                     .ConfigureAwait(false);
 
         _logger.LogDebug("Loading initial state");
         var initialState = await ConsumeInitialAsync(
                                     topicWatermark,
-                                    topicParams,
+                                    loadingTopic,
                                     keyFilter,
                                     valueFilter,
                                     ct)
@@ -82,7 +82,7 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
 
         _logger.LogDebug("Creating compacting state");
 
-        return CreateSnapshot(initialState, topicParams.LoadWithCompacting);
+        return CreateSnapshot(initialState, loadingTopic.LoadWithCompacting);
     }
 
     private async Task<IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>>> ConsumeInitialAsync
@@ -124,7 +124,7 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
                                         ct))
                    )
             ).ConfigureAwait(false);
-            
+
             return consumedEntities.SelectMany(consumerResults => consumerResults);
         }
     }
@@ -136,79 +136,104 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
         IDataFilter<TMessage> valueFilter,
         CancellationToken ct)
     {
-        using var _ = _logger.BeginScope("Partition {Partition}", watermark.Partition.Value);
+        var logScope = _logger.IsEnabled(LogLevel.Information)
+            ? _logger.BeginScope("Partition {Partition}", watermark.Partition.Value)
+            : null;
 
-        _logger.LogInformation("Watermarks: Low {Low}, High {High}",
+        using (logScope)
+        {
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Watermarks: Low {Low}, High {High}",
                     watermark.Offset.Low,
                     watermark.Offset.High);
+            }
 
-        using var consumer = _consumerFactory();
+            using var consumer = _consumerFactory();
 
-        try
-        {
-
-            if (topicParams.HasOffsetDate)
+            try
             {
-                _logger.LogInformation("Searching for messages after date {Date}",
+
+                if (topicParams.HasOffsetDate)
+                {
+                    if (_logger.IsEnabled(LogLevel.Information))
+                    {
+                        _logger.LogInformation("Searching for messages after date {Date}",
                             topicParams.OffsetDate);
+                    }
 
-                if (!watermark.AssignWithConsumer(
-                            consumer,
-                            topicParams.OffsetDate,
-                            _config.DateOffsetTimeout))
-                {
-                    _logger.LogWarning("No actual offset for date {Date}", topicParams.OffsetDate);
-                    yield break;
+                    if (!watermark.AssignWithConsumer(
+                                consumer,
+                                topicParams.OffsetDate,
+                                _config.DateOffsetTimeout))
+                    {
+                        if (_logger.IsEnabled(LogLevel.Warning))
+                        {
+                            _logger.LogWarning("No actual offset for date {Date}", topicParams.OffsetDate);
+                        }
+
+                        yield break;
+                    }
                 }
-            }
-            else
-            {
-                watermark.AssignWithConsumer(consumer);
-            }
-
-            ConsumeResult<TKey, byte[]> result;
-
-            bool isFinalOffsetDateReached() => topicParams.HasEndOffsetDate &&
-                                               result.Message.Timestamp.UtcDateTime >
-                                               topicParams.EndOffsetDate.ToUniversalTime();
-
-            do
-            {
-                result = consumer.Consume(ct);
-
-                if (isFinalOffsetDateReached())
+                else
                 {
-                    _logger.LogInformation("Final date offset {date} reached",
+                    watermark.AssignWithConsumer(consumer);
+                }
+
+                ConsumeResult<TKey, byte[]> result;
+
+                bool isFinalOffsetDateReached()
+                {
+                    return topicParams.HasEndOffsetDate &&
+                           result.Message.Timestamp.UtcDateTime >
+                           topicParams.EndOffsetDate.ToUniversalTime();
+                }
+
+                do
+                {
+                    result = consumer.Consume(ct);
+
+                    if (isFinalOffsetDateReached())
+                    {
+                        if (_logger.IsEnabled(LogLevel.Information))
+                        {
+                            _logger.LogInformation("Final date offset {Date} reached",
                                 topicParams.EndOffsetDate);
-                    break;
-                }
+                        }
 
-                var messageValue = _encoder.Encode(result.Message.Value, topicParams.TopicValueEncoderRule);
+                        break;
+                    }
 
-                if (keyFilter.IsMatch(result.Message.Key) &&
-                    valueFilter.IsMatch(messageValue))
-                {
-                    _logger.LogTrace("Loading {Key} - {Value}",
+                    var messageValue = _encoder.Encode(result.Message.Value, topicParams.TopicValueEncoderRule);
+
+                    if (keyFilter.IsMatch(result.Message.Key) &&
+                        valueFilter.IsMatch(messageValue))
+                    {
+                        if (_logger.IsEnabled(LogLevel.Trace))
+                        {
+                            _logger.LogTrace("Loading {Key} - {Value}",
+                                result.Message.Key,
+                                messageValue);
+                        }
+
+                        var meta = new KafkaMetadata(
+                                result.Message.Timestamp.UtcDateTime,
+                                watermark.Partition.Value,
+                                result.Offset.Value);
+
+                        var message = new KafkaMessage<TMessage>(messageValue, meta);
+
+                        yield return new KeyValuePair<TKey, KafkaMessage<TMessage>>(
                             result.Message.Key,
-                            messageValue);
+                            message);
+                    }
 
-                    var meta = new KafkaMetadata(
-                            result.Message.Timestamp.UtcDateTime,
-                            watermark.Partition.Value,
-                            result.Offset.Value);
-
-                    var message = new KafkaMessage<TMessage>(messageValue, meta);
-
-                    yield return new KeyValuePair<TKey, KafkaMessage<TMessage>>(
-                        result.Message.Key,
-                        message);
-                }
-
-            } while (watermark.IsWatermarkAchievedBy(result));
-        }
-        finally
-        {
-            consumer?.Close();
+                } while (watermark.IsWatermarkAchievedBy(result));
+            }
+            finally
+            {
+                consumer?.Close();
+            }
         }
     }
 
@@ -230,7 +255,11 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
                     return d;
                 }).ToFrozenDictionary();
 
-            _logger.LogDebug("Created compacting state for {items} item(s)", result.Count());
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                var itemCount = result.Count();
+                _logger.LogDebug("Created compacting state for {ItemCount} item(s)", itemCount);
+            }
         }
         else
         {

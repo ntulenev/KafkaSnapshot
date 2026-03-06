@@ -1,4 +1,4 @@
-﻿using KafkaSnapshot.Models.Sorting;
+using KafkaSnapshot.Models.Sorting;
 
 namespace KafkaSnapshot.Processing.Configuration;
 
@@ -10,7 +10,7 @@ public sealed class LoaderToolConfiguration
     /// <summary>
     /// List of  topics with string Key.
     /// </summary>
-    public required List<TopicConfiguration> Topics { get; init; }
+    public required IReadOnlyList<TopicConfiguration> Topics { get; init; }
 
     /// <summary>
     /// User <see cref="LoaderConcurrentTool"/> to process topics in concurrent mode.

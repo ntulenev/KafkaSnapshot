@@ -1,4 +1,4 @@
-﻿namespace KafkaSnapshot.Models.Import;
+namespace KafkaSnapshot.Models.Import;
 
 /// <summary>
 /// Specifies the rules for encoding messages.

@@ -1,4 +1,4 @@
-﻿namespace KafkaSnapshot.Abstractions.Export;
+namespace KafkaSnapshot.Abstractions.Export;
 
 /// <summary>
 /// This interface serves as a marker that describes 
@@ -6,4 +6,8 @@
 /// </summary>
 public interface IKeyRepresentationMarker
 {
+    /// <summary>
+    /// Gets the key representation kind.
+    /// </summary>
+    string Representation { get; }
 }

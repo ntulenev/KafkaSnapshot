@@ -229,6 +229,43 @@ public class LoadingTopicTests
         exception.Should().BeNull();
     }
 
+    [Fact(DisplayName = "Can get topic value encoder rule.")]
+    [Trait("Category", "Unit")]
+    public void CanGetTopicValueEncoderRule()
+    {
+        // Arrange
+        var topic = new LoadingTopic(
+            new TopicName("test"),
+            true,
+            new DateFilterRange(null!, null!),
+            EncoderRules.MessagePack,
+            null);
+
+        // Assert
+        topic.TopicValueEncoderRule.Should().Be(EncoderRules.MessagePack);
+    }
+
+    [Fact(DisplayName = "Cant create topic with invalid encoder rule.")]
+    [Trait("Category", "Unit")]
+    public void CantCreateTopicWithInvalidEncoderRule()
+    {
+        // Arrange
+        var name = new TopicName("test");
+        var invalidRule = (EncoderRules)999;
+
+        // Act
+        var exception = Record.Exception(() =>
+            new LoadingTopic(
+                name,
+                true,
+                new DateFilterRange(null!, null!),
+                invalidRule,
+                null));
+
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
+    }
+
     [Fact(DisplayName = "Can get topic partition filter.")]
     [Trait("Category", "Unit")]
     public void CanGetTopicPartitionFilter()

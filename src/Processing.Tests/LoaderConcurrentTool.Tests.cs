@@ -98,8 +98,14 @@ public class LoaderConcurrentToolTests
         var unit2 = new Mock<IProcessingUnit>(MockBehavior.Strict);
         unit1.Setup(x => x.TopicName).Returns(() => new TopicName("unit1"));
         unit2.Setup(x => x.TopicName).Returns(() => new TopicName("unit2"));
-        unit1.Setup(x => x.ProcessAsync(cts.Token)).Returns(Task.CompletedTask);
-        unit2.Setup(x => x.ProcessAsync(cts.Token)).Returns(Task.CompletedTask);
+        var unit1ProcessCalls = 0;
+        var unit2ProcessCalls = 0;
+        unit1.Setup(x => x.ProcessAsync(cts.Token))
+            .Callback(() => unit1ProcessCalls++)
+            .Returns(Task.CompletedTask);
+        unit2.Setup(x => x.ProcessAsync(cts.Token))
+            .Callback(() => unit2ProcessCalls++)
+            .Returns(Task.CompletedTask);
         var items = new[]
         {
             unit1.Object,unit2.Object
@@ -110,8 +116,8 @@ public class LoaderConcurrentToolTests
         await tool.ProcessAsync(cts.Token);
 
         // Assert
-        unit1.Verify(x => x.ProcessAsync(cts.Token), Times.Once);
-        unit2.Verify(x => x.ProcessAsync(cts.Token), Times.Once);
+        unit1ProcessCalls.Should().Be(1);
+        unit2ProcessCalls.Should().Be(1);
     }
 
     [Fact(DisplayName = "LoaderConcurrentTool can process units if any thorws error.")]
@@ -126,8 +132,14 @@ public class LoaderConcurrentToolTests
         var unit2 = new Mock<IProcessingUnit>(MockBehavior.Strict);
         unit1.Setup(x => x.TopicName).Returns(() => new TopicName("unit1"));
         unit2.Setup(x => x.TopicName).Returns(() => new TopicName("unit2"));
-        unit1.Setup(x => x.ProcessAsync(cts.Token)).Throws<Exception>();
-        unit2.Setup(x => x.ProcessAsync(cts.Token)).Returns(Task.CompletedTask);
+        var unit1ProcessCalls = 0;
+        var unit2ProcessCalls = 0;
+        unit1.Setup(x => x.ProcessAsync(cts.Token))
+            .Callback(() => unit1ProcessCalls++)
+            .Throws<Exception>();
+        unit2.Setup(x => x.ProcessAsync(cts.Token))
+            .Callback(() => unit2ProcessCalls++)
+            .Returns(Task.CompletedTask);
         var items = new[]
         {
             unit1.Object,unit2.Object
@@ -139,8 +151,8 @@ public class LoaderConcurrentToolTests
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<Exception>();
-        unit1.Verify(x => x.ProcessAsync(cts.Token), Times.Once);
-        unit2.Verify(x => x.ProcessAsync(cts.Token), Times.Once);
+        unit1ProcessCalls.Should().Be(1);
+        unit2ProcessCalls.Should().Be(1);
     }
 
     [Fact(DisplayName = "LoaderConcurrentTool cant process units if token is cancelled.")]
@@ -155,8 +167,14 @@ public class LoaderConcurrentToolTests
         var unit2 = new Mock<IProcessingUnit>(MockBehavior.Strict);
         unit1.Setup(x => x.TopicName).Returns(() => new TopicName("unit1"));
         unit2.Setup(x => x.TopicName).Returns(() => new TopicName("unit2"));
-        unit1.Setup(x => x.ProcessAsync(cts.Token)).Returns(Task.CompletedTask);
-        unit2.Setup(x => x.ProcessAsync(cts.Token)).Returns(Task.CompletedTask);
+        var unit1ProcessCalls = 0;
+        var unit2ProcessCalls = 0;
+        unit1.Setup(x => x.ProcessAsync(cts.Token))
+            .Callback(() => unit1ProcessCalls++)
+            .Returns(Task.CompletedTask);
+        unit2.Setup(x => x.ProcessAsync(cts.Token))
+            .Callback(() => unit2ProcessCalls++)
+            .Returns(Task.CompletedTask);
         var items = new[]
         {
             unit1.Object,unit2.Object
@@ -169,7 +187,7 @@ public class LoaderConcurrentToolTests
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<OperationCanceledException>();
-        unit1.Verify(x => x.ProcessAsync(cts.Token), Times.Never);
-        unit2.Verify(x => x.ProcessAsync(cts.Token), Times.Never);
+        unit1ProcessCalls.Should().Be(0);
+        unit2ProcessCalls.Should().Be(0);
     }
 }

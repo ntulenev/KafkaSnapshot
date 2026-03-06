@@ -66,6 +66,26 @@ public class LoaderToolTests
         exception.Should().BeNull();
     }
 
+    [Fact(DisplayName = "LoaderTool can be created with debug logger.")]
+    [Trait("Category", "Unit")]
+    public void LoaderToolCanBeCreatedWithDebugLogger()
+    {
+        // Arrange
+        var loggerMock = new Mock<ILogger<LoaderTool>>();
+        loggerMock.Setup(x => x.IsEnabled(LogLevel.Debug)).Returns(true);
+        var logger = loggerMock.Object;
+        var items = new[]
+        {
+            (new Mock<IProcessingUnit>(MockBehavior.Strict)).Object
+        };
+
+        // Act
+        var exception = Record.Exception(() => new LoaderTool(logger, items));
+
+        // Assert
+        exception.Should().BeNull();
+    }
+
     [Fact(DisplayName = "LoaderTool can process units.")]
     [Trait("Category", "Unit")]
     public async Task LoaderToolProcessUnits()
@@ -76,8 +96,8 @@ public class LoaderToolTests
         var logger = loggerMock.Object;
         var unit1 = new Mock<IProcessingUnit>(MockBehavior.Strict);
         var unit2 = new Mock<IProcessingUnit>(MockBehavior.Strict);
-        unit1.Setup(x => x.ProcessAsync(cts.Token));
-        unit2.Setup(x => x.ProcessAsync(cts.Token));
+        unit1.Setup(x => x.ProcessAsync(cts.Token)).Returns(Task.CompletedTask);
+        unit2.Setup(x => x.ProcessAsync(cts.Token)).Returns(Task.CompletedTask);
         unit1.Setup(x => x.TopicName).Returns(() => new TopicName("unit1"));
         unit2.Setup(x => x.TopicName).Returns(() => new TopicName("unit2"));
         var items = new[]
@@ -107,7 +127,7 @@ public class LoaderToolTests
         unit1.Setup(x => x.ProcessAsync(cts.Token)).Throws(new Exception());
         var unit2 = new Mock<IProcessingUnit>(MockBehavior.Strict);
         unit2.Setup(x => x.TopicName).Returns(() => new TopicName("unit2"));
-        unit2.Setup(x => x.ProcessAsync(cts.Token));
+        unit2.Setup(x => x.ProcessAsync(cts.Token)).Returns(Task.CompletedTask);
         var items = new[]
         {
             unit1.Object,unit2.Object
@@ -115,11 +135,12 @@ public class LoaderToolTests
         var tool = new LoaderTool(logger, items);
 
         // Act
-        await tool.ProcessAsync(cts.Token);
+        var exception = await Record.ExceptionAsync(() => tool.ProcessAsync(cts.Token));
 
         // Assert
+        exception.Should().NotBeNull().And.BeOfType<Exception>();
         unit1.Verify(x => x.ProcessAsync(cts.Token), Times.Once);
-        unit2.Verify(x => x.ProcessAsync(cts.Token), Times.Once);
+        unit2.Verify(x => x.ProcessAsync(cts.Token), Times.Never);
     }
 
     [Fact(DisplayName = "LoaderTool can't process units if token is canceled.")]
@@ -142,9 +163,10 @@ public class LoaderToolTests
         cts.Cancel();
 
         // Act
-        await tool.ProcessAsync(cts.Token);
+        var exception = await Record.ExceptionAsync(() => tool.ProcessAsync(cts.Token));
 
         // Assert
+        exception.Should().NotBeNull().And.BeOfType<OperationCanceledException>();
         unit1.Verify(x => x.ProcessAsync(cts.Token), Times.Never);
         unit2.Verify(x => x.ProcessAsync(cts.Token), Times.Never);
     }

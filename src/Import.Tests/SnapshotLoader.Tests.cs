@@ -240,6 +240,8 @@ public class SnapshotLoaderTests
     {
 
         // Arrange
+        using var tokenSource = new CancellationTokenSource();
+        var token = tokenSource.Token;
         var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
         var logger = loggerMock.Object;
         IConsumer<object, byte[]> consumerFactory() => throw new NotImplementedException();
@@ -262,7 +264,7 @@ public class SnapshotLoaderTests
         // Act
         var exception = await Record.ExceptionAsync(
             async () => _ = await loader.LoadSnapshotAsync(
-                null!, keyFilter, valueFilter, CancellationToken.None));
+                null!, keyFilter, valueFilter, token));
 
 
         // Assert
@@ -275,6 +277,8 @@ public class SnapshotLoaderTests
     {
 
         // Arrange
+        using var tokenSource = new CancellationTokenSource();
+        var token = tokenSource.Token;
         var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
         var logger = loggerMock.Object;
         IConsumer<object, byte[]> consumerFactory() => throw new NotImplementedException();
@@ -298,7 +302,7 @@ public class SnapshotLoaderTests
         // Act
         var exception = await Record.ExceptionAsync(
             async () => _ = await loader.LoadSnapshotAsync(
-                topicParams, null!, valueFilter, CancellationToken.None));
+                topicParams, null!, valueFilter, token));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -311,6 +315,8 @@ public class SnapshotLoaderTests
     {
 
         // Arrange
+        using var tokenSource = new CancellationTokenSource();
+        var token = tokenSource.Token;
         var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
         var logger = loggerMock.Object;
         IConsumer<object, byte[]> consumerFactory() => throw new NotImplementedException();
@@ -334,7 +340,7 @@ public class SnapshotLoaderTests
         // Act
         var exception = await Record.ExceptionAsync(
             async () => _ = await loader.LoadSnapshotAsync(
-                topicParams, keyFilter, null!, CancellationToken.None));
+                topicParams, keyFilter, null!, token));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -553,6 +559,8 @@ public class SnapshotLoaderTests
     public async Task SnapshotLoaderSkipsLoadDataOnNonRangeDate(bool compacting)
     {
         // Arrange
+        using var tokenSource = new CancellationTokenSource();
+        var token = tokenSource.Token;
         var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
         var logger = loggerMock.Object;
         var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
@@ -594,7 +602,7 @@ public class SnapshotLoaderTests
             {
                 new TopicPartitionOffset(topicPartition,new Offset(Offset.End))
             }.ToList());
-        topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, byte[]>(consumerFactory, topicName, CancellationToken.None))
+        topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, byte[]>(consumerFactory, topicName, token))
             .Returns(Task.FromResult(topicWatermark));
         var dispCount = 0;
         var closeCount = 0;
@@ -602,7 +610,7 @@ public class SnapshotLoaderTests
         consumerMock.Setup(x => x.Close()).Callback(() => closeCount++);
 
         // Act
-        var result = await loader.LoadSnapshotAsync(topicName, keyFilter, valueFilter, CancellationToken.None);
+        var result = await loader.LoadSnapshotAsync(topicName, keyFilter, valueFilter, token);
 
         // Assert
         result.Should().BeEquivalentTo(Enumerable.Empty<KeyValuePair<object, KafkaMessage<object>>>());
@@ -615,6 +623,8 @@ public class SnapshotLoaderTests
     public async Task SnapshotLoaderCanLoadDataWithCompacting()
     {
         // Arrange
+        using var tokenSource = new CancellationTokenSource();
+        var token = tokenSource.Token;
         var indexer = 0;
         var consumerData = new[]
         {
@@ -684,10 +694,10 @@ public class SnapshotLoaderTests
         {
             new PartitionWatermark(topicName,offset,partition)
         });
-        topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, byte[]>(consumerFactory, topicName, CancellationToken.None))
+        topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, byte[]>(consumerFactory, topicName, token))
             .Returns(Task.FromResult(topicWatermark));
         consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(x => x.Topic == topicName.Value.Name && x.Partition == partition)));
-        consumerMock.Setup(x => x.Consume(CancellationToken.None)).Returns(() =>
+        consumerMock.Setup(x => x.Consume(token)).Returns(() =>
         {
             return consumerData[indexer++];
         });
@@ -697,7 +707,7 @@ public class SnapshotLoaderTests
         consumerMock.Setup(x => x.Close()).Callback(() => closeCount++);
 
         // Act
-        var result = await loader.LoadSnapshotAsync(topicName, keyFilter, valueFilter, CancellationToken.None);
+        var result = await loader.LoadSnapshotAsync(topicName, keyFilter, valueFilter, token);
 
         // Assert
         //TODO Fix with add encoder mock setup
@@ -711,6 +721,8 @@ public class SnapshotLoaderTests
     public async Task SnapshotLoaderCanCreateCompactingSnapshotWithDebugLogging()
     {
         // Arrange
+        using var tokenSource = new CancellationTokenSource();
+        var token = tokenSource.Token;
         var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
         loggerMock.Setup(x => x.IsEnabled(LogLevel.Debug)).Returns(true);
         var logger = loggerMock.Object;
@@ -754,10 +766,10 @@ public class SnapshotLoaderTests
         topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, byte[]>(
             consumerFactory,
             topic,
-            CancellationToken.None)).ReturnsAsync(topicWatermark);
+            token)).ReturnsAsync(topicWatermark);
 
         consumerMock.Setup(x => x.Assign(It.IsAny<TopicPartition>()));
-        consumerMock.Setup(x => x.Consume(CancellationToken.None)).Returns(new ConsumeResult<object, byte[]>
+        consumerMock.Setup(x => x.Consume(token)).Returns(new ConsumeResult<object, byte[]>
         {
             Message = new Message<object, byte[]>
             {
@@ -775,7 +787,7 @@ public class SnapshotLoaderTests
             topic,
             keyFilterMock.Object,
             valueFilterMock.Object,
-            CancellationToken.None)).ToList();
+            token)).ToList();
 
         // Assert
         result.Should().HaveCount(1);
@@ -787,6 +799,8 @@ public class SnapshotLoaderTests
     public async Task SnapshotLoaderCanLoadDataWithCompactingOnDate()
     {
         // Arrange
+        using var tokenSource = new CancellationTokenSource();
+        var token = tokenSource.Token;
         var indexer = 0;
         var consumerData = new[]
         {
@@ -866,10 +880,10 @@ public class SnapshotLoaderTests
             {
                 new TopicPartitionOffset(topicPartition,new Offset(0))
             }.ToList());
-        topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, byte[]>(consumerFactory, topicName, CancellationToken.None))
+        topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, byte[]>(consumerFactory, topicName, token))
             .Returns(Task.FromResult(topicWatermark));
         consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(x => x.Topic == topicName.Value.Name && x.Partition == partition)));
-        consumerMock.Setup(x => x.Consume(CancellationToken.None)).Returns(() =>
+        consumerMock.Setup(x => x.Consume(token)).Returns(() =>
         {
             return consumerData[indexer++];
         });
@@ -879,7 +893,7 @@ public class SnapshotLoaderTests
         consumerMock.Setup(x => x.Close()).Callback(() => closeCount++);
 
         // Act
-        var result = await loader.LoadSnapshotAsync(topicName, keyFilter, valueFilter, CancellationToken.None);
+        var result = await loader.LoadSnapshotAsync(topicName, keyFilter, valueFilter, token);
 
         // Assert
         //TODO Fix with add encoder mock setup
@@ -895,6 +909,8 @@ public class SnapshotLoaderTests
     public async Task SnapshotLoaderLoadNoDataWithEndDate(bool compacting)
     {
         // Arrange
+        using var tokenSource = new CancellationTokenSource();
+        var token = tokenSource.Token;
         var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
         var logger = loggerMock.Object;
         var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
@@ -931,14 +947,14 @@ public class SnapshotLoaderTests
         });
         var topicPartition = new TopicPartition(topicName.Value.Name, partition);
         var partitionWithTime = new TopicPartitionTimestamp(topicPartition, new Timestamp(testDate));
-        consumerMock.Setup(x => x.Consume(It.IsAny<CancellationToken>())).Returns(new ConsumeResult<object, byte[]>
+        consumerMock.Setup(x => x.Consume(It.Is<CancellationToken>(currentToken => currentToken == token))).Returns(new ConsumeResult<object, byte[]>
         {
             Message = new Message<object, byte[]>
             {
                 Timestamp = new Timestamp(testDate.AddDays(1))
             }
         });
-        topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, byte[]>(consumerFactory, topicName, CancellationToken.None))
+        topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, byte[]>(consumerFactory, topicName, token))
             .Returns(Task.FromResult(topicWatermark));
         consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(x => x.Topic == topicName.Value.Name && x.Partition == partition)));
         var dispCount = 0;
@@ -947,7 +963,7 @@ public class SnapshotLoaderTests
         consumerMock.Setup(x => x.Close()).Callback(() => closeCount++);
 
         // Act
-        var result = await loader.LoadSnapshotAsync(topicName, keyFilter, valueFilter, CancellationToken.None);
+        var result = await loader.LoadSnapshotAsync(topicName, keyFilter, valueFilter, token);
 
         // Assert
         result.Should().BeEquivalentTo(Enumerable.Empty<KeyValuePair<object, KafkaMessage<object>>>());

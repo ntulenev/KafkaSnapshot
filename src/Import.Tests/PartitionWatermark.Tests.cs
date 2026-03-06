@@ -189,14 +189,16 @@ public class PartitionWatermarkTests
         var partition = new Partition(1);
         var pw = new PartitionWatermark(topicName, offsets, partition);
         var consumerMock = new Mock<IConsumer<object, object>>(MockBehavior.Strict);
-        consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(a => a.Topic == topicName.Value.Name && a.Partition == partition)));
+        var assignCalls = 0;
+        consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(a => a.Topic == topicName.Value.Name && a.Partition == partition)))
+            .Callback(() => assignCalls++);
         var consumer = consumerMock.Object;
 
         // Act
         pw.AssignWithConsumer(consumer);
 
         // Assert
-        consumerMock.Verify(x => x.Assign(It.Is<TopicPartition>(a => a.Topic == topicName.Value.Name && a.Partition == partition)), Times.Once);
+        assignCalls.Should().Be(1);
     }
 
 
@@ -215,11 +217,23 @@ public class PartitionWatermarkTests
         var pw = new PartitionWatermark(topicName, offsets, partition);
         var consumerMock = new Mock<IConsumer<object, object>>(MockBehavior.Strict);
         var topicWithOffset = new TopicPartitionOffset(new TopicPartition(topicName.Value.Name, new Partition()), new Offset(1));
-        consumerMock.Setup(x => x.Assign(It.Is<TopicPartitionOffset>(a => a.Topic == topicName.Value.Name && a.Partition == topicWithOffset.Partition)));
-        consumerMock.Setup(x => x.OffsetsForTimes(It.IsAny<IEnumerable<TopicPartitionTimestamp>>(), timeout)).Returns(new List<TopicPartitionOffset>
-        {
-           topicWithOffset
-        });
+        var expectedTimestamp = new Timestamp(date).UnixTimestampMs;
+        var offsetsForTimesCalls = 0;
+        var assignCalls = 0;
+        consumerMock.Setup(x => x.Assign(It.Is<TopicPartitionOffset>(a => a.Topic == topicName.Value.Name && a.Partition == topicWithOffset.Partition)))
+            .Callback(() => assignCalls++);
+        consumerMock.Setup(x => x.OffsetsForTimes(
+                It.Is<IEnumerable<TopicPartitionTimestamp>>(items =>
+                    items.Count() == 1
+                    && items.Single().Topic == topicName.Value.Name
+                    && items.Single().Partition == partition
+                    && items.Single().Timestamp.UnixTimestampMs == expectedTimestamp),
+                timeout))
+            .Callback(() => offsetsForTimesCalls++)
+            .Returns(new List<TopicPartitionOffset>
+            {
+                topicWithOffset
+            });
         var consumer = consumerMock.Object;
 
         // Act
@@ -227,7 +241,8 @@ public class PartitionWatermarkTests
 
         // Assert
         result.Should().BeTrue();
-        consumerMock.Verify(x => x.Assign(It.Is<TopicPartitionOffset>(a => a.Topic == topicName.Value.Name && a.Partition == topicWithOffset.Partition)), Times.Once);
+        offsetsForTimesCalls.Should().Be(1);
+        assignCalls.Should().Be(1);
     }
 
     [Fact(DisplayName = "PartitionWatermark could be assing to consumer with date but too big.")]
@@ -245,10 +260,23 @@ public class PartitionWatermarkTests
         var pw = new PartitionWatermark(topicName, offsets, partition);
         var consumerMock = new Mock<IConsumer<object, object>>(MockBehavior.Strict);
         var topicWithOffset = new TopicPartitionOffset(new TopicPartition(topicName.Value.Name, new Partition()), new Offset(Offset.End));
-        consumerMock.Setup(x => x.OffsetsForTimes(It.IsAny<IEnumerable<TopicPartitionTimestamp>>(), timeout)).Returns(new List<TopicPartitionOffset>
-        {
-           topicWithOffset
-        });
+        var expectedTimestamp = new Timestamp(date).UnixTimestampMs;
+        var offsetsForTimesCalls = 0;
+        var assignCalls = 0;
+        consumerMock.Setup(x => x.Assign(It.Is<TopicPartitionOffset>(a => a.Topic == topicName.Value.Name && a.Partition == topicWithOffset.Partition)))
+            .Callback(() => assignCalls++);
+        consumerMock.Setup(x => x.OffsetsForTimes(
+                It.Is<IEnumerable<TopicPartitionTimestamp>>(items =>
+                    items.Count() == 1
+                    && items.Single().Topic == topicName.Value.Name
+                    && items.Single().Partition == partition
+                    && items.Single().Timestamp.UnixTimestampMs == expectedTimestamp),
+                timeout))
+            .Callback(() => offsetsForTimesCalls++)
+            .Returns(new List<TopicPartitionOffset>
+            {
+                topicWithOffset
+            });
         var consumer = consumerMock.Object;
 
         // Act
@@ -256,6 +284,7 @@ public class PartitionWatermarkTests
 
         // Assert
         result.Should().BeFalse();
-        consumerMock.Verify(x => x.Assign(It.Is<TopicPartitionOffset>(a => a.Topic == topicName.Value.Name && a.Partition == topicWithOffset.Partition)), Times.Never);
+        offsetsForTimesCalls.Should().Be(1);
+        assignCalls.Should().Be(0);
     }
 }

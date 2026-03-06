@@ -347,211 +347,273 @@ public class SnapshotLoaderTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
-    //TODO Fix encoder mock setup
-    //[Fact(DisplayName = "SnapshotLoader can load data without compacting.")]
-    //[Trait("Category", "Unit")]
-    //public async Task SnapshotLoaderCanLoadDataWithoutCompacting()
-    //{
+    [Fact(DisplayName = "SnapshotLoader can load data without compacting.")]
+    [Trait("Category", "Unit")]
+    public async Task SnapshotLoaderCanLoadDataWithoutCompacting()
+    {
+        // Arrange
+        using var tokenSource = new CancellationTokenSource();
+        var token = tokenSource.Token;
+        var consumeCalls = 0;
+        var sortCalls = 0;
+        var encodeCalls = 0;
+        var topicLoaderCalls = 0;
+        var assignCalls = 0;
+        var disposeCalls = 0;
+        var closeCalls = 0;
 
-    //    // Arrange
-    //    var consumerData = new[]
-    //   {
-    //        new ConsumeResult<object, byte[]>
-    //        {
-    //             Message = new Message<object, byte[]>
-    //             {
-    //                   Key = "key1",
-    //                   Value = Encoding.UTF8.GetBytes("value1"),
-    //                   Timestamp =  Timestamp.Default
-    //             },
-    //             Offset = new Offset(0)
-    //        },
-    //        new ConsumeResult<object, byte[]>
-    //        {
-    //             Message = new Message<object, byte[]>
-    //             {
-    //                   Key = "key2",
-    //                   Value = Encoding.UTF8.GetBytes("value2"),
-    //                   Timestamp =  Timestamp.Default
-    //             },
-    //             Offset = new Offset(1)
-    //        },
-    //        new ConsumeResult<object, byte[]>
-    //        {
-    //             Message = new Message<object, byte[]>
-    //             {
-    //                   Key = "key2",
-    //                   Value = Encoding.UTF8.GetBytes("value2"),
-    //                   Timestamp =  Timestamp.Default
-    //             },
-    //             Offset = new Offset(2)
-    //        }
-    //    };
-    //    var indexer = 0;
-    //    var exceptedData = consumerData.Select((x, i) =>
-    //    new KeyValuePair<object, KafkaMessage<object>>(
-    //        x.Message.Key, new KafkaMessage<object>(
-    //            x.Message.Value, new Models.Message.KafkaMetadata(
-    //                x.Message.Timestamp.UtcDateTime, 1, i)))
-    //    );
-    //    var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
-    //    var logger = loggerMock.Object;
-    //    var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
-    //    Func<IConsumer<object, byte[]>> consumerFactory = () => consumerMock.Object;
-    //    var topicLoaderMock = new Mock<ITopicWatermarkLoader>(MockBehavior.Strict);
-    //    var topicLoader = topicLoaderMock.Object;
-    //    var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>(MockBehavior.Strict);
-    //    optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
-    //    var options = optionsMock.Object;
-    //    var sorterMock = new Mock<IMessageSorter<object, object>>(MockBehavior.Strict);
-    //    sorterMock.Setup(x => x.Sort(exceptedData)).Returns(exceptedData);
-    //    var sorter = sorterMock.Object;
-    //    var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
-    //    encoderMock.Setup(x => x.Encode(It.IsAny<byte[]>(), It.IsAny<EncoderRules>())).Returns("test");
-    //    var encoder = encoderMock.Object;
-    //    var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter, encoder);
-    //    var withCompacting = false;
-    //    HashSet<int> partitionFilter = null!;
-    //    var topicName = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(null!, null!), EncoderRules.String, partitionFilter);
-    //    var filterKeyMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
-    //    filterKeyMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
-    //    var keyFilter = filterKeyMock.Object;
-    //    var filterValueMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
-    //    filterValueMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
-    //    var valueFilter = filterValueMock.Object;
-    //    var offset = new WatermarkOffsets(new Offset(0), new Offset(3));
-    //    var partition = new Partition(1);
-    //    var topicWatermark = new TopicWatermark(new[]
-    //    {
-    //        new PartitionWatermark(topicName,offset,partition)
-    //    });
-    //    topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, byte[]>(consumerFactory, topicName, CancellationToken.None))
-    //        .Returns(Task.FromResult(topicWatermark));
-    //    consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(x => x.Topic == topicName.Value.Name && x.Partition == partition)));
-    //    consumerMock.Setup(x => x.Consume(CancellationToken.None)).Returns(() =>
-    //    {
-    //        return consumerData[indexer++];
-    //    });
-    //    var dispCount = 0;
-    //    var closeCount = 0;
-    //    consumerMock.Setup(x => x.Dispose()).Callback(() => dispCount++);
-    //    consumerMock.Setup(x => x.Close()).Callback(() => closeCount++);
+        var consumerData = new[]
+        {
+            new ConsumeResult<object, byte[]>
+            {
+                Message = new Message<object, byte[]>
+                {
+                    Key = "key1",
+                    Value = Encoding.UTF8.GetBytes("value1"),
+                    Timestamp = Timestamp.Default
+                },
+                Offset = new Offset(0)
+            },
+            new ConsumeResult<object, byte[]>
+            {
+                Message = new Message<object, byte[]>
+                {
+                    Key = "key2",
+                    Value = Encoding.UTF8.GetBytes("value2"),
+                    Timestamp = Timestamp.Default
+                },
+                Offset = new Offset(1)
+            },
+            new ConsumeResult<object, byte[]>
+            {
+                Message = new Message<object, byte[]>
+                {
+                    Key = "key2",
+                    Value = Encoding.UTF8.GetBytes("value3"),
+                    Timestamp = Timestamp.Default
+                },
+                Offset = new Offset(2)
+            }
+        };
 
-    //    // Act
-    //    var result = await loader.LoadSnapshotAsync(
-    //            topicName, keyFilter, valueFilter, CancellationToken.None).ConfigureAwait(false);
+        var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
+        var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
+        Func<IConsumer<object, byte[]>> consumerFactory = () => consumerMock.Object;
+        var topicLoaderMock = new Mock<ITopicWatermarkLoader>(MockBehavior.Strict);
+        var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>(MockBehavior.Strict);
+        optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration());
+        var sorterMock = new Mock<IMessageSorter<object, object>>(MockBehavior.Strict);
+        sorterMock.Setup(x => x.Sort(It.IsAny<IEnumerable<KeyValuePair<object, KafkaMessage<object>>>>()))
+            .Callback(() => sortCalls++)
+            .Returns<IEnumerable<KeyValuePair<object, KafkaMessage<object>>>>(items => items.ToList());
+        var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
+        encoderMock.Setup(x => x.Encode(It.IsAny<byte[]>(), EncoderRules.String))
+            .Callback(() => encodeCalls++)
+            .Returns<byte[], EncoderRules>((valueBytes, _) => Encoding.UTF8.GetString(valueBytes));
 
-    //    // Assert
-    //    result.Should().BeEquivalentTo(exceptedData);
-    //    dispCount.Should().Be(1);
-    //    closeCount.Should().Be(1);
-    //}
+        var loader = new SnapshotLoader<object, object>(
+            loggerMock.Object,
+            optionsMock.Object,
+            consumerFactory,
+            topicLoaderMock.Object,
+            sorterMock.Object,
+            encoderMock.Object);
 
-    //TODO Fix encoder mock setup
-    //[Fact(DisplayName = "SnapshotLoader can load data without compacting on date.")]
-    //[Trait("Category", "Unit")]
-    //public async Task SnapshotLoaderCanLoadDataWithoutCompactingOnDate()
-    //{
-    //    // Arrange
-    //    var indexer = 0;
-    //    var consumerData = new[]
-    //    {
-    //        new ConsumeResult<object, byte[]>
-    //        {
-    //             Message = new Message<object, byte[]>
-    //             {
-    //                   Key = "key1",
-    //                   Value = Encoding.UTF8.GetBytes("value1"),
-    //                   Timestamp =  Timestamp.Default
-    //             },
-    //             Offset = new Offset(0)
-    //        },
-    //        new ConsumeResult<object, byte[]>
-    //        {
-    //             Message = new Message<object, byte[]>
-    //             {
-    //                   Key = "key2",
-    //                   Value = Encoding.UTF8.GetBytes("value2"),
-    //                   Timestamp =  Timestamp.Default
-    //             },
-    //             Offset = new Offset(1)
-    //        },
-    //        new ConsumeResult<object, byte[]>
-    //        {
-    //             Message = new Message<object, byte[]>
-    //             {
-    //                   Key = "key2",
-    //                   Value = Encoding.UTF8.GetBytes("value3"),
-    //                   Timestamp =  Timestamp.Default
-    //             },
-    //             Offset = new Offset(2)
-    //        }
-    //    };
-    //    var exceptedData = consumerData.Select((x, i) =>
-    //                    new KeyValuePair<object, KafkaMessage<object>>(
-    //                        x.Message.Key, new KafkaMessage<object>(
-    //                            x.Message.Value, new Models.Message.KafkaMetadata(x.Message.Timestamp.UtcDateTime, 1, i))));
-    //    var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
-    //    var logger = loggerMock.Object;
-    //    var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
-    //    Func<IConsumer<object, byte[]>> consumerFactory = () => consumerMock.Object;
-    //    var topicLoaderMock = new Mock<ITopicWatermarkLoader>(MockBehavior.Strict);
-    //    var topicLoader = topicLoaderMock.Object;
-    //    var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>(MockBehavior.Strict);
-    //    optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
-    //    var options = optionsMock.Object;
-    //    var sorterMock = new Mock<IMessageSorter<object, object>>(MockBehavior.Strict);
-    //    sorterMock.Setup(x => x.Sort(exceptedData)).Returns(exceptedData);
-    //    var sorter = sorterMock.Object;
-    //    var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
-    //    encoderMock.Setup(x => x.Encode(It.IsAny<byte[]>(), It.IsAny<EncoderRules>())).Returns("test");
-    //    var encoder = encoderMock.Object;
-    //    var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter, encoder);
-    //    var withCompacting = false;
-    //    var testDate = DateTime.UtcNow;
-    //    HashSet<int> partitionFilter = null!;
-    //    var topicName = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(testDate, null!), EncoderRules.String, partitionFilter);
-    //    var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
-    //    keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
-    //    var keyFilter = keyFilterMock.Object;
-    //    var valueFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
-    //    valueFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
-    //    var valueFilter = valueFilterMock.Object;
-    //    var offset = new WatermarkOffsets(new Offset(0), new Offset(3));
-    //    var partition = new Partition(1);
-    //    var topicWatermark = new TopicWatermark(new[]
-    //    {
-    //        new PartitionWatermark(topicName,offset,partition)
-    //    });
-    //    var topicPartition = new TopicPartition(topicName.Value.Name, partition);
-    //    var partitionWithTime = new TopicPartitionTimestamp(topicPartition, new Timestamp(testDate));
-    //    consumerMock.Setup(x => x.OffsetsForTimes(
-    //        It.Is<IEnumerable<TopicPartitionTimestamp>>(x => x.Single() == partitionWithTime),
-    //        It.IsAny<TimeSpan>())).Returns(new[]
-    //        {
-    //            new TopicPartitionOffset(topicPartition,new Offset(0))
-    //        }.ToList());
-    //    topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, byte[]>(consumerFactory, topicName, CancellationToken.None))
-    //        .Returns(Task.FromResult(topicWatermark));
-    //    consumerMock.Setup(x => x.Assign(It.Is<TopicPartitionOffset>(x => x.Topic == topicName.Value.Name && x.Partition == partition)));
-    //    consumerMock.Setup(x => x.Consume(CancellationToken.None)).Returns(() =>
-    //    {
-    //        return consumerData[indexer++];
-    //    });
-    //    var dispCount = 0;
-    //    var closeCount = 0;
-    //    consumerMock.Setup(x => x.Dispose()).Callback(() => dispCount++);
-    //    consumerMock.Setup(x => x.Close()).Callback(() => closeCount++);
+        HashSet<int> partitionFilter = null!;
+        var topicName = new LoadingTopic(
+            new TopicName("test"),
+            false,
+            new DateFilterRange(null!, null!),
+            EncoderRules.String,
+            partitionFilter);
+        var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
+        keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+        var valueFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
+        valueFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+        var offset = new WatermarkOffsets(new Offset(0), new Offset(3));
+        var partition = new Partition(1);
+        var topicWatermark = new TopicWatermark(
+        [
+            new PartitionWatermark(topicName, offset, partition)
+        ]);
+        topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, byte[]>(consumerFactory, topicName, token))
+            .Callback(() => topicLoaderCalls++)
+            .Returns(Task.FromResult(topicWatermark));
+        consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(item => item.Topic == topicName.Value.Name && item.Partition == partition)))
+            .Callback(() => assignCalls++);
+        consumerMock.Setup(x => x.Consume(token))
+            .Returns(() => consumerData[consumeCalls++]);
+        consumerMock.Setup(x => x.Dispose())
+            .Callback(() => disposeCalls++);
+        consumerMock.Setup(x => x.Close())
+            .Callback(() => closeCalls++);
 
-    //    // Act
-    //    var result = await loader.LoadSnapshotAsync(topicName, keyFilter, valueFilter, CancellationToken.None).ConfigureAwait(false);
+        // Act
+        var result = (await loader.LoadSnapshotAsync(topicName, keyFilterMock.Object, valueFilterMock.Object, token))
+            .ToList();
 
-    //    // Assert
-    //    //TODO Fix with add encoder mock setup
-    //    //result.Should().BeEquivalentTo(exceptedData);
-    //    dispCount.Should().Be(1);
-    //    closeCount.Should().Be(1);
-    //}
+        // Assert
+        result.Should().HaveCount(3);
+        result[0].Key.Should().Be("key1");
+        result[0].Value.Message.Should().Be("value1");
+        result[1].Key.Should().Be("key2");
+        result[1].Value.Message.Should().Be("value2");
+        result[2].Key.Should().Be("key2");
+        result[2].Value.Message.Should().Be("value3");
+        sortCalls.Should().Be(1);
+        topicLoaderCalls.Should().Be(1);
+        assignCalls.Should().Be(1);
+        consumeCalls.Should().Be(3);
+        encodeCalls.Should().Be(3);
+        closeCalls.Should().Be(1);
+        disposeCalls.Should().Be(1);
+    }
+
+    [Fact(DisplayName = "SnapshotLoader can load data without compacting on date.")]
+    [Trait("Category", "Unit")]
+    public async Task SnapshotLoaderCanLoadDataWithoutCompactingOnDate()
+    {
+        // Arrange
+        using var tokenSource = new CancellationTokenSource();
+        var token = tokenSource.Token;
+        var consumeCalls = 0;
+        var sortCalls = 0;
+        var encodeCalls = 0;
+        var topicLoaderCalls = 0;
+        var offsetsForTimesCalls = 0;
+        var assignCalls = 0;
+        var disposeCalls = 0;
+        var closeCalls = 0;
+        var timeout = TimeSpan.FromSeconds(1);
+        var testDate = DateTime.UtcNow;
+
+        var consumerData = new[]
+        {
+            new ConsumeResult<object, byte[]>
+            {
+                Message = new Message<object, byte[]>
+                {
+                    Key = "key1",
+                    Value = Encoding.UTF8.GetBytes("value1"),
+                    Timestamp = Timestamp.Default
+                },
+                Offset = new Offset(0)
+            },
+            new ConsumeResult<object, byte[]>
+            {
+                Message = new Message<object, byte[]>
+                {
+                    Key = "key2",
+                    Value = Encoding.UTF8.GetBytes("value2"),
+                    Timestamp = Timestamp.Default
+                },
+                Offset = new Offset(1)
+            },
+            new ConsumeResult<object, byte[]>
+            {
+                Message = new Message<object, byte[]>
+                {
+                    Key = "key2",
+                    Value = Encoding.UTF8.GetBytes("value3"),
+                    Timestamp = Timestamp.Default
+                },
+                Offset = new Offset(2)
+            }
+        };
+
+        var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
+        var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
+        Func<IConsumer<object, byte[]>> consumerFactory = () => consumerMock.Object;
+        var topicLoaderMock = new Mock<ITopicWatermarkLoader>(MockBehavior.Strict);
+        var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>(MockBehavior.Strict);
+        optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration
+        {
+            DateOffsetTimeout = timeout
+        });
+        var sorterMock = new Mock<IMessageSorter<object, object>>(MockBehavior.Strict);
+        sorterMock.Setup(x => x.Sort(It.IsAny<IEnumerable<KeyValuePair<object, KafkaMessage<object>>>>()))
+            .Callback(() => sortCalls++)
+            .Returns<IEnumerable<KeyValuePair<object, KafkaMessage<object>>>>(items => items.ToList());
+        var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
+        encoderMock.Setup(x => x.Encode(It.IsAny<byte[]>(), EncoderRules.String))
+            .Callback(() => encodeCalls++)
+            .Returns<byte[], EncoderRules>((valueBytes, _) => Encoding.UTF8.GetString(valueBytes));
+
+        var loader = new SnapshotLoader<object, object>(
+            loggerMock.Object,
+            optionsMock.Object,
+            consumerFactory,
+            topicLoaderMock.Object,
+            sorterMock.Object,
+            encoderMock.Object);
+
+        HashSet<int> partitionFilter = null!;
+        var topicName = new LoadingTopic(
+            new TopicName("test"),
+            false,
+            new DateFilterRange(testDate, null!),
+            EncoderRules.String,
+            partitionFilter);
+        var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
+        keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+        var valueFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
+        valueFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+        var offset = new WatermarkOffsets(new Offset(0), new Offset(3));
+        var partition = new Partition(1);
+        var topicPartition = new TopicPartition(topicName.Value.Name, partition);
+        var expectedTimestamp = new Timestamp(testDate).UnixTimestampMs;
+        var topicWatermark = new TopicWatermark(
+        [
+            new PartitionWatermark(topicName, offset, partition)
+        ]);
+        topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, byte[]>(consumerFactory, topicName, token))
+            .Callback(() => topicLoaderCalls++)
+            .Returns(Task.FromResult(topicWatermark));
+        consumerMock.Setup(x => x.OffsetsForTimes(
+                It.Is<IEnumerable<TopicPartitionTimestamp>>(items =>
+                    items.Count() == 1
+                    && items.Single().Topic == topicName.Value.Name
+                    && items.Single().Partition == partition
+                    && items.Single().Timestamp.UnixTimestampMs == expectedTimestamp),
+                timeout))
+            .Callback(() => offsetsForTimesCalls++)
+            .Returns(
+            [
+                new TopicPartitionOffset(topicPartition, new Offset(0))
+            ]);
+        consumerMock.Setup(x => x.Assign(It.Is<TopicPartitionOffset>(item =>
+                item.Topic == topicName.Value.Name
+                && item.Partition == partition
+                && item.Offset == new Offset(0))))
+            .Callback(() => assignCalls++);
+        consumerMock.Setup(x => x.Consume(token))
+            .Returns(() => consumerData[consumeCalls++]);
+        consumerMock.Setup(x => x.Dispose())
+            .Callback(() => disposeCalls++);
+        consumerMock.Setup(x => x.Close())
+            .Callback(() => closeCalls++);
+
+        // Act
+        var result = (await loader.LoadSnapshotAsync(topicName, keyFilterMock.Object, valueFilterMock.Object, token))
+            .ToList();
+
+        // Assert
+        result.Should().HaveCount(3);
+        result[0].Key.Should().Be("key1");
+        result[0].Value.Message.Should().Be("value1");
+        result[1].Key.Should().Be("key2");
+        result[1].Value.Message.Should().Be("value2");
+        result[2].Key.Should().Be("key2");
+        result[2].Value.Message.Should().Be("value3");
+        sortCalls.Should().Be(1);
+        topicLoaderCalls.Should().Be(1);
+        offsetsForTimesCalls.Should().Be(1);
+        assignCalls.Should().Be(1);
+        consumeCalls.Should().Be(3);
+        encodeCalls.Should().Be(3);
+        closeCalls.Should().Be(1);
+        disposeCalls.Should().Be(1);
+    }
 
     [Theory(DisplayName = "SnapshotLoader skips load data on out of range date.")]
     [Trait("Category", "Unit")]
@@ -966,103 +1028,124 @@ public class SnapshotLoaderTests
         closeCount.Should().Be(1);
     }
 
-    //TODO Fix encoder mock setup
-    //[Fact(DisplayName = "SnapshotLoader load data with end date filter.")]
-    //[Trait("Category", "Unit")]
-    //public async Task SnapshotLoaderLoadDataWithEndDate()
-    //{
-    //    // Arrange
-    //    var indexer = 0;
-    //    var testDate = DateTime.UtcNow;
-    //    var consumerData = new[]
-    //    {
-    //        new ConsumeResult<object, object>
-    //        {
-    //             Message = new Message<object, object>
-    //             {
-    //                   Key = "key1",
-    //                   Value = "value1",
-    //                   Timestamp =  new Timestamp(testDate.AddDays(-1))
-    //             },
-    //             Offset = new Offset(0)
-    //        },
-    //        new ConsumeResult<object, object>
-    //        {
-    //             Message = new Message<object, object>
-    //             {
-    //                   Key = "key2",
-    //                   Value = "value2",
-    //                   Timestamp =  new Timestamp(testDate)
-    //             },
-    //             Offset = new Offset(1)
-    //        },
-    //        new ConsumeResult<object, object>
-    //        {
-    //             Message = new Message<object, object>
-    //             {
-    //                   Key = "key2",
-    //                   Value = "value2",
-    //                   Timestamp =  new Timestamp(testDate.AddDays(+1))
-    //             },
-    //             Offset = new Offset(2)
-    //        }
-    //    };
-    //    var exceptedData = consumerData.Select((x, i) =>
-    //    new KeyValuePair<object, KafkaMessage<object>>(x.Message.Key, new KafkaMessage<object>(x.Message.Value, new KafkaMetadata(x.Message.Timestamp.UtcDateTime, 1, i)))
-    //    ).ToList();
-    //    exceptedData.RemoveAt(2);
-    //    var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
-    //    var logger = loggerMock.Object;
-    //    var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
-    //    Func<IConsumer<object, byte[]>> consumerFactory = () => consumerMock.Object;
-    //    var topicLoaderMock = new Mock<ITopicWatermarkLoader>(MockBehavior.Strict);
-    //    var topicLoader = topicLoaderMock.Object;
-    //    var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>(MockBehavior.Strict);
-    //    optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
-    //    var options = optionsMock.Object;
-    //    var sorterMock = new Mock<IMessageSorter<object, object>>(MockBehavior.Strict);
-    //    sorterMock.Setup(x => x.Sort(exceptedData)).Returns(exceptedData);
-    //    var sorter = sorterMock.Object;
-    //    var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
-    //    encoderMock.Setup(x => x.Encode(It.IsAny<byte[]>(), It.IsAny<EncoderRules>()));
-    //    var encoder = encoderMock.Object;
-    //    var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter, encoder);
-    //    var withCompacting = false;
-    //    HashSet<int> partitionFilter = null!;
-    //    var topicName = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(null!, testDate), EncoderRules.String, partitionFilter);
-    //    var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
-    //    keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
-    //    var keyfilter = keyFilterMock.Object;
-    //    var valueFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
-    //    valueFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
-    //    var valueFilter = valueFilterMock.Object;
-    //    var offset = new WatermarkOffsets(new Offset(0), new Offset(3));
-    //    var partition = new Partition(1);
-    //    var topicWatermark = new TopicWatermark(new[]
-    //    {
-    //        new PartitionWatermark(topicName,offset,partition)
-    //    });
-    //    var topicPartition = new TopicPartition(topicName.Value.Name, partition);
-    //    var partitionWithTime = new TopicPartitionTimestamp(topicPartition, new Timestamp(testDate));
-    //    consumerMock.Setup(x => x.Consume(CancellationToken.None)).Returns(() =>
-    //    {
-    //        return consumerData[indexer++];
-    //    });
-    //    topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, byte[]>(consumerFactory, topicName, CancellationToken.None))
-    //        .Returns(Task.FromResult(topicWatermark));
-    //    consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(x => x.Topic == topicName.Value.Name && x.Partition == partition)));
-    //    var dispCount = 0;
-    //    var closeCount = 0;
-    //    consumerMock.Setup(x => x.Dispose()).Callback(() => dispCount++);
-    //    consumerMock.Setup(x => x.Close()).Callback(() => closeCount++);
+    [Fact(DisplayName = "SnapshotLoader load data with end date filter.")]
+    [Trait("Category", "Unit")]
+    public async Task SnapshotLoaderLoadDataWithEndDate()
+    {
+        // Arrange
+        using var tokenSource = new CancellationTokenSource();
+        var token = tokenSource.Token;
+        var consumeCalls = 0;
+        var sortCalls = 0;
+        var encodeCalls = 0;
+        var topicLoaderCalls = 0;
+        var assignCalls = 0;
+        var disposeCalls = 0;
+        var closeCalls = 0;
+        var endDate = DateTime.UtcNow;
 
-    //    // Act
-    //    var result = await loader.LoadSnapshotAsync(topicName, keyfilter, valueFilter, CancellationToken.None)
-    //        .ConfigureAwait(false);
+        var consumerData = new[]
+        {
+            new ConsumeResult<object, byte[]>
+            {
+                Message = new Message<object, byte[]>
+                {
+                    Key = "key1",
+                    Value = Encoding.UTF8.GetBytes("value1"),
+                    Timestamp = new Timestamp(endDate.AddDays(-1))
+                },
+                Offset = new Offset(0)
+            },
+            new ConsumeResult<object, byte[]>
+            {
+                Message = new Message<object, byte[]>
+                {
+                    Key = "key2",
+                    Value = Encoding.UTF8.GetBytes("value2"),
+                    Timestamp = new Timestamp(endDate)
+                },
+                Offset = new Offset(1)
+            },
+            new ConsumeResult<object, byte[]>
+            {
+                Message = new Message<object, byte[]>
+                {
+                    Key = "key2",
+                    Value = Encoding.UTF8.GetBytes("value3"),
+                    Timestamp = new Timestamp(endDate.AddDays(1))
+                },
+                Offset = new Offset(2)
+            }
+        };
 
-    //    // Assert
-    //    result.Should().BeEquivalentTo(exceptedData);
-    //    dispCount.Should().Be(1);
-    //    closeCount.Should().Be(1);
-    //}
+        var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
+        var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
+        Func<IConsumer<object, byte[]>> consumerFactory = () => consumerMock.Object;
+        var topicLoaderMock = new Mock<ITopicWatermarkLoader>(MockBehavior.Strict);
+        var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>(MockBehavior.Strict);
+        optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration());
+        var sorterMock = new Mock<IMessageSorter<object, object>>(MockBehavior.Strict);
+        sorterMock.Setup(x => x.Sort(It.IsAny<IEnumerable<KeyValuePair<object, KafkaMessage<object>>>>()))
+            .Callback(() => sortCalls++)
+            .Returns<IEnumerable<KeyValuePair<object, KafkaMessage<object>>>>(items => items.ToList());
+        var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
+        encoderMock.Setup(x => x.Encode(It.IsAny<byte[]>(), EncoderRules.String))
+            .Callback(() => encodeCalls++)
+            .Returns<byte[], EncoderRules>((valueBytes, _) => Encoding.UTF8.GetString(valueBytes));
+
+        var loader = new SnapshotLoader<object, object>(
+            loggerMock.Object,
+            optionsMock.Object,
+            consumerFactory,
+            topicLoaderMock.Object,
+            sorterMock.Object,
+            encoderMock.Object);
+
+        HashSet<int> partitionFilter = null!;
+        var topicName = new LoadingTopic(
+            new TopicName("test"),
+            false,
+            new DateFilterRange(null!, endDate),
+            EncoderRules.String,
+            partitionFilter);
+        var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
+        keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+        var valueFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
+        valueFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+        var offset = new WatermarkOffsets(new Offset(0), new Offset(3));
+        var partition = new Partition(1);
+        var topicWatermark = new TopicWatermark(
+        [
+            new PartitionWatermark(topicName, offset, partition)
+        ]);
+        topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, byte[]>(consumerFactory, topicName, token))
+            .Callback(() => topicLoaderCalls++)
+            .Returns(Task.FromResult(topicWatermark));
+        consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(item => item.Topic == topicName.Value.Name && item.Partition == partition)))
+            .Callback(() => assignCalls++);
+        consumerMock.Setup(x => x.Consume(token))
+            .Returns(() => consumerData[consumeCalls++]);
+        consumerMock.Setup(x => x.Dispose())
+            .Callback(() => disposeCalls++);
+        consumerMock.Setup(x => x.Close())
+            .Callback(() => closeCalls++);
+
+        // Act
+        var result = (await loader.LoadSnapshotAsync(topicName, keyFilterMock.Object, valueFilterMock.Object, token))
+            .ToList();
+
+        // Assert
+        result.Should().HaveCount(2);
+        result[0].Key.Should().Be("key1");
+        result[0].Value.Message.Should().Be("value1");
+        result[1].Key.Should().Be("key2");
+        result[1].Value.Message.Should().Be("value2");
+        sortCalls.Should().Be(1);
+        topicLoaderCalls.Should().Be(1);
+        assignCalls.Should().Be(1);
+        consumeCalls.Should().Be(3);
+        encodeCalls.Should().Be(2);
+        closeCalls.Should().Be(1);
+        disposeCalls.Should().Be(1);
+    }
 }

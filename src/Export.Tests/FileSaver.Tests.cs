@@ -25,13 +25,15 @@ public class FileSaverTests
     public async Task CantSaveWithNullFileName()
     {
         // Arrange
+        using var tokenSource = new CancellationTokenSource();
+        var token = tokenSource.Token;
         var fileSaver = new FileSaver();
         var fileName = (FileName)null!;
         var content = "123";
 
         // Act
         var exception = await Record.ExceptionAsync(
-            async () => await fileSaver.SaveAsync(fileName, content, CancellationToken.None));
+            async () => await fileSaver.SaveAsync(fileName, content, token));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -42,13 +44,15 @@ public class FileSaverTests
     public async Task CantSaveWithNullContent()
     {
         // Arrange
+        using var tokenSource = new CancellationTokenSource();
+        var token = tokenSource.Token;
         var fileSaver = new FileSaver();
         var fileName = new FileName("123");
         var content = (string)null!;
 
         // Act
         var exception = await Record.ExceptionAsync(
-            async () => await fileSaver.SaveAsync(fileName, content, CancellationToken.None));
+            async () => await fileSaver.SaveAsync(fileName, content, token));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -59,6 +63,8 @@ public class FileSaverTests
     public async Task CanSaveWithValidData()
     {
         // Arrange
+        using var tokenSource = new CancellationTokenSource();
+        var token = tokenSource.Token;
         var fileSaver = new FileSaver();
         var tempPath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.txt");
         var fileName = new FileName(tempPath);
@@ -67,7 +73,7 @@ public class FileSaverTests
         try
         {
             // Act
-            await fileSaver.SaveAsync(fileName, content, CancellationToken.None);
+            await fileSaver.SaveAsync(fileName, content, token);
 
             // Assert
             System.IO.File.Exists(tempPath).Should().BeTrue();

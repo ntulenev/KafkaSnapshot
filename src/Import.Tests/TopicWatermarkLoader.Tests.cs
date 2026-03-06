@@ -171,26 +171,36 @@ public class TopicWatermarkLoaderTests
                 new[] { borkerMeta }.ToList(),
                 new[] { topicMeta }.ToList(), 1, "test"
                 );
-        clientMock.Setup(c => c.GetMetadata(topic.Value.Name, TimeSpan.FromSeconds(timeout))).Returns(meta);
+        var getMetadataCalls = 0;
+        clientMock.Setup(c => c.GetMetadata(topic.Value.Name, TimeSpan.FromSeconds(timeout)))
+            .Callback(() => getMetadataCalls++)
+            .Returns(meta);
         var offets = new WatermarkOffsets(new Offset(1), new Offset(2));
-        consumerMock.Setup(x => x.QueryWatermarkOffsets(adminClientPartition, TimeSpan.FromSeconds(timeout))).Returns(offets);
-        consumerMock.Setup(x => x.Dispose());
-        consumerMock.Setup(x => x.Close());
+        var queryWatermarkOffsetsCalls = 0;
+        consumerMock.Setup(x => x.QueryWatermarkOffsets(adminClientPartition, TimeSpan.FromSeconds(timeout)))
+            .Callback(() => queryWatermarkOffsetsCalls++)
+            .Returns(offets);
+        var disposeCalls = 0;
+        consumerMock.Setup(x => x.Dispose())
+            .Callback(() => disposeCalls++);
+        var closeCalls = 0;
+        consumerMock.Setup(x => x.Close())
+            .Callback(() => closeCalls++);
 
         // Act
         var result = await loader.LoadWatermarksAsync(consumerFactory, topic, cts.Token);
 
         // Assert
-        consumerMock.Verify(x => x.Close(), Times.Once);
-        consumerMock.Verify(x => x.Dispose(), Times.Once);
         result.Should().NotBeNull();
         var watermarks = result.Watermarks.ToList();
         watermarks.Should().ContainSingle();
-        clientMock.Verify(c => c.GetMetadata(topic.Value.Name, TimeSpan.FromSeconds(timeout)), Times.Once);
-        consumerMock.Verify(x => x.QueryWatermarkOffsets(adminClientPartition, TimeSpan.FromSeconds(timeout)), Times.Once);
         watermarks.Single().TopicName.Should().Be(topic);
         watermarks.Single().Partition.Value.Should().Be(partitionMeta.PartitionId);
         watermarks.Single().Offset.Should().Be(offets);
+        getMetadataCalls.Should().Be(1);
+        queryWatermarkOffsetsCalls.Should().Be(1);
+        closeCalls.Should().Be(1);
+        disposeCalls.Should().Be(1);
     }
 
     [Fact(DisplayName = "TopicWatermarkLoader can load watermarks with valid params with partition filter.")]
@@ -222,27 +232,40 @@ public class TopicWatermarkLoaderTests
                 new[] { borkerMeta }.ToList(),
                 new[] { topicMeta }.ToList(), 1, "test"
                 );
-        clientMock.Setup(c => c.GetMetadata(topic.Value.Name, TimeSpan.FromSeconds(timeout))).Returns(meta);
+        var getMetadataCalls = 0;
+        clientMock.Setup(c => c.GetMetadata(topic.Value.Name, TimeSpan.FromSeconds(timeout)))
+            .Callback(() => getMetadataCalls++)
+            .Returns(meta);
         var offets = new WatermarkOffsets(new Offset(1), new Offset(2));
-        consumerMock.Setup(x => x.QueryWatermarkOffsets(adminClientPartition1, TimeSpan.FromSeconds(timeout))).Returns(offets);
-        consumerMock.Setup(x => x.QueryWatermarkOffsets(adminClientPartition2, TimeSpan.FromSeconds(timeout))).Returns(offets);
-        consumerMock.Setup(x => x.Dispose());
-        consumerMock.Setup(x => x.Close());
+        var queryWatermarkOffsetsPartition1Calls = 0;
+        consumerMock.Setup(x => x.QueryWatermarkOffsets(adminClientPartition1, TimeSpan.FromSeconds(timeout)))
+            .Callback(() => queryWatermarkOffsetsPartition1Calls++)
+            .Returns(offets);
+        var queryWatermarkOffsetsPartition2Calls = 0;
+        consumerMock.Setup(x => x.QueryWatermarkOffsets(adminClientPartition2, TimeSpan.FromSeconds(timeout)))
+            .Callback(() => queryWatermarkOffsetsPartition2Calls++)
+            .Returns(offets);
+        var disposeCalls = 0;
+        consumerMock.Setup(x => x.Dispose())
+            .Callback(() => disposeCalls++);
+        var closeCalls = 0;
+        consumerMock.Setup(x => x.Close())
+            .Callback(() => closeCalls++);
 
         // Act
         var result = await loader.LoadWatermarksAsync(consumerFactory, topic, cts.Token);
 
         // Assert
-        consumerMock.Verify(x => x.Close(), Times.Once);
-        consumerMock.Verify(x => x.Dispose(), Times.Once);
         result.Should().NotBeNull();
         var watermarks = result.Watermarks.ToList();
         watermarks.Should().ContainSingle();
-        clientMock.Verify(c => c.GetMetadata(topic.Value.Name, TimeSpan.FromSeconds(timeout)), Times.Once);
-        consumerMock.Verify(x => x.QueryWatermarkOffsets(adminClientPartition1, TimeSpan.FromSeconds(timeout)), Times.Never);
-        consumerMock.Verify(x => x.QueryWatermarkOffsets(adminClientPartition2, TimeSpan.FromSeconds(timeout)), Times.Once);
         watermarks.Single().TopicName.Should().Be(topic);
         watermarks.Single().Partition.Value.Should().Be(partitionMeta2.PartitionId);
         watermarks.Single().Offset.Should().Be(offets);
+        getMetadataCalls.Should().Be(1);
+        queryWatermarkOffsetsPartition1Calls.Should().Be(0);
+        queryWatermarkOffsetsPartition2Calls.Should().Be(1);
+        closeCalls.Should().Be(1);
+        disposeCalls.Should().Be(1);
     }
 }

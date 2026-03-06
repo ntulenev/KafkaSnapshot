@@ -228,6 +228,83 @@ public class ProcessingUnitTests
         exception.Should().BeNull();
     }
 
+    [Fact(DisplayName = "ProcessingUnit can expose topic name.")]
+    [Trait("Category", "Unit")]
+    public void ProcessingUnitCanExposeTopicName()
+    {
+        // Arrange
+        var loggerMock = new Mock<ILogger<ProcessingUnit<object, IKeyRepresentationMarker, object>>>();
+        var topic = new ProcessingTopic<object>(
+            new TopicName("test-topic"),
+            new FileName("test-export"),
+            true,
+            Models.Filters.FilterType.None,
+            Models.Filters.KeyType.String,
+            null!,
+            new DateFilterRange(null!, null!),
+            false,
+            EncoderRules.String);
+        var loaderMock = new Mock<ISnapshotLoader<object, object>>(MockBehavior.Strict);
+        var exporterMock = new Mock<IDataExporter<object, IKeyRepresentationMarker, object, ExportedTopic>>(MockBehavior.Strict);
+        var keyFactoryMock = new Mock<IKeyFiltersFactory<object>>(MockBehavior.Strict);
+        var valueFactoryMock = new Mock<IValueFilterFactory<object>>(MockBehavior.Strict);
+        var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
+        var valueFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
+        keyFactoryMock.Setup(x => x.Create(topic.FilterKeyType, topic.KeyType, topic.FilterKeyValue)).Returns(keyFilterMock.Object);
+        valueFactoryMock.Setup(x => x.Create(Models.Filters.FilterType.None, ValueMessageType.Raw, default!)).Returns(valueFilterMock.Object);
+
+        // Act
+        var unit = new ProcessingUnit<object, IKeyRepresentationMarker, object>(
+            loggerMock.Object,
+            topic,
+            loaderMock.Object,
+            exporterMock.Object,
+            keyFactoryMock.Object,
+            valueFactoryMock.Object);
+
+        // Assert
+        unit.TopicName.Name.Should().Be(topic.TopicName.Name);
+    }
+
+    [Fact(DisplayName = "ProcessingUnit can be created with debug logger enabled.")]
+    [Trait("Category", "Unit")]
+    public void ProcessingUnitCouldBeCreatedWithDebugLogger()
+    {
+        // Arrange
+        var loggerMock = new Mock<ILogger<ProcessingUnit<object, IKeyRepresentationMarker, object>>>();
+        loggerMock.Setup(x => x.IsEnabled(LogLevel.Debug)).Returns(true);
+        var topic = new ProcessingTopic<object>(
+            new TopicName("test"),
+            new FileName("test"),
+            true,
+            Models.Filters.FilterType.None,
+            Models.Filters.KeyType.String,
+            null!,
+            new DateFilterRange(null!, null!),
+            false,
+            EncoderRules.String);
+        var loaderMock = new Mock<ISnapshotLoader<object, object>>(MockBehavior.Strict);
+        var exporterMock = new Mock<IDataExporter<object, IKeyRepresentationMarker, object, ExportedTopic>>(MockBehavior.Strict);
+        var keyFactoryMock = new Mock<IKeyFiltersFactory<object>>(MockBehavior.Strict);
+        var valueFactoryMock = new Mock<IValueFilterFactory<object>>(MockBehavior.Strict);
+        var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
+        var valueFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
+        keyFactoryMock.Setup(x => x.Create(topic.FilterKeyType, topic.KeyType, topic.FilterKeyValue)).Returns(keyFilterMock.Object);
+        valueFactoryMock.Setup(x => x.Create(Models.Filters.FilterType.None, ValueMessageType.Raw, default!)).Returns(valueFilterMock.Object);
+
+        // Act
+        var exception = Record.Exception(() => _ = new ProcessingUnit<object, IKeyRepresentationMarker, object>(
+            loggerMock.Object,
+            topic,
+            loaderMock.Object,
+            exporterMock.Object,
+            keyFactoryMock.Object,
+            valueFactoryMock.Object));
+
+        // Assert
+        exception.Should().BeNull();
+    }
+
     [Fact(DisplayName = "ProcessingUnit can process topic.")]
     [Trait("Category", "Unit")]
     public async Task ProcessingUnitCanProcessTopic()

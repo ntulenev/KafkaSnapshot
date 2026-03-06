@@ -245,4 +245,28 @@ public class IgnoreKeySerializerTests
         var jsonString = Encoding.Default.GetString((stream.ToArray()));
         jsonString.Should().Be("[\r\n  {\r\n    \"Value\": \"Test\",\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
     }
+
+    [Fact(DisplayName = "IgnoreKeySerializer can serialize data with non null keys by ignoring them.")]
+    [Trait("Category", "Unit")]
+    public void IgnoreKeySerializerCanSerializeDataWithNotNullKeys()
+    {
+        // Arrange
+        var logger = new Mock<ILogger<IgnoreKeySerializer>>().Object;
+        var serializer = new IgnoreKeySerializer(logger);
+        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var isRaw = true;
+        var data = new[]
+        {
+            new KeyValuePair<string, KafkaMessage<string>>("test-key",
+                new KafkaMessage<string>("Test",
+                    new KafkaMetadata(dateTime,1,2)))
+        };
+
+        // Act
+        var result = serializer.Serialize(data, isRaw);
+
+        // Assert
+        result.Should().Contain("\"Value\": \"Test\"");
+        result.Should().NotContain("test-key");
+    }
 }

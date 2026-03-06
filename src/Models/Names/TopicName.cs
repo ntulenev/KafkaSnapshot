@@ -24,7 +24,7 @@ public sealed class TopicName
         if (name.Length > MAX_TOPIC_NAME_LENGTH)
         {
             throw new ArgumentException(
-                $"Topic name cannot be longer than {MAX_TOPIC_NAME_LENGTH} characters", 
+                $"Topic name cannot be longer than {MAX_TOPIC_NAME_LENGTH} characters",
                 nameof(name));
         }
 
@@ -33,17 +33,17 @@ public sealed class TopicName
             throw new ArgumentException("Topic name contains invalid characters", nameof(name));
         }
 
-        _name = name;
+        Name = name;
     }
 
     /// <summary>
     /// Gets the name of the Kafka topic.
     /// </summary>
-    public string Name => _name;
+    public string Name { get; }
 
     private static bool IsValidTopicName(string name)
     {
-        foreach (char c in name)
+        foreach (var c in name)
         {
             if (!char.IsLetterOrDigit(c) && c != '-' && c != '_' && c != '.')
             {
@@ -55,5 +55,4 @@ public sealed class TopicName
     }
 
     private const int MAX_TOPIC_NAME_LENGTH = 255;
-    private readonly string _name;
 }

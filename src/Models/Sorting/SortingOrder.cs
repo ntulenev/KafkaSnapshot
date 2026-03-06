@@ -5,5 +5,18 @@
 /// </summary>
 public enum SortingOrder
 {
-    Ask, Desk, No
+    /// <summary>
+    /// Sort in ascending order.
+    /// </summary>
+    Ask,
+
+    /// <summary>
+    /// Sort in descending order.
+    /// </summary>
+    Desk,
+
+    /// <summary>
+    /// Do not apply sorting.
+    /// </summary>
+    No
 }

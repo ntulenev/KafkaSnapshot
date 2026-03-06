@@ -8,12 +8,12 @@ public sealed class FileName
     /// <summary>
     /// Gets the full name of the file, including the extension.
     /// </summary>
-    public string FullName => _fullName;
+    public string FullName { get; }
 
     /// <summary>
     /// Gets the extension of the file, including the dot.
     /// </summary>
-    public string Extension => _extension;
+    public string Extension { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FileName"/> 
@@ -31,14 +31,11 @@ public sealed class FileName
         if (string.IsNullOrWhiteSpace(fileName))
         {
             throw new ArgumentException(
-                        "File name cannot be null, empty or whitespace.", 
-                        nameof(fileName));
+                "File name cannot be null, empty or whitespace.",
+                nameof(fileName));
         }
 
-        _fullName = fileName;
-        _extension = Path.GetExtension(fileName);
+        FullName = fileName;
+        Extension = Path.GetExtension(fileName);
     }
-
-    private readonly string _fullName;
-    private readonly string _extension;
 }

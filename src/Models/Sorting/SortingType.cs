@@ -5,5 +5,13 @@
 /// </summary>
 public enum SortingType
 {
-    Time, Partition
+    /// <summary>
+    /// Sort by message timestamp.
+    /// </summary>
+    Time,
+
+    /// <summary>
+    /// Sort by partition id.
+    /// </summary>
+    Partition
 }

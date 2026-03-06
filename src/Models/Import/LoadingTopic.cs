@@ -50,20 +50,21 @@ public sealed class LoadingTopic
     /// <summary>
     /// Topic's interested partitions.
     /// </summary>
-    public IReadOnlySet<int> PartitionFilter => _partitionFilter;
+    public IReadOnlySet<int> PartitionFilter { get; }
 
     /// <summary>
     /// Checks if <see cref="PartitionFilter"/> contains any items.
     /// </summary>
-    public bool HasPartitionFilter => _partitionFilter.Any();
+    public bool HasPartitionFilter => PartitionFilter.Any();
 
     /// <summary>
     /// Creates <see cref="LoadingTopic"/>.
     /// </summary>
-    /// <param name="name">topic name.</param>
+    /// <param name="topicName">Topic name.</param>
     /// <param name="loadWithCompacting">Flag for compacting.</param>
-    /// <param name="dateParams">date filter for initial offset.</param>
-    /// <param name="partitionFilter">filtered partition ids.</param>
+    /// <param name="dateParams">Date filter for initial offset.</param>
+    /// <param name="valueEncoderRule">Encoding rule for topic values.</param>
+    /// <param name="partitionFilter">Filtered partition ids.</param>
     public LoadingTopic(TopicName topicName,
                         bool loadWithCompacting,
                         DateFilterRange dateParams,
@@ -86,14 +87,14 @@ public sealed class LoadingTopic
                 throw new ArgumentException("Filter is not set", nameof(partitionFilter));
             }
 
-            _partitionFilter = partitionFilter.ToFrozenSet();
+            PartitionFilter = partitionFilter.ToFrozenSet();
         }
         else
         {
-            _partitionFilter = new HashSet<int>().ToFrozenSet();
+            PartitionFilter = new HashSet<int>().ToFrozenSet();
         }
 
-        if (!Enum.IsDefined(typeof(EncoderRules), valueEncoderRule))
+        if (!Enum.IsDefined(valueEncoderRule))
         {
             throw new ArgumentException(
                 $"Invalid EncoderRules value {valueEncoderRule}", nameof(valueEncoderRule));
@@ -104,5 +105,4 @@ public sealed class LoadingTopic
 
     private readonly DateTime? _offsetDate;
     private readonly DateTime? _endOffsetDate;
-    private readonly IReadOnlySet<int> _partitionFilter;
 }

@@ -3,8 +3,6 @@
 /// <summary>
 /// Message offset date filtration range.
 /// </summary>
-/// <param name="StartDate">Start offset date.</param>
-/// <param name="EndDate">End offset date.</param>
 public sealed class DateFilterRange
 {
     /// <summary>

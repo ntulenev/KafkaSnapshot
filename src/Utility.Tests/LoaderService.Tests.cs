@@ -63,7 +63,7 @@ namespace KafkaSnapshot.Utility.Tests
             using var token = new CancellationTokenSource();
             var toolMock = new Mock<ILoaderTool>(MockBehavior.Strict);
             var processCount = 0;
-            toolMock.Setup(x => x.ProcessAsync(It.IsAny<CancellationToken>()))
+            toolMock.Setup(x => x.ProcessAsync(It.Is<CancellationToken>(token => token.CanBeCanceled)))
                 .Returns(() => Task.CompletedTask)
                 .Callback(() => processCount++);
             var lifetimeMock = new Mock<IHostApplicationLifetime>(MockBehavior.Strict);

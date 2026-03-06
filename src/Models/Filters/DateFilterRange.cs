@@ -24,13 +24,10 @@ public sealed class DateFilterRange
     /// greater then <paramref name="endDate"/>.</exception>
     public DateFilterRange(DateTime? startDate, DateTime? endDate)
     {
-        if (startDate is not null && endDate is not null)
+        if (startDate is DateTime start && endDate is DateTime end && start > end)
         {
-            if (startDate > endDate)
-            {
-                throw new ArgumentException($"Start date {startDate} should " +
-                    $"be less or equals then end date {endDate}.");
-            }
+            throw new ArgumentException($"Start date {startDate} should " +
+                $"be less or equals then end date {endDate}.");
         }
 
         StartDate = startDate;

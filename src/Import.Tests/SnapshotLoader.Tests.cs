@@ -104,6 +104,33 @@ public class SnapshotLoaderTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
+    [Fact(DisplayName = "SnapshotLoader can't be created with null options value.")]
+    [Trait("Category", "Unit")]
+    public void CantCreateSnapshotLoaderWithNullOptionsValue()
+    {
+
+        // Arrange
+        var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
+        var logger = loggerMock.Object;
+        IConsumer<object, byte[]> consumerFactory() => throw new NotImplementedException();
+        var topicLoaderMock = new Mock<ITopicWatermarkLoader>(MockBehavior.Strict);
+        var topicLoader = topicLoaderMock.Object;
+        var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>(MockBehavior.Strict);
+        optionsMock.Setup(x => x.Value).Returns((SnapshotLoaderConfiguration)null!);
+        var options = optionsMock.Object;
+        var sorterMock = new Mock<IMessageSorter<object, object>>(MockBehavior.Strict);
+        var sorter = sorterMock.Object;
+        var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
+        var encoder = encoderMock.Object;
+
+        // Act
+        var exception = Record.Exception(
+            () => new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter, encoder));
+
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
+    }
+
     [Fact(DisplayName = "SnapshotLoader can't be created with null topic loader.")]
     [Trait("Category", "Unit")]
     public void CantCreateSnapshotLoaderWithNullTopicLoader()
@@ -677,6 +704,81 @@ public class SnapshotLoaderTests
         //result.Should().BeEquivalentTo(exceptedData);
         dispCount.Should().Be(1);
         closeCount.Should().Be(1);
+    }
+
+    [Fact(DisplayName = "SnapshotLoader can create compacting snapshot with debug logging.")]
+    [Trait("Category", "Unit")]
+    public async Task SnapshotLoaderCanCreateCompactingSnapshotWithDebugLogging()
+    {
+        // Arrange
+        var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
+        loggerMock.Setup(x => x.IsEnabled(LogLevel.Debug)).Returns(true);
+        var logger = loggerMock.Object;
+
+        var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
+        Func<IConsumer<object, byte[]>> consumerFactory = () => consumerMock.Object;
+
+        var topicLoaderMock = new Mock<ITopicWatermarkLoader>(MockBehavior.Strict);
+        var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>(MockBehavior.Strict);
+        optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration());
+
+        var sorterMock = new Mock<IMessageSorter<object, object>>(MockBehavior.Strict);
+        var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
+        encoderMock.Setup(x => x.Encode(It.IsAny<byte[]>(), EncoderRules.String)).Returns("encoded");
+
+        var loader = new SnapshotLoader<object, object>(
+            logger,
+            optionsMock.Object,
+            consumerFactory,
+            topicLoaderMock.Object,
+            sorterMock.Object,
+            encoderMock.Object);
+
+        var topic = new LoadingTopic(
+            new TopicName("test"),
+            true,
+            new DateFilterRange(null!, null!),
+            EncoderRules.String,
+            null);
+
+        var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
+        keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+        var valueFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
+        valueFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+
+        var partition = new Partition(1);
+        var topicWatermark = new TopicWatermark(new[]
+        {
+            new PartitionWatermark(topic, new WatermarkOffsets(new Offset(0), new Offset(1)), partition)
+        });
+        topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, byte[]>(
+            consumerFactory,
+            topic,
+            CancellationToken.None)).ReturnsAsync(topicWatermark);
+
+        consumerMock.Setup(x => x.Assign(It.IsAny<TopicPartition>()));
+        consumerMock.Setup(x => x.Consume(CancellationToken.None)).Returns(new ConsumeResult<object, byte[]>
+        {
+            Message = new Message<object, byte[]>
+            {
+                Key = "k",
+                Value = Encoding.UTF8.GetBytes("v"),
+                Timestamp = Timestamp.Default
+            },
+            Offset = new Offset(0)
+        });
+        consumerMock.Setup(x => x.Close());
+        consumerMock.Setup(x => x.Dispose());
+
+        // Act
+        var result = (await loader.LoadSnapshotAsync(
+            topic,
+            keyFilterMock.Object,
+            valueFilterMock.Object,
+            CancellationToken.None)).ToList();
+
+        // Assert
+        result.Should().HaveCount(1);
     }
 
 

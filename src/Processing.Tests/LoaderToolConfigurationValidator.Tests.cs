@@ -60,6 +60,42 @@ public class LoaderToolConfigurationValidatorTests
         result.Succeeded.Should().BeTrue();
     }
 
+    [Fact(DisplayName = "LoaderToolConfigurationValidator can be validated with valid date range.")]
+    [Trait("Category", "Unit")]
+    public void LoaderToolConfigurationValidatorCanBeValidatedWithDates()
+    {
+
+        // Arrange
+        var validator = new LoaderToolConfigurationValidator();
+        var startDate = new DateTime(2022, 1, 1, 10, 0, 0, DateTimeKind.Utc);
+        var endDate = startDate.AddHours(1);
+        ValidateOptionsResult result = null!;
+        var options = new LoaderToolConfiguration
+        {
+            UseConcurrentLoad = false,
+            Topics =
+            [
+                new TopicConfiguration
+                {
+                    Name = "test",
+                    Compacting = CompactingMode.Off,
+                    ExportFileName = "export",
+                    FilterKeyType = Models.Filters.FilterType.None,
+                    KeyType = Models.Filters.KeyType.String,
+                    OffsetStartDate = startDate,
+                    OffsetEndDate = endDate
+                }
+            ]
+        };
+
+        // Act
+        var exception = Record.Exception(() => result = validator.Validate("Test", options));
+
+        // Assert
+        exception.Should().BeNull();
+        result.Succeeded.Should().BeTrue();
+    }
+
 
     [Fact(DisplayName = "LoaderToolConfigurationValidator can't be validated for same files.")]
     [Trait("Category", "Unit")]
@@ -113,15 +149,13 @@ public class LoaderToolConfigurationValidatorTests
         // Arrange
         var validator = new LoaderToolConfigurationValidator();
         var name = "Test";
-        ValidateOptionsResult result = null!;
         var options = (LoaderToolConfiguration)null!;
 
         // Act
-        var exception = Record.Exception(() => result = validator.Validate(name, options));
+        var exception = Record.Exception(() => validator.Validate(name, options));
 
         // Assert
-        exception.Should().BeNull();
-        result.Succeeded.Should().BeFalse();
+        exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
     [Fact(DisplayName = "LoaderToolConfigurationValidator cant be validated with null topics.")]

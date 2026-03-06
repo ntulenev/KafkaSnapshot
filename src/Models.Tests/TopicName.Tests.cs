@@ -8,6 +8,7 @@ namespace KafkaSnapshot.Models.Tests;
 public class TopicNameTests
 {
     [Fact(DisplayName = "TopicName constructor throws exception with null input")]
+    [Trait("Category", "Unit")]
     public void ConstructorThrowsExceptionWithNullInput()
     {
         // Act
@@ -18,6 +19,7 @@ public class TopicNameTests
     }
 
     [Fact(DisplayName = "TopicName constructor throws exception with long input")]
+    [Trait("Category", "Unit")]
     public void ConstructorThrowsExceptionWithLongInput()
     {
         // Arrange
@@ -34,6 +36,7 @@ public class TopicNameTests
     [InlineData("")]
     [InlineData("    ")]
     [InlineData("a/topic/name/with/invalid/characters")]
+    [Trait("Category", "Unit")]
     public void ConstructorThrowsExceptionWithInvalidInput(string input)
     {
         // Act
@@ -44,6 +47,7 @@ public class TopicNameTests
     }
 
     [Fact(DisplayName = "TopicName constructor returns expected topic name")]
+    [Trait("Category", "Unit")]
     public void ConstructorReturnsExpectedTopicName()
     {
         // Arrange

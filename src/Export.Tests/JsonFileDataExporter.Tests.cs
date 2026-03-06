@@ -168,6 +168,8 @@ public class JsonFileDataExporterTests
     public async Task JsonFileDataExporterCanExportNullDataAsync(bool isStreaming)
     {
         // Arrange
+        using var tokenSource = new CancellationTokenSource();
+        var token = tokenSource.Token;
         var config = new Mock<IOptions<JsonFileDataExporterConfiguration>>(MockBehavior.Strict);
         config.Setup(x => x.Value).Returns(new JsonFileDataExporterConfiguration() { UseFileStreaming = isStreaming });
         var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>>>();
@@ -181,7 +183,7 @@ public class JsonFileDataExporterTests
 
         // Act
         var exception = await Record.ExceptionAsync(async () =>
-            await exporter.ExportAsync(data, topic, CancellationToken.None));
+            await exporter.ExportAsync(data, topic, token));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -194,6 +196,8 @@ public class JsonFileDataExporterTests
     public async Task JsonFileDataExporterCanExportNullTopic(bool isStreaming)
     {
         // Arrange
+        using var tokenSource = new CancellationTokenSource();
+        var token = tokenSource.Token;
         var config = new Mock<IOptions<JsonFileDataExporterConfiguration>>(MockBehavior.Strict);
         config.Setup(x => x.Value).Returns(new JsonFileDataExporterConfiguration() { UseFileStreaming = isStreaming });
         var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>>>();
@@ -207,7 +211,7 @@ public class JsonFileDataExporterTests
 
         // Act
         var exception = await Record.ExceptionAsync(async () =>
-            await exporter.ExportAsync(data, topic, CancellationToken.None));
+            await exporter.ExportAsync(data, topic, token));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();

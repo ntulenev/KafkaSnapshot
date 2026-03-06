@@ -82,15 +82,14 @@ public sealed partial class LoaderToolConfigurationValidator :
             return true;
         }
 
-        if (topic.OffsetStartDate is not null && topic.OffsetEndDate is not null)
+        if (topic.OffsetStartDate is DateTime startDate &&
+            topic.OffsetEndDate is DateTime endDate &&
+            startDate > endDate)
         {
-            if (topic.OffsetStartDate > topic.OffsetEndDate)
-            {
-                result = ValidateOptionsResult.Fail(
-                    $"Topic start date ({topic.OffsetStartDate}) is greater than " +
-                    $"end date ({topic.OffsetEndDate}). Topic {topic.Name}.");
-                return true;
-            }
+            result = ValidateOptionsResult.Fail(
+                $"Topic start date ({topic.OffsetStartDate}) is greater than " +
+                $"end date ({topic.OffsetEndDate}). Topic {topic.Name}.");
+            return true;
         }
 
         result = null!;
@@ -101,12 +100,6 @@ public sealed partial class LoaderToolConfigurationValidator :
         LoaderToolConfiguration options,
         [NotNullWhen(returnValue: true)] out ValidateOptionsResult result)
     {
-        if (options is null)
-        {
-            result = ValidateOptionsResult.Fail("Configuration object is null.");
-            return true;
-        }
-
         if (options.Topics is null)
         {
             result = ValidateOptionsResult.Fail("Topics section is not set.");

@@ -39,13 +39,41 @@ public class NaiveKeyFiltersFactoryTests
         result.Should().BeOfType(typeof(EqualsFilter<object>));
     }
 
+    [Fact(DisplayName = "GreaterOrEquals filter can be created for long key.")]
+    [Trait("Category", "Unit")]
+    public void GreaterOrEqualsFilterCanBeCreatedByFactory()
+    {
+        // Arrange
+        var factory = new NaiveKeyFiltersFactory<long>();
+
+        // Act
+        var result = factory.Create(FilterType.GreaterOrEquals, KeyType.Long, 42L);
+
+        // Assert
+        result.Should().BeOfType(typeof(CompareFilter<long>));
+    }
+
+    [Fact(DisplayName = "LessOrEquals filter can be created for long key.")]
+    [Trait("Category", "Unit")]
+    public void LessOrEqualsFilterCanBeCreatedByFactory()
+    {
+        // Arrange
+        var factory = new NaiveKeyFiltersFactory<long>();
+
+        // Act
+        var result = factory.Create(FilterType.LessOrEquals, KeyType.Long, 42L);
+
+        // Assert
+        result.Should().BeOfType(typeof(CompareFilter<long>));
+    }
+
     [Fact(DisplayName = "Json Equals filter can be created.")]
     [Trait("Category", "Unit")]
     public void JsonEqualsFilterCanBeCreatedByFactory()
     {
         // Arrange
         var factory = new NaiveKeyFiltersFactory<string>();
-        string value = "{\"value\": 1 }";
+        var value = /*lang=json,strict*/ "{\"value\": 1 }";
 
         // Act
         var result = factory.Create(FilterType.Equals, KeyType.Json, value);
@@ -61,7 +89,7 @@ public class NaiveKeyFiltersFactoryTests
         // Arrange
         var factory = new NaiveKeyFiltersFactory<string>();
         IDataFilter<string> result = null!;
-        string value = "{\"value\": 1 }";
+        var value = /*lang=json,strict*/ "{\"value\": 1 }";
 
         // Act
         var exception = Record.Exception(() =>
@@ -80,7 +108,7 @@ public class NaiveKeyFiltersFactoryTests
     {
         // Arrange
         var factory = new NaiveKeyFiltersFactory<string>();
-        string value = "data";
+        var value = "data";
 
         // Act
         var result = factory.Create(FilterType.Contains, KeyType.String, value);
@@ -99,7 +127,7 @@ public class NaiveKeyFiltersFactoryTests
         // Arrange
         var factory = new NaiveKeyFiltersFactory<string>();
         IDataFilter<string> result = null!;
-        string value = "data";
+        var value = "data";
 
         // Act
         var exception = Record.Exception(() =>

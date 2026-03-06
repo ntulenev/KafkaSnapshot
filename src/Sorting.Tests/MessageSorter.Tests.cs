@@ -78,7 +78,7 @@ public class MessageSorterTests
         var result = sorter.Sort([msg3, msg1, msg2]);
 
         // Assert
-        result.Should().BeEquivalentTo(new[] { msg1, msg2, msg3 });
+        result.Should().Equal(msg1, msg2, msg3);
     }
 
     [Fact(DisplayName = "MessageSorter can sort partition desc.")]
@@ -92,13 +92,13 @@ public class MessageSorterTests
         var msg1 = new KeyValuePair<int, KafkaMessage<int>>(1, new KafkaMessage<int>(1, new KafkaMetadata(date, 1, 1)));
         var msg2 = new KeyValuePair<int, KafkaMessage<int>>(1, new KafkaMessage<int>(1, new KafkaMetadata(date, 2, 1)));
 
-        var sorter = new MessageSorter<int, int>(new Models.Sorting.SortingParams(SortingType.Partition, SortingOrder.Ask));
+        var sorter = new MessageSorter<int, int>(new Models.Sorting.SortingParams(SortingType.Partition, SortingOrder.Desk));
 
         // Act
         var result = sorter.Sort([msg3, msg1, msg2]);
 
         // Assert
-        result.Should().BeEquivalentTo(new[] { msg3, msg2, msg1 });
+        result.Should().Equal(msg3, msg2, msg1);
     }
 
     [Fact(DisplayName = "MessageSorter can sort date ask.")]
@@ -114,13 +114,13 @@ public class MessageSorterTests
         var msg1 = new KeyValuePair<int, KafkaMessage<int>>(1, new KafkaMessage<int>(1, new KafkaMetadata(date2, 1, 1)));
         var msg2 = new KeyValuePair<int, KafkaMessage<int>>(1, new KafkaMessage<int>(1, new KafkaMetadata(date1, 1, 1)));
 
-        var sorter = new MessageSorter<int, int>(new Models.Sorting.SortingParams(SortingType.Partition, SortingOrder.Ask));
+        var sorter = new MessageSorter<int, int>(new Models.Sorting.SortingParams(SortingType.Time, SortingOrder.Ask));
 
         // Act
         var result = sorter.Sort([msg3, msg1, msg2]);
 
         // Assert
-        result.Should().BeEquivalentTo(new[] { msg1, msg2, msg3 });
+        result.Should().Equal(msg2, msg1, msg3);
     }
 
     [Fact(DisplayName = "MessageSorter can sort date desc.")]
@@ -136,13 +136,34 @@ public class MessageSorterTests
         var msg1 = new KeyValuePair<int, KafkaMessage<int>>(1, new KafkaMessage<int>(1, new KafkaMetadata(date2, 1, 1)));
         var msg2 = new KeyValuePair<int, KafkaMessage<int>>(1, new KafkaMessage<int>(1, new KafkaMetadata(date1, 1, 1)));
 
-        var sorter = new MessageSorter<int, int>(new Models.Sorting.SortingParams(SortingType.Partition, SortingOrder.Ask));
+        var sorter = new MessageSorter<int, int>(new Models.Sorting.SortingParams(SortingType.Time, SortingOrder.Desk));
 
         // Act
         var result = sorter.Sort([msg3, msg1, msg2]);
 
         // Assert
-        result.Should().BeEquivalentTo(new[] { msg3, msg2, msg1 });
+        result.Should().Equal(msg3, msg1, msg2);
+    }
+
+    [Fact(DisplayName = "MessageSorter throws for unsupported sorting params.")]
+    [Trait("Category", "Unit")]
+    public void MessageSorterThrowsForUnsupportedSortingParams()
+    {
+        // Arrange
+        var sorter = new MessageSorter<int, int>(
+            new Models.Sorting.SortingParams((SortingType)999, (SortingOrder)999));
+        var data = new[]
+        {
+            new KeyValuePair<int, KafkaMessage<int>>(
+                1,
+                new KafkaMessage<int>(1, new KafkaMetadata(DateTime.UtcNow, 1, 1)))
+        };
+
+        // Act
+        var exception = Record.Exception(() => sorter.Sort(data).ToList());
+
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<NotImplementedException>();
     }
 
 }

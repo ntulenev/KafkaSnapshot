@@ -40,6 +40,27 @@ public class JsonFileDataExporterTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
+    [Fact(DisplayName = "JsonFileDataExporter can't be created with null config value.")]
+    [Trait("Category", "Unit")]
+    public void JsonFileDataExporterCantBeCreatedWithoutConfigValue()
+    {
+        // Arrange
+        var config = new Mock<IOptions<JsonFileDataExporterConfiguration>>(MockBehavior.Strict);
+        config.Setup(x => x.Value).Returns((JsonFileDataExporterConfiguration)null!);
+        var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>>>();
+        var fileSaver = new Mock<IFileSaver>(MockBehavior.Strict);
+        var serializer = new Mock<ISerializer<object, object, OriginalKeyMarker>>(MockBehavior.Strict);
+        var fileStreamProvider = new Mock<IFileStreamProvider>(MockBehavior.Strict);
+
+        // Act
+        var exception = Record.Exception(() =>
+        _ = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(
+            config.Object, logger.Object, fileSaver.Object, fileStreamProvider.Object, serializer.Object));
+
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
+    }
+
     [Fact(DisplayName = "JsonFileDataExporter can't be created without serializer.")]
     [Trait("Category", "Unit")]
     public void JsonFileDataExporterCantBeCreatedWithoutSerializer()

@@ -338,9 +338,12 @@ public class ProcessingUnitTests
         var factory = factoryMock.Object;
         var loader = loaderMock.Object;
         var exporterMock = new Mock<IDataExporter<object, IKeyRepresentationMarker, object, ExportedTopic>>(MockBehavior.Strict);
+        var exportCalls = 0;
         exporterMock.Setup(x => x.ExportAsync(snapshot,
                                 It.Is<ExportedTopic>(e => e.TopicName.Name == topic.TopicName.Name && e.ExportName == topic.ExportName),
-                                cts.Token)).Returns(() => Task.CompletedTask);
+                                cts.Token))
+            .Callback(() => exportCalls++)
+            .Returns(() => Task.CompletedTask);
         var exporter = exporterMock.Object;
         var unit = new ProcessingUnit<object, IKeyRepresentationMarker, object>(logger, topic, loader, exporter, factory, valueFactory);
 
@@ -348,10 +351,7 @@ public class ProcessingUnitTests
         await unit.ProcessAsync(cts.Token);
 
         // Assert
-        exporterMock.Verify
-            (x => x.ExportAsync(snapshot,
-                                It.Is<ExportedTopic>(e => e.TopicName.Name == topic.TopicName.Name && e.ExportName == topic.ExportName),
-                                cts.Token), Times.Once);
+        exportCalls.Should().Be(1);
 
     }
 }

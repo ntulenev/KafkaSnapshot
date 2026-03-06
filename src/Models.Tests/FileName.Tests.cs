@@ -11,6 +11,7 @@ public class FileNameTests
     [Theory(DisplayName = "FileName constructor throws exception with emtpy or spaces in input")]
     [InlineData("")]
     [InlineData("    ")]
+    [Trait("Category", "Unit")]
     public void ConstructorThrowsExceptionWithEmptyOrSpacesInInput(string input)
     {
         // Act
@@ -21,6 +22,7 @@ public class FileNameTests
     }
 
     [Fact(DisplayName = "FileName constructor throws exception with null input")]
+    [Trait("Category", "Unit")]
     public void ConstructorThrowsExceptionWithNullInput()
     {
         // Act
@@ -31,6 +33,7 @@ public class FileNameTests
     }
 
     [Fact(DisplayName = "FileName constructor returns expected file name and extension")]
+    [Trait("Category", "Unit")]
     public void ConstructorReturnsExpectedFileNameAndExtension()
     {
         // Arrange
@@ -47,6 +50,7 @@ public class FileNameTests
     }
 
     [Fact(DisplayName = "FileName constructor returns expected file and empty extension")]
+    [Trait("Category", "Unit")]
     public void ConstructorReturnsExpectedFileNameAndEmptyExtension()
     {
         // Arrange

@@ -112,7 +112,7 @@ Config example:
         "MessageEncoderRule": "MessagePackLz4Block"
       },
       {
-        "Name": topic10,
+        "Name": "topic10",
         "KeyType": "Long",
         "ExportRawMessage": true,
         "MessageEncoderRule": "Base64",

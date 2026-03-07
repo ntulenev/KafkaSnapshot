@@ -61,4 +61,24 @@ public class TopicWatermarkLoaderConfigurationValidatorTests
         // Assert
         result.Succeeded.Should().BeFalse();
     }
+
+    [Fact(DisplayName = "TopicWatermarkLoaderConfigurationValidator fails for negative timeout.")]
+    [Trait("Category", "Unit")]
+    public void TopicWatermarkLoaderConfigurationValidatorFailsForNegativeTimeout()
+    {
+
+        // Arrange
+        var validator = new TopicWatermarkLoaderConfigurationValidator();
+        var name = "test";
+        var config = new TopicWatermarkLoaderConfiguration
+        {
+            AdminClientTimeout = TimeSpan.FromSeconds(-1)
+        };
+
+        // Act
+        var result = validator.Validate(name, config);
+
+        // Assert
+        result.Succeeded.Should().BeFalse();
+    }
 }

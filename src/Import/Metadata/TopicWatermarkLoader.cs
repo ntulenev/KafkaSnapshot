@@ -35,9 +35,40 @@ public class TopicWatermarkLoader : ITopicWatermarkLoader
 
     private IEnumerable<TopicPartition> SplitTopicOnPartitions(LoadingTopic loadingTopic)
     {
-        var topicMeta = _adminClient.GetMetadata(loadingTopic.Value.Name, _metaTimeout);
+        var requestedTopicName = loadingTopic.Value.Name;
+        var metadata = _adminClient.GetMetadata(requestedTopicName, _metaTimeout);
+        var topicMetas = metadata.Topics
+                                 .Where(topic => topic.Topic == requestedTopicName)
+                                 .ToList();
 
-        IEnumerable<PartitionMetadata> partitions = topicMeta.Topics.Single().Partitions;
+        if (!topicMetas.Any())
+        {
+            throw new InvalidOperationException(
+                $"Metadata for topic '{requestedTopicName}' was not found.");
+        }
+
+        if (topicMetas.Count > 1)
+        {
+            throw new InvalidOperationException(
+                $"Metadata for topic '{requestedTopicName}' is ambiguous.");
+        }
+
+        var topicMeta = topicMetas[0];
+
+        if (topicMeta.Error is not null && topicMeta.Error.IsError)
+        {
+            throw new InvalidOperationException(
+                $"Metadata for topic '{requestedTopicName}' returned error " +
+                $"{topicMeta.Error.Code}: {topicMeta.Error.Reason}");
+        }
+
+        if (topicMeta.Partitions is null)
+        {
+            throw new InvalidOperationException(
+                $"Metadata for topic '{requestedTopicName}' does not contain partitions.");
+        }
+
+        IEnumerable<PartitionMetadata> partitions = topicMeta.Partitions;
 
         if (loadingTopic.HasPartitionFilter)
         {

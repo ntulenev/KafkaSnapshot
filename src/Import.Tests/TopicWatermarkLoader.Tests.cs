@@ -268,4 +268,169 @@ public class TopicWatermarkLoaderTests
         closeCalls.Should().Be(1);
         disposeCalls.Should().Be(1);
     }
+
+    [Fact(DisplayName = "TopicWatermarkLoader fails when metadata for requested topic is missing.")]
+    [Trait("Category", "Unit")]
+    public async Task TopicWatermarkLoaderFailsWhenMetadataForRequestedTopicIsMissing()
+    {
+        // Arrange
+        using var cts = new CancellationTokenSource();
+        HashSet<int> partitionFilter = null!;
+        var topic = new LoadingTopic(new TopicName("test"), true, new DateFilterRange(null!, null!), EncoderRules.String, partitionFilter);
+        var clientMock = new Mock<IAdminClient>(MockBehavior.Strict);
+        var timeout = 1;
+        var options = new Mock<IOptions<TopicWatermarkLoaderConfiguration>>(MockBehavior.Strict);
+        options.Setup(x => x.Value).Returns(new TopicWatermarkLoaderConfiguration
+        {
+            AdminClientTimeout = TimeSpan.FromSeconds(timeout)
+        });
+        var loader = new TopicWatermarkLoader(clientMock.Object, options.Object);
+        var consumerMock = new Mock<IConsumer<object, object>>(MockBehavior.Strict);
+        IConsumer<object, object> consumerFactory() => consumerMock.Object;
+
+        var brokerMeta = new BrokerMetadata(1, "testHost", 1000);
+        var partitionMeta = new PartitionMetadata(1, 1, new[] { 1 }, new[] { 1 }, null);
+        var anotherTopicMeta = new TopicMetadata("another-topic", new[] { partitionMeta }.ToList(), null);
+        var metadata = new Confluent.Kafka.Metadata(
+            new[] { brokerMeta }.ToList(),
+            new[] { anotherTopicMeta }.ToList(),
+            1,
+            "test");
+        var getMetadataCalls = 0;
+        clientMock.Setup(c => c.GetMetadata(topic.Value.Name, TimeSpan.FromSeconds(timeout)))
+                  .Callback(() => getMetadataCalls++)
+                  .Returns(metadata);
+        var closeCalls = 0;
+        consumerMock.Setup(x => x.Close())
+                    .Callback(() => closeCalls++);
+        var disposeCalls = 0;
+        consumerMock.Setup(x => x.Dispose())
+                    .Callback(() => disposeCalls++);
+
+        // Act
+        var exception = await Record.ExceptionAsync(
+            async () => await loader.LoadWatermarksAsync(consumerFactory, topic, cts.Token));
+
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<InvalidOperationException>()
+            .Which.Message.Should().Contain(topic.Value.Name).And.Contain("not found");
+        getMetadataCalls.Should().Be(1);
+        closeCalls.Should().Be(1);
+        disposeCalls.Should().Be(1);
+    }
+
+    [Fact(DisplayName = "TopicWatermarkLoader fails when requested topic metadata has broker error.")]
+    [Trait("Category", "Unit")]
+    public async Task TopicWatermarkLoaderFailsWhenRequestedTopicMetadataHasBrokerError()
+    {
+        // Arrange
+        using var cts = new CancellationTokenSource();
+        HashSet<int> partitionFilter = null!;
+        var topic = new LoadingTopic(new TopicName("test"), true, new DateFilterRange(null!, null!), EncoderRules.String, partitionFilter);
+        var clientMock = new Mock<IAdminClient>(MockBehavior.Strict);
+        var timeout = 1;
+        var options = new Mock<IOptions<TopicWatermarkLoaderConfiguration>>(MockBehavior.Strict);
+        options.Setup(x => x.Value).Returns(new TopicWatermarkLoaderConfiguration
+        {
+            AdminClientTimeout = TimeSpan.FromSeconds(timeout)
+        });
+        var loader = new TopicWatermarkLoader(clientMock.Object, options.Object);
+        var consumerMock = new Mock<IConsumer<object, object>>(MockBehavior.Strict);
+        IConsumer<object, object> consumerFactory() => consumerMock.Object;
+
+        var brokerMeta = new BrokerMetadata(1, "testHost", 1000);
+        var topicMeta = new TopicMetadata(
+            topic.Value.Name,
+            [],
+            new Error(ErrorCode.UnknownTopicOrPart, "Unknown topic"));
+        var metadata = new Confluent.Kafka.Metadata(
+            new[] { brokerMeta }.ToList(),
+            new[] { topicMeta }.ToList(),
+            1,
+            "test");
+        var getMetadataCalls = 0;
+        clientMock.Setup(c => c.GetMetadata(topic.Value.Name, TimeSpan.FromSeconds(timeout)))
+                  .Callback(() => getMetadataCalls++)
+                  .Returns(metadata);
+        var closeCalls = 0;
+        consumerMock.Setup(x => x.Close())
+                    .Callback(() => closeCalls++);
+        var disposeCalls = 0;
+        consumerMock.Setup(x => x.Dispose())
+                    .Callback(() => disposeCalls++);
+
+        // Act
+        var exception = await Record.ExceptionAsync(
+            async () => await loader.LoadWatermarksAsync(consumerFactory, topic, cts.Token));
+
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<InvalidOperationException>()
+            .Which.Message.Should().Contain(topic.Value.Name).And.Contain(nameof(ErrorCode.UnknownTopicOrPart));
+        getMetadataCalls.Should().Be(1);
+        closeCalls.Should().Be(1);
+        disposeCalls.Should().Be(1);
+    }
+
+    [Fact(DisplayName = "TopicWatermarkLoader can load watermarks when metadata contains additional topics.")]
+    [Trait("Category", "Unit")]
+    public async Task CanLoadWatermarksWhenMetadataContainsAdditionalTopics()
+    {
+        // Arrange
+        using var cts = new CancellationTokenSource();
+        HashSet<int> partitionFilter = null!;
+        var topic = new LoadingTopic(new TopicName("test"), true, new DateFilterRange(null!, null!), EncoderRules.String, partitionFilter);
+        var clientMock = new Mock<IAdminClient>(MockBehavior.Strict);
+        var timeout = 1;
+        var options = new Mock<IOptions<TopicWatermarkLoaderConfiguration>>(MockBehavior.Strict);
+        options.Setup(x => x.Value).Returns(new TopicWatermarkLoaderConfiguration
+        {
+            AdminClientTimeout = TimeSpan.FromSeconds(timeout)
+        });
+        var loader = new TopicWatermarkLoader(clientMock.Object, options.Object);
+        var consumerMock = new Mock<IConsumer<object, object>>(MockBehavior.Strict);
+        IConsumer<object, object> consumerFactory() => consumerMock.Object;
+
+        var requestedPartition = new TopicPartition(topic.Value.Name, new Partition(1));
+        var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
+
+        var brokerMeta = new BrokerMetadata(1, "testHost", 1000);
+        var requestedPartitionMeta = new PartitionMetadata(1, 1, new[] { 1 }, new[] { 1 }, null);
+        var anotherTopicPartitionMeta = new PartitionMetadata(2, 1, new[] { 1 }, new[] { 1 }, null);
+        var anotherTopicMeta = new TopicMetadata("another-topic", new[] { anotherTopicPartitionMeta }.ToList(), null);
+        var requestedTopicMeta = new TopicMetadata(topic.Value.Name, new[] { requestedPartitionMeta }.ToList(), null);
+        var metadata = new Confluent.Kafka.Metadata(
+            new[] { brokerMeta }.ToList(),
+            new[] { anotherTopicMeta, requestedTopicMeta }.ToList(),
+            1,
+            "test");
+        var getMetadataCalls = 0;
+        clientMock.Setup(c => c.GetMetadata(topic.Value.Name, TimeSpan.FromSeconds(timeout)))
+                  .Callback(() => getMetadataCalls++)
+                  .Returns(metadata);
+        var queryWatermarkOffsetsCalls = 0;
+        consumerMock.Setup(x => x.QueryWatermarkOffsets(requestedPartition, TimeSpan.FromSeconds(timeout)))
+                    .Callback(() => queryWatermarkOffsetsCalls++)
+                    .Returns(offsets);
+        var closeCalls = 0;
+        consumerMock.Setup(x => x.Close())
+                    .Callback(() => closeCalls++);
+        var disposeCalls = 0;
+        consumerMock.Setup(x => x.Dispose())
+                    .Callback(() => disposeCalls++);
+
+        // Act
+        var result = await loader.LoadWatermarksAsync(consumerFactory, topic, cts.Token);
+
+        // Assert
+        result.Should().NotBeNull();
+        var watermarks = result.Watermarks.ToList();
+        watermarks.Should().ContainSingle();
+        watermarks.Single().TopicName.Should().Be(topic);
+        watermarks.Single().Partition.Value.Should().Be(requestedPartitionMeta.PartitionId);
+        watermarks.Single().Offset.Should().Be(offsets);
+        getMetadataCalls.Should().Be(1);
+        queryWatermarkOffsetsCalls.Should().Be(1);
+        closeCalls.Should().Be(1);
+        disposeCalls.Should().Be(1);
+    }
 }

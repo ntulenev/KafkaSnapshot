@@ -19,9 +19,9 @@ public class TopicWatermarkLoaderConfigurationValidator :
         Debug.Assert(name is not null);
         Debug.Assert(options is not null);
 
-        if (options.AdminClientTimeout == TimeSpan.Zero)
+        if (options.AdminClientTimeout <= TimeSpan.Zero)
         {
-            return ValidateOptionsResult.Fail("Timeout should not be zero.");
+            return ValidateOptionsResult.Fail("Timeout should be positive.");
         }
 
         return ValidateOptionsResult.Success;

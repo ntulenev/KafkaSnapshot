@@ -66,6 +66,8 @@ internal static class ConfigHelper
                                                BootstrapServersConfigurationValidator>();
         _ = services.AddSingleton<IValidateOptions<TopicWatermarkLoaderConfiguration>,
                                                TopicWatermarkLoaderConfigurationValidator>();
+        _ = services.AddSingleton<IValidateOptions<SnapshotLoaderConfiguration>,
+                                               SnapshotLoaderConfigurationValidator>();
 
         _ = services.AddOptions<BootstrapServersConfiguration>()
             .Bind(hostContext.Configuration.GetSection(nameof(BootstrapServersConfiguration)))

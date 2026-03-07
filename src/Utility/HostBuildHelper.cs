@@ -14,10 +14,10 @@ public static class HostBuildHelper
     /// <summary>
     /// Creates default host for app.
     /// </summary>
-    public static IHost CreateHost()
+    /// <param name="args">Command-line arguments.</param>
+    public static IHost CreateHost(string[]? args = null)
     {
-        var builder = new HostBuilder()
-               .ConfigureAppConfiguration((hostingContext, config) => config.RegisterApplicationSettings())
+        var builder = Host.CreateDefaultBuilder(args ?? [])
                .ConfigureServices((hostContext, services) =>
                {
                    services.AddTools(hostContext);

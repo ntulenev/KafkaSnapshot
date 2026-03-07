@@ -58,7 +58,7 @@ public class SnapshotLoaderTests
     {
 
         // Arrange
-        var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
+        var loggerMock = CreateLoggerMock();
         var logger = loggerMock.Object;
         var topicLoaderMock = new Mock<ITopicWatermarkLoader>(MockBehavior.Strict);
         var topicLoader = topicLoaderMock.Object;
@@ -84,7 +84,7 @@ public class SnapshotLoaderTests
     {
 
         // Arrange
-        var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
+        var loggerMock = CreateLoggerMock();
         var logger = loggerMock.Object;
         IConsumer<object, byte[]> consumerFactory() => throw new NotImplementedException();
         var topicLoaderMock = new Mock<ITopicWatermarkLoader>(MockBehavior.Strict);
@@ -111,7 +111,7 @@ public class SnapshotLoaderTests
     {
 
         // Arrange
-        var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
+        var loggerMock = CreateLoggerMock();
         var logger = loggerMock.Object;
         IConsumer<object, byte[]> consumerFactory() => throw new NotImplementedException();
         var topicLoaderMock = new Mock<ITopicWatermarkLoader>(MockBehavior.Strict);
@@ -138,7 +138,7 @@ public class SnapshotLoaderTests
     {
 
         // Arrange
-        var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
+        var loggerMock = CreateLoggerMock();
         var logger = loggerMock.Object;
         IConsumer<object, byte[]> consumerFactory() => throw new NotImplementedException();
         var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>(MockBehavior.Strict);
@@ -213,7 +213,7 @@ public class SnapshotLoaderTests
     {
 
         // Arrange
-        var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
+        var loggerMock = CreateLoggerMock();
         var logger = loggerMock.Object;
         IConsumer<object, byte[]> consumerFactory() => throw new NotImplementedException();
         var topicLoaderMock = new Mock<ITopicWatermarkLoader>(MockBehavior.Strict);
@@ -243,7 +243,7 @@ public class SnapshotLoaderTests
         // Arrange
         using var tokenSource = new CancellationTokenSource();
         var token = tokenSource.Token;
-        var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
+        var loggerMock = CreateLoggerMock();
         var logger = loggerMock.Object;
         IConsumer<object, byte[]> consumerFactory() => throw new NotImplementedException();
         var topicLoaderMock = new Mock<ITopicWatermarkLoader>(MockBehavior.Strict);
@@ -280,7 +280,7 @@ public class SnapshotLoaderTests
         // Arrange
         using var tokenSource = new CancellationTokenSource();
         var token = tokenSource.Token;
-        var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
+        var loggerMock = CreateLoggerMock();
         var logger = loggerMock.Object;
         IConsumer<object, byte[]> consumerFactory() => throw new NotImplementedException();
         var topicLoaderMock = new Mock<ITopicWatermarkLoader>(MockBehavior.Strict);
@@ -318,7 +318,7 @@ public class SnapshotLoaderTests
         // Arrange
         using var tokenSource = new CancellationTokenSource();
         var token = tokenSource.Token;
-        var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
+        var loggerMock = CreateLoggerMock();
         var logger = loggerMock.Object;
         IConsumer<object, byte[]> consumerFactory() => throw new NotImplementedException();
         var topicLoaderMock = new Mock<ITopicWatermarkLoader>(MockBehavior.Strict);
@@ -396,7 +396,7 @@ public class SnapshotLoaderTests
             }
         };
 
-        var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
+        var loggerMock = CreateLoggerMock();
         var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
         Func<IConsumer<object, byte[]>> consumerFactory = () => consumerMock.Object;
         var topicLoaderMock = new Mock<ITopicWatermarkLoader>(MockBehavior.Strict);
@@ -521,7 +521,7 @@ public class SnapshotLoaderTests
             }
         };
 
-        var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
+        var loggerMock = CreateLoggerMock();
         var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
         Func<IConsumer<object, byte[]>> consumerFactory = () => consumerMock.Object;
         var topicLoaderMock = new Mock<ITopicWatermarkLoader>(MockBehavior.Strict);
@@ -624,7 +624,7 @@ public class SnapshotLoaderTests
         // Arrange
         using var tokenSource = new CancellationTokenSource();
         var token = tokenSource.Token;
-        var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
+        var loggerMock = CreateLoggerMock();
         var logger = loggerMock.Object;
         var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
         Func<IConsumer<object, byte[]>> consumerFactory = () => consumerMock.Object;
@@ -722,24 +722,29 @@ public class SnapshotLoaderTests
                  Offset = new Offset(2)
             }
         };
-        var exceptedData = consumerData.Select((x, i) =>
-        new KeyValuePair<object, KafkaMessage<object>>(x.Message.Key, new KafkaMessage<object>(x.Message.Value, new KafkaMetadata(x.Message.Timestamp.UtcDateTime, 1, i)))
-        ).ToList();
-        exceptedData.RemoveAt(1);
-        var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
+        var expectedData = consumerData.Select((x, i) =>
+        new KeyValuePair<object, KafkaMessage<object>>(
+            x.Message.Key,
+            new KafkaMessage<object>(
+                Encoding.UTF8.GetString(x.Message.Value),
+                new KafkaMetadata(x.Message.Timestamp.UtcDateTime, 1, i))))
+        .ToList();
+        expectedData.RemoveAt(1);
+        var loggerMock = CreateLoggerMock();
         var logger = loggerMock.Object;
         var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
         Func<IConsumer<object, byte[]>> consumerFactory = () => consumerMock.Object;
-        var topicLoaderMock = new Mock<ITopicWatermarkLoader>();
+        var topicLoaderMock = new Mock<ITopicWatermarkLoader>(MockBehavior.Strict);
         var topicLoader = topicLoaderMock.Object;
         var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>(MockBehavior.Strict);
         optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
         var options = optionsMock.Object;
         var sorterMock = new Mock<IMessageSorter<object, object>>(MockBehavior.Strict);
-        sorterMock.Setup(x => x.Sort(exceptedData)).Returns(exceptedData);
+        sorterMock.Setup(x => x.Sort(expectedData)).Returns(expectedData);
         var sorter = sorterMock.Object;
         var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
-        encoderMock.Setup(x => x.Encode(It.IsAny<byte[]>(), It.IsAny<EncoderRules>())).Returns("test");
+        encoderMock.Setup(x => x.Encode(It.IsAny<byte[]>(), It.IsAny<EncoderRules>()))
+            .Returns<byte[], EncoderRules>((bytes, _) => Encoding.UTF8.GetString(bytes));
         var encoder = encoderMock.Object;
         var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter, encoder);
         var withCompacting = true;
@@ -748,7 +753,7 @@ public class SnapshotLoaderTests
         var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
         keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
         var keyFilter = keyFilterMock.Object;
-        var valueFilterMock = new Mock<IDataFilter<object>>();
+        var valueFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
         valueFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
         var valueFilter = valueFilterMock.Object;
         var offset = new WatermarkOffsets(new Offset(0), new Offset(3));
@@ -770,8 +775,7 @@ public class SnapshotLoaderTests
         var result = await loader.LoadSnapshotAsync(topicName, keyFilter, valueFilter, token);
 
         // Assert
-        //TODO Fix with add encoder mock setup
-        //result.Should().BeEquivalentTo(exceptedData);
+        result.Should().BeEquivalentTo(expectedData);
         dispCount.Should().Be(1);
         closeCount.Should().Be(1);
     }
@@ -783,7 +787,7 @@ public class SnapshotLoaderTests
         // Arrange
         using var tokenSource = new CancellationTokenSource();
         var token = tokenSource.Token;
-        var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
+        var loggerMock = CreateLoggerMock();
         loggerMock.Setup(x => x.IsEnabled(LogLevel.Debug)).Returns(true);
         var logger = loggerMock.Object;
 
@@ -895,11 +899,15 @@ public class SnapshotLoaderTests
                  Offset = new Offset(2)
             }
         };
-        var exceptedData = consumerData.Select((x, i) =>
-        new KeyValuePair<object, KafkaMessage<object>>(x.Message.Key, new KafkaMessage<object>(x.Message.Value, new KafkaMetadata(x.Message.Timestamp.UtcDateTime, 1, i)))
-        ).ToList();
-        exceptedData.RemoveAt(1);
-        var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
+        var expectedData = consumerData.Select((x, i) =>
+        new KeyValuePair<object, KafkaMessage<object>>(
+            x.Message.Key,
+            new KafkaMessage<object>(
+                Encoding.UTF8.GetString(x.Message.Value),
+                new KafkaMetadata(x.Message.Timestamp.UtcDateTime, 1, i))))
+        .ToList();
+        expectedData.RemoveAt(1);
+        var loggerMock = CreateLoggerMock();
         var logger = loggerMock.Object;
         var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
         Func<IConsumer<object, byte[]>> consumerFactory = () => consumerMock.Object;
@@ -909,10 +917,11 @@ public class SnapshotLoaderTests
         optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration() { });
         var options = optionsMock.Object;
         var sorterMock = new Mock<IMessageSorter<object, object>>(MockBehavior.Strict);
-        sorterMock.Setup(x => x.Sort(exceptedData)).Returns(exceptedData);
+        sorterMock.Setup(x => x.Sort(expectedData)).Returns(expectedData);
         var sorter = sorterMock.Object;
         var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
-        encoderMock.Setup(x => x.Encode(It.IsAny<byte[]>(), It.IsAny<EncoderRules>())).Returns("test");
+        encoderMock.Setup(x => x.Encode(It.IsAny<byte[]>(), It.IsAny<EncoderRules>()))
+            .Returns<byte[], EncoderRules>((bytes, _) => Encoding.UTF8.GetString(bytes));
         var encoder = encoderMock.Object;
         var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter, encoder);
         var withCompacting = true;
@@ -953,8 +962,7 @@ public class SnapshotLoaderTests
         var result = await loader.LoadSnapshotAsync(topicName, keyFilter, valueFilter, token);
 
         // Assert
-        //TODO Fix with add encoder mock setup
-        //result.Should().BeEquivalentTo(exceptedData);
+        result.Should().BeEquivalentTo(expectedData);
         dispCount.Should().Be(1);
         closeCount.Should().Be(1);
     }
@@ -968,7 +976,7 @@ public class SnapshotLoaderTests
         // Arrange
         using var tokenSource = new CancellationTokenSource();
         var token = tokenSource.Token;
-        var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
+        var loggerMock = CreateLoggerMock();
         var logger = loggerMock.Object;
         var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
         Func<IConsumer<object, byte[]>> consumerFactory = () => consumerMock.Object;
@@ -1078,7 +1086,7 @@ public class SnapshotLoaderTests
             }
         };
 
-        var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>();
+        var loggerMock = CreateLoggerMock();
         var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
         Func<IConsumer<object, byte[]>> consumerFactory = () => consumerMock.Object;
         var topicLoaderMock = new Mock<ITopicWatermarkLoader>(MockBehavior.Strict);
@@ -1147,5 +1155,19 @@ public class SnapshotLoaderTests
         encodeCalls.Should().Be(2);
         closeCalls.Should().Be(1);
         disposeCalls.Should().Be(1);
+    }
+
+    private static Mock<ILogger<SnapshotLoader<object, object>>> CreateLoggerMock()
+    {
+        var loggerMock = new Mock<ILogger<SnapshotLoader<object, object>>>(MockBehavior.Strict);
+        loggerMock.Setup(x => x.IsEnabled(It.IsAny<LogLevel>())).Returns(false);
+        loggerMock.Setup(
+            x => x.Log(
+                It.IsAny<LogLevel>(),
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception?>(),
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()));
+        return loggerMock;
     }
 }

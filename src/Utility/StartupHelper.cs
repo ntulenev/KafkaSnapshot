@@ -11,6 +11,7 @@ using KafkaSnapshot.Export.Markers;
 using KafkaSnapshot.Export.Serialization;
 using KafkaSnapshot.Filters;
 using KafkaSnapshot.Import;
+using KafkaSnapshot.Import.Configuration;
 using KafkaSnapshot.Import.Encoders;
 using KafkaSnapshot.Import.Metadata;
 using KafkaSnapshot.Models.Filters;
@@ -18,10 +19,10 @@ using KafkaSnapshot.Processing;
 using KafkaSnapshot.Processing.Configuration;
 using KafkaSnapshot.Sorting;
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 using Serilog;
 
@@ -45,8 +46,10 @@ internal static class StartupHelper
         _ = services.AddScoped<LoaderConcurrentTool>();
         _ = services.AddScoped<ILoaderTool>(sp =>
         {
-            var config = sp.GetLoaderConfig(hostContext.Configuration);
-            return config.UseConcurrentLoad ? sp.GetRequiredService<LoaderConcurrentTool>() : sp.GetRequiredService<LoaderTool>();
+            var config = sp.GetRequiredService<IOptions<LoaderToolConfiguration>>().Value;
+            return config.UseConcurrentLoad
+                ? sp.GetRequiredService<LoaderConcurrentTool>()
+                : sp.GetRequiredService<LoaderTool>();
         });
     }
 
@@ -91,17 +94,14 @@ internal static class StartupHelper
     /// <summary>
     /// Add topic loaders.
     /// </summary>
-    public static void AddTopicLoaders(
-        this IServiceCollection services,
-        HostBuilderContext hostContext)
+    public static void AddTopicLoaders(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(hostContext);
 
         _ = services.AddSingleton<IKeyFiltersFactory<long>, NaiveKeyFiltersFactory<long>>();
         _ = services.AddSingleton<IKeyFiltersFactory<string>, NaiveKeyFiltersFactory<string>>();
         _ = services.AddSingleton<IValueFilterFactory<string>, NaiveValueFiltersFactory<string>>();
-        _ = services.AddSingleton(sp => CreateTopicLoaders(sp, hostContext.Configuration));
+        _ = services.AddSingleton(CreateTopicLoaders);
     }
 
     /// <summary>
@@ -118,7 +118,7 @@ internal static class StartupHelper
 
         _ = services.AddSingleton(sp =>
         {
-            var config = sp.GetBootstrapConfig(hostContext.Configuration);
+            var config = sp.GetRequiredService<IOptions<BootstrapServersConfiguration>>().Value;
             var servers = string.Join(",", config.BootstrapServers);
             var adminConfig = new AdminClientConfig()
             {
@@ -135,7 +135,7 @@ internal static class StartupHelper
 
         IConsumer<Key, byte[]> createConsumer<Key>(IServiceProvider sp)
         {
-            var config = sp.GetBootstrapConfig(hostContext.Configuration);
+            var config = sp.GetRequiredService<IOptions<BootstrapServersConfiguration>>().Value;
             var servers = string.Join(",", config.BootstrapServers);
             var conf = new ConsumerConfig
             {
@@ -161,7 +161,7 @@ internal static class StartupHelper
         IMessageSorter<TKey, TValue> createSorter<TKey, TValue>(IServiceProvider sp)
             where TKey : notnull where TValue : notnull
         {
-            var config = sp.GetLoaderConfig(hostContext.Configuration);
+            var config = sp.GetRequiredService<IOptions<LoaderToolConfiguration>>().Value;
             return new MessageSorter<TKey, TValue>(
                 new Models.Sorting.SortingParams(config.GlobalMessageSort, config.GlobalSortOrder));
         }
@@ -169,11 +169,9 @@ internal static class StartupHelper
         _ = services.AddSingleton(createSorter<long, string>);
     }
 
-    private static IReadOnlyCollection<IProcessingUnit> CreateTopicLoaders(
-        IServiceProvider sp,
-        IConfiguration configuration)
+    private static IReadOnlyCollection<IProcessingUnit> CreateTopicLoaders(IServiceProvider sp)
     {
-        var config = sp.GetLoaderConfig(configuration);
+        var config = sp.GetRequiredService<IOptions<LoaderToolConfiguration>>().Value;
 
         return [.. config.Topics.Select(topic => topic.KeyType switch
         {

@@ -30,23 +30,21 @@ public class UtilityInternalsTests
         var services = new ServiceCollection();
         _ = services.AddSingleton<IValidateOptions<BootstrapServersConfiguration>>(
             new FailBootstrapValidator());
-        using var provider = services.BuildServiceProvider();
-
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 ["BootstrapServersConfiguration:BootstrapServers:0"] = "server1"
             })
             .Build();
-
-        var method = GetStaticMethod("KafkaSnapshot.Utility.ConfigHelper", "GetBootstrapConfig");
+        _ = services.AddOptions<BootstrapServersConfiguration>()
+            .Bind(configuration.GetSection(nameof(BootstrapServersConfiguration)));
+        using var provider = services.BuildServiceProvider();
 
         // Act
-        Action act = () => _ = method.Invoke(null, [provider, configuration]);
+        Action act = () => _ = provider.GetRequiredService<IOptions<BootstrapServersConfiguration>>().Value;
 
         // Assert
-        act.Should().Throw<TargetInvocationException>()
-            .WithInnerException<OptionsValidationException>();
+        act.Should().Throw<OptionsValidationException>();
     }
 
     [Fact(DisplayName = "ConfigHelper throws on invalid loader config.")]
@@ -57,17 +55,16 @@ public class UtilityInternalsTests
         var services = new ServiceCollection();
         _ = services.AddSingleton<IValidateOptions<LoaderToolConfiguration>>(
             new FailLoaderValidator());
+        var configuration = BuildLoaderConfig(useConcurrentLoad: true, keyType: KeyType.String);
+        _ = services.AddOptions<LoaderToolConfiguration>()
+            .Bind(configuration.GetSection(nameof(LoaderToolConfiguration)));
         using var provider = services.BuildServiceProvider();
 
-        var configuration = BuildLoaderConfig(useConcurrentLoad: true, keyType: KeyType.String);
-        var method = GetStaticMethod("KafkaSnapshot.Utility.ConfigHelper", "GetLoaderConfig");
-
         // Act
-        Action act = () => _ = method.Invoke(null, [provider, configuration]);
+        Action act = () => _ = provider.GetRequiredService<IOptions<LoaderToolConfiguration>>().Value;
 
         // Assert
-        act.Should().Throw<TargetInvocationException>()
-            .WithInnerException<OptionsValidationException>();
+        act.Should().Throw<OptionsValidationException>();
     }
 
     [Fact(DisplayName = "StartupHelper AddTools resolves LoaderTool for sequential mode.")]
@@ -105,6 +102,8 @@ public class UtilityInternalsTests
         // Arrange
         var configuration = BuildLoaderConfig(useConcurrentLoad: true, keyType: (KeyType)999);
         var services = new ServiceCollection();
+        _ = services.AddOptions<LoaderToolConfiguration>()
+            .Bind(configuration.GetSection(nameof(LoaderToolConfiguration)));
         _ = services.AddSingleton<IValidateOptions<LoaderToolConfiguration>>(
             new LoaderToolConfigurationValidator());
         using var provider = services.BuildServiceProvider();
@@ -115,7 +114,7 @@ public class UtilityInternalsTests
             BindingFlags.NonPublic | BindingFlags.Static);
 
         // Act
-        Action act = () => _ = method.Invoke(null, [provider, configuration]);
+        Action act = () => _ = method.Invoke(null, [provider]);
 
         // Assert
         act.Should().Throw<TargetInvocationException>()

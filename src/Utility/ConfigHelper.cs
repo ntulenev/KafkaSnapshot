@@ -1,5 +1,3 @@
-using System.Diagnostics;
-
 using KafkaSnapshot.Export.Configuration;
 using KafkaSnapshot.Import.Configuration;
 using KafkaSnapshot.Import.Configuration.Validation;
@@ -19,60 +17,6 @@ namespace KafkaSnapshot.Utility;
 internal static class ConfigHelper
 {
     /// <summary>
-    /// Gets configuration for Kafka servers.
-    /// </summary>
-    public static BootstrapServersConfiguration GetBootstrapConfig(
-        this IServiceProvider sp,
-        IConfiguration configuration)
-    {
-        ArgumentNullException.ThrowIfNull(sp);
-        ArgumentNullException.ThrowIfNull(configuration);
-
-        var section = configuration.GetSection(nameof(BootstrapServersConfiguration));
-        var config = section.Get<BootstrapServersConfiguration>();
-
-        Debug.Assert(config is not null);
-
-        var validator = sp.GetRequiredService<IValidateOptions<BootstrapServersConfiguration>>();
-
-        // Crutch to use IValidateOptions in manual generation logic.
-        var validationResult = validator.Validate(string.Empty, config);
-        return validationResult.Failed
-            ? throw new OptionsValidationException(
-                string.Empty,
-                typeof(BootstrapServersConfiguration),
-                [validationResult.FailureMessage])
-            : config;
-    }
-
-    /// <summary>
-    /// Gets configuration for Kafka topics.
-    /// </summary>
-    public static LoaderToolConfiguration GetLoaderConfig(
-        this IServiceProvider sp,
-        IConfiguration configuration)
-    {
-        ArgumentNullException.ThrowIfNull(sp);
-        ArgumentNullException.ThrowIfNull(configuration);
-
-        var section = configuration.GetSection(nameof(LoaderToolConfiguration));
-        var config = section.Get<LoaderToolConfiguration>();
-
-        Debug.Assert(config is not null);
-
-        var validator = sp.GetRequiredService<IValidateOptions<LoaderToolConfiguration>>();
-
-        // Crutch to use IValidateOptions in manual generation logic.
-        var validationResult = validator.Validate(string.Empty, config);
-        return validationResult.Failed
-            ? throw new OptionsValidationException(
-                string.Empty,
-                typeof(LoaderToolConfiguration),
-                [validationResult.FailureMessage])
-            : config;
-    }
-
-    /// <summary>
     /// Configures <see cref="LoaderToolConfiguration"/>
     /// </summary>
     public static IServiceCollection ConfigureLoaderTool(
@@ -82,10 +26,12 @@ internal static class ConfigHelper
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(hostContext);
 
-        _ = services.Configure<LoaderToolConfiguration>(
-            hostContext.Configuration.GetSection(nameof(LoaderToolConfiguration)));
         _ = services.AddSingleton<IValidateOptions<LoaderToolConfiguration>,
                                                LoaderToolConfigurationValidator>();
+        _ = services.AddOptions<LoaderToolConfiguration>()
+            .Bind(hostContext.Configuration.GetSection(nameof(LoaderToolConfiguration)))
+            .ValidateOnStart();
+
         return services;
     }
 
@@ -99,8 +45,10 @@ internal static class ConfigHelper
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(hostContext);
 
-        _ = services.Configure<JsonFileDataExporterConfiguration>(
-            hostContext.Configuration.GetSection(nameof(JsonFileDataExporterConfiguration)));
+        _ = services.AddOptions<JsonFileDataExporterConfiguration>()
+            .Bind(hostContext.Configuration.GetSection(nameof(JsonFileDataExporterConfiguration)))
+            .ValidateOnStart();
+
         return services;
     }
 
@@ -114,14 +62,21 @@ internal static class ConfigHelper
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(hostContext);
 
-        _ = services.Configure<TopicWatermarkLoaderConfiguration>(
-            hostContext.Configuration.GetSection(nameof(TopicWatermarkLoaderConfiguration)));
         _ = services.AddSingleton<IValidateOptions<BootstrapServersConfiguration>,
                                                BootstrapServersConfigurationValidator>();
         _ = services.AddSingleton<IValidateOptions<TopicWatermarkLoaderConfiguration>,
                                                TopicWatermarkLoaderConfigurationValidator>();
-        _ = services.Configure<SnapshotLoaderConfiguration>(
-            hostContext.Configuration.GetSection(nameof(SnapshotLoaderConfiguration)));
+
+        _ = services.AddOptions<BootstrapServersConfiguration>()
+            .Bind(hostContext.Configuration.GetSection(nameof(BootstrapServersConfiguration)))
+            .ValidateOnStart();
+        _ = services.AddOptions<TopicWatermarkLoaderConfiguration>()
+            .Bind(hostContext.Configuration.GetSection(nameof(TopicWatermarkLoaderConfiguration)))
+            .ValidateOnStart();
+        _ = services.AddOptions<SnapshotLoaderConfiguration>()
+            .Bind(hostContext.Configuration.GetSection(nameof(SnapshotLoaderConfiguration)))
+            .ValidateOnStart();
+
         return services;
     }
 

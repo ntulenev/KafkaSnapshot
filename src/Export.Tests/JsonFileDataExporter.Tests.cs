@@ -217,6 +217,58 @@ public class JsonFileDataExporterTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
+    [Theory(DisplayName = "JsonFileDataExporter does not start export for canceled token.")]
+    [Trait("Category", "Unit")]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task JsonFileDataExporterDoesNotStartExportForCanceledToken(bool isStreaming)
+    {
+        // Arrange
+        using var tokenSource = new CancellationTokenSource();
+        await tokenSource.CancelAsync();
+        var token = tokenSource.Token;
+        var config = new Mock<IOptions<JsonFileDataExporterConfiguration>>(MockBehavior.Strict);
+        config.Setup(x => x.Value).Returns(new JsonFileDataExporterConfiguration() { UseFileStreaming = isStreaming });
+        var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>>>();
+        var fileSaver = new Mock<IFileSaver>(MockBehavior.Strict);
+        var serializer = new Mock<ISerializer<object, object, OriginalKeyMarker>>(MockBehavior.Strict);
+        var fileStreamProvider = new Mock<IFileStreamProvider>(MockBehavior.Strict);
+        var exporter = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>
+            (config.Object, logger.Object, fileSaver.Object, fileStreamProvider.Object, serializer.Object);
+        var topic = new ExportedTopic(new TopicName("name"), new FileName("filename"), true);
+        var data = new KeyValuePair<object, KafkaMessage<object>>[]
+        {
+            new("test",
+                new KafkaMessage<object>("value",
+                    new KafkaMetadata(DateTime.UtcNow, 1, 2)))
+        };
+        var saveCalls = 0;
+        fileSaver.Setup(x => x.SaveAsync(It.IsAny<FileName>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Callback(() => saveCalls++)
+            .Returns(Task.CompletedTask);
+        var serializeCalls = 0;
+        serializer.Setup(x => x.Serialize(It.IsAny<IEnumerable<KeyValuePair<object, KafkaMessage<object>>>>(), It.IsAny<bool>()))
+            .Callback(() => serializeCalls++)
+            .Returns("{}");
+        var streamSerializeCalls = 0;
+        serializer.Setup(x => x.Serialize(It.IsAny<IEnumerable<KeyValuePair<object, KafkaMessage<object>>>>(), It.IsAny<bool>(), It.IsAny<Stream>()))
+            .Callback(() => streamSerializeCalls++);
+        var createStreamCalls = 0;
+        fileStreamProvider.Setup(x => x.CreateFileStream(It.IsAny<FileName>()))
+            .Callback(() => createStreamCalls++)
+            .Returns(new MemoryStream());
+
+        // Act
+        var exception = await Record.ExceptionAsync(() => exporter.ExportAsync(data, topic, token));
+
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<OperationCanceledException>();
+        saveCalls.Should().Be(0);
+        serializeCalls.Should().Be(0);
+        streamSerializeCalls.Should().Be(0);
+        createStreamCalls.Should().Be(0);
+    }
+
     [Theory(DisplayName = "JsonFileDataExporter can export data with non stream mode.")]
     [Trait("Category", "Unit")]
     [InlineData(true)]

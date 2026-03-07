@@ -67,13 +67,15 @@ public sealed class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> :
         ArgumentNullException.ThrowIfNull(data);
         ArgumentNullException.ThrowIfNull(topic);
 
+        ct.ThrowIfCancellationRequested();
+
         if (_isStreamingMode)
         {
-            await InnerStreamExportAsync(data, topic);
+            await InnerStreamExportAsync(data, topic, ct).ConfigureAwait(false);
         }
         else
         {
-            await InnerFileExportAsync(data, topic, ct);
+            await InnerFileExportAsync(data, topic, ct).ConfigureAwait(false);
         }
     }
 
@@ -88,9 +90,11 @@ public sealed class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> :
 
         _logger.LogDebug("Starting saving data.");
 
+        var cancellableData = EnumerateWithCancellation(data, ct);
+
         await _fileSaver.SaveAsync(
                     topic.ExportName,
-                    _serializer.Serialize(data, topic.ExportRawMessage),
+                    _serializer.Serialize(cancellableData, topic.ExportRawMessage),
                     ct)
                     .ConfigureAwait(false);
 
@@ -99,17 +103,33 @@ public sealed class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> :
 
     private Task InnerStreamExportAsync(
             IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> data,
-            TTopic topic)
+            TTopic topic,
+            CancellationToken ct)
     {
         using var _ = _logger.BeginScope("Data from topic {Topic} to File {File} with stream",
                         topic.TopicName.Name,
                         topic.ExportName);
 
+        ct.ThrowIfCancellationRequested();
+
         using var stream = _streamProvider.CreateFileStream(topic.ExportName);
 
-        _serializer.Serialize(data, topic.ExportRawMessage, stream);
+        _serializer.Serialize(EnumerateWithCancellation(data, ct), topic.ExportRawMessage, stream);
+
+        ct.ThrowIfCancellationRequested();
 
         return Task.CompletedTask;
+    }
+
+    private static IEnumerable<T> EnumerateWithCancellation<T>(
+        IEnumerable<T> source,
+        CancellationToken ct)
+    {
+        foreach (var item in source)
+        {
+            ct.ThrowIfCancellationRequested();
+            yield return item;
+        }
     }
 
     private readonly ILogger _logger;

@@ -245,9 +245,13 @@ public class PartitionWatermarkTests
         assignCalls.Should().Be(1);
     }
 
-    [Fact(DisplayName = "PartitionWatermark could be assing to consumer with date but too big.")]
+    [Theory(DisplayName = "PartitionWatermark should not assign consumer with date and special offset.")]
     [Trait("Category", "Unit")]
-    public void PartitionWatermarkCouldBeAssingToConsumerWithDateTooBig()
+    [InlineData(-1L)]
+    [InlineData(-2L)]
+    [InlineData(-1000L)]
+    [InlineData(-1001L)]
+    public void PartitionWatermarkShouldNotAssignConsumerWithDateAndSpecialOffset(long specialOffset)
     {
 
         // Arrange
@@ -259,7 +263,7 @@ public class PartitionWatermarkTests
         var partition = new Partition(1);
         var pw = new PartitionWatermark(topicName, offsets, partition);
         var consumerMock = new Mock<IConsumer<object, object>>(MockBehavior.Strict);
-        var topicWithOffset = new TopicPartitionOffset(new TopicPartition(topicName.Value.Name, new Partition()), new Offset(Offset.End));
+        var topicWithOffset = new TopicPartitionOffset(new TopicPartition(topicName.Value.Name, new Partition()), new Offset(specialOffset));
         var expectedTimestamp = new Timestamp(date).UnixTimestampMs;
         var offsetsForTimesCalls = 0;
         var assignCalls = 0;

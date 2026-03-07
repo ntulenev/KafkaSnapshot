@@ -96,7 +96,7 @@ public class PartitionWatermark
 
         var singleOffset = offsets.Single();
 
-        if (singleOffset.Offset.IsSpecial && singleOffset.Offset.Value == Confluent.Kafka.Offset.End)
+        if (singleOffset.Offset.IsSpecial)
         {
             return false;
         }

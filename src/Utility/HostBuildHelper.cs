@@ -1,5 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 
+using KafkaSnapshot.Utility.Helpers;
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 

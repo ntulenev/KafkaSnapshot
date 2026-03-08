@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
-namespace KafkaSnapshot.Utility;
+namespace KafkaSnapshot.Utility.Helpers;
 
 /// <summary>
 /// Helpers for common config data.

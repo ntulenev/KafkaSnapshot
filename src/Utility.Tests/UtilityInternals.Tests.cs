@@ -82,7 +82,7 @@ public class UtilityInternalsTests
         _ = services.AddSingleton<ILogger<LoaderConcurrentTool>>(NullLogger<LoaderConcurrentTool>.Instance);
         _ = services.AddSingleton<IReadOnlyCollection<IProcessingUnit>>([]);
 
-        var method = GetStaticMethod("KafkaSnapshot.Utility.StartupHelper", "AddTools");
+        var method = GetStaticMethod("KafkaSnapshot.Utility.Helpers.StartupHelper", "AddTools");
         _ = method.Invoke(null, [services, context]);
 
         using var provider = services.BuildServiceProvider();
@@ -109,7 +109,7 @@ public class UtilityInternalsTests
         using var provider = services.BuildServiceProvider();
 
         var method = GetStaticMethod(
-            "KafkaSnapshot.Utility.StartupHelper",
+            "KafkaSnapshot.Utility.Helpers.StartupHelper",
             "CreateTopicLoaders",
             BindingFlags.NonPublic | BindingFlags.Static);
 

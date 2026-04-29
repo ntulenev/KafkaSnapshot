@@ -26,14 +26,7 @@ public sealed class FileName
     /// if <paramref name="fileName"/> is empty or whitespace.</exception>
     public FileName(string fileName)
     {
-        ArgumentNullException.ThrowIfNull(fileName);
-
-        if (string.IsNullOrWhiteSpace(fileName))
-        {
-            throw new ArgumentException(
-                "File name cannot be null, empty or whitespace.",
-                nameof(fileName));
-        }
+        ArgumentException.ThrowIfNullOrWhiteSpace(fileName);
 
         FullName = fileName;
         Extension = Path.GetExtension(fileName);

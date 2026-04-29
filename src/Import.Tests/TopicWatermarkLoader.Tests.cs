@@ -91,7 +91,7 @@ public class TopicWatermarkLoaderTests
         var exception = Record.Exception(() => CreateLoader(client, options.Object));
 
         // Assert
-        exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
+        exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
     [Fact(DisplayName = "TopicWatermarkLoader can't load data with null factory.")]

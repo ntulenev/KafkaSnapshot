@@ -61,6 +61,27 @@ public class LoadingTopicTests
         item.LoadWithCompacting.Should().Be(compactingRule);
         item.HasOffsetDate.Should().BeFalse();
         item.HasEndOffsetDate.Should().BeFalse();
+        item.HasPartitionFilter.Should().BeFalse();
+    }
+
+    [Fact(DisplayName = "Topic can't be created with null date range.")]
+    [Trait("Category", "Unit")]
+    public void CantCreateTopicWithNullDateRange()
+    {
+        // Arrange
+        var name = new TopicName("test");
+
+        // Act
+        var exception = Record.Exception(() =>
+                new LoadingTopic(
+                        name,
+                        true,
+                        null!,
+                        EncoderRules.String,
+                        null));
+
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
     [Theory(DisplayName = "Topic with valid name can be created 2.")]

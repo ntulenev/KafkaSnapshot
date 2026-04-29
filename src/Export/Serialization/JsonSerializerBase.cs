@@ -16,7 +16,9 @@ public abstract class JsonSerializerBase
     /// <exception cref="ArgumentNullException">Thrown when logger is null.</exception>
     protected JsonSerializerBase(ILogger<JsonSerializerBase> logger)
     {
-        Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        ArgumentNullException.ThrowIfNull(logger);
+
+        Logger = logger;
     }
 
     /// <summary>

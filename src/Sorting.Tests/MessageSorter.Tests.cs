@@ -145,25 +145,28 @@ public class MessageSorterTests
         result.Should().Equal(msg3, msg1, msg2);
     }
 
-    [Fact(DisplayName = "MessageSorter throws for unsupported sorting params.")]
+    [Fact(DisplayName = "SortingParams can't be created with unsupported sorting type.")]
     [Trait("Category", "Unit")]
-    public void MessageSorterThrowsForUnsupportedSortingParams()
+    public void SortingParamsCantBeCreatedWithUnsupportedSortingType()
     {
-        // Arrange
-        var sorter = new MessageSorter<int, int>(
-            new Models.Sorting.SortingParams((SortingType)999, (SortingOrder)999));
-        var data = new[]
-        {
-            new KeyValuePair<int, KafkaMessage<int>>(
-                1,
-                new KafkaMessage<int>(1, new KafkaMetadata(DateTime.UtcNow, 1, 1)))
-        };
-
         // Act
-        var exception = Record.Exception(() => sorter.Sort(data).ToList());
+        var exception = Record.Exception(() =>
+            new Models.Sorting.SortingParams((SortingType)999, SortingOrder.None));
 
         // Assert
-        exception.Should().NotBeNull().And.BeOfType<NotImplementedException>();
+        exception.Should().NotBeNull().And.BeOfType<ArgumentOutOfRangeException>();
+    }
+
+    [Fact(DisplayName = "SortingParams can't be created with unsupported sorting order.")]
+    [Trait("Category", "Unit")]
+    public void SortingParamsCantBeCreatedWithUnsupportedSortingOrder()
+    {
+        // Act
+        var exception = Record.Exception(() =>
+            new Models.Sorting.SortingParams(SortingType.Time, (SortingOrder)999));
+
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<ArgumentOutOfRangeException>();
     }
 
 }

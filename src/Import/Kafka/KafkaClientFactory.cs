@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 namespace KafkaSnapshot.Import.Kafka;
 
 /// <inheritdoc />
-public sealed class KafkaClientFactory : IKafkaClientFactory
+public class KafkaClientFactory : IKafkaClientFactory
 {
     /// <summary>
     /// Creates <see cref="KafkaClientFactory"/>.
@@ -22,9 +22,17 @@ public sealed class KafkaClientFactory : IKafkaClientFactory
     }
 
     /// <inheritdoc />
-    public IAdminClient CreateAdminClient()
-    {
-        var adminConfig = new AdminClientConfig
+    public IAdminClient CreateAdminClient() => BuildAdminClient(CreateAdminConfig());
+
+    /// <inheritdoc />
+    public IConsumer<TKey, byte[]> CreateConsumer<TKey>() => BuildConsumer<TKey>(CreateConsumerConfig<TKey>());
+
+    /// <summary>
+    /// Creates Apache Kafka admin client configuration.
+    /// </summary>
+    public AdminClientConfig CreateAdminConfig()
+        =>
+        new()
         {
             BootstrapServers = BootstrapServers,
             SecurityProtocol = _config.SecurityProtocol,
@@ -33,13 +41,12 @@ public sealed class KafkaClientFactory : IKafkaClientFactory
             SaslPassword = _config.Password
         };
 
-        return new AdminClientBuilder(adminConfig).Build();
-    }
-
-    /// <inheritdoc />
-    public IConsumer<TKey, byte[]> CreateConsumer<TKey>()
-    {
-        var consumerConfig = new ConsumerConfig
+    /// <summary>
+    /// Creates Apache Kafka consumer configuration.
+    /// </summary>
+    public ConsumerConfig CreateConsumerConfig<TKey>()
+        =>
+        new()
         {
             BootstrapServers = BootstrapServers,
             AutoOffsetReset = AutoOffsetReset.Earliest,
@@ -51,7 +58,27 @@ public sealed class KafkaClientFactory : IKafkaClientFactory
             SaslPassword = _config.Password
         };
 
-        return new ConsumerBuilder<TKey, byte[]>(consumerConfig).Build();
+    /// <summary>
+    /// Builds an Apache Kafka admin client.
+    /// </summary>
+    /// <param name="config">Admin client configuration.</param>
+    protected virtual IAdminClient BuildAdminClient(AdminClientConfig config)
+    {
+        ArgumentNullException.ThrowIfNull(config);
+
+        return new AdminClientBuilder(config).Build();
+    }
+
+    /// <summary>
+    /// Builds an Apache Kafka consumer.
+    /// </summary>
+    /// <typeparam name="TKey">Kafka message key type.</typeparam>
+    /// <param name="config">Consumer configuration.</param>
+    protected virtual IConsumer<TKey, byte[]> BuildConsumer<TKey>(ConsumerConfig config)
+    {
+        ArgumentNullException.ThrowIfNull(config);
+
+        return new ConsumerBuilder<TKey, byte[]>(config).Build();
     }
 
     private string BootstrapServers => string.Join(",", _config.BootstrapServers);

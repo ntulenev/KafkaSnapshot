@@ -14,7 +14,7 @@ public sealed class TopicName
     /// too long, or contains invalid characters.</exception>
     public TopicName(string name)
     {
-        ArgumentNullException.ThrowIfNull(name);
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
 
         if (!KafkaTopicNameRules.IsValid(name))
         {

@@ -16,19 +16,7 @@ public sealed class TopicName
     {
         ArgumentNullException.ThrowIfNull(name);
 
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            throw new ArgumentException("Topic name cannot be null or empty", nameof(name));
-        }
-
-        if (name.Length > MAX_TOPIC_NAME_LENGTH)
-        {
-            throw new ArgumentException(
-                $"Topic name cannot be longer than {MAX_TOPIC_NAME_LENGTH} characters",
-                nameof(name));
-        }
-
-        if (!IsValidTopicName(name))
+        if (!KafkaTopicNameRules.IsValid(name))
         {
             throw new ArgumentException("Topic name contains invalid characters", nameof(name));
         }
@@ -41,18 +29,4 @@ public sealed class TopicName
     /// </summary>
     public string Name { get; }
 
-    private static bool IsValidTopicName(string name)
-    {
-        foreach (var c in name)
-        {
-            if (!char.IsLetterOrDigit(c) && c != '-' && c != '_' && c != '.')
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private const int MAX_TOPIC_NAME_LENGTH = 255;
 }

@@ -51,7 +51,7 @@ public sealed class LoaderConcurrentTool : ILoaderTool
 
             _logger.LogInformation("Finish processing topic.");
 
-        }));
+        })).ConfigureAwait(false);
 
         _logger.LogInformation("Done.");
     }

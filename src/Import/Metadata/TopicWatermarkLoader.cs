@@ -1,6 +1,7 @@
 using Confluent.Kafka;
 
 using KafkaSnapshot.Import.Configuration;
+using KafkaSnapshot.Import.Kafka;
 using KafkaSnapshot.Import.Watermarks;
 using KafkaSnapshot.Models.Import;
 
@@ -16,12 +17,12 @@ public class TopicWatermarkLoader : ITopicWatermarkLoader
     /// <summary>
     /// Creates <see cref="TopicWatermarkLoader"/>.
     /// </summary>
-    /// <param name="adminClient">Kafka admin client.</param>
+    /// <param name="kafkaClientFactory">Kafka client factory.</param>
     /// <param name="options">Loader options.</param>
-    public TopicWatermarkLoader(IAdminClient adminClient,
+    public TopicWatermarkLoader(IKafkaClientFactory kafkaClientFactory,
                                 IOptions<TopicWatermarkLoaderConfiguration> options)
     {
-        ArgumentNullException.ThrowIfNull(adminClient);
+        ArgumentNullException.ThrowIfNull(kafkaClientFactory);
         ArgumentNullException.ThrowIfNull(options);
 
         if (options.Value is null)
@@ -30,18 +31,19 @@ public class TopicWatermarkLoader : ITopicWatermarkLoader
         }
 
         _metaTimeout = options.Value.AdminClientTimeout;
-        _adminClient = adminClient;
+        _kafkaClientFactory = kafkaClientFactory;
     }
 
     private IEnumerable<TopicPartition> SplitTopicOnPartitions(LoadingTopic loadingTopic)
     {
         var requestedTopicName = loadingTopic.Value.Name;
-        var metadata = _adminClient.GetMetadata(requestedTopicName, _metaTimeout);
+        using var adminClient = _kafkaClientFactory.CreateAdminClient();
+        var metadata = adminClient.GetMetadata(requestedTopicName, _metaTimeout);
         var topicMetas = metadata.Topics
                                  .Where(topic => topic.Topic == requestedTopicName)
                                  .ToList();
 
-        if (!topicMetas.Any())
+        if (topicMetas.Count == 0)
         {
             throw new InvalidOperationException(
                 $"Metadata for topic '{requestedTopicName}' was not found.");
@@ -96,7 +98,7 @@ public class TopicWatermarkLoader : ITopicWatermarkLoader
     }
 
     /// <inheritdoc />
-    public async Task<TopicWatermark> LoadWatermarksAsync<TKey, TValue>(
+    public Task<TopicWatermark> LoadWatermarksAsync<TKey, TValue>(
                         Func<IConsumer<TKey, TValue>> consumerFactory,
                         LoadingTopic loadingTopic,
                         CancellationToken ct
@@ -105,18 +107,24 @@ public class TopicWatermarkLoader : ITopicWatermarkLoader
         ArgumentNullException.ThrowIfNull(consumerFactory);
         ArgumentNullException.ThrowIfNull(loadingTopic);
 
+        ct.ThrowIfCancellationRequested();
+
         using var consumer = consumerFactory();
 
         try
         {
             var partitions = SplitTopicOnPartitions(loadingTopic);
 
-            var partitionWatermarks = await Task.WhenAll(partitions.Select(
-                        topicPartition => Task.Run(() =>
-                        CreatePartitionWatermark(consumer, loadingTopic, topicPartition), ct)
-                                                   )).ConfigureAwait(false);
+            var partitionWatermarks = partitions
+                .Select(topicPartition =>
+                {
+                    ct.ThrowIfCancellationRequested();
+                    return CreatePartitionWatermark(consumer, loadingTopic, topicPartition);
+                })
+                .ToList();
 
-            return new TopicWatermark(partitionWatermarks.Where(item => item.IsReadyToRead()));
+            return Task.FromResult(
+                new TopicWatermark(partitionWatermarks.Where(item => item.IsReadyToRead())));
         }
         finally
         {
@@ -124,6 +132,6 @@ public class TopicWatermarkLoader : ITopicWatermarkLoader
         }
     }
 
-    private readonly IAdminClient _adminClient;
+    private readonly IKafkaClientFactory _kafkaClientFactory;
     private readonly TimeSpan _metaTimeout;
 }

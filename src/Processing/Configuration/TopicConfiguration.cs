@@ -1,9 +1,5 @@
-using System.Globalization;
-
 using KafkaSnapshot.Models.Filters;
 using KafkaSnapshot.Models.Import;
-using KafkaSnapshot.Models.Names;
-using KafkaSnapshot.Models.Processing;
 
 namespace KafkaSnapshot.Processing.Configuration;
 
@@ -54,7 +50,7 @@ public sealed class TopicConfiguration
     /// <summary>
     /// Optional filter key value.
     /// </summary>
-    public object? FilterKeyValue { get; init; }
+    public string? FilterKeyValue { get; init; }
 
     /// <summary>
     /// Partition ids filter.
@@ -66,28 +62,4 @@ public sealed class TopicConfiguration
     /// </summary>
     public EncoderRules MessageEncoderRule { get; init; } = EncoderRules.String;
 
-    /// <summary>
-    /// Converts configuration to <see cref="ProcessingTopic{TKey}"/>.
-    /// </summary>
-    /// <typeparam name="TKey">Message key.</typeparam>
-    public ProcessingTopic<TKey> ConvertToProcess<TKey>()
-    {
-        var typedFilterKeyValue = FilterKeyValue is not null ?
-                              (TKey)Convert.ChangeType(FilterKeyValue, typeof(TKey), CultureInfo.InvariantCulture)
-                              :
-                              default;
-
-        var dateRange = new DateFilterRange(OffsetStartDate, OffsetEndDate);
-
-        return new ProcessingTopic<TKey>(new TopicName(Name),
-                                         new FileName(ExportFileName),
-                                         Compacting == CompactingMode.On,
-                                         FilterKeyType,
-                                         KeyType,
-                                         typedFilterKeyValue!,
-                                         dateRange,
-                                         ExportRawMessage,
-                                         MessageEncoderRule,
-                                         PartitionsIds);
-    }
 }

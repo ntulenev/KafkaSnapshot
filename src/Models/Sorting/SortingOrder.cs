@@ -8,15 +8,33 @@ public enum SortingOrder
     /// <summary>
     /// Sort in ascending order.
     /// </summary>
-    Ask,
+    Ascending,
 
     /// <summary>
     /// Sort in descending order.
     /// </summary>
-    Desk,
+    Descending,
 
     /// <summary>
     /// Do not apply sorting.
     /// </summary>
-    No
+    None,
+
+    /// <summary>
+    /// Sort in ascending order.
+    /// </summary>
+    [Obsolete("Use Ascending instead.")]
+    Ask = Ascending,
+
+    /// <summary>
+    /// Sort in descending order.
+    /// </summary>
+    [Obsolete("Use Descending instead.")]
+    Desk = Descending,
+
+    /// <summary>
+    /// Do not apply sorting.
+    /// </summary>
+    [Obsolete("Use None instead.")]
+    No = None
 }

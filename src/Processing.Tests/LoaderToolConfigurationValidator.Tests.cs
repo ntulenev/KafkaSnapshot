@@ -618,7 +618,7 @@ public class LoaderToolConfigurationValidatorTests
                       ExportFileName = "export",
                       ExportRawMessage = true,
                       FilterKeyType = Models.Filters.FilterType.Equals,
-                      FilterKeyValue = new object(),
+                      FilterKeyValue = "{}",
                       KeyType = Models.Filters.KeyType.Json,
                   }
             }
@@ -653,7 +653,7 @@ public class LoaderToolConfigurationValidatorTests
                       ExportFileName = "export",
                       ExportRawMessage = true,
                       FilterKeyType = Models.Filters.FilterType.Equals,
-                      FilterKeyValue = new object(),
+                      FilterKeyValue = "{}",
                       KeyType = Models.Filters.KeyType.Json,
                   },
                   new TopicConfiguration
@@ -698,7 +698,7 @@ public class LoaderToolConfigurationValidatorTests
                       ExportFileName = "export",
                       ExportRawMessage = true,
                       FilterKeyType = Models.Filters.FilterType.Equals,
-                      FilterKeyValue = new object(),
+                      FilterKeyValue = "{}",
                       KeyType = Models.Filters.KeyType.Json,
                   },
                   new TopicConfiguration
@@ -708,7 +708,7 @@ public class LoaderToolConfigurationValidatorTests
                       ExportFileName = "export",
                       ExportRawMessage = true,
                       FilterKeyType = Models.Filters.FilterType.Equals,
-                      FilterKeyValue = new object(),
+                      FilterKeyValue = "{}",
                       KeyType = Models.Filters.KeyType.Ignored,
                   }
             }
@@ -756,3 +756,4 @@ public class LoaderToolConfigurationValidatorTests
         result.Succeeded.Should().BeFalse();
     }
 }
+

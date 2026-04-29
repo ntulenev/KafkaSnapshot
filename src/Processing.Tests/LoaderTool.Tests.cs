@@ -133,7 +133,7 @@ public class LoaderToolTests
         var unit1ProcessCalls = 0;
         unit1.Setup(x => x.ProcessAsync(cts.Token))
             .Callback(() => unit1ProcessCalls++)
-            .Throws(new Exception());
+            .Throws(new InvalidOperationException());
         var unit2 = new Mock<IProcessingUnit>(MockBehavior.Strict);
         unit2.Setup(x => x.TopicName).Returns(() => new TopicName("unit2"));
         var unit2ProcessCalls = 0;
@@ -150,7 +150,7 @@ public class LoaderToolTests
         var exception = await Record.ExceptionAsync(() => tool.ProcessAsync(cts.Token));
 
         // Assert
-        exception.Should().NotBeNull().And.BeOfType<Exception>();
+        exception.Should().NotBeNull().And.BeOfType<InvalidOperationException>();
         unit1ProcessCalls.Should().Be(1);
         unit2ProcessCalls.Should().Be(0);
     }
@@ -180,7 +180,7 @@ public class LoaderToolTests
             unit1.Object,unit2.Object
         };
         var tool = new LoaderTool(logger, items);
-        cts.Cancel();
+        await cts.CancelAsync();
 
         // Act
         var exception = await Record.ExceptionAsync(() => tool.ProcessAsync(cts.Token));

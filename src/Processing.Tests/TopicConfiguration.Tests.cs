@@ -34,7 +34,7 @@ public class TopicConfigurationTests
         };
 
         // Act
-        var result = config.ConvertToProcess<long>();
+        var result = TopicConfigurationMapper.ToProcessingTopic<long>(config);
 
         // Assert
         config.PartitionsIds.Should().BeSameAs(partitions);
@@ -70,7 +70,7 @@ public class TopicConfigurationTests
         };
 
         // Act
-        var result = config.ConvertToProcess<string>();
+        var result = TopicConfigurationMapper.ToProcessingTopic<string>(config);
 
         // Assert
         result.FilterKeyValue.Should().BeNull();

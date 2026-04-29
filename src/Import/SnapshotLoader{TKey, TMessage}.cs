@@ -111,22 +111,61 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
 
             return [];
         }
-        else
-        {
-            var consumedEntities = await Task.WhenAll(topicWatermark.Watermarks
-            .Select(watermark =>
-                        Task.Run(() =>
-                                    ConsumeToWatermark(
-                                        watermark,
-                                        topicParams,
-                                        keyFilter,
-                                        valueFilter,
-                                        ct))
-                   )
-            ).ConfigureAwait(false);
+        return await ConsumePartitionsAsync(
+            topicWatermark.Watermarks,
+            topicParams,
+            keyFilter,
+            valueFilter,
+            ct).ConfigureAwait(false);
+    }
 
-            return consumedEntities.SelectMany(consumerResults => consumerResults);
+    private async Task<IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>>> ConsumePartitionsAsync(
+        IEnumerable<PartitionWatermark> watermarks,
+        LoadingTopic topicParams,
+        IDataFilter<TKey> keyFilter,
+        IDataFilter<TMessage> valueFilter,
+        CancellationToken ct)
+    {
+        var partitionWatermarks = watermarks.ToList();
+
+        if (partitionWatermarks.Count == 0)
+        {
+            return [];
         }
+
+        var maxConcurrency = _config.MaxConcurrentPartitions.GetValueOrDefault();
+
+        if (maxConcurrency < 1)
+        {
+            maxConcurrency = partitionWatermarks.Count;
+        }
+
+        using var concurrency = new SemaphoreSlim(maxConcurrency);
+
+        var tasks = partitionWatermarks.Select(async watermark =>
+        {
+            await concurrency.WaitAsync(ct).ConfigureAwait(false);
+
+            try
+            {
+                return await Task.Run(
+                    () => ConsumeToWatermark(
+                        watermark,
+                        topicParams,
+                        keyFilter,
+                        valueFilter,
+                        ct).ToList(),
+                    ct).ConfigureAwait(false);
+            }
+            finally
+            {
+                _ = concurrency.Release();
+            }
+        });
+
+        var consumedEntities = await Task.WhenAll(tasks).ConfigureAwait(false);
+
+        return consumedEntities.SelectMany(consumerResults => consumerResults);
     }
 
     private IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> ConsumeToWatermark(

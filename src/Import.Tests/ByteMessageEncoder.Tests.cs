@@ -11,7 +11,7 @@ namespace KafkaSnapshot.Import.Tests;
 
 public class ByteMessageEncoderTests
 {
-    public static IEnumerable<object[]> TestData()
+    public static TheoryData<byte[], EncoderRules, string> TestData()
     {
         var strData1 = new string('A', 100);
         var strData2 = new string('B', 100);
@@ -30,10 +30,13 @@ public class ByteMessageEncoderTests
         var parametersLZ4 = MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4Block);
         byte[] serializedDataLZ4 = MessagePackSerializer.Serialize(testObject, parametersLZ4);
 
-        yield return new object[] { helloBytes, EncoderRules.String, "Hello" };
-        yield return new object[] { serializedDataNone, EncoderRules.MessagePack, result };
-        yield return new object[] { serializedDataLZ4, EncoderRules.MessagePackLz4Block, result };
-        yield return new object[] { helloBytes, EncoderRules.Base64, "SGVsbG8=" };
+        return new TheoryData<byte[], EncoderRules, string>
+        {
+            { helloBytes, EncoderRules.String, "Hello" },
+            { serializedDataNone, EncoderRules.MessagePack, result },
+            { serializedDataLZ4, EncoderRules.MessagePackLz4Block, result },
+            { helloBytes, EncoderRules.Base64, "SGVsbG8=" }
+        };
     }
 
     [Trait("Category", "Unit")]

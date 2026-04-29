@@ -9,6 +9,7 @@ using Moq;
 using Xunit;
 
 using KafkaSnapshot.Import.Configuration;
+using KafkaSnapshot.Import.Kafka;
 using KafkaSnapshot.Import.Metadata;
 using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Filters;
@@ -32,7 +33,7 @@ public class TopicWatermarkLoaderTests
         });
 
         // Act
-        var exception = Record.Exception(() => new TopicWatermarkLoader(client, options.Object));
+        var exception = Record.Exception(() => CreateLoader(client, options.Object));
 
         // Assert
         exception.Should().BeNull();
@@ -44,7 +45,7 @@ public class TopicWatermarkLoaderTests
     {
 
         // Arrange
-        var client = (IAdminClient)null!;
+        var client = (IKafkaClientFactory)null!;
         var options = (new Mock<IOptions<TopicWatermarkLoaderConfiguration>>(MockBehavior.Strict));
         options.Setup(x => x.Value).Returns(new TopicWatermarkLoaderConfiguration
         {
@@ -68,7 +69,9 @@ public class TopicWatermarkLoaderTests
         var options = (IOptions<TopicWatermarkLoaderConfiguration>)null!;
 
         // Act
-        var exception = Record.Exception(() => new TopicWatermarkLoader(client, options));
+        var exception = Record.Exception(() => new TopicWatermarkLoader(
+            CreateKafkaClientFactory(client),
+            options));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -85,7 +88,7 @@ public class TopicWatermarkLoaderTests
         options.SetupGet(x => x.Value).Returns(() => null!);
 
         // Act
-        var exception = Record.Exception(() => new TopicWatermarkLoader(client, options.Object));
+        var exception = Record.Exception(() => CreateLoader(client, options.Object));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
@@ -104,7 +107,7 @@ public class TopicWatermarkLoaderTests
         {
 
         });
-        var loader = new TopicWatermarkLoader(client, options.Object);
+        var loader = CreateLoader(client, options.Object);
         var consumerFactory = (Func<IConsumer<string, string>>)null!;
         HashSet<int> partitionFilter = null!;
         var topicName = new LoadingTopic(new TopicName("test"), true, new DateFilterRange(null!, null!), EncoderRules.String, partitionFilter);
@@ -130,7 +133,7 @@ public class TopicWatermarkLoaderTests
         {
 
         });
-        var loader = new TopicWatermarkLoader(client, options.Object);
+        var loader = CreateLoader(client, options.Object);
         static IConsumer<string, string> consumerFactory() => null!;
         var topicName = (LoadingTopic)null!;
 
@@ -159,7 +162,7 @@ public class TopicWatermarkLoaderTests
         {
             AdminClientTimeout = TimeSpan.FromSeconds(timeout)
         });
-        var loader = new TopicWatermarkLoader(client, options.Object);
+        var loader = CreateLoader(client, options.Object);
         var consumerMock = new Mock<IConsumer<object, object>>(MockBehavior.Strict);
         IConsumer<object, object> consumerFactory() => consumerMock!.Object;
         var adminClientPartition = new TopicPartition(topic.Value.Name, new Partition(1));
@@ -218,7 +221,7 @@ public class TopicWatermarkLoaderTests
         {
             AdminClientTimeout = TimeSpan.FromSeconds(timeout)
         });
-        var loader = new TopicWatermarkLoader(client, options.Object);
+        var loader = CreateLoader(client, options.Object);
         var consumerMock = new Mock<IConsumer<object, object>>(MockBehavior.Strict);
         IConsumer<object, object> consumerFactory() => consumerMock!.Object;
         var adminClientPartition1 = new TopicPartition(topic.Value.Name, new Partition(1));
@@ -284,7 +287,7 @@ public class TopicWatermarkLoaderTests
         {
             AdminClientTimeout = TimeSpan.FromSeconds(timeout)
         });
-        var loader = new TopicWatermarkLoader(clientMock.Object, options.Object);
+        var loader = CreateLoader(clientMock.Object, options.Object);
         var consumerMock = new Mock<IConsumer<object, object>>(MockBehavior.Strict);
         IConsumer<object, object> consumerFactory() => consumerMock.Object;
 
@@ -334,7 +337,7 @@ public class TopicWatermarkLoaderTests
         {
             AdminClientTimeout = TimeSpan.FromSeconds(timeout)
         });
-        var loader = new TopicWatermarkLoader(clientMock.Object, options.Object);
+        var loader = CreateLoader(clientMock.Object, options.Object);
         var consumerMock = new Mock<IConsumer<object, object>>(MockBehavior.Strict);
         IConsumer<object, object> consumerFactory() => consumerMock.Object;
 
@@ -386,7 +389,7 @@ public class TopicWatermarkLoaderTests
         {
             AdminClientTimeout = TimeSpan.FromSeconds(timeout)
         });
-        var loader = new TopicWatermarkLoader(clientMock.Object, options.Object);
+        var loader = CreateLoader(clientMock.Object, options.Object);
         var consumerMock = new Mock<IConsumer<object, object>>(MockBehavior.Strict);
         IConsumer<object, object> consumerFactory() => consumerMock.Object;
 
@@ -433,4 +436,24 @@ public class TopicWatermarkLoaderTests
         closeCalls.Should().Be(1);
         disposeCalls.Should().Be(1);
     }
+
+    private static TopicWatermarkLoader CreateLoader(
+        IAdminClient adminClient,
+        IOptions<TopicWatermarkLoaderConfiguration> options)
+        => new(CreateKafkaClientFactory(adminClient), options);
+
+    private static IKafkaClientFactory CreateKafkaClientFactory(IAdminClient adminClient)
+    {
+        if (adminClient is not null)
+        {
+            Mock.Get(adminClient).Setup(client => client.Dispose());
+        }
+
+        var factoryMock = new Mock<IKafkaClientFactory>(MockBehavior.Strict);
+        factoryMock.Setup(factory => factory.CreateAdminClient()).Returns(adminClient!);
+
+        return factoryMock.Object;
+    }
 }
+
+

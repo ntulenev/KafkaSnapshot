@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Text.RegularExpressions;
+
+using KafkaSnapshot.Models.Names;
 
 using Microsoft.Extensions.Options;
 
@@ -35,19 +36,19 @@ public sealed partial class LoaderToolConfigurationValidator :
             return true;
         }
 
-        if (topic.Name.Length > MAX_TOPIC_NAME_LENGTH)
+        if (topic.Name.Length > KafkaTopicNameRules.MaxLength)
         {
             result = ValidateOptionsResult.Fail(
                 $"The name of a topic {topic.Name} is too long.");
             return true;
         }
 
-        if (!_topicNameCharacters.IsMatch(topic.Name))
+        if (!KafkaTopicNameRules.IsValid(topic.Name))
         {
             result = ValidateOptionsResult.Fail(
                $"Incorrect topic name {topic.Name}. " +
                $"The topic name may consist of characters 'a' to 'z', 'A' to 'Z', " +
-               $"digits, and minus signs.");
+               $"digits, dots, underscores, and minus signs.");
             return true;
         }
 
@@ -106,7 +107,7 @@ public sealed partial class LoaderToolConfigurationValidator :
             return true;
         }
 
-        if (!options.Topics.Any())
+        if (options.Topics.Count == 0)
         {
             result = ValidateOptionsResult.Fail("Topics section is empty.");
             return true;
@@ -127,7 +128,7 @@ public sealed partial class LoaderToolConfigurationValidator :
                                     .Select(x => x.Key)
                                     .ToList();
 
-        if (fileDuplicates.Any())
+        if (fileDuplicates.Count > 0)
         {
             var duplicates = string.Join(",", fileDuplicates);
             result = ValidateOptionsResult.Fail(
@@ -167,9 +168,4 @@ public sealed partial class LoaderToolConfigurationValidator :
         return ValidateOptionsResult.Success;
     }
 
-    private static readonly Regex _topicNameCharacters = CreateKafkaRegex();
-    private const int MAX_TOPIC_NAME_LENGTH = 249;
-
-    [GeneratedRegex("^[a-zA-Z0-9\\-]*$", RegexOptions.Compiled)]
-    private static partial Regex CreateKafkaRegex();
 }

@@ -41,10 +41,10 @@ public class ModelRecordsTests
     public void SortingParamsPropertiesCanBeRead()
     {
         // Arrange
-        var sortingParams = new SortingParams(SortingType.Time, SortingOrder.Ask);
+        var sortingParams = new SortingParams(SortingType.Time, SortingOrder.Ascending);
 
         // Assert
         sortingParams.Type.Should().Be(SortingType.Time);
-        sortingParams.Order.Should().Be(SortingOrder.Ask);
+        sortingParams.Order.Should().Be(SortingOrder.Ascending);
     }
 }

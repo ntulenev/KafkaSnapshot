@@ -20,12 +20,12 @@ public class MessageSorterTests
 
     [Theory(DisplayName = "MessageSorter can't sort null data.")]
     [Trait("Category", "Unit")]
-    [InlineData(SortingType.Partition, SortingOrder.No)]
-    [InlineData(SortingType.Time, SortingOrder.No)]
-    [InlineData(SortingType.Partition, SortingOrder.Ask)]
-    [InlineData(SortingType.Time, SortingOrder.Ask)]
-    [InlineData(SortingType.Partition, SortingOrder.Desk)]
-    [InlineData(SortingType.Time, SortingOrder.Desk)]
+    [InlineData(SortingType.Partition, SortingOrder.None)]
+    [InlineData(SortingType.Time, SortingOrder.None)]
+    [InlineData(SortingType.Partition, SortingOrder.Ascending)]
+    [InlineData(SortingType.Time, SortingOrder.Ascending)]
+    [InlineData(SortingType.Partition, SortingOrder.Descending)]
+    [InlineData(SortingType.Time, SortingOrder.Descending)]
     public void MessageSorterCantSortNullData(SortingType type, SortingOrder order)
     {
         // Arrange
@@ -52,7 +52,7 @@ public class MessageSorterTests
              new KeyValuePair<int, KafkaMessage<int>>(3,new KafkaMessage<int>(3,new KafkaMetadata(DateTime.UtcNow,1,1))),
         ];
 
-        var sorter = new MessageSorter<int, int>(new Models.Sorting.SortingParams(type, SortingOrder.No));
+        var sorter = new MessageSorter<int, int>(new Models.Sorting.SortingParams(type, SortingOrder.None));
 
         // Act
         var result = sorter.Sort(data);
@@ -72,7 +72,7 @@ public class MessageSorterTests
         var msg1 = new KeyValuePair<int, KafkaMessage<int>>(1, new KafkaMessage<int>(1, new KafkaMetadata(date, 1, 1)));
         var msg2 = new KeyValuePair<int, KafkaMessage<int>>(1, new KafkaMessage<int>(1, new KafkaMetadata(date, 2, 1)));
 
-        var sorter = new MessageSorter<int, int>(new Models.Sorting.SortingParams(SortingType.Partition, SortingOrder.Ask));
+        var sorter = new MessageSorter<int, int>(new Models.Sorting.SortingParams(SortingType.Partition, SortingOrder.Ascending));
 
         // Act
         var result = sorter.Sort([msg3, msg1, msg2]);
@@ -92,7 +92,7 @@ public class MessageSorterTests
         var msg1 = new KeyValuePair<int, KafkaMessage<int>>(1, new KafkaMessage<int>(1, new KafkaMetadata(date, 1, 1)));
         var msg2 = new KeyValuePair<int, KafkaMessage<int>>(1, new KafkaMessage<int>(1, new KafkaMetadata(date, 2, 1)));
 
-        var sorter = new MessageSorter<int, int>(new Models.Sorting.SortingParams(SortingType.Partition, SortingOrder.Desk));
+        var sorter = new MessageSorter<int, int>(new Models.Sorting.SortingParams(SortingType.Partition, SortingOrder.Descending));
 
         // Act
         var result = sorter.Sort([msg3, msg1, msg2]);
@@ -114,7 +114,7 @@ public class MessageSorterTests
         var msg1 = new KeyValuePair<int, KafkaMessage<int>>(1, new KafkaMessage<int>(1, new KafkaMetadata(date2, 1, 1)));
         var msg2 = new KeyValuePair<int, KafkaMessage<int>>(1, new KafkaMessage<int>(1, new KafkaMetadata(date1, 1, 1)));
 
-        var sorter = new MessageSorter<int, int>(new Models.Sorting.SortingParams(SortingType.Time, SortingOrder.Ask));
+        var sorter = new MessageSorter<int, int>(new Models.Sorting.SortingParams(SortingType.Time, SortingOrder.Ascending));
 
         // Act
         var result = sorter.Sort([msg3, msg1, msg2]);
@@ -136,7 +136,7 @@ public class MessageSorterTests
         var msg1 = new KeyValuePair<int, KafkaMessage<int>>(1, new KafkaMessage<int>(1, new KafkaMetadata(date2, 1, 1)));
         var msg2 = new KeyValuePair<int, KafkaMessage<int>>(1, new KafkaMessage<int>(1, new KafkaMetadata(date1, 1, 1)));
 
-        var sorter = new MessageSorter<int, int>(new Models.Sorting.SortingParams(SortingType.Time, SortingOrder.Desk));
+        var sorter = new MessageSorter<int, int>(new Models.Sorting.SortingParams(SortingType.Time, SortingOrder.Descending));
 
         // Act
         var result = sorter.Sort([msg3, msg1, msg2]);

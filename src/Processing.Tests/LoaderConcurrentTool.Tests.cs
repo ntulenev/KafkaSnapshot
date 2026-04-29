@@ -180,7 +180,7 @@ public class LoaderConcurrentToolTests
             unit1.Object,unit2.Object
         };
         var tool = new LoaderConcurrentTool(logger, items);
-        cts.Cancel();
+        await cts.CancelAsync();
 
         // Act
         var exception = await Record.ExceptionAsync(() => tool.ProcessAsync(cts.Token));

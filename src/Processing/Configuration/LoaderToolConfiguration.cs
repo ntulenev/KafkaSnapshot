@@ -25,5 +25,5 @@ public sealed class LoaderToolConfiguration
     /// <summary>
     /// Message sorting type.
     /// </summary>
-    public SortingOrder GlobalSortOrder { get; init; } = SortingOrder.No;
+    public SortingOrder GlobalSortOrder { get; init; } = SortingOrder.None;
 }

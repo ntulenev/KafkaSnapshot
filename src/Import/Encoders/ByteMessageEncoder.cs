@@ -17,7 +17,7 @@ public class ByteMessageEncoder : IMessageEncoder<byte[], string>
 
     /// <inheritdoc />
     /// <exception cref="ArgumentNullException">Thrown when the input message is null.</exception>
-    /// <exception cref="ArgumentException">Thrown when an invalid EncoderRules value is provided.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when an invalid EncoderRules value is provided.</exception>
     public string Encode(byte[] message, EncoderRules rule)
     {
         ArgumentNullException.ThrowIfNull(message);
@@ -29,7 +29,7 @@ public class ByteMessageEncoder : IMessageEncoder<byte[], string>
             EncoderRules.MessagePackLz4Block => MessagePackSerializer.ConvertToJson(message,
                 MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4Block)),
             EncoderRules.Base64 => Convert.ToBase64String(message),
-            _ => throw new ArgumentException($"Invalid EncoderRules value {rule}", nameof(rule))
+            _ => throw new ArgumentOutOfRangeException(nameof(rule), rule, $"Invalid EncoderRules value {rule}")
         };
     }
 }

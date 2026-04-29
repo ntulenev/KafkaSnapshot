@@ -23,6 +23,12 @@ public sealed class EqualsFilter<TData>(TData sample) :
         return data.Equals(_sample);
     }
 
-    private readonly TData _sample = sample ??
-        throw new ArgumentNullException(nameof(sample));
+    private readonly TData _sample = ValidateSample(sample);
+
+    private static TData ValidateSample(TData sample)
+    {
+        ArgumentNullException.ThrowIfNull(sample);
+
+        return sample;
+    }
 }

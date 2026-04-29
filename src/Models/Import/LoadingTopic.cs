@@ -72,20 +72,17 @@ public sealed class LoadingTopic
                         IReadOnlySet<int>? partitionFilter
                         )
     {
-        Value = topicName ?? throw new ArgumentNullException(nameof(topicName));
-        LoadWithCompacting = loadWithCompacting;
-
+        ArgumentNullException.ThrowIfNull(topicName);
         ArgumentNullException.ThrowIfNull(dateParams);
 
+        Value = topicName;
+        LoadWithCompacting = loadWithCompacting;
         _offsetDate = dateParams.StartDate;
         _endOffsetDate = dateParams.EndDate;
 
         if (partitionFilter != null)
         {
-            if (!partitionFilter.Any())
-            {
-                throw new ArgumentException("Filter is not set", nameof(partitionFilter));
-            }
+            ArgumentOutOfRangeException.ThrowIfZero(partitionFilter.Count, nameof(partitionFilter));
 
             PartitionFilter = partitionFilter.ToFrozenSet();
         }
@@ -96,8 +93,10 @@ public sealed class LoadingTopic
 
         if (!Enum.IsDefined(valueEncoderRule))
         {
-            throw new ArgumentException(
-                $"Invalid EncoderRules value {valueEncoderRule}", nameof(valueEncoderRule));
+            throw new ArgumentOutOfRangeException(
+                nameof(valueEncoderRule),
+                valueEncoderRule,
+                $"Invalid EncoderRules value {valueEncoderRule}.");
         }
 
         TopicValueEncoderRule = valueEncoderRule;

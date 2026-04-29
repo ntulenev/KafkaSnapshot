@@ -1,6 +1,28 @@
 ![KafkaSnapshot](logo_s.png)
 # KafkaSnapshot
-Tool that allows to read current data snapshot from Apache Kafka topic to the file.
+Tool that allows reading the current data snapshot from an Apache Kafka topic to a file.
+
+## Requirements
+
+* .NET 10 SDK
+
+## Build and test
+
+The repository uses the modern `.slnx` solution format.
+
+```powershell
+dotnet restore src\KafkaSnapshot.slnx
+dotnet build src\KafkaSnapshot.slnx --no-restore
+dotnet test src\KafkaSnapshot.slnx --no-build
+```
+
+## Run
+
+Update `src\Utility\appsettings.json`, then run the utility project:
+
+```powershell
+dotnet run --project src\Utility\Utility.csproj
+```
 
 Supports:
 * Compacting
@@ -13,7 +35,7 @@ Supports:
 * Message payload in MessagePack with auto converting to JSON Array
 * Message converting to Base64
 
-By default messages should contains JSON data. Simple strings also supported (see ExportRawMessage parameter).
+By default, messages should contain JSON data. Simple strings are also supported (see the `ExportRawMessage` parameter).
 
 ![Details](Case1.PNG)
 

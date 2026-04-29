@@ -58,7 +58,7 @@ public class JsonFileDataExporterTests
             config.Object, logger.Object, fileSaver.Object, fileStreamProvider.Object, serializer.Object));
 
         // Assert
-        exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
+        exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
     [Fact(DisplayName = "JsonFileDataExporter can't be created without serializer.")]

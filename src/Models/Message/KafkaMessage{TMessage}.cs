@@ -4,7 +4,30 @@ namespace KafkaSnapshot.Models.Message;
 /// Kafka message with metadata.
 /// </summary>
 /// <typeparam name="TMessage">Message type.</typeparam>
-/// <param name="Message">Kafka message.</param>
-/// <param name="Meta">Message metadata.</param>
-public sealed record KafkaMessage<TMessage>(TMessage Message, KafkaMetadata Meta)
-    where TMessage : notnull;
+public sealed record KafkaMessage<TMessage>
+    where TMessage : notnull
+{
+    /// <summary>
+    /// Creates <see cref="KafkaMessage{TMessage}"/>.
+    /// </summary>
+    /// <param name="message">Kafka message.</param>
+    /// <param name="meta">Message metadata.</param>
+    public KafkaMessage(TMessage message, KafkaMetadata meta)
+    {
+        ArgumentNullException.ThrowIfNull(message);
+        ArgumentNullException.ThrowIfNull(meta);
+
+        Message = message;
+        Meta = meta;
+    }
+
+    /// <summary>
+    /// Kafka message.
+    /// </summary>
+    public TMessage Message { get; init; }
+
+    /// <summary>
+    /// Message metadata.
+    /// </summary>
+    public KafkaMetadata Meta { get; init; }
+}

@@ -40,6 +40,12 @@ public class CompareFilter<TData>(TData sample, bool greaterOrEquals) :
     /// </summary>
     public bool IsGreaterOrEquals { get; } = greaterOrEquals;
 
-    private readonly TData _sample = sample
-        ?? throw new ArgumentNullException(nameof(sample));
+    private readonly TData _sample = ValidateSample(sample);
+
+    private static TData ValidateSample(TData sample)
+    {
+        ArgumentNullException.ThrowIfNull(sample);
+
+        return sample;
+    }
 }

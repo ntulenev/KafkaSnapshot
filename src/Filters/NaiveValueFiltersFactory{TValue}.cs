@@ -25,8 +25,9 @@ public sealed class NaiveValueFiltersFactory<TValue> :
         (FilterType.Equals, ValueMessageType.Json, string json)
             => (IDataFilter<TValue>)new JsonEqualsFilter(json),
 
-        _ => throw new ArgumentException($"Invalid filter type {filterValueType} " +
-        $"for value type {valueType} with sample type {typeof(TValue).Name}.", nameof(filterValueType)),
+        _ => throw new ArgumentOutOfRangeException(nameof(filterValueType), filterValueType,
+            $"Invalid filter type {filterValueType} " +
+            $"for value type {valueType} with sample type {typeof(TValue).Name}."),
     };
     private readonly DefaultFilter<TValue> _default = new();
 }

@@ -9,12 +9,12 @@ using KafkaSnapshot.Export.Configuration;
 namespace KafkaSnapshot.Export.File.Output;
 
 /// <summary>
-/// Default Json File exporter.
+/// Exports topic data to a JSON file.
 /// </summary>
-/// <typeparam name="TKey">Message Key.</typeparam>
+/// <typeparam name="TKey">Message key.</typeparam>
 /// <typeparam name="TKeyMarker">Key marker.</typeparam>
-/// <typeparam name="TValue">Message Value.</typeparam>
-/// <typeparam name="TTopic">Topic object.</typeparam>
+/// <typeparam name="TValue">Message value.</typeparam>
+/// <typeparam name="TTopic">Export topic type.</typeparam>
 public sealed class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> :
                     IDataExporter<TKey, TKeyMarker, TValue, TTopic>
                     where TTopic : ExportedTopic

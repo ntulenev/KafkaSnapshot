@@ -7,7 +7,7 @@ using KafkaSnapshot.Export.Markers;
 namespace KafkaSnapshot.Export.Serialization;
 
 /// <summary>
-/// Basic serializer.
+/// Serializes Kafka messages with their original keys.
 /// </summary>
 /// <typeparam name="TKey">Data key type.</typeparam>
 /// <typeparam name="TMessage">Data message type.</typeparam>

@@ -3,7 +3,7 @@ using KafkaSnapshot.Abstractions.Export;
 namespace KafkaSnapshot.Export.Markers;
 
 /// <summary>
-/// Marker for not exists key type that should be ignored. 
+/// Marker for export formats that omit message keys.
 /// </summary>
 public sealed class IgnoreKeyMarker : IKeyRepresentationMarker
 {

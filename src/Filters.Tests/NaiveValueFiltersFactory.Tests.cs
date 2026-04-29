@@ -70,7 +70,7 @@ public class NaiveValueFiltersFactoryTests
                                         new()));
 
         // Assert
-        exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
+        exception.Should().NotBeNull().And.BeOfType<ArgumentOutOfRangeException>();
     }
 
     [Theory(DisplayName = "GreaterOrEquals filter can't be created.")]
@@ -91,7 +91,7 @@ public class NaiveValueFiltersFactoryTests
                                         new()));
 
         // Assert
-        exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
+        exception.Should().NotBeNull().And.BeOfType<ArgumentOutOfRangeException>();
     }
 
     [Theory(DisplayName = "LessOrEquals filter can't be created.")]
@@ -112,6 +112,6 @@ public class NaiveValueFiltersFactoryTests
                                         new()));
 
         // Assert
-        exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
+        exception.Should().NotBeNull().And.BeOfType<ArgumentOutOfRangeException>();
     }
 }

@@ -56,4 +56,43 @@ public class KafkaClientFactoryTests
         // Assert
         exception.Should().BeNull();
     }
+
+    [Fact(DisplayName = "KafkaClientFactory can create admin client.")]
+    [Trait("Category", "Unit")]
+    public void KafkaClientFactoryCanCreateAdminClient()
+    {
+        // Arrange
+        var factory = CreateFactory();
+
+        // Act
+        using var client = factory.CreateAdminClient();
+
+        // Assert
+        client.Should().NotBeNull();
+    }
+
+    [Fact(DisplayName = "KafkaClientFactory can create consumer.")]
+    [Trait("Category", "Unit")]
+    public void KafkaClientFactoryCanCreateConsumer()
+    {
+        // Arrange
+        var factory = CreateFactory();
+
+        // Act
+        using var consumer = factory.CreateConsumer<string>();
+
+        // Assert
+        consumer.Should().NotBeNull();
+    }
+
+    private static KafkaClientFactory CreateFactory()
+    {
+        var optionsMock = new Mock<IOptions<BootstrapServersConfiguration>>(MockBehavior.Strict);
+        optionsMock.Setup(x => x.Value).Returns(new BootstrapServersConfiguration
+        {
+            BootstrapServers = ["localhost:9092"]
+        });
+
+        return new KafkaClientFactory(optionsMock.Object);
+    }
 }

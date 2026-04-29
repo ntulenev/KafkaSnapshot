@@ -205,7 +205,7 @@ public class LoadingTopicTests
                         new HashSet<int>()));
 
         // Assert
-        exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
+        exception.Should().NotBeNull().And.BeOfType<ArgumentOutOfRangeException>();
     }
 
     [Fact(DisplayName = "Can setup partition filter.")]
@@ -263,7 +263,7 @@ public class LoadingTopicTests
                 null));
 
         // Assert
-        exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
+        exception.Should().NotBeNull().And.BeOfType<ArgumentOutOfRangeException>();
     }
 
     [Fact(DisplayName = "Can get topic partition filter.")]

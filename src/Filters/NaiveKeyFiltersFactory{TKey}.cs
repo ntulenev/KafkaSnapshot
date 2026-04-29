@@ -29,8 +29,9 @@ public sealed class NaiveKeyFiltersFactory<TKey> :
             (FilterType.Contains, KeyType.String, string data)
                     => (IDataFilter<TKey>)new StringContainsFilter(data),
 
-            _ => throw new ArgumentException($"Invalid filter type {filterKeyType} for key type {keyType}" +
-                $" with sample type {typeof(TKey).Name}.", nameof(filterKeyType)),
+            _ => throw new ArgumentOutOfRangeException(nameof(filterKeyType), filterKeyType,
+                $"Invalid filter type {filterKeyType} for key type {keyType}" +
+                $" with sample type {typeof(TKey).Name}."),
         };
 
     private readonly DefaultFilter<TKey> _default = new();

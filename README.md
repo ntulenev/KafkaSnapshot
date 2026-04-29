@@ -54,10 +54,12 @@ Config example:
   },
   "SnapshotLoaderConfiguration": {
     "DateOffsetTimeout": "00:00:05",
-    "SearchSinglePartition": false
+    "SearchSinglePartition": false,
+    "MaxConcurrentPartitions": 4
   },
   "JsonFileDataExporterConfiguration": {
-    "UseFileStreaming": true
+    "UseFileStreaming": true,
+    "OutputDirectory": "snapshots"
   },
   "LoaderToolConfiguration": {
     "UseConcurrentLoad": true,
@@ -148,6 +150,7 @@ Config params:
 | AdminClientTimeout | Cluster metadata loading timeout                                                                                                                                        |
 | DateOffsetTimeout | Searching offset by date timeout                                                                                                                                        |
 | SearchSinglePartition | Stops traversing partitions after the first partition with suitable data                                                                                                |
+| MaxConcurrentPartitions | Maximum number of topic partitions processed concurrently (optional). If omitted, all partitions are processed concurrently.                                           |
 | BootstrapServers | List of kafka cluster servers, like "kafka-test:9092"                                                                                                                   |
 | Username | SASL username (optional)                                                                                                                                                |
 | Password | SASL password (optional)                                                                                                                                                |
@@ -155,7 +158,7 @@ Config params:
 | SASLMechanism | SASL mechanism to use for authentication (Gssapi,Plain,ScramSha256,ScramSha512,OAuthBearer) (optional)                                                                  |
 | UseConcurrentLoad | Loads data in concurrent mode or one by one                                                                                                                             |
 | GlobalMessageSort | Message meta field for sorting (Time, Partition) (optional). Applies only for topics without Compacting.                                                                |
-| GlobalSortOrder | GlobalMessageSort order (Ask, Desk, No) (optional). Applies only for topics without Compacting.                                                                         |
+| GlobalSortOrder | GlobalMessageSort order (Ascending, Descending, None) (optional). Legacy aliases Ask, Desk, and No are still supported. Applies only for topics without Compacting.    |
 | Name           | Apache Kafka topic name                                                                                                                                                 |
 | KeyType        | Apache Kafka topic key representation (Json,String,Long,Ignored)                                                                                                        |
 | Compacting     | Use compacting by key or not (On,Off). Not supported for Ignored keyType                                                                                                |
@@ -167,6 +170,7 @@ Config params:
 | ExportRawMessage | If true - export will write message as raw string without converting to formatted json (optional)                                                                       |
 | PartitionsIds | Partitions ids filter (optional)                                                                                                                                        |
 | UseFileStreaming | Serializes loaded data to file directly via FileStream (Avoids OOM issue for large amounts of data). Better effect with disabled sorting (GlobalSortOrder No)           |
+| OutputDirectory | Directory for exported files (optional). If omitted, files are written to the current working directory.                                                                |
 |MessageEncoderRule| Allows you to choose the format in which the message body is received. By default, a String is expected, but you can choose MessagePack, MessagePackLz4Block or Base64. |
 
 Filter restrictions:

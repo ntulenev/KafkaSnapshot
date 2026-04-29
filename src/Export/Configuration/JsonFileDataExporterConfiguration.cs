@@ -9,4 +9,9 @@ public sealed class JsonFileDataExporterConfiguration
     /// Gets or sets a value indicating whether to use file streaming.
     /// </summary>
     public bool UseFileStreaming { get; set; }
+
+    /// <summary>
+    /// Optional directory for exported files. Defaults to the current working directory.
+    /// </summary>
+    public string? OutputDirectory { get; set; }
 }

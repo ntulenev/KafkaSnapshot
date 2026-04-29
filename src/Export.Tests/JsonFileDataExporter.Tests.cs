@@ -183,7 +183,7 @@ public class JsonFileDataExporterTests
 
         // Act
         var exception = await Record.ExceptionAsync(async () =>
-            await exporter.ExportAsync(data, topic, token));
+            await exporter.ExportAsync(data, topic, token).ConfigureAwait(false));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -211,7 +211,7 @@ public class JsonFileDataExporterTests
 
         // Act
         var exception = await Record.ExceptionAsync(async () =>
-            await exporter.ExportAsync(data, topic, token));
+            await exporter.ExportAsync(data, topic, token).ConfigureAwait(false));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -251,7 +251,7 @@ public class JsonFileDataExporterTests
             .Callback(() => serializeCalls++)
             .Returns("{}");
         var streamSerializeCalls = 0;
-        serializer.Setup(x => x.Serialize(It.IsAny<IEnumerable<KeyValuePair<object, KafkaMessage<object>>>>(), It.IsAny<bool>(), It.IsAny<Stream>()))
+        serializer.Setup(x => x.SerializeAsync(It.IsAny<IEnumerable<KeyValuePair<object, KafkaMessage<object>>>>(), It.IsAny<bool>(), It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
             .Callback(() => streamSerializeCalls++);
         var createStreamCalls = 0;
         fileStreamProvider.Setup(x => x.CreateFileStream(It.IsAny<FileName>()))
@@ -302,7 +302,7 @@ public class JsonFileDataExporterTests
             .Callback(() => fileSaverRunCount++);
 
         // Act
-        await exporter.ExportAsync(data, topic, token);
+        await exporter.ExportAsync(data, topic, token).ConfigureAwait(false);
 
         // Assert
         fileSaverRunCount.Should().Be(1);
@@ -334,12 +334,14 @@ public class JsonFileDataExporterTests
         var testStream = new Mock<Stream>().Object;
         fileStreamProvider.Setup(x => x.CreateFileStream(topic.ExportName)).Returns(() => testStream);
         var fileSaverRunCount = 0;
-        serializer.Setup(x => x.Serialize(data, isRawMessage, testStream)).Callback(() => fileSaverRunCount++);
         using var tcs = new CancellationTokenSource();
         var token = tcs.Token;
+        serializer.Setup(x => x.SerializeAsync(data, isRawMessage, testStream, token))
+            .Returns(Task.CompletedTask)
+            .Callback(() => fileSaverRunCount++);
 
         // Act
-        await exporter.ExportAsync(data, topic, token);
+        await exporter.ExportAsync(data, topic, token).ConfigureAwait(false);
 
         // Assert
         fileSaverRunCount.Should().Be(1);

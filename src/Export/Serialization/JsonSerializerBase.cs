@@ -1,9 +1,6 @@
-using System.Diagnostics;
-using System.Text;
+using System.Text.Json;
 
 using Microsoft.Extensions.Logging;
-
-using Newtonsoft.Json;
 
 namespace KafkaSnapshot.Export.Serialization;
 
@@ -29,21 +26,15 @@ public abstract class JsonSerializerBase
     /// <returns>Serialized JSON.</returns>
     protected string SerializeData(object data)
     {
-        Debug.Assert(data is not null);
-
-        var sb = new StringBuilder();
-
-        using var textWriter = new StringWriter(sb);
-
-        using var jsonWriter = new JsonTextWriter(textWriter);
+        ArgumentNullException.ThrowIfNull(data);
 
         Logger.LogTrace("Start serializing data.");
 
-        _serializer.Serialize(jsonWriter, data);
+        var json = JsonSerializer.Serialize(data, _serializerOptions);
 
         Logger.LogTrace("Finish serializing data.");
 
-        return sb.ToString();
+        return json;
     }
 
     /// <summary>
@@ -51,22 +42,23 @@ public abstract class JsonSerializerBase
     /// </summary>
     /// <param name="data">Data to serialize.</param>
     /// <param name="stream">Destination stream.</param>
-    protected void SerializeDataToStream(object data, Stream stream)
+    /// <param name="ct">The token for cancelling the operation.</param>
+    protected async Task SerializeDataToStreamAsync(object data, Stream stream, CancellationToken ct)
     {
-        Debug.Assert(data is not null);
-        Debug.Assert(stream is not null);
-
-        using var sw = new StreamWriter(stream);
-        using var jsonWriter = new JsonTextWriter(sw);
+        ArgumentNullException.ThrowIfNull(data);
+        ArgumentNullException.ThrowIfNull(stream);
 
         Logger.LogTrace("Start serializing data.");
 
-        _serializer.Serialize(jsonWriter, data);
+        await JsonSerializer.SerializeAsync(stream, data, _serializerOptions, ct).ConfigureAwait(false);
 
         Logger.LogTrace("Finish serializing data.");
     }
 
-    private readonly JsonSerializer _serializer = new() { Formatting = Formatting.Indented };
+    private static readonly JsonSerializerOptions _serializerOptions = new()
+    {
+        WriteIndented = true
+    };
     /// <summary>
     /// Logger instance.
     /// </summary>

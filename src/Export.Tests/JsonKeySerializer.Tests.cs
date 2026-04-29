@@ -65,7 +65,7 @@ public class JsonKeySerializerTests
     [Trait("Category", "Unit")]
     [InlineData(true)]
     [InlineData(false)]
-    public void JsonKeySerializerCantSerializeNullDataToStream(bool isRawData)
+    public async Task JsonKeySerializerCantSerializeNullDataToStream(bool isRawData)
     {
         // Arrange
         var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
@@ -74,7 +74,7 @@ public class JsonKeySerializerTests
         var stream = new Mock<Stream>(MockBehavior.Strict).Object;
 
         // Act
-        var exception = Record.Exception(() => serializer.Serialize(data, isRawData, stream));
+        var exception = await Record.ExceptionAsync(() => serializer.SerializeAsync(data, isRawData, stream, CancellationToken.None)).ConfigureAwait(false);
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -84,7 +84,7 @@ public class JsonKeySerializerTests
     [Trait("Category", "Unit")]
     [InlineData(true)]
     [InlineData(false)]
-    public void JsonKeySerializerCantSerializeDataToNullStream(bool isRawData)
+    public async Task JsonKeySerializerCantSerializeDataToNullStream(bool isRawData)
     {
         // Arrange
         var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
@@ -98,7 +98,7 @@ public class JsonKeySerializerTests
         };
 
         // Act
-        var exception = Record.Exception(() => serializer.Serialize(data, isRawData, null!));
+        var exception = await Record.ExceptionAsync(() => serializer.SerializeAsync(data, isRawData, null!, CancellationToken.None)).ConfigureAwait(false);
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -131,7 +131,7 @@ public class JsonKeySerializerTests
 
     [Fact(DisplayName = "JsonKeySerializer can serialize data to the stream.")]
     [Trait("Category", "Unit")]
-    public void JsonKeySerializerCanSerializeDataToStream()
+    public async Task JsonKeySerializerCanSerializeDataToStream()
     {
         // Arrange
         var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
@@ -147,7 +147,7 @@ public class JsonKeySerializerTests
         using var stream = new MemoryStream();
 
         // Act
-        var exception = Record.Exception(() => serializer.Serialize(data, isRaw, stream));
+        var exception = await Record.ExceptionAsync(() => serializer.SerializeAsync(data, isRaw, stream, CancellationToken.None)).ConfigureAwait(false);
 
         // Assert
         var jsonString = Encoding.Default.GetString((stream.ToArray()));
@@ -175,12 +175,12 @@ public class JsonKeySerializerTests
         var exception = Record.Exception(() => result = serializer.Serialize(data, isRaw));
 
         // Assert
-        exception.Should().NotBeNull().And.BeOfType<Newtonsoft.Json.JsonReaderException>();
+        exception.Should().NotBeNull().And.BeAssignableTo<System.Text.Json.JsonException>();
     }
 
     [Fact(DisplayName = "JsonKeySerializer cant serialize non json data to the stream.")]
     [Trait("Category", "Unit")]
-    public void JsonKeySerializerCantSerializeNonJsonDataToStream()
+    public async Task JsonKeySerializerCantSerializeNonJsonDataToStream()
     {
         // Arrange
         var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
@@ -196,10 +196,10 @@ public class JsonKeySerializerTests
         var stream = new MemoryStream();
 
         // Act
-        var exception = Record.Exception(() => serializer.Serialize(data, isRaw, stream));
+        var exception = await Record.ExceptionAsync(() => serializer.SerializeAsync(data, isRaw, stream, CancellationToken.None)).ConfigureAwait(false);
 
         // Assert
-        exception.Should().NotBeNull().And.BeOfType<Newtonsoft.Json.JsonReaderException>();
+        exception.Should().NotBeNull().And.BeAssignableTo<System.Text.Json.JsonException>();
     }
 
     [Fact(DisplayName = "JsonKeySerializer cant serialize non json key.")]
@@ -223,12 +223,12 @@ public class JsonKeySerializerTests
         var exception = Record.Exception(() => result = serializer.Serialize(data, isRaw));
 
         // Assert
-        exception.Should().NotBeNull().And.BeOfType<Newtonsoft.Json.JsonReaderException>();
+        exception.Should().NotBeNull().And.BeAssignableTo<System.Text.Json.JsonException>();
     }
 
     [Fact(DisplayName = "JsonKeySerializer cant serialize non json key to the stream.")]
     [Trait("Category", "Unit")]
-    public void JsonKeySerializerCantSerializeNonJsonKeyToStream()
+    public async Task JsonKeySerializerCantSerializeNonJsonKeyToStream()
     {
         // Arrange
         var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
@@ -244,10 +244,10 @@ public class JsonKeySerializerTests
         var stream = new MemoryStream();
 
         // Act
-        var exception = Record.Exception(() => serializer.Serialize(data, isRaw, stream));
+        var exception = await Record.ExceptionAsync(() => serializer.SerializeAsync(data, isRaw, stream, CancellationToken.None)).ConfigureAwait(false);
 
         // Assert
-        exception.Should().NotBeNull().And.BeOfType<Newtonsoft.Json.JsonReaderException>();
+        exception.Should().NotBeNull().And.BeAssignableTo<System.Text.Json.JsonException>();
     }
 
     [Fact(DisplayName = "JsonKeySerializer can serialize raw data.")]
@@ -277,7 +277,7 @@ public class JsonKeySerializerTests
 
     [Fact(DisplayName = "JsonKeySerializer can serialize raw data to the stream.")]
     [Trait("Category", "Unit")]
-    public void JsonKeySerializerCanSerializeRawDataToStream()
+    public async Task JsonKeySerializerCanSerializeRawDataToStream()
     {
         // Arrange
         var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
@@ -293,7 +293,7 @@ public class JsonKeySerializerTests
         var stream = new MemoryStream();
 
         // Act
-        serializer.Serialize(data, isRaw, stream);
+        await serializer.SerializeAsync(data, isRaw, stream, CancellationToken.None).ConfigureAwait(false);
 
         // Assert
         var jsonString = Encoding.Default.GetString((stream.ToArray()));

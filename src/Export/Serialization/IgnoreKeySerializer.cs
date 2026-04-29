@@ -1,4 +1,4 @@
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 
 using Microsoft.Extensions.Logging;
 
@@ -32,7 +32,7 @@ public sealed class IgnoreKeySerializer(ILogger<IgnoreKeySerializer> logger) :
 
         var items = data.Select(x => new
         {
-            Value = exportRawMessage ? x.Value.Message : JToken.Parse(x.Value.Message),
+            Value = exportRawMessage ? x.Value.Message : ParseJson(x.Value.Message),
             x.Value.Meta
         });
 
@@ -52,14 +52,18 @@ public sealed class IgnoreKeySerializer(ILogger<IgnoreKeySerializer> logger) :
 
     /// <inheritdoc/>
     /// <exception cref="ArgumentNullException">Thrown when data or stream is null.</exception>
-    public void Serialize(
+    public Task SerializeAsync(
             IEnumerable<KeyValuePair<string, KafkaMessage<string>>> data,
             bool exportRawMessage,
-            Stream stream)
+            Stream stream,
+            CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(data);
         ArgumentNullException.ThrowIfNull(stream);
 
-        SerializeDataToStream(ProjectData(data, exportRawMessage), stream);
+        return SerializeDataToStreamAsync(ProjectData(data, exportRawMessage), stream, ct);
     }
+
+    private static JsonNode ParseJson(string value)
+        => JsonNode.Parse(value) ?? throw new InvalidOperationException("JSON value cannot be null.");
 }

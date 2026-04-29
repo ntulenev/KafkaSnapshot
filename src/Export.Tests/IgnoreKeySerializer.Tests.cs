@@ -65,7 +65,7 @@ public class IgnoreKeySerializerTests
     [Trait("Category", "Unit")]
     [InlineData(true)]
     [InlineData(false)]
-    public void IgnoreKeySerializerCantSerializeNullDataToStream(bool isRawData)
+    public async Task IgnoreKeySerializerCantSerializeNullDataToStream(bool isRawData)
     {
         // Arrange
         var logger = new Mock<ILogger<IgnoreKeySerializer>>().Object;
@@ -74,7 +74,7 @@ public class IgnoreKeySerializerTests
         var stream = new Mock<Stream>(MockBehavior.Strict).Object;
 
         // Act
-        var exception = Record.Exception(() => serializer.Serialize(data, isRawData, stream));
+        var exception = await Record.ExceptionAsync(() => serializer.SerializeAsync(data, isRawData, stream, CancellationToken.None)).ConfigureAwait(false);
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -84,7 +84,7 @@ public class IgnoreKeySerializerTests
     [Trait("Category", "Unit")]
     [InlineData(true)]
     [InlineData(false)]
-    public void IgnoreKeySerializerCantSerializeDataToNullStream(bool isRawData)
+    public async Task IgnoreKeySerializerCantSerializeDataToNullStream(bool isRawData)
     {
         // Arrange
         var logger = new Mock<ILogger<IgnoreKeySerializer>>().Object;
@@ -98,7 +98,7 @@ public class IgnoreKeySerializerTests
         };
 
         // Act
-        var exception = Record.Exception(() => serializer.Serialize(data, isRawData, null!));
+        var exception = await Record.ExceptionAsync(() => serializer.SerializeAsync(data, isRawData, null!, CancellationToken.None)).ConfigureAwait(false);
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -129,7 +129,7 @@ public class IgnoreKeySerializerTests
 
     [Fact(DisplayName = "IgnoreKeySerializer can serialize data to stream.")]
     [Trait("Category", "Unit")]
-    public void IgnoreKeySerializerCanSerializeDataToStream()
+    public async Task IgnoreKeySerializerCanSerializeDataToStream()
     {
         // Arrange
         var logger = new Mock<ILogger<IgnoreKeySerializer>>().Object;
@@ -145,7 +145,7 @@ public class IgnoreKeySerializerTests
         using var stream = new MemoryStream();
 
         // Act
-        var exception = Record.Exception(() => serializer.Serialize(data, isRaw, stream));
+        var exception = await Record.ExceptionAsync(() => serializer.SerializeAsync(data, isRaw, stream, CancellationToken.None)).ConfigureAwait(false);
 
         // Assert
         var jsonString = Encoding.Default.GetString((stream.ToArray()));
@@ -172,12 +172,12 @@ public class IgnoreKeySerializerTests
         var exception = Record.Exception(() => result = serializer.Serialize(data, isRaw));
 
         // Assert
-        exception.Should().NotBeNull().And.BeOfType<Newtonsoft.Json.JsonReaderException>();
+        exception.Should().NotBeNull().And.BeAssignableTo<System.Text.Json.JsonException>();
     }
 
     [Fact(DisplayName = "IgnoreKeySerializer cant serialize non json data to the stream.")]
     [Trait("Category", "Unit")]
-    public void IgnoreKeySerializerCantSerializeNonJsonDataToTheStream()
+    public async Task IgnoreKeySerializerCantSerializeNonJsonDataToTheStream()
     {
         // Arrange
         var logger = new Mock<ILogger<IgnoreKeySerializer>>().Object;
@@ -192,10 +192,10 @@ public class IgnoreKeySerializerTests
         var stream = new MemoryStream();
 
         // Act
-        var exception = Record.Exception(() => serializer.Serialize(data, isRaw, stream));
+        var exception = await Record.ExceptionAsync(() => serializer.SerializeAsync(data, isRaw, stream, CancellationToken.None)).ConfigureAwait(false);
 
         // Assert
-        exception.Should().NotBeNull().And.BeOfType<Newtonsoft.Json.JsonReaderException>();
+        exception.Should().NotBeNull().And.BeAssignableTo<System.Text.Json.JsonException>();
     }
 
     [Fact(DisplayName = "IgnoreKeySerializer can serialize raw data.")]
@@ -223,7 +223,7 @@ public class IgnoreKeySerializerTests
 
     [Fact(DisplayName = "IgnoreKeySerializer can serialize raw data to the stream.")]
     [Trait("Category", "Unit")]
-    public void IgnoreKeySerializerCanSerializeRawDataToStream()
+    public async Task IgnoreKeySerializerCanSerializeRawDataToStream()
     {
         // Arrange
         var logger = new Mock<ILogger<IgnoreKeySerializer>>().Object;
@@ -239,7 +239,7 @@ public class IgnoreKeySerializerTests
         var stream = new MemoryStream();
 
         // Act
-        serializer.Serialize(data, isRaw, stream);
+        await serializer.SerializeAsync(data, isRaw, stream, CancellationToken.None).ConfigureAwait(false);
 
         // Assert
         var jsonString = Encoding.Default.GetString((stream.ToArray()));

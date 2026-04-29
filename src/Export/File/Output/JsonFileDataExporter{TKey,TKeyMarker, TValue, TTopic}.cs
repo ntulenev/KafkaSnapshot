@@ -52,6 +52,7 @@ public sealed class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> :
         _streamProvider = streamProvider ?? throw new ArgumentNullException(nameof(streamProvider));
         _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
         _isStreamingMode = config.Value.UseFileStreaming;
+        _outputDirectory = config.Value.OutputDirectory;
 
         _logger.LogDebug("Instance created.");
     }
@@ -86,14 +87,14 @@ public sealed class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> :
     {
         using var _ = _logger.BeginScope("Data from topic {Topic} to File {File}",
                             topic.TopicName.Name,
-                            topic.ExportName);
+                            ResolveExportName(topic.ExportName));
 
         _logger.LogDebug("Starting saving data.");
 
         var cancellableData = EnumerateWithCancellation(data, ct);
 
         await _fileSaver.SaveAsync(
-                    topic.ExportName,
+                    ResolveExportName(topic.ExportName),
                     _serializer.Serialize(cancellableData, topic.ExportRawMessage),
                     ct)
                     .ConfigureAwait(false);
@@ -101,24 +102,38 @@ public sealed class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> :
         _logger.LogDebug("Data saved successfully.");
     }
 
-    private Task InnerStreamExportAsync(
+    private async Task InnerStreamExportAsync(
             IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> data,
             TTopic topic,
             CancellationToken ct)
     {
         using var _ = _logger.BeginScope("Data from topic {Topic} to File {File} with stream",
                         topic.TopicName.Name,
-                        topic.ExportName);
+                        ResolveExportName(topic.ExportName));
 
         ct.ThrowIfCancellationRequested();
 
-        using var stream = _streamProvider.CreateFileStream(topic.ExportName);
+        var stream = _streamProvider.CreateFileStream(ResolveExportName(topic.ExportName));
+        await using var streamScope = stream.ConfigureAwait(false);
 
-        _serializer.Serialize(EnumerateWithCancellation(data, ct), topic.ExportRawMessage, stream);
+        await _serializer.SerializeAsync(
+            EnumerateWithCancellation(data, ct),
+            topic.ExportRawMessage,
+            stream,
+            ct).ConfigureAwait(false);
 
         ct.ThrowIfCancellationRequested();
+    }
 
-        return Task.CompletedTask;
+    private Models.Names.FileName ResolveExportName(Models.Names.FileName fileName)
+    {
+        if (string.IsNullOrWhiteSpace(_outputDirectory))
+        {
+            return fileName;
+        }
+
+        _ = Directory.CreateDirectory(_outputDirectory);
+        return new Models.Names.FileName(Path.Combine(_outputDirectory, fileName.FullName));
     }
 
     private static IEnumerable<T> EnumerateWithCancellation<T>(
@@ -137,4 +152,5 @@ public sealed class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> :
     private readonly IFileStreamProvider _streamProvider;
     private readonly ISerializer<TKey, TValue, TKeyMarker> _serializer;
     private readonly bool _isStreamingMode;
+    private readonly string? _outputDirectory;
 }

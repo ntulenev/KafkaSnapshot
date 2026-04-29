@@ -65,7 +65,7 @@ public class OriginalKeySerializerTests
     [Trait("Category", "Unit")]
     [InlineData(true)]
     [InlineData(false)]
-    public void OriginalKeySerializerCantSerializeNullDataToStream(bool isRawData)
+    public async Task OriginalKeySerializerCantSerializeNullDataToStream(bool isRawData)
     {
         // Arrange
         var logger = new Mock<ILogger<OriginalKeySerializer<object>>>().Object;
@@ -74,7 +74,7 @@ public class OriginalKeySerializerTests
         var stream = new Mock<Stream>(MockBehavior.Strict).Object;
 
         // Act
-        var exception = Record.Exception(() => serializer.Serialize(data, isRawData, stream));
+        var exception = await Record.ExceptionAsync(() => serializer.SerializeAsync(data, isRawData, stream, CancellationToken.None)).ConfigureAwait(false);
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -84,7 +84,7 @@ public class OriginalKeySerializerTests
     [Trait("Category", "Unit")]
     [InlineData(true)]
     [InlineData(false)]
-    public void OriginalKeySerializerCantSerializeDataToNullStream(bool isRawData)
+    public async Task OriginalKeySerializerCantSerializeDataToNullStream(bool isRawData)
     {
         // Arrange
         var logger = new Mock<ILogger<OriginalKeySerializer<object>>>().Object;
@@ -98,7 +98,7 @@ public class OriginalKeySerializerTests
         };
 
         // Act
-        var exception = Record.Exception(() => serializer.Serialize(data, isRawData, null!));
+        var exception = await Record.ExceptionAsync(() => serializer.SerializeAsync(data, isRawData, null!, CancellationToken.None)).ConfigureAwait(false);
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -129,7 +129,7 @@ public class OriginalKeySerializerTests
 
     [Fact(DisplayName = "OriginalKeySerializer can serialize data to the stream.")]
     [Trait("Category", "Unit")]
-    public void OriginalKeySerializerCanSerializeDataToTheStream()
+    public async Task OriginalKeySerializerCanSerializeDataToTheStream()
     {
         // Arrange
         var logger = new Mock<ILogger<OriginalKeySerializer<object>>>().Object;
@@ -146,7 +146,7 @@ public class OriginalKeySerializerTests
         using var stream = new MemoryStream();
 
         // Act
-        serializer.Serialize(data, isRaw, stream);
+        await serializer.SerializeAsync(data, isRaw, stream, CancellationToken.None).ConfigureAwait(false);
 
         // Assert
         var jsonString = Encoding.Default.GetString((stream.ToArray()));
@@ -174,12 +174,12 @@ public class OriginalKeySerializerTests
         var exception = Record.Exception(() => result = serializer.Serialize(data, isRaw));
 
         // Assert
-        exception.Should().NotBeNull().And.BeOfType<Newtonsoft.Json.JsonReaderException>();
+        exception.Should().NotBeNull().And.BeAssignableTo<System.Text.Json.JsonException>();
     }
 
     [Fact(DisplayName = "OriginalKeySerializer cant serialize non json data to the stream.")]
     [Trait("Category", "Unit")]
-    public void OriginalKeySerializerCantSerializeNonDataToStream()
+    public async Task OriginalKeySerializerCantSerializeNonDataToStream()
     {
         // Arrange
         var logger = new Mock<ILogger<OriginalKeySerializer<object>>>().Object;
@@ -195,10 +195,10 @@ public class OriginalKeySerializerTests
         using var stream = new MemoryStream();
 
         // Act
-        var exception = Record.Exception(() => serializer.Serialize(data, isRaw, stream));
+        var exception = await Record.ExceptionAsync(() => serializer.SerializeAsync(data, isRaw, stream, CancellationToken.None)).ConfigureAwait(false);
 
         // Assert
-        exception.Should().NotBeNull().And.BeOfType<Newtonsoft.Json.JsonReaderException>();
+        exception.Should().NotBeNull().And.BeAssignableTo<System.Text.Json.JsonException>();
     }
 
     [Fact(DisplayName = "OriginalKeySerializer can serialize raw data.")]
@@ -226,7 +226,7 @@ public class OriginalKeySerializerTests
 
     [Fact(DisplayName = "OriginalKeySerializer can serialize raw data to the stream.")]
     [Trait("Category", "Unit")]
-    public void OriginalKeySerializerCanSerializeRawDataToStream()
+    public async Task OriginalKeySerializerCanSerializeRawDataToStream()
     {
         // Arrange
         var logger = new Mock<ILogger<OriginalKeySerializer<object>>>().Object;
@@ -242,7 +242,7 @@ public class OriginalKeySerializerTests
         using var stream = new MemoryStream();
 
         // Act
-        serializer.Serialize(data, isRaw, stream);
+        await serializer.SerializeAsync(data, isRaw, stream, CancellationToken.None).ConfigureAwait(false);
 
         // Assert
         var jsonString = Encoding.Default.GetString((stream.ToArray()));

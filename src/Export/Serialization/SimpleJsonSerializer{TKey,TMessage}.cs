@@ -37,16 +37,17 @@ public sealed class SimpleJsonSerializer<TKey, TMessage>(ILogger<SimpleJsonSeria
 
     /// <inheritdoc/>
     /// <exception cref="ArgumentNullException">Thrown when data or stream is null.</exception>
-    public void Serialize(
+    public Task SerializeAsync(
             IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> data,
             bool exportRawMessage,
-            Stream stream)
+            Stream stream,
+            CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(data);
         ArgumentNullException.ThrowIfNull(stream);
 
         _ = exportRawMessage; // not needed for this implementation.
 
-        SerializeDataToStream(data, stream);
+        return SerializeDataToStreamAsync(data, stream, ct);
     }
 }

@@ -65,7 +65,7 @@ public class SimpleJsonSerializerTests
     [Trait("Category", "Unit")]
     [InlineData(true)]
     [InlineData(false)]
-    public void SimpleJsonSerializerCantSerializeNullDataToStream(bool isRawData)
+    public async Task SimpleJsonSerializerCantSerializeNullDataToStream(bool isRawData)
     {
         // Arrange
         var logger = new Mock<ILogger<SimpleJsonSerializer<object, object>>>().Object;
@@ -74,7 +74,7 @@ public class SimpleJsonSerializerTests
         var stream = new Mock<Stream>(MockBehavior.Strict).Object;
 
         // Act
-        var exception = Record.Exception(() => serializer.Serialize(data, isRawData, stream));
+        var exception = await Record.ExceptionAsync(() => serializer.SerializeAsync(data, isRawData, stream, CancellationToken.None)).ConfigureAwait(false);
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -84,7 +84,7 @@ public class SimpleJsonSerializerTests
     [Trait("Category", "Unit")]
     [InlineData(true)]
     [InlineData(false)]
-    public void SimpleJsonSerializerCantSerializeNullDataToNullStream(bool isRawData)
+    public async Task SimpleJsonSerializerCantSerializeNullDataToNullStream(bool isRawData)
     {
         // Arrange
         var logger = new Mock<ILogger<SimpleJsonSerializer<object, object>>>().Object;
@@ -92,7 +92,7 @@ public class SimpleJsonSerializerTests
         var data = (IEnumerable<KeyValuePair<object, KafkaMessage<object>>>)null!;
 
         // Act
-        var exception = Record.Exception(() => serializer.Serialize(data, isRawData, null!));
+        var exception = await Record.ExceptionAsync(() => serializer.SerializeAsync(data, isRawData, null!, CancellationToken.None)).ConfigureAwait(false);
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -126,7 +126,7 @@ public class SimpleJsonSerializerTests
     [Trait("Category", "Unit")]
     [InlineData(true)]
     [InlineData(false)]
-    public void SimpleJsonSerializerCanSerializeDataToStream(bool isRaw)
+    public async Task SimpleJsonSerializerCanSerializeDataToStream(bool isRaw)
     {
         // Arrange
         var logger = new Mock<ILogger<SimpleJsonSerializer<object, object>>>().Object;
@@ -142,7 +142,7 @@ public class SimpleJsonSerializerTests
         using var stream = new MemoryStream();
 
         // Act
-        serializer.Serialize(data, isRaw, stream);
+        await serializer.SerializeAsync(data, isRaw, stream, CancellationToken.None).ConfigureAwait(false);
 
         // Assert
         var jsonString = Encoding.Default.GetString((stream.ToArray()));

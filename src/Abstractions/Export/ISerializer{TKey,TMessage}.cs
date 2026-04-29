@@ -28,8 +28,10 @@ public interface ISerializer<TKey, TMessage, TKeyMarker>
     /// <param name="data">Data to be serialized.</param>
     /// <param name="exportRawMessage">Specifies the message serialization rule.</param>
     /// <param name="stream">The stream to which the data is written.</param>
-    void Serialize(
+    /// <param name="ct">The token for cancelling the operation.</param>
+    Task SerializeAsync(
         IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> data,
         bool exportRawMessage,
-        Stream stream);
+        Stream stream,
+        CancellationToken ct);
 }

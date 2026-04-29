@@ -1,0 +1,50 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="Abstractions/Abstractions.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="Export.Tests/Export.Tests.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="Export/Export.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="Filters.Tests/Filters.Tests.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="Filters/Filters.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="Import.Tests/Import.Tests.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="Import/Import.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="Models.Tests/Models.Tests.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="Models/Models.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="Processing.Tests/Processing.Tests.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="Processing/Processing.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="Sorting.Tests/Sorting.Tests.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="Sorting/Sorting.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="Utility.Tests/Utility.Tests.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="Utility/Utility.csproj">
+    <Platform Project="x64" />
+  </Project>
+</Solution>

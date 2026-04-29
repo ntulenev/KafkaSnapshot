@@ -295,6 +295,12 @@ dotnet_diagnostic.CA2007.severity = suggestion
 # CA1848: Use the LoggerMessage delegates
 dotnet_diagnostic.CA1848.severity = none
 
+# CA1515: Public types are expected in application/test assemblies.
+dotnet_diagnostic.CA1515.severity = none
+
+# CA1852: Public test types are part of the test framework surface.
+dotnet_diagnostic.CA1852.severity = none
+
 # IDE diagnostics
 
 # IDE0055: fix code formatting
@@ -324,3 +330,11 @@ dotnet_style_coalesce_expression = true:suggestion
 dotnet_style_null_propagation = true:warning
 dotnet_style_prefer_is_null_check_over_reference_equality_method = true:suggestion
 dotnet_style_prefer_auto_properties = true:suggestion
+
+[*.Tests.cs]
+dotnet_diagnostic.CA1861.severity = none
+dotnet_diagnostic.CA1873.severity = none
+dotnet_diagnostic.CA2007.severity = none
+dotnet_diagnostic.CA2025.severity = none
+dotnet_diagnostic.CA2263.severity = none
+dotnet_diagnostic.xUnit1030.severity = none

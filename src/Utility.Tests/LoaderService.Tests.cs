@@ -63,18 +63,30 @@ namespace KafkaSnapshot.Utility.Tests
             using var token = new CancellationTokenSource();
             var toolMock = new Mock<ILoaderTool>(MockBehavior.Strict);
             var processCount = 0;
+            var processStarted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
             toolMock.Setup(x => x.ProcessAsync(It.Is<CancellationToken>(token => token.CanBeCanceled)))
                 .Returns(() => Task.CompletedTask)
-                .Callback(() => processCount++);
+                .Callback(() =>
+                {
+                    processCount++;
+                    processStarted.SetResult();
+                });
             var lifetimeMock = new Mock<IHostApplicationLifetime>(MockBehavior.Strict);
             var stopCount = 0;
-            lifetimeMock.Setup(x => x.StopApplication()).Callback(() => stopCount++);
+            var stopRequested = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            lifetimeMock.Setup(x => x.StopApplication()).Callback(() =>
+            {
+                stopCount++;
+                stopRequested.SetResult();
+            });
             var lifetime = lifetimeMock.Object;
             var tool = toolMock.Object;
             using var loader = new LoaderService(tool, lifetime);
 
             // Act
             await loader.StartAsync(token.Token);
+            await processStarted.Task.WaitAsync(TimeSpan.FromSeconds(1));
+            await stopRequested.Task.WaitAsync(TimeSpan.FromSeconds(1));
 
             // Assert
             processCount.Should().Be(1);

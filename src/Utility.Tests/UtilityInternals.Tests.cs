@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Reflection;
 
 using FluentAssertions;
@@ -73,7 +74,7 @@ public class UtilityInternalsTests
     {
         // Arrange
         var configuration = BuildLoaderConfig(useConcurrentLoad: false, keyType: KeyType.String);
-        var context = new HostBuilderContext(new Dictionary<object, object?>())
+        var context = new HostBuilderContext(new Dictionary<object, object>())
         {
             Configuration = configuration
         };
@@ -140,10 +141,10 @@ public class UtilityInternalsTests
         => new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["LoaderToolConfiguration:UseConcurrentLoad"] = useConcurrentLoad.ToString(),
+                ["LoaderToolConfiguration:UseConcurrentLoad"] = useConcurrentLoad.ToString(CultureInfo.InvariantCulture),
                 ["LoaderToolConfiguration:Topics:0:Name"] = "topic-1",
                 ["LoaderToolConfiguration:Topics:0:ExportFileName"] = "topic-1.json",
-                ["LoaderToolConfiguration:Topics:0:KeyType"] = ((int)keyType).ToString(),
+                ["LoaderToolConfiguration:Topics:0:KeyType"] = ((int)keyType).ToString(CultureInfo.InvariantCulture),
                 ["LoaderToolConfiguration:Topics:0:Compacting"] = nameof(CompactingMode.Off),
                 ["LoaderToolConfiguration:Topics:0:FilterKeyType"] = nameof(FilterType.None)
             })

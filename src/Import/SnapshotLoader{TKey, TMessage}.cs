@@ -32,24 +32,19 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
                           IMessageEncoder<byte[], TMessage> encoder
                          )
     {
-        _logger = logger
-            ?? throw new ArgumentNullException(nameof(logger));
-        _topicWatermarkLoader = topicWatermarkLoader
-            ?? throw new ArgumentNullException(nameof(topicWatermarkLoader));
-        _consumerFactory = consumerFactory
-            ?? throw new ArgumentNullException(nameof(consumerFactory));
-        _sorter = sorter
-            ?? throw new ArgumentNullException(nameof(sorter));
-        _encoder = encoder
-            ?? throw new ArgumentNullException(nameof(encoder));
-
+        ArgumentNullException.ThrowIfNull(logger);
         ArgumentNullException.ThrowIfNull(config);
+        ArgumentNullException.ThrowIfNull(config.Value, nameof(config));
+        ArgumentNullException.ThrowIfNull(consumerFactory);
+        ArgumentNullException.ThrowIfNull(topicWatermarkLoader);
+        ArgumentNullException.ThrowIfNull(sorter);
+        ArgumentNullException.ThrowIfNull(encoder);
 
-        if (config.Value is null)
-        {
-            throw new ArgumentException("Config is not set", nameof(config));
-        }
-
+        _logger = logger;
+        _topicWatermarkLoader = topicWatermarkLoader;
+        _consumerFactory = consumerFactory;
+        _sorter = sorter;
+        _encoder = encoder;
         _config = config.Value;
 
         _logger.LogDebug("Instance created");

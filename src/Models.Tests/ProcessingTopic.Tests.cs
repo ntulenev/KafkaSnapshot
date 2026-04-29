@@ -85,6 +85,31 @@ public class ProcessingTopicTests
         result.PartitionIdsFilter.Should().BeEquivalentTo(partitions);
     }
 
+    [Fact(DisplayName = "ProcessingTopic can be created without partition filter.")]
+    [Trait("Category", "Unit")]
+    public void CanCreateProcessingTopicWithoutPartitionFilter()
+    {
+        // Arrange
+        var name = new TopicName("Test1");
+        var exName = new FileName("Test2");
+        var dateRange = new Filters.DateFilterRange(null!, null!);
+
+        // Act
+        var result = new ProcessingTopic<int>(
+            name,
+            exName,
+            true,
+            Filters.FilterType.Equals,
+            Filters.KeyType.Long,
+            1,
+            dateRange,
+            true,
+            EncoderRules.String);
+
+        // Assert
+        result.PartitionIdsFilter.Should().BeNull();
+    }
+
     [Fact(DisplayName = "ProcessingTopic can't be created with null topic name.")]
     [Trait("Category", "Unit")]
     public void ProcessingTopicCantBeCreatedWithNullTopicName()

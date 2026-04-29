@@ -99,7 +99,7 @@ public class NaiveKeyFiltersFactoryTests
                                         value));
 
         // Assert
-        exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
+        exception.Should().NotBeNull().And.BeOfType<ArgumentOutOfRangeException>();
     }
 
     [Fact(DisplayName = "Contains filter can be created for string type.")]
@@ -137,6 +137,6 @@ public class NaiveKeyFiltersFactoryTests
                                         value));
 
         // Assert
-        exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
+        exception.Should().NotBeNull().And.BeOfType<ArgumentOutOfRangeException>();
     }
 }

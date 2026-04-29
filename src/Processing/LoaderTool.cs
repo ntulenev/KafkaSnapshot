@@ -18,8 +18,11 @@ public sealed class LoaderTool : ILoaderTool
     /// <paramref name="units"/> is null.</exception>
     public LoaderTool(ILogger<LoaderTool> logger, IReadOnlyCollection<IProcessingUnit> units)
     {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _units = units ?? throw new ArgumentNullException(nameof(units));
+        ArgumentNullException.ThrowIfNull(logger);
+        ArgumentNullException.ThrowIfNull(units);
+
+        _logger = logger;
+        _units = units;
 
         if (_logger.IsEnabled(LogLevel.Debug))
         {

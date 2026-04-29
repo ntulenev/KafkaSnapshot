@@ -16,7 +16,9 @@ public sealed class KafkaClientFactory : IKafkaClientFactory
     {
         ArgumentNullException.ThrowIfNull(options);
 
-        _config = options.Value ?? throw new ArgumentException("Config is not set", nameof(options));
+        ArgumentNullException.ThrowIfNull(options.Value, nameof(options));
+
+        _config = options.Value;
     }
 
     /// <inheritdoc />

@@ -2,8 +2,8 @@ using KafkaSnapshot.Abstractions.Processing;
 using KafkaSnapshot.Processing;
 using KafkaSnapshot.Processing.Configuration;
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace KafkaSnapshot.Utility.Helpers;
@@ -13,15 +13,17 @@ namespace KafkaSnapshot.Utility.Helpers;
 /// </summary>
 internal static class ToolsRegistrationHelper
 {
-    internal static void Register(IServiceCollection services, HostBuilderContext hostContext)
+    internal static IServiceCollection Register(IServiceCollection services, IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(hostContext);
+        ArgumentNullException.ThrowIfNull(configuration);
 
-        _ = services.ConfigureLoaderTool(hostContext);
+        _ = services.ConfigureLoaderTool(configuration);
         _ = services.AddScoped<LoaderTool>();
         _ = services.AddScoped<LoaderConcurrentTool>();
         _ = services.AddScoped(CreateLoaderTool);
+
+        return services;
     }
 
     private static ILoaderTool CreateLoaderTool(IServiceProvider serviceProvider)

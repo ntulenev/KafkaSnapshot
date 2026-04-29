@@ -3,6 +3,7 @@ using FluentAssertions;
 using KafkaSnapshot.Abstractions.Processing;
 
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 using Moq;
 
@@ -19,9 +20,10 @@ namespace KafkaSnapshot.Utility.Tests
             // Arrange
             var tool = new Mock<ILoaderTool>(MockBehavior.Strict).Object;
             var lifetime = new Mock<IHostApplicationLifetime>(MockBehavior.Strict).Object;
+            var logger = new Mock<ILogger<LoaderService>>(MockBehavior.Strict).Object;
 
             // Act
-            var exception = Record.Exception(() => new LoaderService(tool, lifetime));
+            var exception = Record.Exception(() => new LoaderService(tool, lifetime, logger));
 
             // Assert
             exception.Should().BeNull();
@@ -33,9 +35,10 @@ namespace KafkaSnapshot.Utility.Tests
         {
             // Arrange
             var tool = new Mock<ILoaderTool>(MockBehavior.Strict).Object;
+            var logger = new Mock<ILogger<LoaderService>>(MockBehavior.Strict).Object;
 
             // Act
-            var exception = Record.Exception(() => new LoaderService(tool, null!));
+            var exception = Record.Exception(() => new LoaderService(tool, null!, logger));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -47,9 +50,10 @@ namespace KafkaSnapshot.Utility.Tests
         {
             // Arrange
             var lifetime = new Mock<IHostApplicationLifetime>(MockBehavior.Strict).Object;
+            var logger = new Mock<ILogger<LoaderService>>(MockBehavior.Strict).Object;
 
             // Act
-            var exception = Record.Exception(() => new LoaderService(null!, lifetime));
+            var exception = Record.Exception(() => new LoaderService(null!, lifetime, logger));
 
             // Assert
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -81,7 +85,8 @@ namespace KafkaSnapshot.Utility.Tests
             });
             var lifetime = lifetimeMock.Object;
             var tool = toolMock.Object;
-            using var loader = new LoaderService(tool, lifetime);
+            var logger = new Mock<ILogger<LoaderService>>().Object;
+            using var loader = new LoaderService(tool, lifetime, logger);
 
             // Act
             await loader.StartAsync(token.Token);

@@ -1,6 +1,9 @@
-using KafkaSnapshot.Utility;
+using KafkaSnapshot.Utility.DependencyInjection;
 
 using Microsoft.Extensions.Hosting;
 
-using var host = HostBuildHelper.CreateHost(args);
-await host.RunAsync();
+var builder = Host.CreateApplicationBuilder(args);
+_ = builder.Services.AddKafkaSnapshotUtility(builder.Configuration);
+
+using var host = builder.Build();
+await host.RunAsync().ConfigureAwait(false);

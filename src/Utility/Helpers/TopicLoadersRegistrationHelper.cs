@@ -17,7 +17,10 @@ namespace KafkaSnapshot.Utility.Helpers;
 /// </summary>
 internal static class TopicLoadersRegistrationHelper
 {
-    internal static void Register(
+    internal static IServiceCollection Register(IServiceCollection services)
+        => Register(services, CreateTopicLoaders);
+
+    internal static IServiceCollection Register(
         IServiceCollection services,
         Func<IServiceProvider, IReadOnlyCollection<IProcessingUnit>> topicLoadersFactory)
     {
@@ -28,6 +31,8 @@ internal static class TopicLoadersRegistrationHelper
         _ = services.AddSingleton<IKeyFiltersFactory<string>, NaiveKeyFiltersFactory<string>>();
         _ = services.AddSingleton<IValueFilterFactory<string>, NaiveValueFiltersFactory<string>>();
         _ = services.AddSingleton(topicLoadersFactory);
+
+        return services;
     }
 
     internal static IReadOnlyCollection<IProcessingUnit> CreateTopicLoaders(IServiceProvider serviceProvider)
@@ -52,5 +57,5 @@ internal static class TopicLoadersRegistrationHelper
         where TMarker : IKeyRepresentationMarker
         => ActivatorUtilities.CreateInstance<ProcessingUnit<TKey, TMarker, string>>(
             provider,
-            topic.ConvertToProcess<TKey>());
+            TopicConfigurationMapper.ToProcessingTopic<TKey>(topic));
 }

@@ -9,12 +9,12 @@ using KafkaSnapshot.Models.Filters;
 using KafkaSnapshot.Processing;
 using KafkaSnapshot.Processing.Configuration;
 using KafkaSnapshot.Processing.Configuration.Validation;
+using KafkaSnapshot.Utility.DependencyInjection;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 
 using Xunit;
@@ -68,23 +68,16 @@ public class UtilityInternalsTests
         act.Should().Throw<OptionsValidationException>();
     }
 
-    [Fact(DisplayName = "StartupHelper AddTools resolves LoaderTool for sequential mode.")]
+    [Fact(DisplayName = "AddKafkaSnapshotProcessing resolves LoaderTool for sequential mode.")]
     [Trait("Category", "Unit")]
-    public void StartupHelperAddToolsResolvesSequentialLoader()
+    public void AddKafkaSnapshotProcessingResolvesSequentialLoader()
     {
         // Arrange
         var configuration = BuildLoaderConfig(useConcurrentLoad: false, keyType: KeyType.String);
-        var context = new HostBuilderContext(new Dictionary<object, object>())
-        {
-            Configuration = configuration
-        };
         var services = new ServiceCollection();
-        _ = services.AddSingleton<ILogger<LoaderTool>>(NullLogger<LoaderTool>.Instance);
-        _ = services.AddSingleton<ILogger<LoaderConcurrentTool>>(NullLogger<LoaderConcurrentTool>.Instance);
+        _ = services.AddLogging();
         _ = services.AddSingleton<IReadOnlyCollection<IProcessingUnit>>([]);
-
-        var method = GetStaticMethod("KafkaSnapshot.Utility.Helpers.StartupHelper", "AddTools");
-        _ = method.Invoke(null, [services, context]);
+        _ = services.AddKafkaSnapshotProcessing(configuration);
 
         using var provider = services.BuildServiceProvider();
         using var scope = provider.CreateScope();
@@ -96,9 +89,9 @@ public class UtilityInternalsTests
         tool.Should().BeOfType<LoaderTool>();
     }
 
-    [Fact(DisplayName = "StartupHelper throws for unsupported key type in topic loader creation.")]
+    [Fact(DisplayName = "TopicLoadersRegistrationHelper throws for unsupported key type in topic loader creation.")]
     [Trait("Category", "Unit")]
-    public void StartupHelperCreateTopicLoadersThrowsForUnsupportedKeyType()
+    public void TopicLoadersRegistrationHelperCreateTopicLoadersThrowsForUnsupportedKeyType()
     {
         // Arrange
         var configuration = BuildLoaderConfig(useConcurrentLoad: true, keyType: (KeyType)999);
@@ -110,7 +103,7 @@ public class UtilityInternalsTests
         using var provider = services.BuildServiceProvider();
 
         var method = GetStaticMethod(
-            "KafkaSnapshot.Utility.Helpers.StartupHelper",
+            "KafkaSnapshot.Utility.Helpers.TopicLoadersRegistrationHelper",
             "CreateTopicLoaders",
             BindingFlags.NonPublic | BindingFlags.Static);
 

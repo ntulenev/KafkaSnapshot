@@ -1,5 +1,5 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 using Serilog;
@@ -11,13 +11,13 @@ namespace KafkaSnapshot.Utility.Helpers;
 /// </summary>
 internal static class LoggingRegistrationHelper
 {
-    internal static void Register(IServiceCollection services, HostBuilderContext hostContext)
+    internal static IServiceCollection Register(IServiceCollection services, IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(hostContext);
+        ArgumentNullException.ThrowIfNull(configuration);
 
         var logger = new LoggerConfiguration()
-                         .ReadFrom.Configuration(hostContext.Configuration)
+                         .ReadFrom.Configuration(configuration)
                          .CreateLogger();
 
         _ = services.AddLogging(builder =>
@@ -25,5 +25,7 @@ internal static class LoggingRegistrationHelper
             _ = builder.SetMinimumLevel(LogLevel.Information);
             _ = builder.AddSerilog(logger: logger, dispose: true);
         });
+
+        return services;
     }
 }

@@ -2,15 +2,14 @@ using Confluent.Kafka;
 
 using KafkaSnapshot.Abstractions.Import;
 using KafkaSnapshot.Abstractions.Sorting;
-using KafkaSnapshot.Import;
-using KafkaSnapshot.Import.Configuration;
 using KafkaSnapshot.Import.Encoders;
+using KafkaSnapshot.Import.Kafka;
 using KafkaSnapshot.Import.Metadata;
 using KafkaSnapshot.Processing.Configuration;
 using KafkaSnapshot.Sorting;
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace KafkaSnapshot.Utility.Helpers;
@@ -20,57 +19,26 @@ namespace KafkaSnapshot.Utility.Helpers;
 /// </summary>
 internal static class ImportRegistrationHelper
 {
-    internal static void Register(IServiceCollection services, HostBuilderContext hostContext)
+    internal static IServiceCollection Register(IServiceCollection services, IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(hostContext);
+        ArgumentNullException.ThrowIfNull(configuration);
 
-        _ = services.ConfigureImport(hostContext);
+        _ = services.ConfigureImport(configuration);
         _ = services.AddSingleton<IMessageEncoder<byte[], string>, ByteMessageEncoder>();
-        _ = services.AddSingleton(CreateAdminClient);
+        _ = services.AddSingleton<IKafkaClientFactory, KafkaClientFactory>();
         _ = services.AddSingleton<ITopicWatermarkLoader, TopicWatermarkLoader>();
         _ = services.AddSingleton<Func<IConsumer<string, byte[]>>>(
-            serviceProvider => () => CreateConsumer<string>(serviceProvider));
+            serviceProvider => serviceProvider.GetRequiredService<IKafkaClientFactory>().CreateConsumer<string>);
         _ = services.AddSingleton<Func<IConsumer<long, byte[]>>>(
-            serviceProvider => () => CreateConsumer<long>(serviceProvider));
-        _ = services.AddSingleton(typeof(ISnapshotLoader<,>), typeof(SnapshotLoader<,>));
+            serviceProvider => serviceProvider.GetRequiredService<IKafkaClientFactory>().CreateConsumer<long>);
+        _ = services.AddSingleton(
+            typeof(ISnapshotLoader<,>),
+            typeof(KafkaSnapshot.Import.SnapshotLoader<,>));
         _ = services.AddSingleton<IMessageSorter<string, string>>(CreateStringSorter);
         _ = services.AddSingleton<IMessageSorter<long, string>>(CreateLongSorter);
-    }
 
-    private static IAdminClient CreateAdminClient(IServiceProvider serviceProvider)
-    {
-        var config = serviceProvider.GetRequiredService<IOptions<BootstrapServersConfiguration>>().Value;
-        var servers = string.Join(",", config.BootstrapServers);
-        var adminConfig = new AdminClientConfig
-        {
-            BootstrapServers = servers,
-            SecurityProtocol = config.SecurityProtocol,
-            SaslMechanism = config.SASLMechanism,
-            SaslUsername = config.Username,
-            SaslPassword = config.Password
-        };
-
-        return new AdminClientBuilder(adminConfig).Build();
-    }
-
-    private static IConsumer<TKey, byte[]> CreateConsumer<TKey>(IServiceProvider serviceProvider)
-    {
-        var config = serviceProvider.GetRequiredService<IOptions<BootstrapServersConfiguration>>().Value;
-        var servers = string.Join(",", config.BootstrapServers);
-        var consumerConfig = new ConsumerConfig
-        {
-            BootstrapServers = servers,
-            AutoOffsetReset = AutoOffsetReset.Earliest,
-            GroupId = Guid.NewGuid().ToString(),
-            EnableAutoCommit = false,
-            SecurityProtocol = config.SecurityProtocol,
-            SaslMechanism = config.SASLMechanism,
-            SaslUsername = config.Username,
-            SaslPassword = config.Password
-        };
-
-        return new ConsumerBuilder<TKey, byte[]>(consumerConfig).Build();
+        return services;
     }
 
     private static MessageSorter<TKey, TValue> CreateSorter<TKey, TValue>(

@@ -1,8 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 
-using KafkaSnapshot.Utility.Helpers;
+using KafkaSnapshot.Utility.DependencyInjection;
 
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace KafkaSnapshot.Utility;
@@ -19,16 +18,8 @@ public static class HostBuildHelper
     /// <param name="args">Command-line arguments.</param>
     public static IHost CreateHost(string[]? args = null)
     {
-        var builder = Host.CreateDefaultBuilder(args ?? [])
-               .ConfigureServices((hostContext, services) =>
-               {
-                   services.AddTools(hostContext);
-                   services.AddImport(hostContext);
-                   services.AddExport(hostContext);
-                   services.AddTopicLoaders();
-                   services.AddLogging(hostContext);
-                   _ = services.AddHostedService<LoaderService>();
-               });
+        var builder = Host.CreateApplicationBuilder(args ?? []);
+        _ = builder.Services.AddKafkaSnapshotUtility(builder.Configuration);
 
         return builder.Build();
     }

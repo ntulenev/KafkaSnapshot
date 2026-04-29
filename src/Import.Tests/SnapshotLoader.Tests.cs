@@ -129,7 +129,7 @@ public class SnapshotLoaderTests
             () => new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter, encoder));
 
         // Assert
-        exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
+        exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
     [Fact(DisplayName = "SnapshotLoader can't be created with null topic loader.")]

@@ -77,4 +77,85 @@ public class TopicConfigurationTests
         result.PartitionIdsFilter.Should().BeNull();
         result.LoadWithCompacting.Should().BeTrue();
     }
+
+    [Fact(DisplayName = "TopicConfiguration can't convert null configuration.")]
+    [Trait("Category", "Unit")]
+    public void TopicConfigurationCantConvertNullConfiguration()
+    {
+        // Act
+        var exception = Record.Exception(() =>
+            TopicConfigurationMapper.ToProcessingTopic<string>(null!));
+
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
+    }
+
+    [Theory(DisplayName = "TopicConfiguration can convert string filter values.")]
+    [Trait("Category", "Unit")]
+    [InlineData(KeyType.String)]
+    [InlineData(KeyType.Json)]
+    public void TopicConfigurationCanConvertStringFilterValues(KeyType keyType)
+    {
+        // Arrange
+        var config = new TopicConfiguration
+        {
+            Name = "topic-3",
+            ExportFileName = "topic-3.json",
+            FilterKeyType = FilterType.Equals,
+            KeyType = keyType,
+            FilterKeyValue = "value",
+            MessageEncoderRule = EncoderRules.String
+        };
+
+        // Act
+        var result = TopicConfigurationMapper.ToProcessingTopic<string>(config);
+
+        // Assert
+        result.FilterKeyValue.Should().Be("value");
+    }
+
+    [Fact(DisplayName = "TopicConfiguration ignores filter value for ignored key.")]
+    [Trait("Category", "Unit")]
+    public void TopicConfigurationIgnoresFilterValueForIgnoredKey()
+    {
+        // Arrange
+        var config = new TopicConfiguration
+        {
+            Name = "topic-4",
+            ExportFileName = "topic-4.json",
+            FilterKeyType = FilterType.Equals,
+            KeyType = KeyType.Ignored,
+            FilterKeyValue = "value",
+            MessageEncoderRule = EncoderRules.String
+        };
+
+        // Act
+        var result = TopicConfigurationMapper.ToProcessingTopic<string>(config);
+
+        // Assert
+        result.FilterKeyValue.Should().BeNull();
+    }
+
+    [Fact(DisplayName = "TopicConfiguration can't convert invalid key type.")]
+    [Trait("Category", "Unit")]
+    public void TopicConfigurationCantConvertInvalidKeyType()
+    {
+        // Arrange
+        var config = new TopicConfiguration
+        {
+            Name = "topic-5",
+            ExportFileName = "topic-5.json",
+            FilterKeyType = FilterType.Equals,
+            KeyType = (KeyType)999,
+            FilterKeyValue = "value",
+            MessageEncoderRule = EncoderRules.String
+        };
+
+        // Act
+        var exception = Record.Exception(() =>
+            TopicConfigurationMapper.ToProcessingTopic<string>(config));
+
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<InvalidOperationException>();
+    }
 }

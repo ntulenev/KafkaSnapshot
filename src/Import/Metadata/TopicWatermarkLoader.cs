@@ -25,10 +25,7 @@ public class TopicWatermarkLoader : ITopicWatermarkLoader
         ArgumentNullException.ThrowIfNull(kafkaClientFactory);
         ArgumentNullException.ThrowIfNull(options);
 
-        if (options.Value is null)
-        {
-            throw new ArgumentException("Options value is not set", nameof(options));
-        }
+        ArgumentNullException.ThrowIfNull(options.Value, nameof(options));
 
         _metaTimeout = options.Value.AdminClientTimeout;
         _kafkaClientFactory = kafkaClientFactory;

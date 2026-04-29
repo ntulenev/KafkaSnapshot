@@ -24,6 +24,9 @@ Update `src\Utility\appsettings.json`, then run the utility project:
 dotnet run --project src\Utility\Utility.csproj
 ```
 
+The optional JSON schema for editors is available at
+`src\Utility\appsettings.schema.json`.
+
 Supports:
 * Compacting
 * Key filtering

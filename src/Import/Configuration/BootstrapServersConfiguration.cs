@@ -10,7 +10,7 @@ public class BootstrapServersConfiguration
     /// <summary>
     /// List of bootstrap servers.
     /// </summary>
-    public required IReadOnlyList<string> BootstrapServers { get; init; }
+    public IReadOnlyList<string> BootstrapServers { get; init; } = [];
 
     /// <summary>
     /// Kafka user name, is any.

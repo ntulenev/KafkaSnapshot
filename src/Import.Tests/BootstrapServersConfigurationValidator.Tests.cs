@@ -4,6 +4,7 @@ using FluentAssertions;
 
 using KafkaSnapshot.Import.Configuration;
 using KafkaSnapshot.Import.Configuration.Validation;
+using KafkaSnapshot.Models.Configuration;
 
 using Xunit;
 
@@ -76,6 +77,9 @@ public class BootstrapServersConfigurationValidatorTests
 
         // Assert
         result.Succeeded.Should().BeFalse();
+        result.Failures.Should().ContainSingle()
+            .Which.Should().StartWith(
+                ConfigurationValidationErrorCodes.BootstrapServersMissing);
     }
 
     [Fact(DisplayName = "BootstrapServersConfigurationValidator rejects empty bootstrap list.")]

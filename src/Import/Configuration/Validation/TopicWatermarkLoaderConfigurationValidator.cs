@@ -1,4 +1,4 @@
-using System.Diagnostics;
+using KafkaSnapshot.Models.Configuration;
 
 using Microsoft.Extensions.Options;
 
@@ -16,14 +16,18 @@ public class TopicWatermarkLoaderConfigurationValidator :
     public ValidateOptionsResult Validate(string? name,
                                           TopicWatermarkLoaderConfiguration options)
     {
-        Debug.Assert(name is not null);
-        Debug.Assert(options is not null);
+        ArgumentNullException.ThrowIfNull(options);
 
         if (options.AdminClientTimeout <= TimeSpan.Zero)
         {
-            return ValidateOptionsResult.Fail("Timeout should be positive.");
+            return Fail(
+                ConfigurationValidationErrorCodes.AdminClientTimeoutInvalid,
+                "AdminClientTimeout should be positive.");
         }
 
         return ValidateOptionsResult.Success;
     }
+
+    private static ValidateOptionsResult Fail(string code, string message)
+        => ValidateOptionsResult.Fail(ConfigurationValidationError.Create(code, message));
 }

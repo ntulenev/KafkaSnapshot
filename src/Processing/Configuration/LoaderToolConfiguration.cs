@@ -10,7 +10,7 @@ public sealed class LoaderToolConfiguration
     /// <summary>
     /// List of  topics with string Key.
     /// </summary>
-    public required IReadOnlyList<TopicConfiguration> Topics { get; init; }
+    public IReadOnlyList<TopicConfiguration> Topics { get; init; } = [];
 
     /// <summary>
     /// User <see cref="LoaderConcurrentTool"/> to process topics in concurrent mode.

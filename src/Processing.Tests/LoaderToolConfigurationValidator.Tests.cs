@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 
 using FluentAssertions;
 
+using KafkaSnapshot.Models.Configuration;
 using KafkaSnapshot.Processing.Configuration;
 using KafkaSnapshot.Processing.Configuration.Validation;
 
@@ -139,6 +140,9 @@ public class LoaderToolConfigurationValidatorTests
         // Assert
         exception.Should().BeNull();
         result.Succeeded.Should().BeFalse();
+        result.Failures.Should().ContainSingle()
+            .Which.Should().StartWith(
+                ConfigurationValidationErrorCodes.ExportFileNameDuplicate);
     }
 
     [Fact(DisplayName = "LoaderToolConfigurationValidator cant be validated with null options.")]

@@ -5,6 +5,7 @@ using FluentAssertions;
 
 using KafkaSnapshot.Abstractions.Processing;
 using KafkaSnapshot.Import.Configuration;
+using KafkaSnapshot.Models.Configuration;
 using KafkaSnapshot.Models.Filters;
 using KafkaSnapshot.Processing;
 using KafkaSnapshot.Processing.Configuration;
@@ -68,6 +69,28 @@ public class UtilityInternalsTests
         act.Should().Throw<OptionsValidationException>();
     }
 
+    [Fact(DisplayName = "Host validates options on start.")]
+    [Trait("Category", "Unit")]
+    public async Task HostValidatesOptionsOnStart()
+    {
+        // Arrange
+        var builder = Host.CreateApplicationBuilder([]);
+        builder.Configuration.AddInMemoryCollection(CreateValidConfig());
+        builder.Configuration["JsonFileDataExporterConfiguration:OutputDirectory"] = "   ";
+        _ = builder.Services.AddKafkaSnapshotUtility(builder.Configuration);
+        using var host = builder.Build();
+
+        // Act
+        var exception = await Record.ExceptionAsync(
+            () => host.StartAsync(CancellationToken.None));
+
+        // Assert
+        exception.Should().BeOfType<OptionsValidationException>()
+            .Which.Failures.Should().ContainSingle()
+            .Which.Should().StartWith(
+                ConfigurationValidationErrorCodes.OutputDirectoryWhitespace);
+    }
+
     [Fact(DisplayName = "AddKafkaSnapshotProcessing resolves LoaderTool for sequential mode.")]
     [Trait("Category", "Unit")]
     public void AddKafkaSnapshotProcessingResolvesSequentialLoader()
@@ -89,7 +112,7 @@ public class UtilityInternalsTests
         tool.Should().BeOfType<LoaderTool>();
     }
 
-    [Fact(DisplayName = "TopicLoadersRegistrationHelper throws for unsupported key type in topic loader creation.")]
+    [Fact(DisplayName = "TopicLoadersRegistrationHelper throws options validation for unsupported key type.")]
     [Trait("Category", "Unit")]
     public void TopicLoadersRegistrationHelperCreateTopicLoadersThrowsForUnsupportedKeyType()
     {
@@ -111,9 +134,13 @@ public class UtilityInternalsTests
         Action act = () => _ = method.Invoke(null, [provider]);
 
         // Assert
-        act.Should().Throw<TargetInvocationException>()
-            .WithInnerException<InvalidOperationException>()
-            .WithMessage("*Invalid Key type*");
+        var exception = act.Should().Throw<TargetInvocationException>().Which;
+        var validationException = exception.InnerException.Should()
+            .BeOfType<OptionsValidationException>()
+            .Subject;
+        validationException.Failures.Should().ContainSingle()
+            .Which.Should().StartWith(
+                ConfigurationValidationErrorCodes.KeyTypeUnsupported);
     }
 
     private static MethodInfo GetStaticMethod(
@@ -142,6 +169,22 @@ public class UtilityInternalsTests
                 ["LoaderToolConfiguration:Topics:0:FilterKeyType"] = nameof(FilterType.None)
             })
             .Build();
+
+    private static Dictionary<string, string?> CreateValidConfig()
+        => new()
+        {
+            ["BootstrapServersConfiguration:BootstrapServers:0"] = "kafka1:9092",
+            ["TopicWatermarkLoaderConfiguration:AdminClientTimeout"] = "00:00:05",
+            ["SnapshotLoaderConfiguration:DateOffsetTimeout"] = "00:00:05",
+            ["SnapshotLoaderConfiguration:SearchSinglePartition"] = "false",
+            ["JsonFileDataExporterConfiguration:UseFileStreaming"] = "true",
+            ["LoaderToolConfiguration:UseConcurrentLoad"] = "false",
+            ["LoaderToolConfiguration:Topics:0:Name"] = "topic-1",
+            ["LoaderToolConfiguration:Topics:0:ExportFileName"] = "topic-1.json",
+            ["LoaderToolConfiguration:Topics:0:KeyType"] = nameof(KeyType.String),
+            ["LoaderToolConfiguration:Topics:0:Compacting"] = nameof(CompactingMode.Off),
+            ["LoaderToolConfiguration:Topics:0:FilterKeyType"] = nameof(FilterType.None)
+        };
 
     private sealed class FailBootstrapValidator :
         IValidateOptions<BootstrapServersConfiguration>

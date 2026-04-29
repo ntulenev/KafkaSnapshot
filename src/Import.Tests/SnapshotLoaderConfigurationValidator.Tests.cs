@@ -2,6 +2,7 @@ using FluentAssertions;
 
 using KafkaSnapshot.Import.Configuration;
 using KafkaSnapshot.Import.Configuration.Validation;
+using KafkaSnapshot.Models.Configuration;
 
 using Xunit;
 
@@ -55,6 +56,31 @@ public class SnapshotLoaderConfigurationValidatorTests
 
         // Assert
         result.Succeeded.Should().BeFalse();
+        result.Failures.Should().ContainSingle()
+            .Which.Should().StartWith(
+                ConfigurationValidationErrorCodes.DateOffsetTimeoutInvalid);
+    }
+
+    [Fact(DisplayName = "SnapshotLoaderConfigurationValidator fails for non-positive max concurrent partitions.")]
+    [Trait("Category", "Unit")]
+    public void SnapshotLoaderConfigurationValidatorFailsForNonPositiveMaxConcurrentPartitions()
+    {
+        // Arrange
+        var validator = new SnapshotLoaderConfigurationValidator();
+        var config = new SnapshotLoaderConfiguration
+        {
+            DateOffsetTimeout = TimeSpan.FromSeconds(1),
+            MaxConcurrentPartitions = 0
+        };
+
+        // Act
+        var result = validator.Validate("test", config);
+
+        // Assert
+        result.Succeeded.Should().BeFalse();
+        result.Failures.Should().ContainSingle()
+            .Which.Should().StartWith(
+                ConfigurationValidationErrorCodes.MaxConcurrentPartitionsInvalid);
     }
 
     [Fact(DisplayName = "SnapshotLoaderConfigurationValidator fails for negative timeout.")]

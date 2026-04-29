@@ -1,3 +1,5 @@
+using KafkaSnapshot.Models.Configuration;
+
 using Microsoft.Extensions.Options;
 
 namespace KafkaSnapshot.Import.Configuration.Validation;
@@ -17,9 +19,21 @@ public class SnapshotLoaderConfigurationValidator :
 
         if (options.DateOffsetTimeout <= TimeSpan.Zero)
         {
-            return ValidateOptionsResult.Fail("DateOffsetTimeout should be positive.");
+            return Fail(
+                ConfigurationValidationErrorCodes.DateOffsetTimeoutInvalid,
+                "DateOffsetTimeout should be positive.");
+        }
+
+        if (options.MaxConcurrentPartitions is <= 0)
+        {
+            return Fail(
+                ConfigurationValidationErrorCodes.MaxConcurrentPartitionsInvalid,
+                "MaxConcurrentPartitions should be positive when set.");
         }
 
         return ValidateOptionsResult.Success;
     }
+
+    private static ValidateOptionsResult Fail(string code, string message)
+        => ValidateOptionsResult.Fail(ConfigurationValidationError.Create(code, message));
 }

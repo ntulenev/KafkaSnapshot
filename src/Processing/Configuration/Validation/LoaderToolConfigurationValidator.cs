@@ -1,5 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 
+using KafkaSnapshot.Models.Configuration;
+using KafkaSnapshot.Models.Filters;
 using KafkaSnapshot.Models.Names;
 
 using Microsoft.Extensions.Options;
@@ -18,34 +20,40 @@ public sealed partial class LoaderToolConfigurationValidator :
     {
         if (topic.Name is null)
         {
-            result = ValidateOptionsResult.Fail("Topic name is not set.");
+            result = Fail(
+                ConfigurationValidationErrorCodes.TopicNameMissing,
+                "Topic name is not set.");
             return true;
         }
 
         if (string.IsNullOrWhiteSpace(topic.Name))
         {
-            result = ValidateOptionsResult.Fail(
+            result = Fail(
+                ConfigurationValidationErrorCodes.TopicNameEmpty,
                 "The topic name cannot be empty or consist of whitespaces.");
             return true;
         }
 
         if (topic.Name.Any(char.IsWhiteSpace))
         {
-            result = ValidateOptionsResult.Fail(
+            result = Fail(
+                ConfigurationValidationErrorCodes.TopicNameWhitespace,
                 $"The topic name {topic.Name} cannot contain whitespaces.");
             return true;
         }
 
         if (topic.Name.Length > KafkaTopicNameRules.MaxLength)
         {
-            result = ValidateOptionsResult.Fail(
+            result = Fail(
+                ConfigurationValidationErrorCodes.TopicNameTooLong,
                 $"The name of a topic {topic.Name} is too long.");
             return true;
         }
 
         if (!KafkaTopicNameRules.IsValid(topic.Name))
         {
-            result = ValidateOptionsResult.Fail(
+            result = Fail(
+               ConfigurationValidationErrorCodes.TopicNameInvalid,
                $"Incorrect topic name {topic.Name}. " +
                $"The topic name may consist of characters 'a' to 'z', 'A' to 'Z', " +
                $"digits, dots, underscores, and minus signs.");
@@ -54,31 +62,68 @@ public sealed partial class LoaderToolConfigurationValidator :
 
         if (topic.ExportFileName is null)
         {
-            result = ValidateOptionsResult.Fail("Topic export name is not set.");
+            result = Fail(
+                ConfigurationValidationErrorCodes.ExportFileNameMissing,
+                "Topic export name is not set.");
             return true;
         }
 
         if (string.IsNullOrWhiteSpace(topic.ExportFileName))
         {
-            result = ValidateOptionsResult.Fail(
+            result = Fail(
+                ConfigurationValidationErrorCodes.ExportFileNameEmpty,
                 "The topic export name cannot be empty or consist of whitespaces.");
             return true;
         }
 
-        if (topic.FilterKeyType is not Models.Filters.FilterType.None)
+        if (!Enum.IsDefined(topic.KeyType))
+        {
+            result = Fail(
+                ConfigurationValidationErrorCodes.KeyTypeUnsupported,
+                $"Unsupported KeyType value {topic.KeyType}.");
+            return true;
+        }
+
+        if (!Enum.IsDefined(topic.FilterKeyType))
+        {
+            result = Fail(
+                ConfigurationValidationErrorCodes.FilterTypeUnsupported,
+                $"Unsupported FilterKeyType value {topic.FilterKeyType}.");
+            return true;
+        }
+
+        if (!Enum.IsDefined(topic.Compacting))
+        {
+            result = Fail(
+                ConfigurationValidationErrorCodes.CompactingModeUnsupported,
+                $"Unsupported Compacting value {topic.Compacting}.");
+            return true;
+        }
+
+        if (!Enum.IsDefined(topic.MessageEncoderRule))
+        {
+            result = Fail(
+                ConfigurationValidationErrorCodes.EncoderRuleUnsupported,
+                $"Unsupported MessageEncoderRule value {topic.MessageEncoderRule}.");
+            return true;
+        }
+
+        if (topic.FilterKeyType is not FilterType.None)
         {
             if (topic.FilterKeyValue is null)
             {
-                result = ValidateOptionsResult.Fail(
+                result = Fail(
+                    ConfigurationValidationErrorCodes.FilterValueMissing,
                     $"Filter value does not set for topic {topic.Name}.");
                 return true;
             }
         }
 
-        if (topic.KeyType == Models.Filters.KeyType.Ignored &&
+        if (topic.KeyType == KeyType.Ignored &&
             topic.Compacting == CompactingMode.On)
         {
-            result = ValidateOptionsResult.Fail(
+            result = Fail(
+                ConfigurationValidationErrorCodes.CompactingIgnoredKey,
                 $"Compacting is not supported for ignored keys. Topic {topic.Name}.");
             return true;
         }
@@ -87,7 +132,8 @@ public sealed partial class LoaderToolConfigurationValidator :
             topic.OffsetEndDate is DateTime endDate &&
             startDate > endDate)
         {
-            result = ValidateOptionsResult.Fail(
+            result = Fail(
+                ConfigurationValidationErrorCodes.TopicDateRangeInvalid,
                 $"Topic start date ({topic.OffsetStartDate}) is greater than " +
                 $"end date ({topic.OffsetEndDate}). Topic {topic.Name}.");
             return true;
@@ -103,13 +149,17 @@ public sealed partial class LoaderToolConfigurationValidator :
     {
         if (options.Topics is null)
         {
-            result = ValidateOptionsResult.Fail("Topics section is not set.");
+            result = Fail(
+                ConfigurationValidationErrorCodes.TopicsMissing,
+                "Topics section is not set.");
             return true;
         }
 
         if (options.Topics.Count == 0)
         {
-            result = ValidateOptionsResult.Fail("Topics section is empty.");
+            result = Fail(
+                ConfigurationValidationErrorCodes.TopicsEmpty,
+                "Topics section is empty.");
             return true;
         }
 
@@ -131,7 +181,8 @@ public sealed partial class LoaderToolConfigurationValidator :
         if (fileDuplicates.Count > 0)
         {
             var duplicates = string.Join(",", fileDuplicates);
-            result = ValidateOptionsResult.Fail(
+            result = Fail(
+                     ConfigurationValidationErrorCodes.ExportFileNameDuplicate,
                      $"Files names duplicate in several topics ({duplicates}).");
             return true;
         }
@@ -152,6 +203,20 @@ public sealed partial class LoaderToolConfigurationValidator :
             return error;
         }
 
+        if (!Enum.IsDefined(options.GlobalMessageSort))
+        {
+            return Fail(
+                ConfigurationValidationErrorCodes.SortingTypeUnsupported,
+                $"Unsupported GlobalMessageSort value {options.GlobalMessageSort}.");
+        }
+
+        if (!Enum.IsDefined(options.GlobalSortOrder))
+        {
+            return Fail(
+                ConfigurationValidationErrorCodes.SortingOrderUnsupported,
+                $"Unsupported GlobalSortOrder value {options.GlobalSortOrder}.");
+        }
+
         foreach (var topic in options.Topics)
         {
             if (TryFailOnTopicRules(topic, out var topicError))
@@ -168,4 +233,6 @@ public sealed partial class LoaderToolConfigurationValidator :
         return ValidateOptionsResult.Success;
     }
 
+    private static ValidateOptionsResult Fail(string code, string message)
+        => ValidateOptionsResult.Fail(ConfigurationValidationError.Create(code, message));
 }

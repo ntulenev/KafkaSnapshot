@@ -1,4 +1,5 @@
 using KafkaSnapshot.Export.Configuration;
+using KafkaSnapshot.Export.Configuration.Validation;
 using KafkaSnapshot.Import.Configuration;
 using KafkaSnapshot.Import.Configuration.Validation;
 using KafkaSnapshot.Processing.Configuration;
@@ -44,6 +45,8 @@ internal static class ConfigHelper
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configuration);
 
+        _ = services.AddSingleton<IValidateOptions<JsonFileDataExporterConfiguration>,
+                                               JsonFileDataExporterConfigurationValidator>();
         _ = services.AddOptions<JsonFileDataExporterConfiguration>()
             .Bind(configuration.GetSection(nameof(JsonFileDataExporterConfiguration)))
             .ValidateOnStart();

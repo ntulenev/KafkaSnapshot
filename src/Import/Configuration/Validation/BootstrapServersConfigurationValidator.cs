@@ -1,5 +1,7 @@
 using Confluent.Kafka;
 
+using KafkaSnapshot.Models.Configuration;
+
 using Microsoft.Extensions.Options;
 
 namespace KafkaSnapshot.Import.Configuration.Validation;
@@ -20,35 +22,44 @@ public class BootstrapServersConfigurationValidator :
 
         if (options.BootstrapServers is null)
         {
-            return ValidateOptionsResult.Fail("BootstrapServers section is not set.");
+            return Fail(
+                ConfigurationValidationErrorCodes.BootstrapServersMissing,
+                "BootstrapServers section is not set.");
         }
 
-        if (!options.BootstrapServers.Any())
+        if (options.BootstrapServers.Count == 0)
         {
-            return ValidateOptionsResult.Fail("BootstrapServers section is empty.");
+            return Fail(
+                ConfigurationValidationErrorCodes.BootstrapServersEmpty,
+                "BootstrapServers section is empty.");
         }
 
         if (options.BootstrapServers.Any(string.IsNullOrEmpty))
         {
-            return ValidateOptionsResult.Fail("BootstrapServers section contains empty string.");
+            return Fail(
+                ConfigurationValidationErrorCodes.BootstrapServersEmptyItem,
+                "BootstrapServers section contains empty string.");
         }
 
         if (options.BootstrapServers.Any(string.IsNullOrWhiteSpace))
         {
-            return ValidateOptionsResult.Fail("BootstrapServers section contains " +
-                "empty string of whitespaces.");
+            return Fail(
+                ConfigurationValidationErrorCodes.BootstrapServersWhitespaceItem,
+                "BootstrapServers section contains empty string of whitespaces.");
         }
 
         if (!Enum.IsDefined(options.SecurityProtocol))
         {
-            return ValidateOptionsResult.Fail(
+            return Fail(
+                ConfigurationValidationErrorCodes.SecurityProtocolUnsupported,
                 $"Unsupported SecurityProtocol value {options.SecurityProtocol}.");
         }
 
         if (options.SASLMechanism is SaslMechanism mechanism &&
             !Enum.IsDefined(mechanism))
         {
-            return ValidateOptionsResult.Fail(
+            return Fail(
+                ConfigurationValidationErrorCodes.SaslMechanismUnsupported,
                 $"Unsupported SASLMechanism value {mechanism}.");
         }
 
@@ -56,7 +67,8 @@ public class BootstrapServersConfigurationValidator :
         {
             if (options.SASLMechanism is null)
             {
-                return ValidateOptionsResult.Fail(
+                return Fail(
+                    ConfigurationValidationErrorCodes.SaslMechanismMissing,
                     "SASLMechanism should be set for SASL security protocols.");
             }
 
@@ -64,13 +76,15 @@ public class BootstrapServersConfigurationValidator :
             {
                 if (string.IsNullOrWhiteSpace(options.Username))
                 {
-                    return ValidateOptionsResult.Fail(
+                    return Fail(
+                        ConfigurationValidationErrorCodes.SaslUsernameMissing,
                         "Username should be set for selected SASL mechanism.");
                 }
 
                 if (string.IsNullOrWhiteSpace(options.Password))
                 {
-                    return ValidateOptionsResult.Fail(
+                    return Fail(
+                        ConfigurationValidationErrorCodes.SaslPasswordMissing,
                         "Password should be set for selected SASL mechanism.");
                 }
             }
@@ -79,7 +93,8 @@ public class BootstrapServersConfigurationValidator :
                  !string.IsNullOrWhiteSpace(options.Username) ||
                  !string.IsNullOrWhiteSpace(options.Password))
         {
-            return ValidateOptionsResult.Fail(
+            return Fail(
+                ConfigurationValidationErrorCodes.SaslProtocolMissing,
                 "SASL settings require SaslPlaintext or SaslSsl security protocol.");
         }
 
@@ -93,4 +108,7 @@ public class BootstrapServersConfigurationValidator :
         => mechanism is SaslMechanism.Plain or
                          SaslMechanism.ScramSha256 or
                          SaslMechanism.ScramSha512;
+
+    private static ValidateOptionsResult Fail(string code, string message)
+        => ValidateOptionsResult.Fail(ConfigurationValidationError.Create(code, message));
 }

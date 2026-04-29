@@ -71,8 +71,8 @@ public class ByteMessageEncoderTests
     }
 
     [Trait("Category", "Unit")]
-    [Fact(DisplayName = "Encode should throw ArgumentException when invalid EncoderRules value is provided")]
-    public void EncodeInvalidEncoderRuleThrowsArgumentException()
+    [Fact(DisplayName = "Encode should throw ArgumentOutOfRangeException when invalid EncoderRules value is provided")]
+    public void EncodeInvalidEncoderRuleThrowsArgumentOutOfRangeException()
     {
         // Arrange
         var encoder = new ByteMessageEncoder();
@@ -83,6 +83,6 @@ public class ByteMessageEncoderTests
         Action act = () => encoder.Encode(message, rule);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        act.Should().Throw<ArgumentOutOfRangeException>();
     }
 }

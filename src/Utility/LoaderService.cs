@@ -28,10 +28,13 @@ public sealed class LoaderService : BackgroundService
         IHostApplicationLifetime hostApplicationLifetime,
         ILogger<LoaderService> logger)
     {
-        _tool = tool ?? throw new ArgumentNullException(nameof(tool));
-        _hostApplicationLifetime = hostApplicationLifetime ??
-            throw new ArgumentNullException(nameof(hostApplicationLifetime));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        ArgumentNullException.ThrowIfNull(tool);
+        ArgumentNullException.ThrowIfNull(hostApplicationLifetime);
+        ArgumentNullException.ThrowIfNull(logger);
+
+        _tool = tool;
+        _hostApplicationLifetime = hostApplicationLifetime;
+        _logger = logger;
     }
 
     /// <inheritdoc />

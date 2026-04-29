@@ -17,12 +17,7 @@ public class StringContainsFilter : IDataFilter<string>
     /// <exception cref="ArgumentException">If sample is empty of contains only spaces.</exception>
     public StringContainsFilter(string sample)
     {
-        ArgumentNullException.ThrowIfNull(sample);
-
-        if (string.IsNullOrWhiteSpace(sample))
-        {
-            throw new ArgumentException("Sample is empty of whitespace.", nameof(sample));
-        }
+        ArgumentException.ThrowIfNullOrWhiteSpace(sample);
 
         _sample = sample;
     }

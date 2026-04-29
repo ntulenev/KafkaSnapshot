@@ -6,7 +6,7 @@ using System.Collections.Frozen;
 namespace KafkaSnapshot.Models.Import;
 
 /// <summary>
-/// Represents Kafka topics attributes.
+/// Represents Kafka topic loading attributes.
 /// </summary>
 public sealed class LoadingTopic
 {
@@ -21,34 +21,34 @@ public sealed class LoadingTopic
     public EncoderRules TopicValueEncoderRule { get; }
 
     /// <summary>
-    /// Need to compact results by key.
+    /// Indicates whether results should be compacted by key.
     /// </summary>
     public bool LoadWithCompacting { get; }
 
     /// <summary>
-    /// Date and time of staring offset.
+    /// Date and time of the starting offset.
     /// </summary>
     public DateTime OffsetDate => _offsetDate.HasValue ? _offsetDate.Value :
         throw new InvalidOperationException("Topic params does not have date offset.");
 
     /// <summary>
-    /// Date and time of end offset.
+    /// Date and time of the ending offset.
     /// </summary>
     public DateTime EndOffsetDate => _endOffsetDate.HasValue ? _endOffsetDate.Value :
         throw new InvalidOperationException("Topic params does not have end date offset.");
 
     /// <summary>
-    /// Does offset trimmed with start date.
+    /// Indicates whether the starting offset date is set.
     /// </summary>
     public bool HasOffsetDate => _offsetDate.HasValue;
 
     /// <summary>
-    /// Does offset trimmed with end date.
+    /// Indicates whether the ending offset date is set.
     /// </summary>
     public bool HasEndOffsetDate => _endOffsetDate.HasValue;
 
     /// <summary>
-    /// Topic's interested partitions.
+    /// Topic partitions to read from.
     /// </summary>
     public IReadOnlySet<int> PartitionFilter { get; }
 

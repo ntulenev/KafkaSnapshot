@@ -13,12 +13,12 @@ public class BootstrapServersConfiguration
     public IReadOnlyList<string> BootstrapServers { get; init; } = [];
 
     /// <summary>
-    /// Kafka user name, is any.
+    /// Kafka user name, if any.
     /// </summary>
     public string? Username { get; set; }
 
     /// <summary>
-    /// Kafka password name, is any.
+    /// Kafka password, if any.
     /// </summary>
     public string? Password { get; init; }
 

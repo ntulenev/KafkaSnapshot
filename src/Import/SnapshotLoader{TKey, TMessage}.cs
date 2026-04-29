@@ -22,7 +22,7 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
     where TMessage : notnull
 {
     /// <summary>
-    /// Creates <see cref="SnapshotLoader{Key, Message}"/>.
+    /// Creates <see cref="SnapshotLoader{TKey, TMessage}"/>.
     /// </summary>
     public SnapshotLoader(ILogger<SnapshotLoader<TKey, TMessage>> logger,
                           IOptions<SnapshotLoaderConfiguration> config,

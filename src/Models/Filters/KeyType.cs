@@ -1,7 +1,7 @@
 namespace KafkaSnapshot.Models.Filters;
 
 /// <summary>
-/// Keys types of Kafka message.
+/// Key types supported for Kafka messages.
 /// </summary>
 #pragma warning disable CA1720
 public enum KeyType

@@ -3,9 +3,9 @@ using KafkaSnapshot.Models.Names;
 namespace KafkaSnapshot.Models.Export;
 
 /// <summary>
-/// Topic that could be exported.
+/// Topic that can be exported.
 /// </summary>
 /// <param name="TopicName">Topic name.</param>
 /// <param name="ExportName">Export name.</param>
-/// <param name="ExportRawMessage">Rule to export message as raw string.</param>
+/// <param name="ExportRawMessage">Whether to export message values as raw strings.</param>
 public record ExportedTopic(TopicName TopicName, FileName ExportName, bool ExportRawMessage);

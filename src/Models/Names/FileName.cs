@@ -23,7 +23,7 @@ public sealed class FileName
     /// <exception cref="ArgumentNullException">Thrown 
     /// if <paramref name="fileName"/> is null.</exception>
     /// <exception cref="ArgumentException">Thrown 
-    /// if <paramref name="fileName"/> is null, empty, or whitespace.</exception>
+    /// if <paramref name="fileName"/> is empty or whitespace.</exception>
     public FileName(string fileName)
     {
         ArgumentNullException.ThrowIfNull(fileName);

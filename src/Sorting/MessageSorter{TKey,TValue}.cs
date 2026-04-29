@@ -21,7 +21,9 @@ public sealed class MessageSorter<TKey, TValue> : IMessageSorter<TKey, TValue>
     /// is null.</exception>
     public MessageSorter(SortingParams sortingRules)
     {
-        _sortingRules = sortingRules ?? throw new ArgumentNullException(nameof(sortingRules));
+        ArgumentNullException.ThrowIfNull(sortingRules);
+
+        _sortingRules = sortingRules;
     }
 
     /// <inheritdoc/>

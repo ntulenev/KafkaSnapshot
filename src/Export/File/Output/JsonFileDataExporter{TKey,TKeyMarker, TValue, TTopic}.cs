@@ -42,15 +42,16 @@ public sealed class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> :
     {
         ArgumentNullException.ThrowIfNull(config);
 
-        if (config.Value is null)
-        {
-            throw new ArgumentException("Config is not set", nameof(config));
-        }
+        ArgumentNullException.ThrowIfNull(config.Value, nameof(config));
+        ArgumentNullException.ThrowIfNull(logger);
+        ArgumentNullException.ThrowIfNull(fileSaver);
+        ArgumentNullException.ThrowIfNull(streamProvider);
+        ArgumentNullException.ThrowIfNull(serializer);
 
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _fileSaver = fileSaver ?? throw new ArgumentNullException(nameof(fileSaver));
-        _streamProvider = streamProvider ?? throw new ArgumentNullException(nameof(streamProvider));
-        _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
+        _logger = logger;
+        _fileSaver = fileSaver;
+        _streamProvider = streamProvider;
+        _serializer = serializer;
         _isStreamingMode = config.Value.UseFileStreaming;
         _outputDirectory = config.Value.OutputDirectory;
 

@@ -85,6 +85,140 @@ public class ProcessingTopicTests
         result.PartitionIdsFilter.Should().BeEquivalentTo(partitions);
     }
 
+    [Fact(DisplayName = "ProcessingTopic can't be created with null topic name.")]
+    [Trait("Category", "Unit")]
+    public void ProcessingTopicCantBeCreatedWithNullTopicName()
+    {
+        // Arrange
+        var exportName = new FileName("Test2");
+        var dateRange = new Filters.DateFilterRange(null!, null!);
+
+        // Act
+        var exception = Record.Exception(() =>
+            new ProcessingTopic<int>(
+                null!,
+                exportName,
+                true,
+                Filters.FilterType.Equals,
+                Filters.KeyType.Long,
+                1,
+                dateRange,
+                true,
+                EncoderRules.String));
+
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
+    }
+
+    [Fact(DisplayName = "ProcessingTopic can't be created with null export name.")]
+    [Trait("Category", "Unit")]
+    public void ProcessingTopicCantBeCreatedWithNullExportName()
+    {
+        // Arrange
+        var topicName = new TopicName("Test1");
+        var dateRange = new Filters.DateFilterRange(null!, null!);
+
+        // Act
+        var exception = Record.Exception(() =>
+            new ProcessingTopic<int>(
+                topicName,
+                null!,
+                true,
+                Filters.FilterType.Equals,
+                Filters.KeyType.Long,
+                1,
+                dateRange,
+                true,
+                EncoderRules.String));
+
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
+    }
+
+    [Fact(DisplayName = "ProcessingTopic can't be created with null date range.")]
+    [Trait("Category", "Unit")]
+    public void ProcessingTopicCantBeCreatedWithNullDateRange()
+    {
+        // Arrange
+        var topicName = new TopicName("Test1");
+        var exportName = new FileName("Test2");
+
+        // Act
+        var exception = Record.Exception(() =>
+            new ProcessingTopic<int>(
+                topicName,
+                exportName,
+                true,
+                Filters.FilterType.Equals,
+                Filters.KeyType.Long,
+                1,
+                null!,
+                true,
+                EncoderRules.String));
+
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
+    }
+
+    [Theory(DisplayName = "ProcessingTopic can't be created with invalid enum values.")]
+    [Trait("Category", "Unit")]
+    [InlineData(999, 0, 0)]
+    [InlineData(0, 999, 0)]
+    [InlineData(0, 0, 999)]
+    public void ProcessingTopicCantBeCreatedWithInvalidEnumValues(
+        int filterType,
+        int keyType,
+        int encoderRule)
+    {
+        // Arrange
+        var topicName = new TopicName("Test1");
+        var exportName = new FileName("Test2");
+        var dateRange = new Filters.DateFilterRange(null!, null!);
+
+        // Act
+        var exception = Record.Exception(() =>
+            new ProcessingTopic<int>(
+                topicName,
+                exportName,
+                true,
+                (Filters.FilterType)filterType,
+                (Filters.KeyType)keyType,
+                1,
+                dateRange,
+                true,
+                (EncoderRules)encoderRule));
+
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<ArgumentOutOfRangeException>();
+    }
+
+    [Fact(DisplayName = "ProcessingTopic can't be created with empty partition filter.")]
+    [Trait("Category", "Unit")]
+    public void ProcessingTopicCantBeCreatedWithEmptyPartitionFilter()
+    {
+        // Arrange
+        var topicName = new TopicName("Test1");
+        var exportName = new FileName("Test2");
+        var dateRange = new Filters.DateFilterRange(null!, null!);
+
+        // Act
+        var exception = Record.Exception(() =>
+            new ProcessingTopic<int>(
+                topicName,
+                exportName,
+                true,
+                Filters.FilterType.Equals,
+                Filters.KeyType.Long,
+                1,
+                dateRange,
+                true,
+                EncoderRules.String,
+                new HashSet<int>()));
+
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<ArgumentOutOfRangeException>();
+    }
+
     [Fact(DisplayName = "Can Create LoadingTopic from ProcessingTopic.")]
     [Trait("Category", "Unit")]
     public void CanCreateLoadingTopicFromProcessingTopic()

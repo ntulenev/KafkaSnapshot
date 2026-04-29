@@ -41,14 +41,16 @@ public sealed class ProcessingUnit<TKey, TKeyMarker, TValue> : IProcessingUnit
                           IValueFilterFactory<TValue> valueFilterFactory
                           )
     {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _kafkaLoader = kafkaLoader ?? throw new ArgumentNullException(nameof(kafkaLoader));
-        _exporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
-
+        ArgumentNullException.ThrowIfNull(logger);
         ArgumentNullException.ThrowIfNull(topic);
+        ArgumentNullException.ThrowIfNull(kafkaLoader);
+        ArgumentNullException.ThrowIfNull(exporter);
         ArgumentNullException.ThrowIfNull(keyFilterFactory);
         ArgumentNullException.ThrowIfNull(valueFilterFactory);
 
+        _logger = logger;
+        _kafkaLoader = kafkaLoader;
+        _exporter = exporter;
         _keyFilter = keyFilterFactory.Create(
             topic.FilterKeyType,
             topic.KeyType,

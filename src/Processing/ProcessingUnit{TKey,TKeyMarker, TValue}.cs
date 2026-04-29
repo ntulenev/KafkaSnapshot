@@ -15,9 +15,9 @@ namespace KafkaSnapshot.Processing;
 /// <summary>
 /// Single topic processor that loads data from Apache Kafka and exports to file.
 /// </summary>
-/// <typeparam name="TKey">Message Key.</typeparam>
-/// <typeparam name="TKeyMarker">Message Key marker.</typeparam>
-/// <typeparam name="TValue">Message Value.</typeparam>
+/// <typeparam name="TKey">Message key.</typeparam>
+/// <typeparam name="TKeyMarker">Message key marker.</typeparam>
+/// <typeparam name="TValue">Message value.</typeparam>
 public sealed class ProcessingUnit<TKey, TKeyMarker, TValue> : IProcessingUnit
     where TKey : notnull
     where TKeyMarker : IKeyRepresentationMarker
@@ -26,8 +26,8 @@ public sealed class ProcessingUnit<TKey, TKeyMarker, TValue> : IProcessingUnit
     /// <summary>
     /// Creates <see cref="ProcessingUnit{TKey,TKeyMarker, TValue}"/>.
     /// </summary>
-    /// <param name="logger">Creates logger 
-    /// for <see cref="ProcessingUnit{TKey, TKeyMarker, TValue}"/>.</param>
+    /// <param name="logger">Logger for
+    /// <see cref="ProcessingUnit{TKey, TKeyMarker, TValue}"/>.</param>
     /// <param name="topic">Apache Kafka topic.</param>
     /// <param name="kafkaLoader">Kafka topic loader.</param>
     /// <param name="exporter">Data exporter.</param>

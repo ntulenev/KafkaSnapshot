@@ -5,7 +5,7 @@ using KafkaSnapshot.Abstractions.Processing;
 namespace KafkaSnapshot.Processing;
 
 /// <summary>
-/// Tool that process topics from Apache Kafka.
+/// Tool that processes topics from Apache Kafka sequentially.
 /// </summary>
 public sealed class LoaderTool : ILoaderTool
 {
@@ -14,7 +14,8 @@ public sealed class LoaderTool : ILoaderTool
     /// </summary>
     /// <param name="logger">Logger.</param>
     /// <param name="units">Processors for topics.</param>
-    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="logger"/> or
+    /// <paramref name="units"/> is null.</exception>
     public LoaderTool(ILogger<LoaderTool> logger, IReadOnlyCollection<IProcessingUnit> units)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));

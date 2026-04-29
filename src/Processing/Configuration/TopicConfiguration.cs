@@ -14,12 +14,12 @@ public sealed class TopicConfiguration
     public required string Name { get; init; }
 
     /// <summary>
-    /// Topic Key Type.
+    /// Topic key type.
     /// </summary>
     public KeyType KeyType { get; init; }
 
     /// <summary>
-    /// Setting to On or Off compacting.
+    /// Compaction mode for duplicated keys.
     /// </summary>
     public CompactingMode Compacting { get; init; } = CompactingMode.On;
 
@@ -43,7 +43,7 @@ public sealed class TopicConfiguration
     public DateTime? OffsetEndDate { get; init; }
 
     /// <summary>
-    /// Message format in export JSON.
+    /// Whether to export message values as raw strings.
     /// </summary>
     public bool ExportRawMessage { get; init; }
 
@@ -53,7 +53,7 @@ public sealed class TopicConfiguration
     public string? FilterKeyValue { get; init; }
 
     /// <summary>
-    /// Partition ids filter.
+    /// Partition id filter.
     /// </summary>
     public HashSet<int>? PartitionsIds { get; init; }
 

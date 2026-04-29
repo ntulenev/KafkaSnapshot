@@ -8,22 +8,22 @@ namespace KafkaSnapshot.Processing.Configuration;
 public sealed class LoaderToolConfiguration
 {
     /// <summary>
-    /// List of  topics with string Key.
+    /// Topics to process.
     /// </summary>
     public IReadOnlyList<TopicConfiguration> Topics { get; init; } = [];
 
     /// <summary>
-    /// User <see cref="LoaderConcurrentTool"/> to process topics in concurrent mode.
+    /// Use <see cref="LoaderConcurrentTool"/> to process topics concurrently.
     /// </summary>
     public bool UseConcurrentLoad { get; init; }
 
     /// <summary>
-    /// Message sorting field.
+    /// Field used to sort messages.
     /// </summary>
     public SortingType GlobalMessageSort { get; init; } = SortingType.Time;
 
     /// <summary>
-    /// Message sorting type.
+    /// Message sort order.
     /// </summary>
     public SortingOrder GlobalSortOrder { get; init; } = SortingOrder.None;
 }

@@ -82,6 +82,6 @@ public class DateFilterRangeTests
         var exception = Record.Exception(() => new DateFilterRange(dtStart, dtEnd));
 
         // Assert
-        exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
+        exception.Should().NotBeNull().And.BeOfType<ArgumentOutOfRangeException>();
     }
 }

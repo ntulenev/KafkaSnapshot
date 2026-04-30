@@ -46,7 +46,7 @@ public class SnapshotLoaderTests
 
         // Act
         var exception = Record.Exception(
-            () => new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter, encoder));
+            () => CreateLoader(logger, options, consumerFactory, topicLoader, sorter, encoder));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -72,7 +72,7 @@ public class SnapshotLoaderTests
 
         // Act
         var exception = Record.Exception(
-            () => new SnapshotLoader<object, object>(logger, options, null!, topicLoader, sorter, encoder));
+            () => CreateLoader(logger, options, null!, topicLoader, sorter, encoder));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -99,7 +99,7 @@ public class SnapshotLoaderTests
 
         // Act
         var exception = Record.Exception(
-            () => new SnapshotLoader<object, object>(logger, null!, consumerFactory, topicLoader, sorter, encoder));
+            () => CreateLoader(logger, null!, consumerFactory, topicLoader, sorter, encoder));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -126,7 +126,7 @@ public class SnapshotLoaderTests
 
         // Act
         var exception = Record.Exception(
-            () => new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter, encoder));
+            () => CreateLoader(logger, options, consumerFactory, topicLoader, sorter, encoder));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -151,7 +151,7 @@ public class SnapshotLoaderTests
 
         // Act
         var exception = Record.Exception(
-            () => new SnapshotLoader<object, object>(logger, options, consumerFactory, null!, sorter, encoder));
+            () => CreateLoader(logger, options, consumerFactory, null!, sorter, encoder));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -176,7 +176,7 @@ public class SnapshotLoaderTests
 
         // Act
         var exception = Record.Exception(
-            () => new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, null!, encoder));
+            () => CreateLoader(logger, options, consumerFactory, topicLoader, null!, encoder));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -201,7 +201,7 @@ public class SnapshotLoaderTests
 
         // Act
         var exception = Record.Exception(
-            () => new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter, null!));
+            () => CreateLoader(logger, options, consumerFactory, topicLoader, sorter, null!));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -229,7 +229,7 @@ public class SnapshotLoaderTests
 
         // Act
         var exception = Record.Exception(
-            () => new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter, encoder));
+            () => CreateLoader(logger, options, consumerFactory, topicLoader, sorter, encoder));
 
         // Assert
         exception.Should().BeNull();
@@ -256,7 +256,7 @@ public class SnapshotLoaderTests
         var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
         encoderMock.Setup(x => x.Encode(It.IsAny<byte[]>(), It.IsAny<EncoderRules>()));
         var encoder = encoderMock.Object;
-        var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter, encoder);
+        var loader = CreateLoader(logger, options, consumerFactory, topicLoader, sorter, encoder);
         var filterKeyMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
         var keyFilter = filterKeyMock.Object;
         var filterValueMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
@@ -293,7 +293,7 @@ public class SnapshotLoaderTests
         var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
         encoderMock.Setup(x => x.Encode(It.IsAny<byte[]>(), It.IsAny<EncoderRules>()));
         var encoder = encoderMock.Object;
-        var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter, encoder);
+        var loader = CreateLoader(logger, options, consumerFactory, topicLoader, sorter, encoder);
         var withCompacting = true;
         HashSet<int> partitionFilter = null!;
         var topicParams = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(null!, null!), EncoderRules.String, partitionFilter);
@@ -331,7 +331,7 @@ public class SnapshotLoaderTests
         var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
         encoderMock.Setup(x => x.Encode(It.IsAny<byte[]>(), It.IsAny<EncoderRules>()));
         var encoder = encoderMock.Object;
-        var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter, encoder);
+        var loader = CreateLoader(logger, options, consumerFactory, topicLoader, sorter, encoder);
         var withCompacting = true;
         HashSet<int> partitionFilter = null!;
         var topicParams = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(null!, null!), EncoderRules.String, partitionFilter);
@@ -411,7 +411,7 @@ public class SnapshotLoaderTests
             .Callback(() => encodeCalls++)
             .Returns<byte[], EncoderRules>((valueBytes, _) => Encoding.UTF8.GetString(valueBytes));
 
-        var loader = new SnapshotLoader<object, object>(
+        var loader = CreateLoader(
             loggerMock.Object,
             optionsMock.Object,
             consumerFactory,
@@ -539,7 +539,7 @@ public class SnapshotLoaderTests
             .Callback(() => encodeCalls++)
             .Returns<byte[], EncoderRules>((valueBytes, _) => Encoding.UTF8.GetString(valueBytes));
 
-        var loader = new SnapshotLoader<object, object>(
+        var loader = CreateLoader(
             loggerMock.Object,
             optionsMock.Object,
             consumerFactory,
@@ -640,7 +640,7 @@ public class SnapshotLoaderTests
         var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
         encoderMock.Setup(x => x.Encode(It.IsAny<byte[]>(), It.IsAny<EncoderRules>()));
         var encoder = encoderMock.Object;
-        var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter, encoder);
+        var loader = CreateLoader(logger, options, consumerFactory, topicLoader, sorter, encoder);
         var withCompacting = compacting;
         var testDate = DateTime.UtcNow;
         HashSet<int> partitionFilter = null!;
@@ -746,7 +746,7 @@ public class SnapshotLoaderTests
         encoderMock.Setup(x => x.Encode(It.IsAny<byte[]>(), It.IsAny<EncoderRules>()))
             .Returns<byte[], EncoderRules>((bytes, _) => Encoding.UTF8.GetString(bytes));
         var encoder = encoderMock.Object;
-        var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter, encoder);
+        var loader = CreateLoader(logger, options, consumerFactory, topicLoader, sorter, encoder);
         var withCompacting = true;
         HashSet<int> partitionFilter = null!;
         var topicName = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(null!, null!), EncoderRules.String, partitionFilter);
@@ -802,7 +802,7 @@ public class SnapshotLoaderTests
         var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
         encoderMock.Setup(x => x.Encode(It.IsAny<byte[]>(), EncoderRules.String)).Returns("encoded");
 
-        var loader = new SnapshotLoader<object, object>(
+        var loader = CreateLoader(
             logger,
             optionsMock.Object,
             consumerFactory,
@@ -923,7 +923,7 @@ public class SnapshotLoaderTests
         encoderMock.Setup(x => x.Encode(It.IsAny<byte[]>(), It.IsAny<EncoderRules>()))
             .Returns<byte[], EncoderRules>((bytes, _) => Encoding.UTF8.GetString(bytes));
         var encoder = encoderMock.Object;
-        var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter, encoder);
+        var loader = CreateLoader(logger, options, consumerFactory, topicLoader, sorter, encoder);
         var withCompacting = true;
         HashSet<int> partitionFilter = null!;
         var topicName = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(null!, null!), EncoderRules.String, partitionFilter);
@@ -993,7 +993,7 @@ public class SnapshotLoaderTests
         encoderMock.Setup(x => x.Encode(It.IsAny<byte[]>(), It.IsAny<EncoderRules>())).Returns("test");
 
         var encoder = encoderMock.Object;
-        var loader = new SnapshotLoader<object, object>(logger, options, consumerFactory, topicLoader, sorter, encoder);
+        var loader = CreateLoader(logger, options, consumerFactory, topicLoader, sorter, encoder);
         var withCompacting = compacting;
         var testDate = DateTime.UtcNow;
         HashSet<int> partitionFilter = null!;
@@ -1101,7 +1101,7 @@ public class SnapshotLoaderTests
             .Callback(() => encodeCalls++)
             .Returns<byte[], EncoderRules>((valueBytes, _) => Encoding.UTF8.GetString(valueBytes));
 
-        var loader = new SnapshotLoader<object, object>(
+        var loader = CreateLoader(
             loggerMock.Object,
             optionsMock.Object,
             consumerFactory,
@@ -1179,7 +1179,7 @@ public class SnapshotLoaderTests
         sorterMock.Setup(x => x.Sort(It.IsAny<IEnumerable<KeyValuePair<object, KafkaMessage<object>>>>()))
             .Returns<IEnumerable<KeyValuePair<object, KafkaMessage<object>>>>(items => items.ToList());
         var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
-        var loader = new SnapshotLoader<object, object>(
+        var loader = CreateLoader(
             loggerMock.Object,
             optionsMock.Object,
             consumerFactory,
@@ -1240,7 +1240,7 @@ public class SnapshotLoaderTests
         encoderMock.Setup(x => x.Encode(It.IsAny<byte[]>(), EncoderRules.String))
             .Returns<byte[], EncoderRules>((valueBytes, _) => Encoding.UTF8.GetString(valueBytes));
 
-        var loader = new SnapshotLoader<object, object>(
+        var loader = CreateLoader(
             loggerMock.Object,
             optionsMock.Object,
             consumerFactory,
@@ -1318,6 +1318,54 @@ public class SnapshotLoaderTests
         consumerMock.Setup(x => x.Dispose());
 
         return consumerMock.Object;
+    }
+
+    private static SnapshotLoader<object, object> CreateLoader(
+        ILogger<SnapshotLoader<object, object>> logger,
+        IOptions<SnapshotLoaderConfiguration> config,
+        Func<IConsumer<object, byte[]>> consumerFactory,
+        ITopicWatermarkLoader topicWatermarkLoader,
+        IMessageSorter<object, object> sorter,
+        IMessageEncoder<byte[], object> encoder)
+    {
+        var readerLoggerMock = new Mock<ILogger<PartitionSnapshotReader<object, object>>>(MockBehavior.Strict);
+        readerLoggerMock.Setup(x => x.IsEnabled(It.IsAny<LogLevel>())).Returns(false);
+        readerLoggerMock.Setup(
+            x => x.Log(
+                It.IsAny<LogLevel>(),
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception?>(),
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()));
+        var compactorLoggerMock = new Mock<ILogger<SnapshotCompactor<object, object>>>(MockBehavior.Strict);
+        compactorLoggerMock.Setup(x => x.IsEnabled(It.IsAny<LogLevel>())).Returns(false);
+        compactorLoggerMock.Setup(
+            x => x.Log(
+                It.IsAny<LogLevel>(),
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception?>(),
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()));
+
+        var partitionReader = new PartitionSnapshotReader<object, object>(
+            readerLoggerMock.Object,
+            config,
+            consumerFactory,
+            encoder);
+        var batchReader = new PartitionSnapshotBatchReader<object, object>(
+            config,
+            partitionReader);
+        var compactor = new SnapshotCompactor<object, object>(
+            compactorLoggerMock.Object,
+            sorter);
+
+        return new SnapshotLoader<object, object>(
+            logger,
+            config,
+            consumerFactory,
+            topicWatermarkLoader,
+            batchReader,
+            compactor);
     }
 
     private static Mock<ILogger<SnapshotLoader<object, object>>> CreateLoggerMock()

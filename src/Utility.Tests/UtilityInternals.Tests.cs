@@ -3,6 +3,8 @@ using System.Reflection;
 
 using FluentAssertions;
 
+using KafkaSnapshot.Abstractions.Import;
+using KafkaSnapshot.Import;
 using KafkaSnapshot.Abstractions.Processing;
 using KafkaSnapshot.Import.Configuration;
 using KafkaSnapshot.Models.Configuration;
@@ -110,6 +112,31 @@ public class UtilityInternalsTests
 
         // Assert
         tool.Should().BeOfType<LoaderTool>();
+    }
+
+    [Fact(DisplayName = "AddKafkaSnapshotUtility resolves snapshot import composition.")]
+    [Trait("Category", "Unit")]
+    public void AddKafkaSnapshotUtilityResolvesSnapshotImportComposition()
+    {
+        // Arrange
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(CreateValidConfig())
+            .Build();
+        var services = new ServiceCollection();
+        _ = services.AddKafkaSnapshotUtility(configuration);
+        using var provider = services.BuildServiceProvider();
+
+        // Act
+        var snapshotLoader = provider.GetRequiredService<ISnapshotLoader<string, string>>();
+        var partitionReader = provider.GetRequiredService<IPartitionSnapshotReader<string, string>>();
+        var partitionBatchReader = provider.GetRequiredService<IPartitionSnapshotBatchReader<string, string>>();
+        var snapshotCompactor = provider.GetRequiredService<ISnapshotCompactor<string, string>>();
+
+        // Assert
+        snapshotLoader.Should().BeOfType<SnapshotLoader<string, string>>();
+        partitionReader.Should().BeOfType<PartitionSnapshotReader<string, string>>();
+        partitionBatchReader.Should().BeOfType<PartitionSnapshotBatchReader<string, string>>();
+        snapshotCompactor.Should().BeOfType<SnapshotCompactor<string, string>>();
     }
 
     [Fact(DisplayName = "TopicLoadersRegistrationHelper throws options validation for unsupported key type.")]

@@ -10,9 +10,6 @@ using KafkaSnapshot.Abstractions.Import;
 using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Message;
 using KafkaSnapshot.Import.Configuration;
-using KafkaSnapshot.Abstractions.Sorting;
-
-using System.Collections.Frozen;
 
 namespace KafkaSnapshot.Import;
 
@@ -28,8 +25,8 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
                           IOptions<SnapshotLoaderConfiguration> config,
                           Func<IConsumer<TKey, byte[]>> consumerFactory,
                           ITopicWatermarkLoader topicWatermarkLoader,
-                          IMessageSorter<TKey, TMessage> sorter,
-                          IMessageEncoder<byte[], TMessage> encoder
+                          IPartitionSnapshotBatchReader<TKey, TMessage> partitionBatchReader,
+                          ISnapshotCompactor<TKey, TMessage> snapshotCompactor
                          )
     {
         ArgumentNullException.ThrowIfNull(logger);
@@ -37,15 +34,15 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
         ArgumentNullException.ThrowIfNull(config.Value, nameof(config));
         ArgumentNullException.ThrowIfNull(consumerFactory);
         ArgumentNullException.ThrowIfNull(topicWatermarkLoader);
-        ArgumentNullException.ThrowIfNull(sorter);
-        ArgumentNullException.ThrowIfNull(encoder);
+        ArgumentNullException.ThrowIfNull(partitionBatchReader);
+        ArgumentNullException.ThrowIfNull(snapshotCompactor);
 
         _logger = logger;
-        _topicWatermarkLoader = topicWatermarkLoader;
         _consumerFactory = consumerFactory;
-        _sorter = sorter;
-        _encoder = encoder;
+        _topicWatermarkLoader = topicWatermarkLoader;
         _config = config.Value;
+        _partitionBatchReader = partitionBatchReader;
+        _snapshotCompactor = snapshotCompactor;
 
         _logger.LogDebug("Instance created");
     }
@@ -77,7 +74,7 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
 
         _logger.LogDebug("Creating compacting state");
 
-        return CreateSnapshot(initialState, loadingTopic.LoadWithCompacting);
+        return _snapshotCompactor.CreateSnapshot(initialState, loadingTopic.LoadWithCompacting);
     }
 
     private async Task<IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>>> ConsumeInitialAsync
@@ -89,24 +86,15 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
     {
         if (_config.SearchSinglePartition)
         {
-            foreach (var watermark in topicWatermark.Watermarks)
-            {
-                var result = ConsumeToWatermark(
-                                watermark,
-                                topicParams,
-                                keyFilter,
-                                valueFilter,
-                                ct);
-
-                if (result.Any())
-                {
-                    return result;
-                }
-            }
-
-            return [];
+            return await _partitionBatchReader.ReadFirstNonEmptyAsync(
+                topicWatermark.Watermarks,
+                topicParams,
+                keyFilter,
+                valueFilter,
+                ct).ConfigureAwait(false);
         }
-        return await ConsumePartitionsAsync(
+
+        return await _partitionBatchReader.ReadAllAsync(
             topicWatermark.Watermarks,
             topicParams,
             keyFilter,
@@ -114,202 +102,11 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
             ct).ConfigureAwait(false);
     }
 
-    private async Task<IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>>> ConsumePartitionsAsync(
-        IEnumerable<PartitionWatermark> watermarks,
-        LoadingTopic topicParams,
-        IDataFilter<TKey> keyFilter,
-        IDataFilter<TMessage> valueFilter,
-        CancellationToken ct)
-    {
-        var partitionWatermarks = watermarks.ToList();
-
-        if (partitionWatermarks.Count == 0)
-        {
-            return [];
-        }
-
-        var maxConcurrency = _config.MaxConcurrentPartitions.GetValueOrDefault();
-
-        if (maxConcurrency < 1)
-        {
-            maxConcurrency = partitionWatermarks.Count;
-        }
-
-        using var concurrency = new SemaphoreSlim(maxConcurrency);
-
-        var tasks = partitionWatermarks.Select(async watermark =>
-        {
-            await concurrency.WaitAsync(ct).ConfigureAwait(false);
-
-            try
-            {
-                return await Task.Run(
-                    () => ConsumeToWatermark(
-                        watermark,
-                        topicParams,
-                        keyFilter,
-                        valueFilter,
-                        ct).ToList(),
-                    ct).ConfigureAwait(false);
-            }
-            finally
-            {
-                _ = concurrency.Release();
-            }
-        });
-
-        var consumedEntities = await Task.WhenAll(tasks).ConfigureAwait(false);
-
-        return consumedEntities.SelectMany(consumerResults => consumerResults);
-    }
-
-    private IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> ConsumeToWatermark(
-        PartitionWatermark watermark,
-        LoadingTopic topicParams,
-        IDataFilter<TKey> keyFilter,
-        IDataFilter<TMessage> valueFilter,
-        CancellationToken ct)
-    {
-        var logScope = _logger.IsEnabled(LogLevel.Information)
-            ? _logger.BeginScope("Partition {Partition}", watermark.Partition.Value)
-            : null;
-
-        using (logScope)
-        {
-            if (_logger.IsEnabled(LogLevel.Information))
-            {
-                _logger.LogInformation("Watermarks: Low {Low}, High {High}",
-                    watermark.Offset.Low,
-                    watermark.Offset.High);
-            }
-
-            using var consumer = _consumerFactory();
-
-            try
-            {
-
-                if (topicParams.HasOffsetDate)
-                {
-                    if (_logger.IsEnabled(LogLevel.Information))
-                    {
-                        _logger.LogInformation("Searching for messages after date {Date}",
-                            topicParams.OffsetDate);
-                    }
-
-                    if (!watermark.AssignWithConsumer(
-                                consumer,
-                                topicParams.OffsetDate,
-                                _config.DateOffsetTimeout))
-                    {
-                        if (_logger.IsEnabled(LogLevel.Warning))
-                        {
-                            _logger.LogWarning("No actual offset for date {Date}", topicParams.OffsetDate);
-                        }
-
-                        yield break;
-                    }
-                }
-                else
-                {
-                    watermark.AssignWithConsumer(consumer);
-                }
-
-                ConsumeResult<TKey, byte[]> result;
-
-                bool isFinalOffsetDateReached()
-                {
-                    return topicParams.HasEndOffsetDate &&
-                           result.Message.Timestamp.UtcDateTime >
-                           topicParams.EndOffsetDate.ToUniversalTime();
-                }
-
-                do
-                {
-                    result = consumer.Consume(ct);
-
-                    if (isFinalOffsetDateReached())
-                    {
-                        if (_logger.IsEnabled(LogLevel.Information))
-                        {
-                            _logger.LogInformation("Final date offset {Date} reached",
-                                topicParams.EndOffsetDate);
-                        }
-
-                        break;
-                    }
-
-                    var messageValue = _encoder.Encode(result.Message.Value, topicParams.TopicValueEncoderRule);
-
-                    if (keyFilter.IsMatch(result.Message.Key) &&
-                        valueFilter.IsMatch(messageValue))
-                    {
-                        if (_logger.IsEnabled(LogLevel.Trace))
-                        {
-                            _logger.LogTrace("Loading {Key} - {Value}",
-                                result.Message.Key,
-                                messageValue);
-                        }
-
-                        var meta = new KafkaMetadata(
-                                result.Message.Timestamp.UtcDateTime,
-                                watermark.Partition.Value,
-                                result.Offset.Value);
-
-                        var message = new KafkaMessage<TMessage>(messageValue, meta);
-
-                        yield return new KeyValuePair<TKey, KafkaMessage<TMessage>>(
-                            result.Message.Key,
-                            message);
-                    }
-
-                } while (watermark.IsWatermarkAchievedBy(result));
-            }
-            finally
-            {
-                consumer?.Close();
-            }
-        }
-    }
-
-    private IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> CreateSnapshot(
-                IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> items,
-                bool withCompacting)
-    {
-        IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> result = null!;
-
-        if (withCompacting)
-        {
-            _logger.LogDebug("Compacting data");
-
-            result = items.Where(x => x.Key is not null).Aggregate(
-                new Dictionary<TKey, KafkaMessage<TMessage>>(),
-                (d, e) =>
-                {
-                    d[e.Key] = e.Value;
-                    return d;
-                }).ToFrozenDictionary();
-
-            if (_logger.IsEnabled(LogLevel.Debug))
-            {
-                var itemCount = result.Count();
-                _logger.LogDebug("Created compacting state for {ItemCount} item(s)", itemCount);
-            }
-        }
-        else
-        {
-            result = _sorter.Sort(items);
-
-            _logger.LogDebug("Created state without compacting");
-        }
-
-        return result;
-    }
-
     private readonly SnapshotLoaderConfiguration _config;
-    private readonly ITopicWatermarkLoader _topicWatermarkLoader;
     private readonly Func<IConsumer<TKey, byte[]>> _consumerFactory;
+    private readonly ITopicWatermarkLoader _topicWatermarkLoader;
     private readonly ILogger _logger;
-    private readonly IMessageSorter<TKey, TMessage> _sorter;
-    private readonly IMessageEncoder<byte[], TMessage> _encoder;
+    private readonly IPartitionSnapshotBatchReader<TKey, TMessage> _partitionBatchReader;
+    private readonly ISnapshotCompactor<TKey, TMessage> _snapshotCompactor;
 }
 

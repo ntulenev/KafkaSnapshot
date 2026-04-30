@@ -5,6 +5,7 @@ using KafkaSnapshot.Abstractions.Sorting;
 using KafkaSnapshot.Import.Encoders;
 using KafkaSnapshot.Import.Kafka;
 using KafkaSnapshot.Import.Metadata;
+using KafkaSnapshot.Import;
 using KafkaSnapshot.Processing.Configuration;
 using KafkaSnapshot.Sorting;
 
@@ -35,6 +36,15 @@ internal static class ImportRegistrationHelper
         _ = services.AddSingleton(
             typeof(ISnapshotLoader<,>),
             typeof(KafkaSnapshot.Import.SnapshotLoader<,>));
+        _ = services.AddSingleton(
+            typeof(IPartitionSnapshotReader<,>),
+            typeof(PartitionSnapshotReader<,>));
+        _ = services.AddSingleton(
+            typeof(IPartitionSnapshotBatchReader<,>),
+            typeof(PartitionSnapshotBatchReader<,>));
+        _ = services.AddSingleton(
+            typeof(ISnapshotCompactor<,>),
+            typeof(SnapshotCompactor<,>));
         _ = services.AddSingleton<IMessageSorter<string, string>>(CreateStringSorter);
         _ = services.AddSingleton<IMessageSorter<long, string>>(CreateLongSorter);
 

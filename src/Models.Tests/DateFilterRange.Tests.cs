@@ -75,7 +75,7 @@ public class DateFilterRangeTests
     public void DateFilterRangeConvertsLocalDatesToUtc()
     {
         // Arrange
-        var start = new DateTime(2024, 1, 1, 12, 0, 0, DateTimeKind.Local);
+        var start = new DateTimeOffset(2024, 1, 1, 12, 0, 0, TimeZoneInfo.Local.GetUtcOffset(DateTime.Now));
         var end = start.AddHours(1);
 
         // Act
@@ -83,27 +83,27 @@ public class DateFilterRangeTests
 
         // Assert
         result.StartDate.Should().Be(start.ToUniversalTime());
-        result.StartDate!.Value.Kind.Should().Be(DateTimeKind.Utc);
+        result.StartDate!.Value.Offset.Should().Be(TimeSpan.Zero);
         result.EndDate.Should().Be(end.ToUniversalTime());
-        result.EndDate!.Value.Kind.Should().Be(DateTimeKind.Utc);
+        result.EndDate!.Value.Offset.Should().Be(TimeSpan.Zero);
     }
 
-    [Fact(DisplayName = "DateFilterRange treats unspecified dates as UTC.")]
+    [Fact(DisplayName = "DateFilterRange converts offset dates to UTC.")]
     [Trait("Category", "Unit")]
-    public void DateFilterRangeTreatsUnspecifiedDatesAsUtc()
+    public void DateFilterRangeConvertsOffsetDatesToUtc()
     {
         // Arrange
-        var start = new DateTime(2024, 1, 1, 12, 0, 0, DateTimeKind.Unspecified);
+        var start = new DateTimeOffset(2024, 1, 1, 12, 0, 0, TimeSpan.FromHours(3));
         var end = start.AddHours(1);
 
         // Act
         var result = new DateFilterRange(start, end);
 
         // Assert
-        result.StartDate.Should().Be(DateTime.SpecifyKind(start, DateTimeKind.Utc));
-        result.StartDate!.Value.Kind.Should().Be(DateTimeKind.Utc);
-        result.EndDate.Should().Be(DateTime.SpecifyKind(end, DateTimeKind.Utc));
-        result.EndDate!.Value.Kind.Should().Be(DateTimeKind.Utc);
+        result.StartDate.Should().Be(start.ToUniversalTime());
+        result.StartDate!.Value.Offset.Should().Be(TimeSpan.Zero);
+        result.EndDate.Should().Be(end.ToUniversalTime());
+        result.EndDate!.Value.Offset.Should().Be(TimeSpan.Zero);
     }
 
     [Fact(DisplayName = "DateFilterRange cant be created when start bigger then end.")]

@@ -35,12 +35,12 @@ public sealed class TopicConfiguration
     /// <summary>
     /// Date and time for starting offset.
     /// </summary>
-    public DateTime? OffsetStartDate { get; init; }
+    public DateTimeOffset? OffsetStartDate { get; init; }
 
     /// <summary>
     /// Date and time for final offset.
     /// </summary>
-    public DateTime? OffsetEndDate { get; init; }
+    public DateTimeOffset? OffsetEndDate { get; init; }
 
     /// <summary>
     /// Whether to export message values as raw strings.

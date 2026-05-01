@@ -28,13 +28,13 @@ public sealed class LoadingTopic
     /// <summary>
     /// Date and time of the starting offset.
     /// </summary>
-    public DateTime OffsetDate => _offsetDate.HasValue ? _offsetDate.Value :
+    public DateTimeOffset OffsetDate => _offsetDate.HasValue ? _offsetDate.Value :
         throw new InvalidOperationException("Topic params does not have date offset.");
 
     /// <summary>
     /// Date and time of the ending offset.
     /// </summary>
-    public DateTime EndOffsetDate => _endOffsetDate.HasValue ? _endOffsetDate.Value :
+    public DateTimeOffset EndOffsetDate => _endOffsetDate.HasValue ? _endOffsetDate.Value :
         throw new InvalidOperationException("Topic params does not have end date offset.");
 
     /// <summary>
@@ -102,6 +102,6 @@ public sealed class LoadingTopic
         TopicValueEncoderRule = valueEncoderRule;
     }
 
-    private readonly DateTime? _offsetDate;
-    private readonly DateTime? _endOffsetDate;
+    private readonly DateTimeOffset? _offsetDate;
+    private readonly DateTimeOffset? _endOffsetDate;
 }

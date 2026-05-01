@@ -151,7 +151,7 @@ public class LoadingTopicTests
                 new DateFilterRange(date, null!),
                 EncoderRules.String,
                 partitionFilter);
-        DateTime resultedDate = default;
+        DateTimeOffset resultedDate = default;
 
         // Act
         var exception = Record.Exception(() => resultedDate = topic.OffsetDate);
@@ -198,7 +198,7 @@ public class LoadingTopicTests
                 new DateFilterRange(null!, date),
                 EncoderRules.String,
                 partitionFilter);
-        DateTime resultedDate = default;
+        DateTimeOffset resultedDate = default;
 
         // Act
         var exception = Record.Exception(() => resultedDate = topic.EndOffsetDate);

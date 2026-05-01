@@ -128,8 +128,8 @@ public sealed partial class LoaderToolConfigurationValidator :
             return true;
         }
 
-        if (topic.OffsetStartDate is DateTime startDate &&
-            topic.OffsetEndDate is DateTime endDate &&
+        if (topic.OffsetStartDate is DateTimeOffset startDate &&
+            topic.OffsetEndDate is DateTimeOffset endDate &&
             startDate > endDate)
         {
             result = Fail(

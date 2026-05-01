@@ -114,9 +114,10 @@ public class PartitionSnapshotReader<TKey, TMessage>
 
                 bool isFinalOffsetDateReached()
                 {
+                    var resultTimestamp = new DateTimeOffset(result.Message.Timestamp.UtcDateTime, TimeSpan.Zero);
+
                     return topicParams.HasEndOffsetDate &&
-                           result.Message.Timestamp.UtcDateTime >
-                           topicParams.EndOffsetDate;
+                           resultTimestamp > topicParams.EndOffsetDate;
                 }
 
                 do

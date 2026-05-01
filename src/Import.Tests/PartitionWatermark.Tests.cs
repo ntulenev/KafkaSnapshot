@@ -209,7 +209,7 @@ public class PartitionWatermarkTests
 
         // Arrange
         HashSet<int> partitionFilter = null!;
-        var date = DateTime.UtcNow;
+        var date = DateTimeOffset.UtcNow;
         var timeout = TimeSpan.FromSeconds(10);
         var topicName = new LoadingTopic(new TopicName("Test"), true, new DateFilterRange(date, null!), EncoderRules.String, partitionFilter);
         var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
@@ -256,7 +256,7 @@ public class PartitionWatermarkTests
 
         // Arrange
         HashSet<int> partitionFilter = null!;
-        var date = DateTime.UtcNow;
+        var date = DateTimeOffset.UtcNow;
         var timeout = TimeSpan.FromSeconds(10);
         var topicName = new LoadingTopic(new TopicName("Test"), true, new DateFilterRange(date, null!), EncoderRules.String, partitionFilter);
         var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));

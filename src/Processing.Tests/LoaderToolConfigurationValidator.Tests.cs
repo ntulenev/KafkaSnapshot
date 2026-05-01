@@ -68,7 +68,7 @@ public class LoaderToolConfigurationValidatorTests
 
         // Arrange
         var validator = new LoaderToolConfigurationValidator();
-        var startDate = new DateTime(2022, 1, 1, 10, 0, 0, DateTimeKind.Utc);
+        var startDate = new DateTimeOffset(2022, 1, 1, 10, 0, 0, TimeSpan.Zero);
         var endDate = startDate.AddHours(1);
         ValidateOptionsResult result = null!;
         var options = new LoaderToolConfiguration
@@ -732,7 +732,7 @@ public class LoaderToolConfigurationValidatorTests
     {
 
         // Arrange
-        var startDate = new DateTime(2022, 1, 1);
+        var startDate = new DateTimeOffset(2022, 1, 1, 0, 0, 0, TimeSpan.Zero);
         var endDate = startDate.AddDays(-1);
         var validator = new LoaderToolConfigurationValidator();
         var name = "Test";

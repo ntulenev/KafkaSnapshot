@@ -325,8 +325,8 @@ public class ProcessingTopicTests
         var loadCompact = true;
         var filterType = Filters.FilterType.Equals;
         var keyType = Filters.KeyType.Long;
-        var dtStart = new DateTime(2022, 1, 1);
-        var dtEnd = new DateTime(2023, 1, 1);
+        var dtStart = new DateTimeOffset(2022, 1, 1, 0, 0, 0, TimeSpan.Zero);
+        var dtEnd = new DateTimeOffset(2023, 1, 1, 0, 0, 0, TimeSpan.Zero);
         var dateRange = new Filters.DateFilterRange(dtStart, dtEnd);
         var filterKeyValue = 1;
         var isRaw = true;

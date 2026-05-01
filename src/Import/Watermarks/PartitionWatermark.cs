@@ -82,15 +82,15 @@ public class PartitionWatermark
     /// <typeparam name="TKey">Message key.</typeparam>
     /// <typeparam name="TValue">Message value.</typeparam>
     /// <param name="consumer">Consumer.</param>
-    /// <param name="startDate">Start date for offset</param>
+    /// <param name="startDate">Start date for offset.</param>
     /// <param name="timeout">Timeout for offset searching</param>
-    public bool AssignWithConsumer<TKey, TValue>(IConsumer<TKey, TValue> consumer, DateTime startDate, TimeSpan timeout)
+    public bool AssignWithConsumer<TKey, TValue>(IConsumer<TKey, TValue> consumer, DateTimeOffset startDate, TimeSpan timeout)
     {
         ArgumentNullException.ThrowIfNull(consumer);
 
         var topicPartition = new TopicPartition(TopicName.Value.Name, Partition);
 
-        var partitionTimestamp = new TopicPartitionTimestamp(topicPartition, new Timestamp(startDate));
+        var partitionTimestamp = new TopicPartitionTimestamp(topicPartition, new Timestamp(startDate.UtcDateTime));
 
         var offsets = consumer.OffsetsForTimes([partitionTimestamp], timeout);
 

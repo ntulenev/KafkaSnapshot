@@ -44,7 +44,7 @@ By default, messages should contain JSON data. Simple strings are also supported
 
 Config example:
 
-```yaml
+```json
   "BootstrapServersConfiguration": {
     "BootstrapServers": [ "test" ],
     "Username": "user123",

@@ -237,10 +237,11 @@ public class PartitionWatermarkTests
         var consumer = consumerMock.Object;
 
         // Act
-        var result = pw.AssignWithConsumer(consumer, date, timeout);
+        var result = pw.AssignWithConsumer(consumer, date, timeout, out var assignedOffset);
 
         // Assert
         result.Should().BeTrue();
+        assignedOffset.Should().Be(topicWithOffset);
         offsetsForTimesCalls.Should().Be(1);
         assignCalls.Should().Be(1);
     }

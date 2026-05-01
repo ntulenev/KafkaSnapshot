@@ -88,21 +88,39 @@ public class PartitionSnapshotReader<TKey, TMessage>
                 {
                     if (_logger.IsEnabled(LogLevel.Information))
                     {
-                        _logger.LogInformation("Searching for messages after date {Date}",
+                        _logger.LogInformation(
+                            "Searching offset for topic {Topic}, partition {Partition}, date {Date}",
+                            topicParams.Value.Name,
+                            watermark.Partition.Value,
                             topicParams.OffsetDate);
                     }
 
                     if (!watermark.AssignWithConsumer(
                                 consumer,
                                 topicParams.OffsetDate,
-                                _config.DateOffsetTimeout))
+                                _config.DateOffsetTimeout,
+                                out var assignedOffset))
                     {
                         if (_logger.IsEnabled(LogLevel.Warning))
                         {
-                            _logger.LogWarning("No actual offset for date {Date}", topicParams.OffsetDate);
+                            _logger.LogWarning(
+                                "No actual offset for topic {Topic}, partition {Partition}, date {Date}",
+                                topicParams.Value.Name,
+                                watermark.Partition.Value,
+                                topicParams.OffsetDate);
                         }
 
                         yield break;
+                    }
+
+                    if (_logger.IsEnabled(LogLevel.Information))
+                    {
+                        _logger.LogInformation(
+                            "Resolved offset {Offset} for topic {Topic}, partition {Partition}, date {Date}",
+                            assignedOffset.Offset.Value,
+                            topicParams.Value.Name,
+                            watermark.Partition.Value,
+                            topicParams.OffsetDate);
                     }
                 }
                 else
@@ -112,12 +130,15 @@ public class PartitionSnapshotReader<TKey, TMessage>
 
                 ConsumeResult<TKey, byte[]> result;
 
+                DateTimeOffset getResultTimestamp()
+                {
+                    return new DateTimeOffset(result.Message.Timestamp.UtcDateTime, TimeSpan.Zero);
+                }
+
                 bool isFinalOffsetDateReached()
                 {
-                    var resultTimestamp = new DateTimeOffset(result.Message.Timestamp.UtcDateTime, TimeSpan.Zero);
-
                     return topicParams.HasEndOffsetDate &&
-                           resultTimestamp > topicParams.EndOffsetDate;
+                           getResultTimestamp() > topicParams.EndOffsetDate;
                 }
 
                 do
@@ -128,8 +149,12 @@ public class PartitionSnapshotReader<TKey, TMessage>
                     {
                         if (_logger.IsEnabled(LogLevel.Information))
                         {
-                            _logger.LogInformation("Final date offset {Date} reached",
-                                topicParams.EndOffsetDate);
+                            _logger.LogInformation(
+                                "Final date offset {Date} reached by message timestamp {MessageTimestamp} at partition {Partition}, offset {Offset}",
+                                topicParams.EndOffsetDate,
+                                getResultTimestamp(),
+                                watermark.Partition.Value,
+                                result.Offset.Value);
                         }
 
                         break;

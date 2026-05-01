@@ -85,6 +85,22 @@ public class PartitionWatermark
     /// <param name="startDate">Start date for offset.</param>
     /// <param name="timeout">Timeout for offset searching</param>
     public bool AssignWithConsumer<TKey, TValue>(IConsumer<TKey, TValue> consumer, DateTimeOffset startDate, TimeSpan timeout)
+        => AssignWithConsumer(consumer, startDate, timeout, out _);
+
+    /// <summary>
+    ///  Assign consumer to a partition as topic with offset started from <paramref name="startDate"/>.
+    /// </summary>
+    /// <typeparam name="TKey">Message key.</typeparam>
+    /// <typeparam name="TValue">Message value.</typeparam>
+    /// <param name="consumer">Consumer.</param>
+    /// <param name="startDate">Start date for offset.</param>
+    /// <param name="timeout">Timeout for offset searching.</param>
+    /// <param name="assignedOffset">Resolved Kafka offset assigned to the consumer.</param>
+    public bool AssignWithConsumer<TKey, TValue>(
+        IConsumer<TKey, TValue> consumer,
+        DateTimeOffset startDate,
+        TimeSpan timeout,
+        out TopicPartitionOffset assignedOffset)
     {
         ArgumentNullException.ThrowIfNull(consumer);
 
@@ -98,11 +114,13 @@ public class PartitionWatermark
 
         if (singleOffset.Offset.IsSpecial)
         {
+            assignedOffset = singleOffset;
             return false;
         }
 
         consumer.Assign(singleOffset);
 
+        assignedOffset = singleOffset;
         return true;
     }
 

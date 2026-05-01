@@ -89,7 +89,7 @@ public class JsonKeySerializerTests
         // Arrange
         var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
         var serializer = new JsonKeySerializer(logger);
-        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var dateTime = new DateTimeOffset(2020, 12, 12, 1, 2, 3, TimeSpan.Zero);
         var data = new[]
                 {
             new KeyValuePair<string, KafkaMessage<string>>("{\"A\": 42}",
@@ -111,7 +111,7 @@ public class JsonKeySerializerTests
         // Arrange
         var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
         var serializer = new JsonKeySerializer(logger);
-        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var dateTime = new DateTimeOffset(2020, 12, 12, 1, 2, 3, TimeSpan.Zero);
         var isRaw = false;
         var data = new[]
         {
@@ -126,7 +126,7 @@ public class JsonKeySerializerTests
 
         // Assert
         exception.Should().BeNull();
-        result.Should().Be("[\r\n  {\r\n    \"Key\": {\r\n      \"A\": 42\r\n    },\r\n    \"Value\": {\r\n      \"Test\": 42\r\n    },\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
+        result.Should().Be("[\r\n  {\r\n    \"Key\": {\r\n      \"A\": 42\r\n    },\r\n    \"Value\": {\r\n      \"Test\": 42\r\n    },\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
     }
 
     [Fact(DisplayName = "JsonKeySerializer can serialize data to the stream.")]
@@ -136,7 +136,7 @@ public class JsonKeySerializerTests
         // Arrange
         var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
         var serializer = new JsonKeySerializer(logger);
-        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var dateTime = new DateTimeOffset(2020, 12, 12, 1, 2, 3, TimeSpan.Zero);
         var isRaw = false;
         var data = new[]
         {
@@ -151,7 +151,7 @@ public class JsonKeySerializerTests
 
         // Assert
         var jsonString = Encoding.Default.GetString((stream.ToArray()));
-        jsonString.Should().Be("[\r\n  {\r\n    \"Key\": {\r\n      \"A\": 42\r\n    },\r\n    \"Value\": {\r\n      \"Test\": 42\r\n    },\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
+        jsonString.Should().Be("[\r\n  {\r\n    \"Key\": {\r\n      \"A\": 42\r\n    },\r\n    \"Value\": {\r\n      \"Test\": 42\r\n    },\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
     }
 
     [Fact(DisplayName = "JsonKeySerializer cant serialize non json data.")]
@@ -161,7 +161,7 @@ public class JsonKeySerializerTests
         // Arrange
         var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
         var serializer = new JsonKeySerializer(logger);
-        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var dateTime = new DateTimeOffset(2020, 12, 12, 1, 2, 3, TimeSpan.Zero);
         var isRaw = false;
         var data = new[]
         {
@@ -185,7 +185,7 @@ public class JsonKeySerializerTests
         // Arrange
         var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
         var serializer = new JsonKeySerializer(logger);
-        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var dateTime = new DateTimeOffset(2020, 12, 12, 1, 2, 3, TimeSpan.Zero);
         var isRaw = false;
         var data = new[]
         {
@@ -209,7 +209,7 @@ public class JsonKeySerializerTests
         // Arrange
         var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
         var serializer = new JsonKeySerializer(logger);
-        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var dateTime = new DateTimeOffset(2020, 12, 12, 1, 2, 3, TimeSpan.Zero);
         var isRaw = false;
         var data = new[]
         {
@@ -233,7 +233,7 @@ public class JsonKeySerializerTests
         // Arrange
         var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
         var serializer = new JsonKeySerializer(logger);
-        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var dateTime = new DateTimeOffset(2020, 12, 12, 1, 2, 3, TimeSpan.Zero);
         var isRaw = false;
         var data = new[]
         {
@@ -257,7 +257,7 @@ public class JsonKeySerializerTests
         // Arrange
         var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
         var serializer = new JsonKeySerializer(logger);
-        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var dateTime = new DateTimeOffset(2020, 12, 12, 1, 2, 3, TimeSpan.Zero);
         var isRaw = true;
         var data = new[]
         {
@@ -272,7 +272,7 @@ public class JsonKeySerializerTests
 
         // Assert
         exception.Should().BeNull();
-        result.Should().Be("[\r\n  {\r\n    \"Key\": {\r\n      \"A\": 42\r\n    },\r\n    \"Value\": \"Test\",\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
+        result.Should().Be("[\r\n  {\r\n    \"Key\": {\r\n      \"A\": 42\r\n    },\r\n    \"Value\": \"Test\",\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
     }
 
     [Fact(DisplayName = "JsonKeySerializer can serialize raw data to the stream.")]
@@ -282,7 +282,7 @@ public class JsonKeySerializerTests
         // Arrange
         var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
         var serializer = new JsonKeySerializer(logger);
-        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var dateTime = new DateTimeOffset(2020, 12, 12, 1, 2, 3, TimeSpan.Zero);
         var isRaw = true;
         var data = new[]
         {
@@ -297,6 +297,6 @@ public class JsonKeySerializerTests
 
         // Assert
         var jsonString = Encoding.Default.GetString((stream.ToArray()));
-        jsonString.Should().Be("[\r\n  {\r\n    \"Key\": {\r\n      \"A\": 42\r\n    },\r\n    \"Value\": \"Test\",\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
+        jsonString.Should().Be("[\r\n  {\r\n    \"Key\": {\r\n      \"A\": 42\r\n    },\r\n    \"Value\": \"Test\",\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
     }
 }

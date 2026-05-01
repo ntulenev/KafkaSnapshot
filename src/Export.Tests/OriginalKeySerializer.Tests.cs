@@ -89,7 +89,7 @@ public class OriginalKeySerializerTests
         // Arrange
         var logger = new Mock<ILogger<OriginalKeySerializer<object>>>().Object;
         var serializer = new OriginalKeySerializer<object>(logger);
-        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var dateTime = new DateTimeOffset(2020, 12, 12, 1, 2, 3, TimeSpan.Zero);
         var data = new[]
         {
             new KeyValuePair<object, KafkaMessage<string>>(1,
@@ -111,7 +111,7 @@ public class OriginalKeySerializerTests
         // Arrange
         var logger = new Mock<ILogger<OriginalKeySerializer<object>>>().Object;
         var serializer = new OriginalKeySerializer<object>(logger);
-        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var dateTime = new DateTimeOffset(2020, 12, 12, 1, 2, 3, TimeSpan.Zero);
         var isRaw = false;
         var data = new[]
         {
@@ -124,7 +124,7 @@ public class OriginalKeySerializerTests
         var result = serializer.Serialize(data, isRaw);
 
         // Assert
-        result.Should().Be("[\r\n  {\r\n    \"Key\": 1,\r\n    \"Value\": {\r\n      \"Test\": 42\r\n    },\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
+        result.Should().Be("[\r\n  {\r\n    \"Key\": 1,\r\n    \"Value\": {\r\n      \"Test\": 42\r\n    },\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
     }
 
     [Fact(DisplayName = "OriginalKeySerializer can serialize data to the stream.")]
@@ -134,7 +134,7 @@ public class OriginalKeySerializerTests
         // Arrange
         var logger = new Mock<ILogger<OriginalKeySerializer<object>>>().Object;
         var serializer = new OriginalKeySerializer<object>(logger);
-        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var dateTime = new DateTimeOffset(2020, 12, 12, 1, 2, 3, TimeSpan.Zero);
         var isRaw = false;
         var data = new[]
         {
@@ -150,7 +150,7 @@ public class OriginalKeySerializerTests
 
         // Assert
         var jsonString = Encoding.Default.GetString((stream.ToArray()));
-        jsonString.Should().Be("[\r\n  {\r\n    \"Key\": 1,\r\n    \"Value\": {\r\n      \"Test\": 42\r\n    },\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
+        jsonString.Should().Be("[\r\n  {\r\n    \"Key\": 1,\r\n    \"Value\": {\r\n      \"Test\": 42\r\n    },\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
     }
 
     [Fact(DisplayName = "OriginalKeySerializer cant serialize non json data.")]
@@ -160,7 +160,7 @@ public class OriginalKeySerializerTests
         // Arrange
         var logger = new Mock<ILogger<OriginalKeySerializer<object>>>().Object;
         var serializer = new OriginalKeySerializer<object>(logger);
-        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var dateTime = new DateTimeOffset(2020, 12, 12, 1, 2, 3, TimeSpan.Zero);
         var isRaw = false;
         var data = new[]
         {
@@ -184,7 +184,7 @@ public class OriginalKeySerializerTests
         // Arrange
         var logger = new Mock<ILogger<OriginalKeySerializer<object>>>().Object;
         var serializer = new OriginalKeySerializer<object>(logger);
-        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var dateTime = new DateTimeOffset(2020, 12, 12, 1, 2, 3, TimeSpan.Zero);
         var isRaw = false;
         var data = new[]
         {
@@ -208,7 +208,7 @@ public class OriginalKeySerializerTests
         // Arrange
         var logger = new Mock<ILogger<OriginalKeySerializer<object>>>().Object;
         var serializer = new OriginalKeySerializer<object>(logger);
-        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var dateTime = new DateTimeOffset(2020, 12, 12, 1, 2, 3, TimeSpan.Zero);
         var isRaw = true;
         var data = new[]
         {
@@ -221,7 +221,7 @@ public class OriginalKeySerializerTests
         var result = serializer.Serialize(data, isRaw);
 
         // Assert
-        result.Should().Be("[\r\n  {\r\n    \"Key\": 1,\r\n    \"Value\": \"Test\",\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
+        result.Should().Be("[\r\n  {\r\n    \"Key\": 1,\r\n    \"Value\": \"Test\",\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
     }
 
     [Fact(DisplayName = "OriginalKeySerializer can serialize raw data to the stream.")]
@@ -231,7 +231,7 @@ public class OriginalKeySerializerTests
         // Arrange
         var logger = new Mock<ILogger<OriginalKeySerializer<object>>>().Object;
         var serializer = new OriginalKeySerializer<object>(logger);
-        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var dateTime = new DateTimeOffset(2020, 12, 12, 1, 2, 3, TimeSpan.Zero);
         var isRaw = true;
         var data = new[]
         {
@@ -246,6 +246,6 @@ public class OriginalKeySerializerTests
 
         // Assert
         var jsonString = Encoding.Default.GetString((stream.ToArray()));
-        jsonString.Should().Be("[\r\n  {\r\n    \"Key\": 1,\r\n    \"Value\": \"Test\",\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
+        jsonString.Should().Be("[\r\n  {\r\n    \"Key\": 1,\r\n    \"Value\": \"Test\",\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
     }
 }

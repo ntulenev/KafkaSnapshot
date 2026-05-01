@@ -89,7 +89,7 @@ public class IgnoreKeySerializerTests
         // Arrange
         var logger = new Mock<ILogger<IgnoreKeySerializer>>().Object;
         var serializer = new IgnoreKeySerializer(logger);
-        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var dateTime = new DateTimeOffset(2020, 12, 12, 1, 2, 3, TimeSpan.Zero);
         var data = new[]
         {
             new KeyValuePair<string, KafkaMessage<string>>(null!,
@@ -111,7 +111,7 @@ public class IgnoreKeySerializerTests
         // Arrange
         var logger = new Mock<ILogger<IgnoreKeySerializer>>().Object;
         var serializer = new IgnoreKeySerializer(logger);
-        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var dateTime = new DateTimeOffset(2020, 12, 12, 1, 2, 3, TimeSpan.Zero);
         var isRaw = false;
         var data = new[]
         {
@@ -124,7 +124,7 @@ public class IgnoreKeySerializerTests
         var result = serializer.Serialize(data, isRaw);
 
         // Assert
-        result.Should().Be("[\r\n  {\r\n    \"Value\": {\r\n      \"Test\": 42\r\n    },\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
+        result.Should().Be("[\r\n  {\r\n    \"Value\": {\r\n      \"Test\": 42\r\n    },\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
     }
 
     [Fact(DisplayName = "IgnoreKeySerializer can serialize data to stream.")]
@@ -134,7 +134,7 @@ public class IgnoreKeySerializerTests
         // Arrange
         var logger = new Mock<ILogger<IgnoreKeySerializer>>().Object;
         var serializer = new IgnoreKeySerializer(logger);
-        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var dateTime = new DateTimeOffset(2020, 12, 12, 1, 2, 3, TimeSpan.Zero);
         var isRaw = false;
         var data = new[]
         {
@@ -149,7 +149,7 @@ public class IgnoreKeySerializerTests
 
         // Assert
         var jsonString = Encoding.Default.GetString((stream.ToArray()));
-        jsonString.Should().Be("[\r\n  {\r\n    \"Value\": {\r\n      \"Test\": 42\r\n    },\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
+        jsonString.Should().Be("[\r\n  {\r\n    \"Value\": {\r\n      \"Test\": 42\r\n    },\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
     }
 
     [Fact(DisplayName = "IgnoreKeySerializer cant serialize non json data.")]
@@ -159,7 +159,7 @@ public class IgnoreKeySerializerTests
         // Arrange
         var logger = new Mock<ILogger<IgnoreKeySerializer>>().Object;
         var serializer = new IgnoreKeySerializer(logger);
-        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var dateTime = new DateTimeOffset(2020, 12, 12, 1, 2, 3, TimeSpan.Zero);
         var isRaw = false;
         var data = new[]
         {
@@ -182,7 +182,7 @@ public class IgnoreKeySerializerTests
         // Arrange
         var logger = new Mock<ILogger<IgnoreKeySerializer>>().Object;
         var serializer = new IgnoreKeySerializer(logger);
-        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var dateTime = new DateTimeOffset(2020, 12, 12, 1, 2, 3, TimeSpan.Zero);
         var isRaw = false;
         var data = new[]
         {
@@ -205,7 +205,7 @@ public class IgnoreKeySerializerTests
         // Arrange
         var logger = new Mock<ILogger<IgnoreKeySerializer>>().Object;
         var serializer = new IgnoreKeySerializer(logger);
-        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var dateTime = new DateTimeOffset(2020, 12, 12, 1, 2, 3, TimeSpan.Zero);
         var isRaw = true;
         var data = new[]
         {
@@ -218,7 +218,7 @@ public class IgnoreKeySerializerTests
         var result = serializer.Serialize(data, isRaw);
 
         // Assert
-        result.Should().Be("[\r\n  {\r\n    \"Value\": \"Test\",\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
+        result.Should().Be("[\r\n  {\r\n    \"Value\": \"Test\",\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
     }
 
     [Fact(DisplayName = "IgnoreKeySerializer can serialize raw data to the stream.")]
@@ -228,7 +228,7 @@ public class IgnoreKeySerializerTests
         // Arrange
         var logger = new Mock<ILogger<IgnoreKeySerializer>>().Object;
         var serializer = new IgnoreKeySerializer(logger);
-        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var dateTime = new DateTimeOffset(2020, 12, 12, 1, 2, 3, TimeSpan.Zero);
         var isRaw = true;
         var data = new[]
         {
@@ -243,7 +243,7 @@ public class IgnoreKeySerializerTests
 
         // Assert
         var jsonString = Encoding.Default.GetString((stream.ToArray()));
-        jsonString.Should().Be("[\r\n  {\r\n    \"Value\": \"Test\",\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
+        jsonString.Should().Be("[\r\n  {\r\n    \"Value\": \"Test\",\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
     }
 
     [Fact(DisplayName = "IgnoreKeySerializer can serialize data with non null keys by ignoring them.")]
@@ -253,7 +253,7 @@ public class IgnoreKeySerializerTests
         // Arrange
         var logger = new Mock<ILogger<IgnoreKeySerializer>>().Object;
         var serializer = new IgnoreKeySerializer(logger);
-        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var dateTime = new DateTimeOffset(2020, 12, 12, 1, 2, 3, TimeSpan.Zero);
         var isRaw = true;
         var data = new[]
         {

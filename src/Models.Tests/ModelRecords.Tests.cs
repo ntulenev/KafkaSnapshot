@@ -16,7 +16,7 @@ public class ModelRecordsTests
     public void KafkaMetadataPropertiesCanBeRead()
     {
         // Arrange
-        var timestamp = new DateTime(2025, 1, 2, 3, 4, 5, DateTimeKind.Utc);
+        var timestamp = new DateTimeOffset(2025, 1, 2, 3, 4, 5, TimeSpan.Zero);
         var metadata = new KafkaMetadata(timestamp, 7, 11);
 
         // Assert

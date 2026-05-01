@@ -11,7 +11,7 @@ public sealed record KafkaMetadata
     /// <param name="timestamp">Message creation timestamp.</param>
     /// <param name="partition">Message partition number.</param>
     /// <param name="offset">Message partition offset.</param>
-    public KafkaMetadata(DateTime timestamp, int partition, long offset)
+    public KafkaMetadata(DateTimeOffset timestamp, int partition, long offset)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(partition);
         ArgumentOutOfRangeException.ThrowIfNegative(offset);
@@ -24,7 +24,7 @@ public sealed record KafkaMetadata
     /// <summary>
     /// Message creation timestamp.
     /// </summary>
-    public DateTime Timestamp { get; init; }
+    public DateTimeOffset Timestamp { get; init; }
 
     /// <summary>
     /// Message partition number.

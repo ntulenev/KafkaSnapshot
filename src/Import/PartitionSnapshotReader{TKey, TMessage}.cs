@@ -148,7 +148,7 @@ public class PartitionSnapshotReader<TKey, TMessage>
                         }
 
                         var meta = new KafkaMetadata(
-                            result.Message.Timestamp.UtcDateTime,
+                            new DateTimeOffset(result.Message.Timestamp.UtcDateTime, TimeSpan.Zero),
                             watermark.Partition.Value,
                             result.Offset.Value);
 

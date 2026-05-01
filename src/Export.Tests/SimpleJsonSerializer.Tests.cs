@@ -107,7 +107,7 @@ public class SimpleJsonSerializerTests
         // Arrange
         var logger = new Mock<ILogger<SimpleJsonSerializer<object, object>>>().Object;
         var serializer = new SimpleJsonSerializer<object, object>(logger);
-        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var dateTime = new DateTimeOffset(2020, 12, 12, 1, 2, 3, TimeSpan.Zero);
         var data = new[]
         {
             new KeyValuePair<object, KafkaMessage<object>>(1,
@@ -119,7 +119,7 @@ public class SimpleJsonSerializerTests
         var result = serializer.Serialize(data, isRaw);
 
         // Assert
-        result.Should().Be("[\r\n  {\r\n    \"Key\": 1,\r\n    \"Value\": {\r\n      \"Message\": \"Test\",\r\n      \"Meta\": {\r\n        \"Timestamp\": \"2020-12-12T01:02:03\",\r\n        \"Partition\": 1,\r\n        \"Offset\": 2\r\n      }\r\n    }\r\n  }\r\n]");
+        result.Should().Be("[\r\n  {\r\n    \"Key\": 1,\r\n    \"Value\": {\r\n      \"Message\": \"Test\",\r\n      \"Meta\": {\r\n        \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n        \"Partition\": 1,\r\n        \"Offset\": 2\r\n      }\r\n    }\r\n  }\r\n]");
     }
 
     [Theory(DisplayName = "SimpleJsonSerializer can serialize data to the stream.")]
@@ -131,7 +131,7 @@ public class SimpleJsonSerializerTests
         // Arrange
         var logger = new Mock<ILogger<SimpleJsonSerializer<object, object>>>().Object;
         var serializer = new SimpleJsonSerializer<object, object>(logger);
-        var dateTime = new DateTime(2020, 12, 12, 1, 2, 3);
+        var dateTime = new DateTimeOffset(2020, 12, 12, 1, 2, 3, TimeSpan.Zero);
         var data = new[]
         {
             new KeyValuePair<object, KafkaMessage<object>>(1,
@@ -146,6 +146,6 @@ public class SimpleJsonSerializerTests
 
         // Assert
         var jsonString = Encoding.Default.GetString((stream.ToArray()));
-        jsonString.Should().Be("[\r\n  {\r\n    \"Key\": 1,\r\n    \"Value\": {\r\n      \"Message\": \"Test\",\r\n      \"Meta\": {\r\n        \"Timestamp\": \"2020-12-12T01:02:03\",\r\n        \"Partition\": 1,\r\n        \"Offset\": 2\r\n      }\r\n    }\r\n  }\r\n]");
+        jsonString.Should().Be("[\r\n  {\r\n    \"Key\": 1,\r\n    \"Value\": {\r\n      \"Message\": \"Test\",\r\n      \"Meta\": {\r\n        \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n        \"Partition\": 1,\r\n        \"Offset\": 2\r\n      }\r\n    }\r\n  }\r\n]");
     }
 }

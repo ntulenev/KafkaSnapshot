@@ -358,6 +358,117 @@ public class PartitionSnapshotReaderTests
         consumerMock.Verify(x => x.Dispose(), Times.Once);
     }
 
+    [Fact(DisplayName = "PartitionSnapshotReader logs date offset lookup failures.")]
+    [Trait("Category", "Unit")]
+    public void PartitionSnapshotReaderLogsDateOffsetLookupFailures()
+    {
+        // Arrange
+        using var tokenSource = new CancellationTokenSource();
+        var token = tokenSource.Token;
+        var logger = new RecordingLogger<PartitionSnapshotReader<object, object>>(LogLevel.Error);
+        var startDate = DateTimeOffset.UtcNow;
+        var topic = CreateTopic(new DateFilterRange(startDate, null!));
+        var partition = CreatePartition();
+        var watermark = CreateWatermark(topic, partition);
+        var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
+        var kafkaException = new KafkaException(new Error(ErrorCode.Local_Transport, "lookup failed"));
+        consumerMock.Setup(x => x.OffsetsForTimes(
+            It.IsAny<IEnumerable<TopicPartitionTimestamp>>(),
+            It.IsAny<TimeSpan>())).Throws(kafkaException);
+        consumerMock.Setup(x => x.Close());
+        consumerMock.Setup(x => x.Dispose());
+        var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
+        var (keyFilterMock, valueFilterMock) = CreateStrictFilters();
+        var reader = CreateReader(logger, consumerMock, encoderMock);
+
+        // Act
+        var exception = Record.Exception(() => reader.Read(
+            watermark,
+            topic,
+            keyFilterMock.Object,
+            valueFilterMock.Object,
+            token).ToList());
+
+        // Assert
+        exception.Should().BeSameAs(kafkaException);
+        logger.Contains(LogLevel.Error, "Failed to resolve offset for topic test, partition 1").Should().BeTrue();
+        consumerMock.Verify(x => x.Close(), Times.Once);
+        consumerMock.Verify(x => x.Dispose(), Times.Once);
+    }
+
+    [Fact(DisplayName = "PartitionSnapshotReader logs consume failures.")]
+    [Trait("Category", "Unit")]
+    public void PartitionSnapshotReaderLogsConsumeFailures()
+    {
+        // Arrange
+        using var tokenSource = new CancellationTokenSource();
+        var token = tokenSource.Token;
+        var logger = new RecordingLogger<PartitionSnapshotReader<object, object>>(LogLevel.Error);
+        var topic = CreateTopic();
+        var partition = CreatePartition();
+        var watermark = CreateWatermark(topic, partition);
+        var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
+        var kafkaException = new KafkaException(new Error(ErrorCode.Local_Transport, "consume failed"));
+        consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(
+            item => item.Topic == topic.Value.Name && item.Partition == partition)));
+        consumerMock.Setup(x => x.Consume(token)).Throws(kafkaException);
+        consumerMock.Setup(x => x.Close());
+        consumerMock.Setup(x => x.Dispose());
+        var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
+        var (keyFilterMock, valueFilterMock) = CreateStrictFilters();
+        var reader = CreateReader(logger, consumerMock, encoderMock);
+
+        // Act
+        var exception = Record.Exception(() => reader.Read(
+            watermark,
+            topic,
+            keyFilterMock.Object,
+            valueFilterMock.Object,
+            token).ToList());
+
+        // Assert
+        exception.Should().BeSameAs(kafkaException);
+        logger.Contains(LogLevel.Error, "Failed to consume message from topic test, partition 1").Should().BeTrue();
+        consumerMock.Verify(x => x.Close(), Times.Once);
+        consumerMock.Verify(x => x.Dispose(), Times.Once);
+    }
+
+    [Fact(DisplayName = "PartitionSnapshotReader does not log cancellation as consume failure.")]
+    [Trait("Category", "Unit")]
+    public void PartitionSnapshotReaderDoesNotLogCancellationAsConsumeFailure()
+    {
+        // Arrange
+        using var tokenSource = new CancellationTokenSource();
+        var token = tokenSource.Token;
+        var logger = new RecordingLogger<PartitionSnapshotReader<object, object>>(LogLevel.Error);
+        var topic = CreateTopic();
+        var partition = CreatePartition();
+        var watermark = CreateWatermark(topic, partition);
+        var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
+        consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(
+            item => item.Topic == topic.Value.Name && item.Partition == partition)));
+        consumerMock.Setup(x => x.Consume(token)).Throws(new OperationCanceledException(token));
+        consumerMock.Setup(x => x.Close());
+        consumerMock.Setup(x => x.Dispose());
+        var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
+        var (keyFilterMock, valueFilterMock) = CreateStrictFilters();
+        var reader = CreateReader(logger, consumerMock, encoderMock);
+
+        // Act
+        var exception = Record.Exception(() => reader.Read(
+            watermark,
+            topic,
+            keyFilterMock.Object,
+            valueFilterMock.Object,
+            token).ToList());
+
+        // Assert
+        exception.Should().BeOfType<OperationCanceledException>();
+        logger.Contains(LogLevel.Error, "Failed to consume message").Should().BeFalse();
+        consumerMock.Verify(x => x.Close(), Times.Once);
+        consumerMock.Verify(x => x.Dispose(), Times.Once);
+    }
+
     private static Mock<ILogger<PartitionSnapshotReader<object, object>>> CreateLoggerMock(
         params LogLevel[] enabledLogLevels)
     {

@@ -95,11 +95,29 @@ public class PartitionSnapshotReader<TKey, TMessage>
                             topicParams.OffsetDate);
                     }
 
-                    if (!watermark.AssignWithConsumer(
-                                consumer,
-                                topicParams.OffsetDate,
-                                _config.DateOffsetTimeout,
-                                out var assignedOffset))
+                    bool offsetAssigned;
+                    TopicPartitionOffset assignedOffset;
+
+                    try
+                    {
+                        offsetAssigned = watermark.AssignWithConsumer(
+                            consumer,
+                            topicParams.OffsetDate,
+                            _config.DateOffsetTimeout,
+                            out assignedOffset);
+                    }
+                    catch (Exception exception) when (exception is not OperationCanceledException)
+                    {
+                        _logger.LogError(
+                            exception,
+                            "Failed to resolve offset for topic {Topic}, partition {Partition}, date {Date}",
+                            topicParams.Value.Name,
+                            watermark.Partition.Value,
+                            topicParams.OffsetDate);
+                        throw;
+                    }
+
+                    if (!offsetAssigned)
                     {
                         if (_logger.IsEnabled(LogLevel.Warning))
                         {
@@ -143,7 +161,19 @@ public class PartitionSnapshotReader<TKey, TMessage>
 
                 do
                 {
-                    result = consumer.Consume(ct);
+                    try
+                    {
+                        result = consumer.Consume(ct);
+                    }
+                    catch (Exception exception) when (exception is not OperationCanceledException)
+                    {
+                        _logger.LogError(
+                            exception,
+                            "Failed to consume message from topic {Topic}, partition {Partition}",
+                            topicParams.Value.Name,
+                            watermark.Partition.Value);
+                        throw;
+                    }
 
                     if (isFinalOffsetDateReached())
                     {

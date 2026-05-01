@@ -53,43 +53,13 @@ public class PartitionSnapshotReaderTests
         var logger = new RecordingLogger<PartitionSnapshotReader<object, object>>(
             LogLevel.Information,
             LogLevel.Warning);
-        var topic = new LoadingTopic(
-            new TopicName("test"),
-            false,
-            new DateFilterRange(null!, null!),
-            EncoderRules.String,
-            null);
-        var partition = new Partition(1);
-        var watermark = new PartitionWatermark(
-            topic,
-            new WatermarkOffsets(new Offset(0), new Offset(1)),
-            partition);
-        var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
-        consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(
-            item => item.Topic == topic.Value.Name && item.Partition == partition)));
-        consumerMock.Setup(x => x.Consume(token)).Returns(new ConsumeResult<object, byte[]>
-        {
-            Message = new Message<object, byte[]>
-            {
-                Key = "key",
-                Value = Encoding.UTF8.GetBytes("value"),
-                Timestamp = Timestamp.Default
-            },
-            Offset = new Offset(0)
-        });
-        consumerMock.Setup(x => x.Close());
-        consumerMock.Setup(x => x.Dispose());
-        var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
-        encoderMock.Setup(x => x.Encode(It.IsAny<byte[]>(), EncoderRules.String)).Returns("value");
-        var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
-        keyFilterMock.Setup(x => x.IsMatch("key")).Returns(true);
-        var valueFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
-        valueFilterMock.Setup(x => x.IsMatch("value")).Returns(true);
-        var reader = new PartitionSnapshotReader<object, object>(
-            logger,
-            Options.Create(new SnapshotLoaderConfiguration()),
-            () => consumerMock.Object,
-            encoderMock.Object);
+        var topic = CreateTopic();
+        var partition = CreatePartition();
+        var watermark = CreateWatermark(topic, partition);
+        var consumerMock = CreateReadableConsumerMock(topic, partition, new Offset(0), token);
+        var encoderMock = CreateEncoderMock();
+        var (keyFilterMock, valueFilterMock) = CreateMatchingFilters();
+        var reader = CreateReader(logger, consumerMock, encoderMock);
 
         // Act
         var result = reader.Read(
@@ -117,17 +87,9 @@ public class PartitionSnapshotReaderTests
             LogLevel.Information,
             LogLevel.Warning);
         var startDate = DateTime.UtcNow;
-        var topic = new LoadingTopic(
-            new TopicName("test"),
-            false,
-            new DateFilterRange(startDate, null!),
-            EncoderRules.String,
-            null);
-        var partition = new Partition(1);
-        var watermark = new PartitionWatermark(
-            topic,
-            new WatermarkOffsets(new Offset(0), new Offset(1)),
-            partition);
+        var topic = CreateTopic(new DateFilterRange(startDate, null!));
+        var partition = CreatePartition();
+        var watermark = CreateWatermark(topic, partition);
         var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
         var topicPartition = new TopicPartition(topic.Value.Name, partition);
         consumerMock.Setup(x => x.OffsetsForTimes(
@@ -140,13 +102,8 @@ public class PartitionSnapshotReaderTests
         consumerMock.Setup(x => x.Close());
         consumerMock.Setup(x => x.Dispose());
         var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
-        var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
-        var valueFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
-        var reader = new PartitionSnapshotReader<object, object>(
-            logger,
-            Options.Create(new SnapshotLoaderConfiguration()),
-            () => consumerMock.Object,
-            encoderMock.Object);
+        var (keyFilterMock, valueFilterMock) = CreateStrictFilters();
+        var reader = CreateReader(logger, consumerMock, encoderMock);
 
         // Act
         var result = reader.Read(
@@ -171,17 +128,9 @@ public class PartitionSnapshotReaderTests
         var token = tokenSource.Token;
         var logger = new RecordingLogger<PartitionSnapshotReader<object, object>>(LogLevel.Information);
         var startDate = DateTimeOffset.UtcNow;
-        var topic = new LoadingTopic(
-            new TopicName("test"),
-            false,
-            new DateFilterRange(startDate, null!),
-            EncoderRules.String,
-            null);
-        var partition = new Partition(1);
-        var watermark = new PartitionWatermark(
-            topic,
-            new WatermarkOffsets(new Offset(0), new Offset(1)),
-            partition);
+        var topic = CreateTopic(new DateFilterRange(startDate, null!));
+        var partition = CreatePartition();
+        var watermark = CreateWatermark(topic, partition);
         var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
         var topicPartition = new TopicPartition(topic.Value.Name, partition);
         consumerMock.Setup(x => x.OffsetsForTimes(
@@ -205,17 +154,9 @@ public class PartitionSnapshotReaderTests
         });
         consumerMock.Setup(x => x.Close());
         consumerMock.Setup(x => x.Dispose());
-        var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
-        encoderMock.Setup(x => x.Encode(It.IsAny<byte[]>(), EncoderRules.String)).Returns("value");
-        var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
-        keyFilterMock.Setup(x => x.IsMatch("key")).Returns(true);
-        var valueFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
-        valueFilterMock.Setup(x => x.IsMatch("value")).Returns(true);
-        var reader = new PartitionSnapshotReader<object, object>(
-            logger,
-            Options.Create(new SnapshotLoaderConfiguration()),
-            () => consumerMock.Object,
-            encoderMock.Object);
+        var encoderMock = CreateEncoderMock();
+        var (keyFilterMock, valueFilterMock) = CreateMatchingFilters();
+        var reader = CreateReader(logger, consumerMock, encoderMock);
 
         // Act
         var result = reader.Read(
@@ -240,17 +181,9 @@ public class PartitionSnapshotReaderTests
         var token = tokenSource.Token;
         var logger = new RecordingLogger<PartitionSnapshotReader<object, object>>(LogLevel.Information);
         var endDate = new DateTimeOffset(2024, 1, 1, 10, 0, 0, TimeSpan.Zero);
-        var topic = new LoadingTopic(
-            new TopicName("test"),
-            false,
-            new DateFilterRange(null!, endDate),
-            EncoderRules.String,
-            null);
-        var partition = new Partition(1);
-        var watermark = new PartitionWatermark(
-            topic,
-            new WatermarkOffsets(new Offset(0), new Offset(1)),
-            partition);
+        var topic = CreateTopic(new DateFilterRange(null!, endDate));
+        var partition = CreatePartition();
+        var watermark = CreateWatermark(topic, partition);
         var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
         consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(
             item => item.Topic == topic.Value.Name && item.Partition == partition)));
@@ -267,13 +200,8 @@ public class PartitionSnapshotReaderTests
         consumerMock.Setup(x => x.Close());
         consumerMock.Setup(x => x.Dispose());
         var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
-        var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
-        var valueFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
-        var reader = new PartitionSnapshotReader<object, object>(
-            logger,
-            Options.Create(new SnapshotLoaderConfiguration()),
-            () => consumerMock.Object,
-            encoderMock.Object);
+        var (keyFilterMock, valueFilterMock) = CreateStrictFilters();
+        var reader = CreateReader(logger, consumerMock, encoderMock);
 
         // Act
         var result = reader.Read(
@@ -296,29 +224,13 @@ public class PartitionSnapshotReaderTests
         using var tokenSource = new CancellationTokenSource();
         var token = tokenSource.Token;
         var loggerMock = CreateLoggerMock();
-        var topic = new LoadingTopic(
-            new TopicName("test"),
-            false,
-            new DateFilterRange(null!, null!),
-            EncoderRules.String,
-            null);
-        var partition = new Partition(1);
-        var watermark = new PartitionWatermark(
-            topic,
-            new WatermarkOffsets(new Offset(0), new Offset(1)),
-            partition);
+        var topic = CreateTopic();
+        var partition = CreatePartition();
+        var watermark = CreateWatermark(topic, partition);
         var consumerMock = CreateReadableConsumerMock(topic, partition, new Offset(0), token);
-        var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
-        encoderMock.Setup(x => x.Encode(It.IsAny<byte[]>(), EncoderRules.String)).Returns("value");
-        var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
-        keyFilterMock.Setup(x => x.IsMatch("key")).Returns(true);
-        var valueFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
-        valueFilterMock.Setup(x => x.IsMatch("value")).Returns(true);
-        var reader = new PartitionSnapshotReader<object, object>(
-            loggerMock.Object,
-            Options.Create(new SnapshotLoaderConfiguration()),
-            () => consumerMock.Object,
-            encoderMock.Object);
+        var encoderMock = CreateEncoderMock();
+        var (keyFilterMock, valueFilterMock) = CreateMatchingFilters();
+        var reader = CreateReader(loggerMock.Object, consumerMock, encoderMock);
 
         // Act
         var result = reader.Read(
@@ -343,17 +255,9 @@ public class PartitionSnapshotReaderTests
         var token = tokenSource.Token;
         var loggerMock = CreateLoggerMock();
         var endDate = new DateTimeOffset(2024, 1, 1, 10, 0, 0, TimeSpan.Zero);
-        var topic = new LoadingTopic(
-            new TopicName("test"),
-            false,
-            new DateFilterRange(null!, endDate),
-            EncoderRules.String,
-            null);
-        var partition = new Partition(1);
-        var watermark = new PartitionWatermark(
-            topic,
-            new WatermarkOffsets(new Offset(0), new Offset(1)),
-            partition);
+        var topic = CreateTopic(new DateFilterRange(null!, endDate));
+        var partition = CreatePartition();
+        var watermark = CreateWatermark(topic, partition);
         var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
         consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(
             item => item.Topic == topic.Value.Name && item.Partition == partition)));
@@ -370,13 +274,8 @@ public class PartitionSnapshotReaderTests
         consumerMock.Setup(x => x.Close());
         consumerMock.Setup(x => x.Dispose());
         var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
-        var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
-        var valueFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
-        var reader = new PartitionSnapshotReader<object, object>(
-            loggerMock.Object,
-            Options.Create(new SnapshotLoaderConfiguration()),
-            () => consumerMock.Object,
-            encoderMock.Object);
+        var (keyFilterMock, valueFilterMock) = CreateStrictFilters();
+        var reader = CreateReader(loggerMock.Object, consumerMock, encoderMock);
 
         // Act
         var result = reader.Read(
@@ -400,17 +299,9 @@ public class PartitionSnapshotReaderTests
         using var tokenSource = new CancellationTokenSource();
         var token = tokenSource.Token;
         var loggerMock = CreateLoggerMock();
-        var topic = new LoadingTopic(
-            new TopicName("test"),
-            false,
-            new DateFilterRange(null!, null!),
-            EncoderRules.String,
-            null);
-        var partition = new Partition(1);
-        var watermark = new PartitionWatermark(
-            topic,
-            new WatermarkOffsets(new Offset(0), new Offset(1)),
-            partition);
+        var topic = CreateTopic();
+        var partition = CreatePartition();
+        var watermark = CreateWatermark(topic, partition);
         var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
         consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(
             item => item.Topic == topic.Value.Name && item.Partition == partition)));
@@ -418,13 +309,8 @@ public class PartitionSnapshotReaderTests
         consumerMock.Setup(x => x.Close());
         consumerMock.Setup(x => x.Dispose());
         var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
-        var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
-        var valueFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
-        var reader = new PartitionSnapshotReader<object, object>(
-            loggerMock.Object,
-            Options.Create(new SnapshotLoaderConfiguration()),
-            () => consumerMock.Object,
-            encoderMock.Object);
+        var (keyFilterMock, valueFilterMock) = CreateStrictFilters();
+        var reader = CreateReader(loggerMock.Object, consumerMock, encoderMock);
 
         // Act
         var exception = Record.Exception(() => reader.Read(
@@ -448,29 +334,13 @@ public class PartitionSnapshotReaderTests
         using var tokenSource = new CancellationTokenSource();
         var token = tokenSource.Token;
         var loggerMock = CreateLoggerMock();
-        var topic = new LoadingTopic(
-            new TopicName("test"),
-            false,
-            new DateFilterRange(null!, null!),
-            EncoderRules.String,
-            null);
-        var partition = new Partition(1);
-        var watermark = new PartitionWatermark(
-            topic,
-            new WatermarkOffsets(new Offset(0), new Offset(2)),
-            partition);
+        var topic = CreateTopic();
+        var partition = CreatePartition();
+        var watermark = CreateWatermark(topic, partition, highOffset: 2);
         var consumerMock = CreateReadableConsumerMock(topic, partition, new Offset(0), token);
-        var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
-        encoderMock.Setup(x => x.Encode(It.IsAny<byte[]>(), EncoderRules.String)).Returns("value");
-        var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
-        keyFilterMock.Setup(x => x.IsMatch("key")).Returns(true);
-        var valueFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
-        valueFilterMock.Setup(x => x.IsMatch("value")).Returns(true);
-        var reader = new PartitionSnapshotReader<object, object>(
-            loggerMock.Object,
-            Options.Create(new SnapshotLoaderConfiguration()),
-            () => consumerMock.Object,
-            encoderMock.Object);
+        var encoderMock = CreateEncoderMock();
+        var (keyFilterMock, valueFilterMock) = CreateMatchingFilters();
+        var reader = CreateReader(loggerMock.Object, consumerMock, encoderMock);
 
         // Act
         using (var enumerator = reader.Read(
@@ -507,6 +377,62 @@ public class PartitionSnapshotReaderTests
 
         return loggerMock;
     }
+
+    private static LoadingTopic CreateTopic(DateFilterRange? dateRange = null)
+        => new(
+            new TopicName("test"),
+            false,
+            dateRange ?? new DateFilterRange(null!, null!),
+            EncoderRules.String,
+            null);
+
+    private static Partition CreatePartition() => new(1);
+
+    private static PartitionWatermark CreateWatermark(
+        LoadingTopic topic,
+        Partition partition,
+        long highOffset = 1)
+        => new(
+            topic,
+            new WatermarkOffsets(new Offset(0), new Offset(highOffset)),
+            partition);
+
+    private static PartitionSnapshotReader<object, object> CreateReader(
+        ILogger<PartitionSnapshotReader<object, object>> logger,
+        Mock<IConsumer<object, byte[]>> consumerMock,
+        Mock<IMessageEncoder<byte[], object>> encoderMock)
+        => new(
+            logger,
+            Options.Create(new SnapshotLoaderConfiguration()),
+            () => consumerMock.Object,
+            encoderMock.Object);
+
+    private static Mock<IMessageEncoder<byte[], object>> CreateEncoderMock()
+    {
+        var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
+        encoderMock.Setup(x => x.Encode(It.IsAny<byte[]>(), EncoderRules.String)).Returns("value");
+
+        return encoderMock;
+    }
+
+    private static (
+        Mock<IDataFilter<object>> KeyFilter,
+        Mock<IDataFilter<object>> ValueFilter) CreateMatchingFilters()
+    {
+        var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
+        keyFilterMock.Setup(x => x.IsMatch("key")).Returns(true);
+        var valueFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
+        valueFilterMock.Setup(x => x.IsMatch("value")).Returns(true);
+
+        return (keyFilterMock, valueFilterMock);
+    }
+
+    private static (
+        Mock<IDataFilter<object>> KeyFilter,
+        Mock<IDataFilter<object>> ValueFilter) CreateStrictFilters()
+        => (
+            new Mock<IDataFilter<object>>(MockBehavior.Strict),
+            new Mock<IDataFilter<object>>(MockBehavior.Strict));
 
     private static Mock<IConsumer<object, byte[]>> CreateReadableConsumerMock(
         LoadingTopic topic,

@@ -70,6 +70,42 @@ public class DateFilterRangeTests
         exception.Should().BeNull();
     }
 
+    [Fact(DisplayName = "DateFilterRange converts local dates to UTC.")]
+    [Trait("Category", "Unit")]
+    public void DateFilterRangeConvertsLocalDatesToUtc()
+    {
+        // Arrange
+        var start = new DateTime(2024, 1, 1, 12, 0, 0, DateTimeKind.Local);
+        var end = start.AddHours(1);
+
+        // Act
+        var result = new DateFilterRange(start, end);
+
+        // Assert
+        result.StartDate.Should().Be(start.ToUniversalTime());
+        result.StartDate!.Value.Kind.Should().Be(DateTimeKind.Utc);
+        result.EndDate.Should().Be(end.ToUniversalTime());
+        result.EndDate!.Value.Kind.Should().Be(DateTimeKind.Utc);
+    }
+
+    [Fact(DisplayName = "DateFilterRange treats unspecified dates as UTC.")]
+    [Trait("Category", "Unit")]
+    public void DateFilterRangeTreatsUnspecifiedDatesAsUtc()
+    {
+        // Arrange
+        var start = new DateTime(2024, 1, 1, 12, 0, 0, DateTimeKind.Unspecified);
+        var end = start.AddHours(1);
+
+        // Act
+        var result = new DateFilterRange(start, end);
+
+        // Assert
+        result.StartDate.Should().Be(DateTime.SpecifyKind(start, DateTimeKind.Utc));
+        result.StartDate!.Value.Kind.Should().Be(DateTimeKind.Utc);
+        result.EndDate.Should().Be(DateTime.SpecifyKind(end, DateTimeKind.Utc));
+        result.EndDate!.Value.Kind.Should().Be(DateTimeKind.Utc);
+    }
+
     [Fact(DisplayName = "DateFilterRange cant be created when start bigger then end.")]
     [Trait("Category", "Unit")]
     public void CantCreateDateFilterRangeWhenStardDateBigger()

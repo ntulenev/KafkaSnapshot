@@ -116,7 +116,7 @@ public class PartitionSnapshotReader<TKey, TMessage>
                 {
                     return topicParams.HasEndOffsetDate &&
                            result.Message.Timestamp.UtcDateTime >
-                           topicParams.EndOffsetDate.ToUniversalTime();
+                           topicParams.EndOffsetDate;
                 }
 
                 do

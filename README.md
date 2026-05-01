@@ -45,6 +45,7 @@ By default, messages should contain JSON data. Simple strings are also supported
 Config example:
 
 ```json
+{
   "BootstrapServersConfiguration": {
     "BootstrapServers": [ "test" ],
     "Username": "user123",
@@ -145,6 +146,9 @@ Config example:
         "MessageEncoderRule": "Base64",
         "ExportFileName": "topic10.json"
       }
+    ]
+  }
+}
 ```
 Config params:
 

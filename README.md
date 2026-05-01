@@ -76,8 +76,8 @@ Config example:
         "ExportFileName": "topic1.json",
         "FilterKeyType": "Equals",
         "FilterKeyValue": "{\"value\": 1 }",
-        "OffsetStartDate": "09.01.2021 12:12:12",
-        "OffsetEndDate": "09.01.2021 14:12:12",
+        "OffsetStartDate": "2021-09-01T12:12:12Z",
+        "OffsetEndDate": "2021-09-01T14:12:12+02:00",
         "ExportRawMessage": true,
         "PartitionsIds": [ 0, 2 ]
       },
@@ -168,8 +168,8 @@ Config params:
 | ExportFileName | File name for exported data                                                                                                                                             |
 | FilterKeyType | Equals, Contains or None (optional)                                                                                                                                     |
 | FilterKeyValue | Sample value for filtering (if FilterKeyType sets as 'Equals', 'Contains','GreaterOrEquals' or 'LessOrEquals')                                                          |
-| OffsetStartDate | First message date (optional). Use to skip old messages in large topics. Format MM.DD.YYYY HH:MM:SS (Local timezone)                                                    |
-| OffsetEndDate | Message date top limit (optional). Use to limit filtering messages in large topics. Format MM.DD.YYYY HH:MM:SS (Local timezone)                                         |
+| OffsetStartDate | First message date (optional). Use to skip old messages in large topics. Use ISO 8601 with an explicit offset, for example `2021-09-01T12:12:12Z` or `2021-09-01T14:12:12+02:00`. |
+| OffsetEndDate | Message date top limit (optional). Use to limit filtering messages in large topics. Use ISO 8601 with an explicit offset, for example `2021-09-01T12:12:12Z` or `2021-09-01T14:12:12+02:00`. |
 | ExportRawMessage | If true - export will write message as raw string without converting to formatted json (optional)                                                                       |
 | PartitionsIds | Partitions ids filter (optional)                                                                                                                                        |
 | UseFileStreaming | Serializes loaded data to file directly via FileStream (Avoids OOM issue for large amounts of data). Better effect with disabled sorting (GlobalSortOrder No)           |

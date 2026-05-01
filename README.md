@@ -27,6 +27,15 @@ dotnet run --project src\Utility\Utility.csproj
 The optional JSON schema for editors is available at
 `src\Utility\appsettings.schema.json`.
 
+## Migration notes
+
+Recent versions use `DateTimeOffset` for date-based offsets and exported metadata timestamps.
+
+* `OffsetStartDate` and `OffsetEndDate` should be configured as ISO 8601 strings with an explicit UTC designator or offset, for example `2021-09-01T12:12:12Z` or `2021-09-01T14:12:12+02:00`.
+* `KafkaMetadata.Timestamp` is now a `DateTimeOffset`.
+* `DateFilterRange.StartDate`, `DateFilterRange.EndDate`, `LoadingTopic.OffsetDate`, `LoadingTopic.EndOffsetDate`, `TopicConfiguration.OffsetStartDate`, and `TopicConfiguration.OffsetEndDate` are now `DateTimeOffset` values.
+* `PartitionWatermark.TopicName` was renamed to `PartitionWatermark.Topic` because it stores the full loading topic configuration, not only the topic name.
+
 Supports:
 * Compacting
 * Key filtering

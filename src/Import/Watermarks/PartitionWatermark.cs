@@ -22,7 +22,7 @@ public class PartitionWatermark
     /// <summary>
     /// Loading topic configuration.
     /// </summary>
-    public LoadingTopic TopicName { get; }
+    public LoadingTopic Topic { get; }
 
     /// <summary>
     /// Creates partition offset watermark.
@@ -37,7 +37,7 @@ public class PartitionWatermark
         ArgumentNullException.ThrowIfNull(topicName);
         ArgumentNullException.ThrowIfNull(offset);
 
-        TopicName = topicName;
+        Topic = topicName;
 
         Offset = offset;
 
@@ -72,7 +72,7 @@ public class PartitionWatermark
     {
         ArgumentNullException.ThrowIfNull(consumer);
 
-        consumer.Assign(new TopicPartition(TopicName.Value.Name, Partition));
+        consumer.Assign(new TopicPartition(Topic.Value.Name, Partition));
 
     }
 
@@ -104,7 +104,7 @@ public class PartitionWatermark
     {
         ArgumentNullException.ThrowIfNull(consumer);
 
-        var topicPartition = new TopicPartition(TopicName.Value.Name, Partition);
+        var topicPartition = new TopicPartition(Topic.Value.Name, Partition);
 
         var partitionTimestamp = new TopicPartitionTimestamp(topicPartition, new Timestamp(startDate.UtcDateTime));
 

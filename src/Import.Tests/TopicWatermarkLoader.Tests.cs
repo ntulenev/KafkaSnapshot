@@ -197,7 +197,7 @@ public class TopicWatermarkLoaderTests
         result.Should().NotBeNull();
         var watermarks = result.Watermarks.ToList();
         watermarks.Should().ContainSingle();
-        watermarks.Single().TopicName.Should().Be(topic);
+        watermarks.Single().Topic.Should().Be(topic);
         watermarks.Single().Partition.Value.Should().Be(partitionMeta.PartitionId);
         watermarks.Single().Offset.Should().Be(offets);
         getMetadataCalls.Should().Be(1);
@@ -262,7 +262,7 @@ public class TopicWatermarkLoaderTests
         result.Should().NotBeNull();
         var watermarks = result.Watermarks.ToList();
         watermarks.Should().ContainSingle();
-        watermarks.Single().TopicName.Should().Be(topic);
+        watermarks.Single().Topic.Should().Be(topic);
         watermarks.Single().Partition.Value.Should().Be(partitionMeta2.PartitionId);
         watermarks.Single().Offset.Should().Be(offets);
         getMetadataCalls.Should().Be(1);
@@ -428,7 +428,7 @@ public class TopicWatermarkLoaderTests
         result.Should().NotBeNull();
         var watermarks = result.Watermarks.ToList();
         watermarks.Should().ContainSingle();
-        watermarks.Single().TopicName.Should().Be(topic);
+        watermarks.Single().Topic.Should().Be(topic);
         watermarks.Single().Partition.Value.Should().Be(requestedPartitionMeta.PartitionId);
         watermarks.Single().Offset.Should().Be(offsets);
         getMetadataCalls.Should().Be(1);

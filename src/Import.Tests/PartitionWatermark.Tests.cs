@@ -67,7 +67,7 @@ public class PartitionWatermarkTests
         // Assert
         result.Partition.Should().Be(partition);
         result.Offset.Should().Be(offsets);
-        result.TopicName.Should().Be(topicName);
+        result.Topic.Should().Be(topicName);
     }
 
     [Theory(DisplayName = "PartitionWatermark is ready to read only valid offsets.")]

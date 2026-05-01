@@ -124,17 +124,17 @@ public class FullPipelineWithFakeKafkaIntegrationTests
                 topicName,
                 new FakeKafkaMessage<string>(
                     "order-2",
-                    """{"status":"created","version":1}""",
+                    CreateOrderMessage(status: "created", version: 1),
                     0,
                     DateTime.UnixEpoch.AddMinutes(3)),
                 new FakeKafkaMessage<string>(
                     "order-1",
-                    """{"status":"created","version":1}""",
+                    CreateOrderMessage(status: "created", version: 1),
                     1,
                     DateTime.UnixEpoch.AddMinutes(1)),
                 new FakeKafkaMessage<string>(
                     "order-1",
-                    """{"status":"paid","version":2}""",
+                    CreateOrderMessage(status: "paid", version: 2),
                     2,
                     DateTime.UnixEpoch.AddMinutes(2)));
 
@@ -322,6 +322,9 @@ public class FullPipelineWithFakeKafkaIntegrationTests
 
         return JsonDocument.Parse(await File.ReadAllTextAsync(outputFile, ct));
     }
+
+    private static string CreateOrderMessage(string status, int version)
+        => JsonSerializer.Serialize(new { status, version });
 
     private sealed class TestDirectory : IDisposable
     {

@@ -23,9 +23,9 @@ public class TopicWatermarkLoaderConfigurationValidatorTests
         exception.Should().BeNull();
     }
 
-    [Fact(DisplayName = "TopicWatermarkLoaderConfigurationValidator could be validated.")]
+    [Fact(DisplayName = "TopicWatermarkLoaderConfigurationValidator can validate valid config.")]
     [Trait("Category", "Unit")]
-    public void TopicWatermarkLoaderConfigurationValidatorCouldBeValidated()
+    public void TopicWatermarkLoaderConfigurationValidatorCanValidateValidConfig()
     {
 
         // Arrange

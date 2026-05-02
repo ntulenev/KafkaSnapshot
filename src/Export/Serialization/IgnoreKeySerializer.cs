@@ -26,8 +26,8 @@ public sealed class IgnoreKeySerializer(ILogger<IgnoreKeySerializer> logger) :
     {
         if (data.Any(x => x.Key is not null))
         {
-            Logger.LogWarning("Serialization data contains not null Keys. " +
-                "This Keys will be ignored.");
+            Logger.LogWarning("Serialization data contains non-null keys. " +
+                "These keys will be ignored.");
         }
 
         var items = data.Select(x => new

@@ -9,7 +9,7 @@ using KafkaSnapshot.Models.Message;
 namespace KafkaSnapshot.Export.Serialization;
 
 /// <summary>
-/// Serializer for data with json keys.
+/// Serializer for data with JSON keys.
 /// </summary>
 /// <remarks>
 /// Creates <see cref="JsonKeySerializer"/>.

@@ -15,9 +15,9 @@ namespace KafkaSnapshot.Export.Tests;
 
 public class OriginalKeySerializerTests
 {
-    [Fact(DisplayName = "OriginalKeySerializer cant be created without logger.")]
+    [Fact(DisplayName = "OriginalKeySerializer can't be created without logger.")]
     [Trait("Category", "Unit")]
-    public void OriginalKeySerializerCantBeCreated()
+    public void OriginalKeySerializerCannotBeCreated()
     {
         // Arrange
         var logger = (ILogger<OriginalKeySerializer<object>>)null!;
@@ -47,7 +47,7 @@ public class OriginalKeySerializerTests
     [Trait("Category", "Unit")]
     [InlineData(true)]
     [InlineData(false)]
-    public void OriginalKeySerializerCantSerializeNullData(bool isRawData)
+    public void OriginalKeySerializerCannotSerializeNullData(bool isRawData)
     {
         // Arrange
         var logger = new Mock<ILogger<OriginalKeySerializer<object>>>().Object;
@@ -65,7 +65,7 @@ public class OriginalKeySerializerTests
     [Trait("Category", "Unit")]
     [InlineData(true)]
     [InlineData(false)]
-    public async Task OriginalKeySerializerCantSerializeNullDataToStream(bool isRawData)
+    public async Task OriginalKeySerializerCannotSerializeNullDataToStream(bool isRawData)
     {
         // Arrange
         var logger = new Mock<ILogger<OriginalKeySerializer<object>>>().Object;
@@ -84,7 +84,7 @@ public class OriginalKeySerializerTests
     [Trait("Category", "Unit")]
     [InlineData(true)]
     [InlineData(false)]
-    public async Task OriginalKeySerializerCantSerializeDataToNullStream(bool isRawData)
+    public async Task OriginalKeySerializerCannotSerializeDataToNullStream(bool isRawData)
     {
         // Arrange
         var logger = new Mock<ILogger<OriginalKeySerializer<object>>>().Object;
@@ -153,9 +153,9 @@ public class OriginalKeySerializerTests
         jsonString.Should().Be("[\r\n  {\r\n    \"Key\": 1,\r\n    \"Value\": {\r\n      \"Test\": 42\r\n    },\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
     }
 
-    [Fact(DisplayName = "OriginalKeySerializer cant serialize non json data.")]
+    [Fact(DisplayName = "OriginalKeySerializer can't serialize non json data.")]
     [Trait("Category", "Unit")]
-    public void OriginalKeySerializerCantSerializeNonData()
+    public void OriginalKeySerializerCannotSerializeNonData()
     {
         // Arrange
         var logger = new Mock<ILogger<OriginalKeySerializer<object>>>().Object;
@@ -177,9 +177,9 @@ public class OriginalKeySerializerTests
         exception.Should().NotBeNull().And.BeAssignableTo<System.Text.Json.JsonException>();
     }
 
-    [Fact(DisplayName = "OriginalKeySerializer cant serialize non json data to the stream.")]
+    [Fact(DisplayName = "OriginalKeySerializer can't serialize non json data to the stream.")]
     [Trait("Category", "Unit")]
-    public async Task OriginalKeySerializerCantSerializeNonDataToStream()
+    public async Task OriginalKeySerializerCannotSerializeNonDataToStream()
     {
         // Arrange
         var logger = new Mock<ILogger<OriginalKeySerializer<object>>>().Object;

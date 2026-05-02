@@ -41,7 +41,7 @@ public class TopicWatermarkLoaderTests
 
     [Fact(DisplayName = "TopicWatermarkLoader can't be created with null client.")]
     [Trait("Category", "Unit")]
-    public void TopicWatermarkLoaderCantBeCreatedWithNullClient()
+    public void TopicWatermarkLoaderCannotBeCreatedWithNullClient()
     {
 
         // Arrange
@@ -61,7 +61,7 @@ public class TopicWatermarkLoaderTests
 
     [Fact(DisplayName = "TopicWatermarkLoader can't be created with null options.")]
     [Trait("Category", "Unit")]
-    public void TopicWatermarkLoaderCantBeCreatedWithNullOptions()
+    public void TopicWatermarkLoaderCannotBeCreatedWithNullOptions()
     {
 
         // Arrange
@@ -79,7 +79,7 @@ public class TopicWatermarkLoaderTests
 
     [Fact(DisplayName = "TopicWatermarkLoader can't be created with null options value.")]
     [Trait("Category", "Unit")]
-    public void TopicWatermarkLoaderCantBeCreatedWithNullOptionsValue()
+    public void TopicWatermarkLoaderCannotBeCreatedWithNullOptionsValue()
     {
 
         // Arrange
@@ -96,7 +96,7 @@ public class TopicWatermarkLoaderTests
 
     [Fact(DisplayName = "TopicWatermarkLoader can't load data with null factory.")]
     [Trait("Category", "Unit")]
-    public async Task TopicWatermarkLoaderCantLoadWithNullFactory()
+    public async Task TopicWatermarkLoaderCannotLoadWithNullFactory()
     {
 
         // Arrange
@@ -122,7 +122,7 @@ public class TopicWatermarkLoaderTests
 
     [Fact(DisplayName = "TopicWatermarkLoader can't load data with null topic.")]
     [Trait("Category", "Unit")]
-    public async Task TopicWatermarkLoaderCantLoadWithNullTopic()
+    public async Task TopicWatermarkLoaderCannotLoadWithNullTopic()
     {
 
         // Arrange

@@ -193,9 +193,9 @@ public class ProcessingUnitTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
-    [Fact(DisplayName = "ProcessingUnit could be created with valid params.")]
+    [Fact(DisplayName = "ProcessingUnit can be created with valid parameters.")]
     [Trait("Category", "Unit")]
-    public void ProcessingUnitCouldBeCreatedWithValidParams()
+    public void ProcessingUnitCanBeCreatedWithValidParams()
     {
         // Arrange
         var factoryMock = new Mock<IKeyFiltersFactory<object>>(MockBehavior.Strict);
@@ -268,7 +268,7 @@ public class ProcessingUnitTests
 
     [Fact(DisplayName = "ProcessingUnit can be created with debug logger enabled.")]
     [Trait("Category", "Unit")]
-    public void ProcessingUnitCouldBeCreatedWithDebugLogger()
+    public void ProcessingUnitCanBeCreatedWithDebugLogger()
     {
         // Arrange
         var loggerMock = new Mock<ILogger<ProcessingUnit<object, IKeyRepresentationMarker, object>>>();

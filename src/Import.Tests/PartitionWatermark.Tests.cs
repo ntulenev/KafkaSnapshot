@@ -50,7 +50,7 @@ public class PartitionWatermarkTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
-    [Fact(DisplayName = "PartitionWatermark can be created with valid params.")]
+    [Fact(DisplayName = "PartitionWatermark can be created with valid parameters.")]
     [Trait("Category", "Unit")]
     public void PartitionWatermarkCanBeCreated()
     {
@@ -157,9 +157,9 @@ public class PartitionWatermarkTests
         status.Should().BeFalse();
     }
 
-    [Fact(DisplayName = "AssingWithConsumer fails on null consumer.")]
+    [Fact(DisplayName = "AssignWithConsumer fails on null consumer.")]
     [Trait("Category", "Unit")]
-    public void AssingWithConsumerFailsOnNullConsumer()
+    public void AssignWithConsumerFailsOnNullConsumer()
     {
 
         // Arrange
@@ -177,9 +177,9 @@ public class PartitionWatermarkTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
-    [Fact(DisplayName = "PartitionWatermark could be assing to consumer.")]
+    [Fact(DisplayName = "PartitionWatermark can assign consumer.")]
     [Trait("Category", "Unit")]
-    public void PartitionWatermarkCouldBeAssingToConsumer()
+    public void PartitionWatermarkCanAssignConsumer()
     {
 
         // Arrange
@@ -202,9 +202,9 @@ public class PartitionWatermarkTests
     }
 
 
-    [Fact(DisplayName = "PartitionWatermark could be assing to consumer with date.")]
+    [Fact(DisplayName = "PartitionWatermark can assign consumer with date.")]
     [Trait("Category", "Unit")]
-    public void PartitionWatermarkCouldBeAssingToConsumerWithDate()
+    public void PartitionWatermarkCanAssignConsumerWithDate()
     {
 
         // Arrange

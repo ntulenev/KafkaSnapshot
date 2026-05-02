@@ -21,9 +21,9 @@ public class SnapshotLoaderConfigurationValidatorTests
         exception.Should().BeNull();
     }
 
-    [Fact(DisplayName = "SnapshotLoaderConfigurationValidator could be validated.")]
+    [Fact(DisplayName = "SnapshotLoaderConfigurationValidator can validate valid config.")]
     [Trait("Category", "Unit")]
-    public void SnapshotLoaderConfigurationValidatorCouldBeValidated()
+    public void SnapshotLoaderConfigurationValidatorCanValidateValidConfig()
     {
         // Arrange
         var validator = new SnapshotLoaderConfigurationValidator();

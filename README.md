@@ -40,11 +40,11 @@ Supports:
 * Compacting
 * Key filtering
 * Filtering with start and end offsets
-* String keys (optionally as json) and long keys. Also Key field could be ignored (e.g. key is null or not exists it topic)
+* String keys (optionally as JSON) and long keys. The key field can also be ignored (for example, when the key is null or does not exist in the topic).
 * Multi-partition topics
 * SASL authentication mechanism
 * Message sorting
-* Message payload in MessagePack with auto converting to JSON Array
+* MessagePack payloads with automatic conversion to JSON arrays.
 * Message converting to Base64
 
 By default, messages should contain JSON data. Simple strings are also supported (see the `ExportRawMessage` parameter).
@@ -159,7 +159,7 @@ Config example:
   }
 }
 ```
-Config params:
+Configuration parameters:
 
 | Parameter name | Description                                                                                                                                                             |
 | -------------- |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -183,15 +183,15 @@ Config params:
 | FilterKeyValue | Sample value for filtering (if FilterKeyType sets as 'Equals', 'Contains','GreaterOrEquals' or 'LessOrEquals')                                                          |
 | OffsetStartDate | First message date (optional). Use to skip old messages in large topics. Use ISO 8601 with an explicit offset, for example `2021-09-01T12:12:12Z` or `2021-09-01T14:12:12+02:00`. |
 | OffsetEndDate | Message date top limit (optional). Use to limit filtering messages in large topics. Use ISO 8601 with an explicit offset, for example `2021-09-01T12:12:12Z` or `2021-09-01T14:12:12+02:00`. |
-| ExportRawMessage | If true - export will write message as raw string without converting to formatted json (optional)                                                                       |
+| ExportRawMessage | If true, export writes messages as raw strings without converting them to formatted JSON (optional)                                                                     |
 | PartitionsIds | Partitions ids filter (optional)                                                                                                                                        |
 | UseFileStreaming | Serializes loaded data to file directly via FileStream (Avoids OOM issue for large amounts of data). Better effect with disabled sorting (GlobalSortOrder No)           |
 | OutputDirectory | Directory for exported files (optional). If omitted, files are written to the current working directory.                                                                |
 |MessageEncoderRule| Allows you to choose the format in which the message body is received. By default, a String is expected, but you can choose MessagePack, MessagePackLz4Block or Base64. |
 
 Filter restrictions:
-* 'Contains' key filter could be applied only to string keys.
-* 'GreaterOrEquals' and 'LessOrEquals' filters could be applied only to long keys.
+* The 'Contains' key filter can be applied only to string keys.
+* The 'GreaterOrEquals' and 'LessOrEquals' filters can be applied only to long keys.
 
 
 Exported file example:
@@ -243,7 +243,7 @@ Exported file example:
 ]
 ```
 
-Exported file json description:
+Exported file JSON format:
 | Field name | Description   |
 | -------------- | ------------- |
 | Key           | Kafka message key (optional) |

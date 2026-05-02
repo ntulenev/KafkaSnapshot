@@ -45,7 +45,7 @@ public class BootstrapServersConfigurationValidator :
         {
             return Fail(
                 ConfigurationValidationErrorCodes.BootstrapServersWhitespaceItem,
-                "BootstrapServers section contains empty string of whitespaces.");
+                "BootstrapServers section contains a whitespace-only string.");
         }
 
         if (!Enum.IsDefined(options.SecurityProtocol))

@@ -47,7 +47,7 @@ public class LoaderToolTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
-    [Fact(DisplayName = "LoaderTool can be created with valid params.")]
+    [Fact(DisplayName = "LoaderTool can be created with valid parameters.")]
     [Trait("Category", "Unit")]
     public void LoaderToolCanBeCreatedWithValidParams()
     {

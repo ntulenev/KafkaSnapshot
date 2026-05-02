@@ -41,7 +41,7 @@ public class DateFilterRangeTests
         exception.Should().BeNull();
     }
 
-    [Fact(DisplayName = "DateFilterRange can be created with end both dates.")]
+    [Fact(DisplayName = "DateFilterRange can be created with both dates.")]
     [Trait("Category", "Unit")]
     public void CanCreateDateFilterRangeBothDates()
     {
@@ -56,7 +56,7 @@ public class DateFilterRangeTests
         exception.Should().BeNull();
     }
 
-    [Fact(DisplayName = "DateFilterRange can be created with end both dates.")]
+    [Fact(DisplayName = "DateFilterRange can be created with equal dates.")]
     [Trait("Category", "Unit")]
     public void CanCreateDateFilterRangeBothSameDates()
     {
@@ -108,7 +108,7 @@ public class DateFilterRangeTests
 
     [Fact(DisplayName = "DateFilterRange can't be created when start greater than end.")]
     [Trait("Category", "Unit")]
-    public void CannotCreateDateFilterRangeWhenStartDateBigger()
+    public void CannotCreateDateFilterRangeWhenStartDateGreaterThanEndDate()
     {
         // Arrange
         var dtStart = new DateTime(2013, 1, 1);

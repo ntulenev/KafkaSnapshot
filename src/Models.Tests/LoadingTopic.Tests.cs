@@ -14,7 +14,7 @@ public class LoadingTopicTests
     [Trait("Category", "Unit")]
     [InlineData(true)]
     [InlineData(false)]
-    public void CantCreateNullTopicName(bool compactingRule)
+    public void CannotCreateNullTopicName(bool compactingRule)
     {
 
         // Arrange
@@ -66,7 +66,7 @@ public class LoadingTopicTests
 
     [Fact(DisplayName = "Topic can't be created with null date range.")]
     [Trait("Category", "Unit")]
-    public void CantCreateTopicWithNullDateRange()
+    public void CannotCreateTopicWithNullDateRange()
     {
         // Arrange
         var name = new TopicName("test");
@@ -113,7 +113,7 @@ public class LoadingTopicTests
         item.HasEndOffsetDate.Should().BeTrue();
     }
 
-    [Fact(DisplayName = "Cant get topic offset date if not set.")]
+    [Fact(DisplayName = "Can't get topic offset date if not set.")]
     [Trait("Category", "Unit")]
     public void CanGetTopicOffsetDate()
     {
@@ -138,7 +138,7 @@ public class LoadingTopicTests
 
     [Fact(DisplayName = "Can get topic offset date if date is set.")]
     [Trait("Category", "Unit")]
-    public void CantGetTopicOffsetDate()
+    public void CannotGetTopicOffsetDate()
     {
 
         // Arrange
@@ -161,9 +161,9 @@ public class LoadingTopicTests
         resultedDate.Should().Be(date);
     }
 
-    [Fact(DisplayName = "Cant get topic end offset date if not set.")]
+    [Fact(DisplayName = "Can't get topic end offset date if not set.")]
     [Trait("Category", "Unit")]
-    public void CantGetTopicEndOffsetDate()
+    public void CannotGetTopicEndOffsetDate()
     {
 
         // Arrange
@@ -210,7 +210,7 @@ public class LoadingTopicTests
 
     [Fact(DisplayName = "Can't setup empty partition filter.")]
     [Trait("Category", "Unit")]
-    public void CantCreateTopicWithEmptyPartitionFilter()
+    public void CannotCreateTopicWithEmptyPartitionFilter()
     {
 
         // Arrange
@@ -266,9 +266,9 @@ public class LoadingTopicTests
         topic.TopicValueEncoderRule.Should().Be(EncoderRules.MessagePack);
     }
 
-    [Fact(DisplayName = "Cant create topic with invalid encoder rule.")]
+    [Fact(DisplayName = "Can't create topic with invalid encoder rule.")]
     [Trait("Category", "Unit")]
-    public void CantCreateTopicWithInvalidEncoderRule()
+    public void CannotCreateTopicWithInvalidEncoderRule()
     {
         // Arrange
         var name = new TopicName("test");

@@ -25,7 +25,7 @@ public sealed class JsonFileDataExporterConfigurationValidator :
             return ValidateOptionsResult.Fail(
                 ConfigurationValidationError.Create(
                     ConfigurationValidationErrorCodes.OutputDirectoryWhitespace,
-                    "OutputDirectory cannot be empty or consist of whitespaces."));
+                    "OutputDirectory cannot be empty or consist only of whitespace."));
         }
 
         return ValidateOptionsResult.Success;

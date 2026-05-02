@@ -9,9 +9,9 @@ namespace KafkaSnapshot.Export.Tests
 {
     public class FileStreamProviderTests
     {
-        [Fact(DisplayName = "FileStreamProvider could be created.")]
+    [Fact(DisplayName = "FileStreamProvider can be created.")]
         [Trait("Category", "Unit")]
-        public void FileStreamProviderCouldBeCreated()
+    public void FileStreamProviderCanBeCreated()
         {
             // Act
             var exception = Record.Exception(() => _ = new FileStreamProvider());

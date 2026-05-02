@@ -29,13 +29,13 @@ public sealed class LoadingTopic
     /// Date and time of the starting offset.
     /// </summary>
     public DateTimeOffset OffsetDate => _offsetDate.HasValue ? _offsetDate.Value :
-        throw new InvalidOperationException("Topic params does not have date offset.");
+        throw new InvalidOperationException("Topic parameters do not have a date offset.");
 
     /// <summary>
     /// Date and time of the ending offset.
     /// </summary>
     public DateTimeOffset EndOffsetDate => _endOffsetDate.HasValue ? _endOffsetDate.Value :
-        throw new InvalidOperationException("Topic params does not have end date offset.");
+        throw new InvalidOperationException("Topic parameters do not have an end date offset.");
 
     /// <summary>
     /// Indicates whether the starting offset date is set.

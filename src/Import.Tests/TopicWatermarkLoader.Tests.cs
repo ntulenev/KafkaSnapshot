@@ -19,7 +19,7 @@ namespace KafkaAsTable.Tests;
 
 public class TopicWatermarkLoaderTests
 {
-    [Fact(DisplayName = "TopicWatermarkLoader can be created with valid params.")]
+    [Fact(DisplayName = "TopicWatermarkLoader can be created with valid parameters.")]
     [Trait("Category", "Unit")]
     public void TopicWatermarkLoaderCanBeCreated()
     {
@@ -145,7 +145,7 @@ public class TopicWatermarkLoaderTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
-    [Fact(DisplayName = "TopicWatermarkLoader can load watermarks with valid params.")]
+    [Fact(DisplayName = "TopicWatermarkLoader can load watermarks with valid parameters.")]
     [Trait("Category", "Unit")]
     public async Task CanLoadWatermarksWithValidParams()
     {
@@ -206,7 +206,7 @@ public class TopicWatermarkLoaderTests
         disposeCalls.Should().Be(1);
     }
 
-    [Fact(DisplayName = "TopicWatermarkLoader can load watermarks with valid params with partition filter.")]
+    [Fact(DisplayName = "TopicWatermarkLoader can load watermarks with valid parameters and partition filter.")]
     [Trait("Category", "Unit")]
     public async Task CanLoadWatermarksWithValidParamsWithPartitionFilter()
     {

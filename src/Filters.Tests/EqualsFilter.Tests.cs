@@ -20,9 +20,9 @@ public class EqualsFilterTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
-    [Fact(DisplayName = "Equals filter could be created.")]
+    [Fact(DisplayName = "Equals filter can be created.")]
     [Trait("Category", "Unit")]
-    public void EqualsFilterCouldBeCreated()
+    public void EqualsFilterCanBeCreated()
     {
 
         // Arrange

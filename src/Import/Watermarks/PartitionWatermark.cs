@@ -45,7 +45,7 @@ public class PartitionWatermark
     }
 
     /// <summary>
-    /// Checks that partition if valid for reading.
+    /// Checks whether the partition is valid for reading.
     /// </summary>
     public bool IsReadyToRead() => Offset.High > Offset.Low;
 
@@ -63,7 +63,7 @@ public class PartitionWatermark
     }
 
     /// <summary>
-    /// Assign consumer to a partition as topic.
+    /// Assigns the consumer to the partition topic.
     /// </summary>
     /// <typeparam name="TKey">Message key.</typeparam>
     /// <typeparam name="TValue">Message value.</typeparam>
@@ -77,24 +77,24 @@ public class PartitionWatermark
     }
 
     /// <summary>
-    ///  Assign consumer to a partition as topic with offset started from <paramref name="startDate"/>.
+    /// Assigns the consumer to the partition topic with an offset resolved from <paramref name="startDate"/>.
     /// </summary>
     /// <typeparam name="TKey">Message key.</typeparam>
     /// <typeparam name="TValue">Message value.</typeparam>
     /// <param name="consumer">Consumer.</param>
     /// <param name="startDate">Start date for offset.</param>
-    /// <param name="timeout">Timeout for offset searching</param>
+    /// <param name="timeout">Timeout for offset lookup.</param>
     public bool AssignWithConsumer<TKey, TValue>(IConsumer<TKey, TValue> consumer, DateTimeOffset startDate, TimeSpan timeout)
         => AssignWithConsumer(consumer, startDate, timeout, out _);
 
     /// <summary>
-    ///  Assign consumer to a partition as topic with offset started from <paramref name="startDate"/>.
+    /// Assigns the consumer to the partition topic with an offset resolved from <paramref name="startDate"/>.
     /// </summary>
     /// <typeparam name="TKey">Message key.</typeparam>
     /// <typeparam name="TValue">Message value.</typeparam>
     /// <param name="consumer">Consumer.</param>
     /// <param name="startDate">Start date for offset.</param>
-    /// <param name="timeout">Timeout for offset searching.</param>
+    /// <param name="timeout">Timeout for offset lookup.</param>
     /// <param name="assignedOffset">Resolved Kafka offset assigned to the consumer.</param>
     public bool AssignWithConsumer<TKey, TValue>(
         IConsumer<TKey, TValue> consumer,

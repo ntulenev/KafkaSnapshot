@@ -8,7 +8,7 @@ namespace KafkaSnapshot.Models.Tests;
 
 public class FileNameTests
 {
-    [Theory(DisplayName = "FileName constructor throws exception with emtpy or spaces in input")]
+    [Theory(DisplayName = "FileName constructor throws exception with empty or whitespace input")]
     [InlineData("")]
     [InlineData("    ")]
     [Trait("Category", "Unit")]

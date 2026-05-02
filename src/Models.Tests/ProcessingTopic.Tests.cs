@@ -112,7 +112,7 @@ public class ProcessingTopicTests
 
     [Fact(DisplayName = "ProcessingTopic can't be created with null topic name.")]
     [Trait("Category", "Unit")]
-    public void ProcessingTopicCantBeCreatedWithNullTopicName()
+    public void ProcessingTopicCannotBeCreatedWithNullTopicName()
     {
         // Arrange
         var exportName = new FileName("Test2");
@@ -137,7 +137,7 @@ public class ProcessingTopicTests
 
     [Fact(DisplayName = "ProcessingTopic can't be created with null export name.")]
     [Trait("Category", "Unit")]
-    public void ProcessingTopicCantBeCreatedWithNullExportName()
+    public void ProcessingTopicCannotBeCreatedWithNullExportName()
     {
         // Arrange
         var topicName = new TopicName("Test1");
@@ -162,7 +162,7 @@ public class ProcessingTopicTests
 
     [Fact(DisplayName = "ProcessingTopic can't be created with null date range.")]
     [Trait("Category", "Unit")]
-    public void ProcessingTopicCantBeCreatedWithNullDateRange()
+    public void ProcessingTopicCannotBeCreatedWithNullDateRange()
     {
         // Arrange
         var topicName = new TopicName("Test1");
@@ -190,7 +190,7 @@ public class ProcessingTopicTests
     [InlineData(999, 0, 0)]
     [InlineData(0, 999, 0)]
     [InlineData(0, 0, 999)]
-    public void ProcessingTopicCantBeCreatedWithInvalidEnumValues(
+    public void ProcessingTopicCannotBeCreatedWithInvalidEnumValues(
         int filterType,
         int keyType,
         int encoderRule)
@@ -219,7 +219,7 @@ public class ProcessingTopicTests
 
     [Fact(DisplayName = "ProcessingTopic can't be created with empty partition filter.")]
     [Trait("Category", "Unit")]
-    public void ProcessingTopicCantBeCreatedWithEmptyPartitionFilter()
+    public void ProcessingTopicCannotBeCreatedWithEmptyPartitionFilter()
     {
         // Arrange
         var topicName = new TopicName("Test1");

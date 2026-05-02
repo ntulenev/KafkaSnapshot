@@ -29,9 +29,9 @@ public class JsonKeySerializerTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
-    [Fact(DisplayName = "JsonKeySerializer could be created.")]
+    [Fact(DisplayName = "JsonKeySerializer can be created.")]
     [Trait("Category", "Unit")]
-    public void JsonKeySerializerCouldBeCreated()
+    public void JsonKeySerializerCannotBeCreatedWithoutLogger()
     {
         //Arrange
         var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
@@ -154,7 +154,7 @@ public class JsonKeySerializerTests
         jsonString.Should().Be("[\r\n  {\r\n    \"Key\": {\r\n      \"A\": 42\r\n    },\r\n    \"Value\": {\r\n      \"Test\": 42\r\n    },\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
     }
 
-    [Fact(DisplayName = "JsonKeySerializer can't serialize non json data.")]
+    [Fact(DisplayName = "JsonKeySerializer can't serialize non-JSON data.")]
     [Trait("Category", "Unit")]
     public void JsonKeySerializerCannotSerializeNonJsonData()
     {
@@ -178,7 +178,7 @@ public class JsonKeySerializerTests
         exception.Should().NotBeNull().And.BeAssignableTo<System.Text.Json.JsonException>();
     }
 
-    [Fact(DisplayName = "JsonKeySerializer can't serialize non json data to the stream.")]
+    [Fact(DisplayName = "JsonKeySerializer can't serialize non-JSON data to the stream.")]
     [Trait("Category", "Unit")]
     public async Task JsonKeySerializerCannotSerializeNonJsonDataToStream()
     {
@@ -202,7 +202,7 @@ public class JsonKeySerializerTests
         exception.Should().NotBeNull().And.BeAssignableTo<System.Text.Json.JsonException>();
     }
 
-    [Fact(DisplayName = "JsonKeySerializer can't serialize non json key.")]
+    [Fact(DisplayName = "JsonKeySerializer can't serialize non-JSON key.")]
     [Trait("Category", "Unit")]
     public void JsonKeySerializerCannotSerializeNonJsonKey()
     {
@@ -226,7 +226,7 @@ public class JsonKeySerializerTests
         exception.Should().NotBeNull().And.BeAssignableTo<System.Text.Json.JsonException>();
     }
 
-    [Fact(DisplayName = "JsonKeySerializer can't serialize non json key to the stream.")]
+    [Fact(DisplayName = "JsonKeySerializer can't serialize non-JSON key to the stream.")]
     [Trait("Category", "Unit")]
     public async Task JsonKeySerializerCannotSerializeNonJsonKeyToStream()
     {

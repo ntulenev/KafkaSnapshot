@@ -52,7 +52,7 @@ public class JsonEqualsFilterTests
 
     [Fact(DisplayName = "JsonEquals filter can't match with null.")]
     [Trait("Category", "Unit")]
-    public void JsonEqualsFilterCantMatchWithNull()
+    public void JsonEqualsFilterCannotMatchWithNull()
     {
 
         // Arrange
@@ -69,7 +69,7 @@ public class JsonEqualsFilterTests
 
     [Fact(DisplayName = "JsonEquals filter can't match with not json value.")]
     [Trait("Category", "Unit")]
-    public void JsonEqualsFilterCantMatchWithNotJsonValue()
+    public void JsonEqualsFilterCannotMatchWithNotJsonValue()
     {
 
         // Arrange

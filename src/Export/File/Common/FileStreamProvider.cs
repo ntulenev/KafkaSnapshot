@@ -11,7 +11,7 @@ public sealed class FileStreamProvider : IFileStreamProvider
     /// <inheritdoc/>
     /// <exception cref="ArgumentNullException">Thrown when fileName is null.</exception>
     /// <exception cref="ArgumentException">Thrown when fileName is empty or 
-    /// consists of whitespaces.</exception>
+    /// consists only of whitespace.</exception>
     public Stream CreateFileStream(FileName fileName)
     {
         ArgumentNullException.ThrowIfNull(fileName);

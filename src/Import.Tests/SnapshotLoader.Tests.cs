@@ -28,7 +28,7 @@ public partial class SnapshotLoaderTests
 {
     [Fact(DisplayName = "SnapshotLoader can't be created with null logger.")]
     [Trait("Category", "Unit")]
-    public void CantCreateSnapshotLoaderWithNulLogger()
+    public void CannotCreateSnapshotLoaderWithNullLogger()
     {
 
         // Arrange
@@ -54,7 +54,7 @@ public partial class SnapshotLoaderTests
 
     [Fact(DisplayName = "SnapshotLoader can't be created with null factory.")]
     [Trait("Category", "Unit")]
-    public void CantCreateSnapshotLoaderWithNullFactory()
+    public void CannotCreateSnapshotLoaderWithNullFactory()
     {
 
         // Arrange
@@ -80,7 +80,7 @@ public partial class SnapshotLoaderTests
 
     [Fact(DisplayName = "SnapshotLoader can't be created with null options.")]
     [Trait("Category", "Unit")]
-    public void CantCreateSnapshotLoaderWithNullOptions()
+    public void CannotCreateSnapshotLoaderWithNullOptions()
     {
 
         // Arrange
@@ -107,7 +107,7 @@ public partial class SnapshotLoaderTests
 
     [Fact(DisplayName = "SnapshotLoader can't be created with null options value.")]
     [Trait("Category", "Unit")]
-    public void CantCreateSnapshotLoaderWithNullOptionsValue()
+    public void CannotCreateSnapshotLoaderWithNullOptionsValue()
     {
 
         // Arrange
@@ -134,7 +134,7 @@ public partial class SnapshotLoaderTests
 
     [Fact(DisplayName = "SnapshotLoader can't be created with null topic loader.")]
     [Trait("Category", "Unit")]
-    public void CantCreateSnapshotLoaderWithNullTopicLoader()
+    public void CannotCreateSnapshotLoaderWithNullTopicLoader()
     {
 
         // Arrange
@@ -157,9 +157,9 @@ public partial class SnapshotLoaderTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
-    [Fact(DisplayName = "SnapshotLoader cant be created with null sorter.")]
+    [Fact(DisplayName = "SnapshotLoader can't be created with null sorter.")]
     [Trait("Category", "Unit")]
-    public void SnapshotLoaderCantBeCreatedWithNullSorter()
+    public void SnapshotLoaderCannotBeCreatedWithNullSorter()
     {
 
         // Arrange
@@ -182,9 +182,9 @@ public partial class SnapshotLoaderTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
-    [Fact(DisplayName = "SnapshotLoader cant be created with null encoder.")]
+    [Fact(DisplayName = "SnapshotLoader can't be created with null encoder.")]
     [Trait("Category", "Unit")]
-    public void SnapshotLoaderCantBeCreatedWithNullEncoder()
+    public void SnapshotLoaderCannotBeCreatedWithNullEncoder()
     {
 
         // Arrange

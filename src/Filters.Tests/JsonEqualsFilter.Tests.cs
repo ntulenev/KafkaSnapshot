@@ -22,7 +22,7 @@ public class JsonEqualsFilterTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
-    [Fact(DisplayName = "Unable to create JsonEquals filter with not json value.")]
+    [Fact(DisplayName = "Unable to create JsonEquals filter with non-JSON value.")]
     [Trait("Category", "Unit")]
     public void UnableToCreateJsonEqualsFilterWithBadString()
     {
@@ -36,9 +36,9 @@ public class JsonEqualsFilterTests
         exception.Should().NotBeNull().And.BeOfType<JsonReaderException>();
     }
 
-    [Fact(DisplayName = "JsonEquals filter could be created.")]
+    [Fact(DisplayName = "JsonEquals filter can be created.")]
     [Trait("Category", "Unit")]
-    public void JsonEqualsFilterCouldBeCreated()
+    public void JsonEqualsFilterCanBeCreated()
     {
 
         // Arrange
@@ -67,7 +67,7 @@ public class JsonEqualsFilterTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
-    [Fact(DisplayName = "JsonEquals filter can't match with not json value.")]
+    [Fact(DisplayName = "JsonEquals filter can't match non-JSON value.")]
     [Trait("Category", "Unit")]
     public void JsonEqualsFilterCannotMatchWithNotJsonValue()
     {

@@ -17,7 +17,7 @@ public class IgnoreKeySerializerTests
 {
     [Fact(DisplayName = "IgnoreKeySerializer can't be created without logger.")]
     [Trait("Category", "Unit")]
-    public void IgnoreKeySerializerCantBeCreated()
+    public void IgnoreKeySerializerCannotBeCreated()
     {
         // Arrange
         var logger = (ILogger<IgnoreKeySerializer>)null!;
@@ -47,7 +47,7 @@ public class IgnoreKeySerializerTests
     [Trait("Category", "Unit")]
     [InlineData(true)]
     [InlineData(false)]
-    public void IgnoreKeySerializerCantSerializeNullData(bool isRawData)
+    public void IgnoreKeySerializerCannotSerializeNullData(bool isRawData)
     {
         // Arrange
         var logger = new Mock<ILogger<IgnoreKeySerializer>>().Object;
@@ -65,7 +65,7 @@ public class IgnoreKeySerializerTests
     [Trait("Category", "Unit")]
     [InlineData(true)]
     [InlineData(false)]
-    public async Task IgnoreKeySerializerCantSerializeNullDataToStream(bool isRawData)
+    public async Task IgnoreKeySerializerCannotSerializeNullDataToStream(bool isRawData)
     {
         // Arrange
         var logger = new Mock<ILogger<IgnoreKeySerializer>>().Object;
@@ -84,7 +84,7 @@ public class IgnoreKeySerializerTests
     [Trait("Category", "Unit")]
     [InlineData(true)]
     [InlineData(false)]
-    public async Task IgnoreKeySerializerCantSerializeDataToNullStream(bool isRawData)
+    public async Task IgnoreKeySerializerCannotSerializeDataToNullStream(bool isRawData)
     {
         // Arrange
         var logger = new Mock<ILogger<IgnoreKeySerializer>>().Object;
@@ -152,9 +152,9 @@ public class IgnoreKeySerializerTests
         jsonString.Should().Be("[\r\n  {\r\n    \"Value\": {\r\n      \"Test\": 42\r\n    },\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
     }
 
-    [Fact(DisplayName = "IgnoreKeySerializer cant serialize non json data.")]
+    [Fact(DisplayName = "IgnoreKeySerializer can't serialize non json data.")]
     [Trait("Category", "Unit")]
-    public void IgnoreKeySerializerCantSerializeNonJsonData()
+    public void IgnoreKeySerializerCannotSerializeNonJsonData()
     {
         // Arrange
         var logger = new Mock<ILogger<IgnoreKeySerializer>>().Object;
@@ -175,9 +175,9 @@ public class IgnoreKeySerializerTests
         exception.Should().NotBeNull().And.BeAssignableTo<System.Text.Json.JsonException>();
     }
 
-    [Fact(DisplayName = "IgnoreKeySerializer cant serialize non json data to the stream.")]
+    [Fact(DisplayName = "IgnoreKeySerializer can't serialize non json data to the stream.")]
     [Trait("Category", "Unit")]
-    public async Task IgnoreKeySerializerCantSerializeNonJsonDataToTheStream()
+    public async Task IgnoreKeySerializerCannotSerializeNonJsonDataToTheStream()
     {
         // Arrange
         var logger = new Mock<ILogger<IgnoreKeySerializer>>().Object;

@@ -40,7 +40,7 @@ public class ModelRecordsTests
 
     [Fact(DisplayName = "KafkaMessage can't be created with null message.")]
     [Trait("Category", "Unit")]
-    public void KafkaMessageCantBeCreatedWithNullMessage()
+    public void KafkaMessageCannotBeCreatedWithNullMessage()
     {
         // Arrange
         var metadata = new KafkaMetadata(DateTime.UtcNow, 1, 2);
@@ -54,7 +54,7 @@ public class ModelRecordsTests
 
     [Fact(DisplayName = "KafkaMessage can't be created with null metadata.")]
     [Trait("Category", "Unit")]
-    public void KafkaMessageCantBeCreatedWithNullMetadata()
+    public void KafkaMessageCannotBeCreatedWithNullMetadata()
     {
         // Act
         var exception = Record.Exception(() => new KafkaMessage<string>("payload", null!));
@@ -67,7 +67,7 @@ public class ModelRecordsTests
     [Trait("Category", "Unit")]
     [InlineData(-1, 0)]
     [InlineData(0, -1)]
-    public void KafkaMetadataCantBeCreatedWithNegativeValues(int partition, long offset)
+    public void KafkaMetadataCannotBeCreatedWithNegativeValues(int partition, long offset)
     {
         // Act
         var exception = Record.Exception(() => new KafkaMetadata(DateTime.UtcNow, partition, offset));
@@ -93,7 +93,7 @@ public class ModelRecordsTests
 
     [Fact(DisplayName = "ExportedTopic can't be created with null topic name.")]
     [Trait("Category", "Unit")]
-    public void ExportedTopicCantBeCreatedWithNullTopicName()
+    public void ExportedTopicCannotBeCreatedWithNullTopicName()
     {
         // Arrange
         var exportName = new FileName("topic.json");
@@ -107,7 +107,7 @@ public class ModelRecordsTests
 
     [Fact(DisplayName = "ExportedTopic can't be created with null export name.")]
     [Trait("Category", "Unit")]
-    public void ExportedTopicCantBeCreatedWithNullExportName()
+    public void ExportedTopicCannotBeCreatedWithNullExportName()
     {
         // Arrange
         var topicName = new TopicName("topic");
@@ -135,7 +135,7 @@ public class ModelRecordsTests
     [Trait("Category", "Unit")]
     [InlineData(999, 0)]
     [InlineData(0, 999)]
-    public void SortingParamsCantBeCreatedWithInvalidEnumValues(int type, int order)
+    public void SortingParamsCannotBeCreatedWithInvalidEnumValues(int type, int order)
     {
         // Act
         var exception = Record.Exception(() =>

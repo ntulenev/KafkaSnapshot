@@ -80,7 +80,7 @@ public class TopicConfigurationTests
 
     [Fact(DisplayName = "TopicConfiguration can't convert null configuration.")]
     [Trait("Category", "Unit")]
-    public void TopicConfigurationCantConvertNullConfiguration()
+    public void TopicConfigurationCannotConvertNullConfiguration()
     {
         // Act
         var exception = Record.Exception(() =>
@@ -138,7 +138,7 @@ public class TopicConfigurationTests
 
     [Fact(DisplayName = "TopicConfiguration can't convert invalid key type.")]
     [Trait("Category", "Unit")]
-    public void TopicConfigurationCantConvertInvalidKeyType()
+    public void TopicConfigurationCannotConvertInvalidKeyType()
     {
         // Arrange
         var config = new TopicConfiguration

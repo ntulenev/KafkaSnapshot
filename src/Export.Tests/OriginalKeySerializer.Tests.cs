@@ -29,9 +29,9 @@ public class OriginalKeySerializerTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
-    [Fact(DisplayName = "OriginalKeySerializer could be created.")]
+    [Fact(DisplayName = "OriginalKeySerializer can be created.")]
     [Trait("Category", "Unit")]
-    public void OriginalKeySerializerCouldBeCreated()
+    public void OriginalKeySerializerCanBeCreated()
     {
         // Arrange
         var logger = new Mock<ILogger<OriginalKeySerializer<object>>>().Object;
@@ -153,7 +153,7 @@ public class OriginalKeySerializerTests
         jsonString.Should().Be("[\r\n  {\r\n    \"Key\": 1,\r\n    \"Value\": {\r\n      \"Test\": 42\r\n    },\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
     }
 
-    [Fact(DisplayName = "OriginalKeySerializer can't serialize non json data.")]
+    [Fact(DisplayName = "OriginalKeySerializer can't serialize non-JSON data.")]
     [Trait("Category", "Unit")]
     public void OriginalKeySerializerCannotSerializeNonData()
     {
@@ -177,7 +177,7 @@ public class OriginalKeySerializerTests
         exception.Should().NotBeNull().And.BeAssignableTo<System.Text.Json.JsonException>();
     }
 
-    [Fact(DisplayName = "OriginalKeySerializer can't serialize non json data to the stream.")]
+    [Fact(DisplayName = "OriginalKeySerializer can't serialize non-JSON data to the stream.")]
     [Trait("Category", "Unit")]
     public async Task OriginalKeySerializerCannotSerializeNonDataToStream()
     {

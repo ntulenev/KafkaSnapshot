@@ -9,7 +9,7 @@ public class MessageSorterTests
 {
     [Fact(DisplayName = "MessageSorter can't be created without rules.")]
     [Trait("Category", "Unit")]
-    public void MessageSorterCantBeCreatedWithoutRules()
+    public void MessageSorterCannotBeCreatedWithoutRules()
     {
         // Act
         var exception = Record.Exception(() => new MessageSorter<object, object>(null!));
@@ -26,7 +26,7 @@ public class MessageSorterTests
     [InlineData(SortingType.Time, SortingOrder.Ascending)]
     [InlineData(SortingType.Partition, SortingOrder.Descending)]
     [InlineData(SortingType.Time, SortingOrder.Descending)]
-    public void MessageSorterCantSortNullData(SortingType type, SortingOrder order)
+    public void MessageSorterCannotSortNullData(SortingType type, SortingOrder order)
     {
         // Arrange
         var sorter = new MessageSorter<object, object>(new Models.Sorting.SortingParams(type, order));
@@ -147,7 +147,7 @@ public class MessageSorterTests
 
     [Fact(DisplayName = "SortingParams can't be created with unsupported sorting type.")]
     [Trait("Category", "Unit")]
-    public void SortingParamsCantBeCreatedWithUnsupportedSortingType()
+    public void SortingParamsCannotBeCreatedWithUnsupportedSortingType()
     {
         // Act
         var exception = Record.Exception(() =>
@@ -159,7 +159,7 @@ public class MessageSorterTests
 
     [Fact(DisplayName = "SortingParams can't be created with unsupported sorting order.")]
     [Trait("Category", "Unit")]
-    public void SortingParamsCantBeCreatedWithUnsupportedSortingOrder()
+    public void SortingParamsCannotBeCreatedWithUnsupportedSortingOrder()
     {
         // Act
         var exception = Record.Exception(() =>

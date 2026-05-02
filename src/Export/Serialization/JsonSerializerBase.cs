@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 namespace KafkaSnapshot.Export.Serialization;
 
 /// <summary>
-/// Base class for Json serialization.
+/// Base class for JSON serialization.
 /// </summary>
 public abstract class JsonSerializerBase
 {

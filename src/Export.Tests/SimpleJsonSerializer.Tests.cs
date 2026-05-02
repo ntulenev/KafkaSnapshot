@@ -15,9 +15,9 @@ namespace KafkaSnapshot.Export.Tests;
 
 public class SimpleJsonSerializerTests
 {
-    [Fact(DisplayName = "SimpleJsonSerializer cant be created without logger.")]
+    [Fact(DisplayName = "SimpleJsonSerializer can't be created without logger.")]
     [Trait("Category", "Unit")]
-    public void SimpleJsonSerializerCantBeCreated()
+    public void SimpleJsonSerializerCannotBeCreated()
     {
         // Arrange
         var logger = (ILogger<SimpleJsonSerializer<object, object>>)null!;
@@ -47,7 +47,7 @@ public class SimpleJsonSerializerTests
     [Trait("Category", "Unit")]
     [InlineData(true)]
     [InlineData(false)]
-    public void SimpleJsonSerializerCantSerializeNullData(bool isRawData)
+    public void SimpleJsonSerializerCannotSerializeNullData(bool isRawData)
     {
         // Arrange
         var logger = new Mock<ILogger<SimpleJsonSerializer<object, object>>>().Object;
@@ -65,7 +65,7 @@ public class SimpleJsonSerializerTests
     [Trait("Category", "Unit")]
     [InlineData(true)]
     [InlineData(false)]
-    public async Task SimpleJsonSerializerCantSerializeNullDataToStream(bool isRawData)
+    public async Task SimpleJsonSerializerCannotSerializeNullDataToStream(bool isRawData)
     {
         // Arrange
         var logger = new Mock<ILogger<SimpleJsonSerializer<object, object>>>().Object;
@@ -84,7 +84,7 @@ public class SimpleJsonSerializerTests
     [Trait("Category", "Unit")]
     [InlineData(true)]
     [InlineData(false)]
-    public async Task SimpleJsonSerializerCantSerializeNullDataToNullStream(bool isRawData)
+    public async Task SimpleJsonSerializerCannotSerializeNullDataToNullStream(bool isRawData)
     {
         // Arrange
         var logger = new Mock<ILogger<SimpleJsonSerializer<object, object>>>().Object;

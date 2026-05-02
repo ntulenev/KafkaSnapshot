@@ -29,9 +29,9 @@ public class SimpleJsonSerializerTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
-    [Fact(DisplayName = "SimpleJsonSerializer could be created.")]
+    [Fact(DisplayName = "SimpleJsonSerializer can be created.")]
     [Trait("Category", "Unit")]
-    public void SimpleJsonSerializerCouldBeCreated()
+    public void SimpleJsonSerializerCanBeCreated()
     {
         // Arrange
         var logger = new Mock<ILogger<SimpleJsonSerializer<object, object>>>().Object;

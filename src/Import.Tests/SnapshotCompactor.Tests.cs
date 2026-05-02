@@ -15,7 +15,7 @@ public class SnapshotCompactorTests
 {
     [Fact(DisplayName = "SnapshotCompactor can't be created with null logger.")]
     [Trait("Category", "Unit")]
-    public void SnapshotCompactorCantBeCreatedWithNullLogger()
+    public void SnapshotCompactorCannotBeCreatedWithNullLogger()
     {
         // Arrange
         var sorterMock = new Mock<IMessageSorter<object, object>>(MockBehavior.Strict);
@@ -30,7 +30,7 @@ public class SnapshotCompactorTests
 
     [Fact(DisplayName = "SnapshotCompactor can't be created with null sorter.")]
     [Trait("Category", "Unit")]
-    public void SnapshotCompactorCantBeCreatedWithNullSorter()
+    public void SnapshotCompactorCannotBeCreatedWithNullSorter()
     {
         // Arrange
         var loggerMock = CreateLoggerMock();
@@ -45,7 +45,7 @@ public class SnapshotCompactorTests
 
     [Fact(DisplayName = "SnapshotCompactor can't create snapshot from null items.")]
     [Trait("Category", "Unit")]
-    public void SnapshotCompactorCantCreateSnapshotFromNullItems()
+    public void SnapshotCompactorCannotCreateSnapshotFromNullItems()
     {
         // Arrange
         var loggerMock = CreateLoggerMock();

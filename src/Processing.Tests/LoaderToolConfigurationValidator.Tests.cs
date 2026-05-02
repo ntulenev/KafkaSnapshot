@@ -100,7 +100,7 @@ public class LoaderToolConfigurationValidatorTests
 
     [Fact(DisplayName = "LoaderToolConfigurationValidator can't be validated for same files.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolConfigurationValidatorCantBeValidatedForSameFiles()
+    public void LoaderToolConfigurationValidatorCannotBeValidatedForSameFiles()
     {
 
         // Arrange
@@ -145,9 +145,9 @@ public class LoaderToolConfigurationValidatorTests
                 ConfigurationValidationErrorCodes.ExportFileNameDuplicate);
     }
 
-    [Fact(DisplayName = "LoaderToolConfigurationValidator cant be validated with null options.")]
+    [Fact(DisplayName = "LoaderToolConfigurationValidator can't be validated with null options.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolConfigurationValidatorCantBeValidatedWithNullOptions()
+    public void LoaderToolConfigurationValidatorCannotBeValidatedWithNullOptions()
     {
 
         // Arrange
@@ -162,9 +162,9 @@ public class LoaderToolConfigurationValidatorTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
-    [Fact(DisplayName = "LoaderToolConfigurationValidator cant be validated with null topics.")]
+    [Fact(DisplayName = "LoaderToolConfigurationValidator can't be validated with null topics.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolConfigurationValidatorCantBeValidatedWithNullTopics()
+    public void LoaderToolConfigurationValidatorCannotBeValidatedWithNullTopics()
     {
 
         // Arrange
@@ -185,9 +185,9 @@ public class LoaderToolConfigurationValidatorTests
         result.Succeeded.Should().BeFalse();
     }
 
-    [Fact(DisplayName = "LoaderToolConfigurationValidator cant be validated with empty topics.")]
+    [Fact(DisplayName = "LoaderToolConfigurationValidator can't be validated with empty topics.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolConfigurationValidatorCantBeValidatedWithEmptyTopics()
+    public void LoaderToolConfigurationValidatorCannotBeValidatedWithEmptyTopics()
     {
 
         // Arrange
@@ -208,9 +208,9 @@ public class LoaderToolConfigurationValidatorTests
         result.Succeeded.Should().BeFalse();
     }
 
-    [Fact(DisplayName = "LoaderToolConfigurationValidator cant be validated with null topic name.")]
+    [Fact(DisplayName = "LoaderToolConfigurationValidator can't be validated with null topic name.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolConfigurationValidatorCantBeValidatedWithNullTopicName()
+    public void LoaderToolConfigurationValidatorCannotBeValidatedWithNullTopicName()
     {
 
         // Arrange
@@ -251,9 +251,9 @@ public class LoaderToolConfigurationValidatorTests
         result.Succeeded.Should().BeFalse();
     }
 
-    [Fact(DisplayName = "LoaderToolConfigurationValidator cant be validated with empty topic name.")]
+    [Fact(DisplayName = "LoaderToolConfigurationValidator can't be validated with empty topic name.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolConfigurationValidatorCantBeValidatedWithEmptyTopicName()
+    public void LoaderToolConfigurationValidatorCannotBeValidatedWithEmptyTopicName()
     {
 
         // Arrange
@@ -294,9 +294,9 @@ public class LoaderToolConfigurationValidatorTests
         result.Succeeded.Should().BeFalse();
     }
 
-    [Fact(DisplayName = "LoaderToolConfigurationValidator cant be validated with space topic name.")]
+    [Fact(DisplayName = "LoaderToolConfigurationValidator can't be validated with space topic name.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolConfigurationValidatorCantBeValidatedWithSpaceTopicName()
+    public void LoaderToolConfigurationValidatorCannotBeValidatedWithSpaceTopicName()
     {
 
         // Arrange
@@ -337,12 +337,12 @@ public class LoaderToolConfigurationValidatorTests
         result.Succeeded.Should().BeFalse();
     }
 
-    [Theory(DisplayName = "LoaderToolConfigurationValidator cant be validated with any space topic name.")]
+    [Theory(DisplayName = "LoaderToolConfigurationValidator can't be validated with any space topic name.")]
     [Trait("Category", "Unit")]
     [InlineData(" test")]
     [InlineData("test ")]
     [InlineData("te st")]
-    public void LoaderToolConfigurationValidatorCantBeValidatedWithAnySpaceTopicName(string topicName)
+    public void LoaderToolConfigurationValidatorCannotBeValidatedWithAnySpaceTopicName(string topicName)
     {
 
         // Arrange
@@ -383,9 +383,9 @@ public class LoaderToolConfigurationValidatorTests
         result.Succeeded.Should().BeFalse();
     }
 
-    [Fact(DisplayName = "LoaderToolConfigurationValidator cant be validated with long topic name.")]
+    [Fact(DisplayName = "LoaderToolConfigurationValidator can't be validated with long topic name.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolConfigurationValidatorCantBeValidatedWithLongTopicName()
+    public void LoaderToolConfigurationValidatorCannotBeValidatedWithLongTopicName()
     {
 
         // Arrange
@@ -427,9 +427,9 @@ public class LoaderToolConfigurationValidatorTests
     }
 
 
-    [Fact(DisplayName = "LoaderToolConfigurationValidator cant be validated with bad topic name.")]
+    [Fact(DisplayName = "LoaderToolConfigurationValidator can't be validated with bad topic name.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolConfigurationValidatorCantBeValidatedWithBadTopicName()
+    public void LoaderToolConfigurationValidatorCannotBeValidatedWithBadTopicName()
     {
 
         // Arrange
@@ -471,9 +471,9 @@ public class LoaderToolConfigurationValidatorTests
     }
 
 
-    [Fact(DisplayName = "LoaderToolConfigurationValidator cant be validated with null export name.")]
+    [Fact(DisplayName = "LoaderToolConfigurationValidator can't be validated with null export name.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolConfigurationValidatorCantBeValidatedWithNullExportName()
+    public void LoaderToolConfigurationValidatorCannotBeValidatedWithNullExportName()
     {
 
         // Arrange
@@ -514,9 +514,9 @@ public class LoaderToolConfigurationValidatorTests
         result.Succeeded.Should().BeFalse();
     }
 
-    [Fact(DisplayName = "LoaderToolConfigurationValidator cant be validated with empty export name.")]
+    [Fact(DisplayName = "LoaderToolConfigurationValidator can't be validated with empty export name.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolConfigurationValidatorCantBeValidatedWithEmptyExportName()
+    public void LoaderToolConfigurationValidatorCannotBeValidatedWithEmptyExportName()
     {
 
         // Arrange
@@ -558,9 +558,9 @@ public class LoaderToolConfigurationValidatorTests
     }
 
 
-    [Fact(DisplayName = "LoaderToolConfigurationValidator cant be validated with space export name.")]
+    [Fact(DisplayName = "LoaderToolConfigurationValidator can't be validated with space export name.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolConfigurationValidatorCantBeValidatedWithSpaceExportName()
+    public void LoaderToolConfigurationValidatorCannotBeValidatedWithSpaceExportName()
     {
 
         // Arrange
@@ -636,9 +636,9 @@ public class LoaderToolConfigurationValidatorTests
         result.Succeeded.Should().BeTrue();
     }
 
-    [Fact(DisplayName = "LoaderToolConfigurationValidator cant be validated with null filter.")]
+    [Fact(DisplayName = "LoaderToolConfigurationValidator can't be validated with null filter.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolConfigurationValidatorCantBeValidatedWithNullFilter()
+    public void LoaderToolConfigurationValidatorCannotBeValidatedWithNullFilter()
     {
 
         // Arrange
@@ -681,9 +681,9 @@ public class LoaderToolConfigurationValidatorTests
         result.Succeeded.Should().BeFalse();
     }
 
-    [Fact(DisplayName = "LoaderToolConfigurationValidator cant be validated with compacting and key ignored.")]
+    [Fact(DisplayName = "LoaderToolConfigurationValidator can't be validated with compacting and key ignored.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolConfigurationValidatorCantBeCompactedAndKeyIgnored()
+    public void LoaderToolConfigurationValidatorCannotBeCompactedAndKeyIgnored()
     {
 
         // Arrange
@@ -726,9 +726,9 @@ public class LoaderToolConfigurationValidatorTests
         result.Succeeded.Should().BeFalse();
     }
 
-    [Fact(DisplayName = "LoaderToolConfigurationValidator cant be validated with start date grater then end date.")]
+    [Fact(DisplayName = "LoaderToolConfigurationValidator can't be validated with start date greater than end date.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolConfigurationValidatorCantBeValidatedWithIncorrectDates()
+    public void LoaderToolConfigurationValidatorCannotBeValidatedWithIncorrectDates()
     {
 
         // Arrange

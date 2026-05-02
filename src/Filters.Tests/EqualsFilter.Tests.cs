@@ -36,7 +36,7 @@ public class EqualsFilterTests
 
     [Fact(DisplayName = "Equals filter can't match with null.")]
     [Trait("Category", "Unit")]
-    public void EqualsFilterCantMatchWithNull()
+    public void EqualsFilterCannotMatchWithNull()
     {
 
         // Arrange

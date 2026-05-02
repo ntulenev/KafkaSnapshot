@@ -17,7 +17,7 @@ public class PartitionWatermarkTests
 {
     [Fact(DisplayName = "PartitionWatermark can't be created with null name.")]
     [Trait("Category", "Unit")]
-    public void CantCreatePartitionWatermarkWithNullName()
+    public void CannotCreatePartitionWatermarkWithNullName()
     {
 
         // Arrange
@@ -34,7 +34,7 @@ public class PartitionWatermarkTests
 
     [Fact(DisplayName = "PartitionWatermark can't be created with null offets.")]
     [Trait("Category", "Unit")]
-    public void CantCreatePartitionWatermarkWithNullWatermarkOffsets()
+    public void CannotCreatePartitionWatermarkWithNullWatermarkOffsets()
     {
 
         // Arrange

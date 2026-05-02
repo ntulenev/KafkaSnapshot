@@ -43,7 +43,7 @@ public class ProcessingTopicTests
         exception.Should().BeNull();
     }
 
-    [Fact(DisplayName = "ProcessingTopic can be created with valid params.")]
+    [Fact(DisplayName = "ProcessingTopic can be created with valid parameters.")]
     [Trait("Category", "Unit")]
     public void CanCreateProcessingTopicWithValidParams()
     {
@@ -244,7 +244,7 @@ public class ProcessingTopicTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentOutOfRangeException>();
     }
 
-    [Fact(DisplayName = "Can Create LoadingTopic from ProcessingTopic.")]
+    [Fact(DisplayName = "Can create LoadingTopic from ProcessingTopic.")]
     [Trait("Category", "Unit")]
     public void CanCreateLoadingTopicFromProcessingTopic()
     {
@@ -277,7 +277,7 @@ public class ProcessingTopicTests
         exception.Should().BeNull();
     }
 
-    [Fact(DisplayName = "Can Create LoadingTopic from ProcessingTopic with correct params.")]
+    [Fact(DisplayName = "Can create LoadingTopic from ProcessingTopic with correct parameters.")]
     [Trait("Category", "Unit")]
     public void CanCreateLoadingTopicFromProcessingTopicWithCorrectParams()
     {
@@ -315,7 +315,7 @@ public class ProcessingTopicTests
         result.PartitionFilter.Should().BeEquivalentTo(partitions);
     }
 
-    [Fact(DisplayName = "Can Create LoadingTopic from ProcessingTopic with correct params with dates.")]
+    [Fact(DisplayName = "Can create LoadingTopic from ProcessingTopic with correct parameters and dates.")]
     [Trait("Category", "Unit")]
     public void CanCreateLoadingTopicFromProcessingTopicWithCorrectParamsWithDates()
     {
@@ -357,7 +357,7 @@ public class ProcessingTopicTests
         result.PartitionFilter.Should().BeEquivalentTo(partitions);
     }
 
-    [Fact(DisplayName = "Can Create ExportTopic from ProcessingTopic.")]
+    [Fact(DisplayName = "Can create ExportTopic from ProcessingTopic.")]
     [Trait("Category", "Unit")]
     public void CanCreateExportTopicFromProcessingTopic()
     {
@@ -390,7 +390,7 @@ public class ProcessingTopicTests
         exception.Should().BeNull();
     }
 
-    [Fact(DisplayName = "Can Create ExportTopic from ProcessingTopic with correct params.")]
+    [Fact(DisplayName = "Can create ExportTopic from ProcessingTopic with correct parameters.")]
     [Trait("Category", "Unit")]
     public void CanCreateExportTopicFromProcessingTopicWithCorrectParams()
     {

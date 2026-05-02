@@ -17,7 +17,7 @@ public sealed class MessageSorter<TKey, TValue> : IMessageSorter<TKey, TValue>
     /// Creates <see cref="MessageSorter{TKey, TValue}"/>.
     /// </summary>
     /// <param name="sortingRules">Sorting parameters.</param>
-    /// <exception cref="ArgumentNullException">Throws exception if <paramref name="sortingRules"/>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="sortingRules"/>
     /// is null.</exception>
     public MessageSorter(SortingParams sortingRules)
     {
@@ -28,7 +28,7 @@ public sealed class MessageSorter<TKey, TValue> : IMessageSorter<TKey, TValue>
 
     /// <inheritdoc/>
     /// <exception cref="NotImplementedException">If sorting not implemented
-    /// for this params.</exception>
+    /// for these parameters.</exception>
     public IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> Sort(
         IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> source)
     {

@@ -12,7 +12,7 @@ public class TopicWatermarkTests
 {
     [Fact(DisplayName = "TopicWatermark can't be created with null partitions")]
     [Trait("Category", "Unit")]
-    public void CantCreateTopicWatermarkWithInvalidParams()
+    public void CannotCreateTopicWatermarkWithInvalidParams()
     {
 
         // Arrange

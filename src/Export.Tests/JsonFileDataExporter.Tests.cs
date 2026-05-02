@@ -21,7 +21,7 @@ public class JsonFileDataExporterTests
 {
     [Fact(DisplayName = "JsonFileDataExporter can't be created without logger.")]
     [Trait("Category", "Unit")]
-    public void JsonFileDataExporterCantBeCreatedWithoutLogger()
+    public void JsonFileDataExporterCannotBeCreatedWithoutLogger()
     {
         // Arrange
         var config = new Mock<IOptions<JsonFileDataExporterConfiguration>>(MockBehavior.Strict);
@@ -42,7 +42,7 @@ public class JsonFileDataExporterTests
 
     [Fact(DisplayName = "JsonFileDataExporter can't be created with null config value.")]
     [Trait("Category", "Unit")]
-    public void JsonFileDataExporterCantBeCreatedWithoutConfigValue()
+    public void JsonFileDataExporterCannotBeCreatedWithoutConfigValue()
     {
         // Arrange
         var config = new Mock<IOptions<JsonFileDataExporterConfiguration>>(MockBehavior.Strict);
@@ -63,7 +63,7 @@ public class JsonFileDataExporterTests
 
     [Fact(DisplayName = "JsonFileDataExporter can't be created without serializer.")]
     [Trait("Category", "Unit")]
-    public void JsonFileDataExporterCantBeCreatedWithoutSerializer()
+    public void JsonFileDataExporterCannotBeCreatedWithoutSerializer()
     {
         // Arrange
         var config = new Mock<IOptions<JsonFileDataExporterConfiguration>>(MockBehavior.Strict);
@@ -88,7 +88,7 @@ public class JsonFileDataExporterTests
 
     [Fact(DisplayName = "JsonFileDataExporter can't be created without fileSaver.")]
     [Trait("Category", "Unit")]
-    public void JsonFileDataExporterCantBeCreatedWithoutSaver()
+    public void JsonFileDataExporterCannotBeCreatedWithoutSaver()
     {
         // Arrange
         var config = new Mock<IOptions<JsonFileDataExporterConfiguration>>(MockBehavior.Strict);
@@ -113,7 +113,7 @@ public class JsonFileDataExporterTests
 
     [Fact(DisplayName = "JsonFileDataExporter can't be created without fileStreamProvider.")]
     [Trait("Category", "Unit")]
-    public void JsonFileDataExporterCantBeCreatedWithoutStreamProvider()
+    public void JsonFileDataExporterCannotBeCreatedWithoutStreamProvider()
     {
         // Arrange
         var config = new Mock<IOptions<JsonFileDataExporterConfiguration>>(MockBehavior.Strict);

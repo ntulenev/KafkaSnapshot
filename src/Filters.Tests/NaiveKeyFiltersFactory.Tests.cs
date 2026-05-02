@@ -82,9 +82,9 @@ public class NaiveKeyFiltersFactoryTests
         result.Should().BeOfType(typeof(JsonEqualsFilter));
     }
 
-    [Fact(DisplayName = "Equals filter cant be created for ignored type.")]
+    [Fact(DisplayName = "Equals filter can't be created for ignored type.")]
     [Trait("Category", "Unit")]
-    public void EqualsFilterCantBeCreatedForIgnoreKeyByFactory()
+    public void EqualsFilterCannotBeCreatedForIgnoreKeyByFactory()
     {
         // Arrange
         var factory = new NaiveKeyFiltersFactory<string>();
@@ -117,12 +117,12 @@ public class NaiveKeyFiltersFactoryTests
         result.Should().BeOfType(typeof(StringContainsFilter));
     }
 
-    [Theory(DisplayName = "Contains filter cant be created for non string type.")]
+    [Theory(DisplayName = "Contains filter can't be created for non string type.")]
     [Trait("Category", "Unit")]
     [InlineData(KeyType.Json)]
     [InlineData(KeyType.Long)]
     [InlineData(KeyType.Ignored)]
-    public void ContainsFilterCantBeCreatedForNonStringKeyByFactory(KeyType keyType)
+    public void ContainsFilterCannotBeCreatedForNonStringKeyByFactory(KeyType keyType)
     {
         // Arrange
         var factory = new NaiveKeyFiltersFactory<string>();

@@ -21,7 +21,7 @@ public class PartitionSnapshotBatchReaderTests
 {
     [Fact(DisplayName = "PartitionSnapshotBatchReader can't be created with null config.")]
     [Trait("Category", "Unit")]
-    public void PartitionSnapshotBatchReaderCantBeCreatedWithNullConfig()
+    public void PartitionSnapshotBatchReaderCannotBeCreatedWithNullConfig()
     {
         // Arrange
         var partitionReaderMock = new Mock<IPartitionSnapshotReader<object, object>>(MockBehavior.Strict);

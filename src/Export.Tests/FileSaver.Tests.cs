@@ -9,9 +9,9 @@ namespace KafkaSnapshot.Export.Tests;
 
 public class FileSaverTests
 {
-    [Fact(DisplayName = "File saver could be created.")]
+    [Fact(DisplayName = "File saver can be created.")]
     [Trait("Category", "Unit")]
-    public void FileSaverCouldBeCreated()
+    public void FileSaverCanBeCreated()
     {
         // Act
         var exception = Record.Exception(() => _ = new FileSaver());

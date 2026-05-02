@@ -48,9 +48,9 @@ public class StringContainsFilterTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentException>();
     }
 
-    [Fact(DisplayName = "StringContains filter could be created.")]
+    [Fact(DisplayName = "StringContains filter can be created.")]
     [Trait("Category", "Unit")]
-    public void StringContainsFilterCouldBeCreated()
+    public void StringContainsFilterCanBeCreated()
     {
 
         // Arrange
@@ -96,7 +96,7 @@ public class StringContainsFilterTests
         result.Should().BeTrue();
     }
 
-    [Fact(DisplayName = "StringContains filter returns false if not scontains.")]
+    [Fact(DisplayName = "StringContains filter returns false when value does not contain sample.")]
     [Trait("Category", "Unit")]
     public void StringContainsFilterFalseForContains()
     {

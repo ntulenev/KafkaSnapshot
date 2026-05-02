@@ -136,7 +136,7 @@ public class JsonFileDataExporterTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
-    [Fact(DisplayName = "JsonFileDataExporter could be creates with valid params.")]
+    [Fact(DisplayName = "JsonFileDataExporter can be created with valid parameters.")]
     [Trait("Category", "Unit")]
     public void JsonFileDataExporterCanBeCreated()
     {

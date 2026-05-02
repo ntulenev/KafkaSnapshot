@@ -20,9 +20,9 @@ namespace KafkaSnapshot.Export.Tests
             exception.Should().BeNull();
         }
 
-        [Fact(DisplayName = "FileStreamProvider cant create stream for null name.")]
+        [Fact(DisplayName = "FileStreamProvider can't create stream for null name.")]
         [Trait("Category", "Unit")]
-        public void CantCreateStreamWithNullFileName()
+        public void CannotCreateStreamWithNullFileName()
         {
             // Arrange
             var provider = new FileStreamProvider();

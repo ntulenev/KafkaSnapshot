@@ -64,7 +64,7 @@ public class StringContainsFilterTests
 
     [Fact(DisplayName = "StringContains filter can't match with null.")]
     [Trait("Category", "Unit")]
-    public void StringContainsFilterCantMatchWithNull()
+    public void StringContainsFilterCannotMatchWithNull()
     {
 
         // Arrange

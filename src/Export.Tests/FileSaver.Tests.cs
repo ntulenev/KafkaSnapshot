@@ -20,9 +20,9 @@ public class FileSaverTests
         exception.Should().BeNull();
     }
 
-    [Fact(DisplayName = "File saver cant save file with null name.")]
+    [Fact(DisplayName = "File saver can't save file with null name.")]
     [Trait("Category", "Unit")]
-    public async Task CantSaveWithNullFileName()
+    public async Task CannotSaveWithNullFileName()
     {
         // Arrange
         using var tokenSource = new CancellationTokenSource();
@@ -39,9 +39,9 @@ public class FileSaverTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
-    [Fact(DisplayName = "File saver cant save file with null content.")]
+    [Fact(DisplayName = "File saver can't save file with null content.")]
     [Trait("Category", "Unit")]
-    public async Task CantSaveWithNullContent()
+    public async Task CannotSaveWithNullContent()
     {
         // Arrange
         using var tokenSource = new CancellationTokenSource();

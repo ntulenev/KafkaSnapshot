@@ -15,7 +15,7 @@ public class LoaderConcurrentToolTests
 {
     [Fact(DisplayName = "LoaderConcurrentTool can't be created without logger.")]
     [Trait("Category", "Unit")]
-    public void LoaderConcurrentToolCantBeCreatedWithoutLogger()
+    public void LoaderConcurrentToolCannotBeCreatedWithoutLogger()
     {
         // Arrange
         var logger = (ILogger<LoaderConcurrentTool>)null!;
@@ -33,7 +33,7 @@ public class LoaderConcurrentToolTests
 
     [Fact(DisplayName = "LoaderConcurrentTool can't be created without unit collection.")]
     [Trait("Category", "Unit")]
-    public void LoaderConcurrentToolCantBeCreatedWithoutNullCollection()
+    public void LoaderConcurrentToolCannotBeCreatedWithoutNullCollection()
     {
         // Arrange
         var loggerMock = new Mock<ILogger<LoaderConcurrentTool>>();
@@ -155,9 +155,9 @@ public class LoaderConcurrentToolTests
         unit2ProcessCalls.Should().Be(1);
     }
 
-    [Fact(DisplayName = "LoaderConcurrentTool cant process units if token is cancelled.")]
+    [Fact(DisplayName = "LoaderConcurrentTool can't process units if token is cancelled.")]
     [Trait("Category", "Unit")]
-    public async Task LoaderConcurrentToolCantProcessUnitsWithCancelToken()
+    public async Task LoaderConcurrentToolCannotProcessUnitsWithCancelToken()
     {
         // Arrange
         using var cts = new CancellationTokenSource();

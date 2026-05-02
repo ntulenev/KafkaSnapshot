@@ -18,7 +18,7 @@ public partial class PartitionSnapshotReaderTests
 {
     [Fact(DisplayName = "PartitionSnapshotReader can't be created with null logger.")]
     [Trait("Category", "Unit")]
-    public void PartitionSnapshotReaderCantBeCreatedWithNullLogger()
+    public void PartitionSnapshotReaderCannotBeCreatedWithNullLogger()
     {
         // Arrange
         var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);

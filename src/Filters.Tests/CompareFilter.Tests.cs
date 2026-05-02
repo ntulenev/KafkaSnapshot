@@ -23,7 +23,7 @@ public class CompareFilterTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
-    [Theory(DisplayName = "Compare filter could be created.")]
+    [Theory(DisplayName = "Compare filter can be created.")]
     [Trait("Category", "Unit")]
     [InlineData(true)]
     [InlineData(false)]

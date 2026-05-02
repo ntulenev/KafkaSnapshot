@@ -22,7 +22,7 @@ public class ProcessingUnitTests
 {
     [Fact(DisplayName = "ProcessingUnit can't be created without logger.")]
     [Trait("Category", "Unit")]
-    public void ProcessingUnitCantBeCreatedWithoutLogger()
+    public void ProcessingUnitCannotBeCreatedWithoutLogger()
     {
 
         // Arrange
@@ -51,7 +51,7 @@ public class ProcessingUnitTests
 
     [Fact(DisplayName = "ProcessingUnit can't be created without topic.")]
     [Trait("Category", "Unit")]
-    public void ProcessingUnitCantBeCreatedWithoutTopic()
+    public void ProcessingUnitCannotBeCreatedWithoutTopic()
     {
 
         // Arrange
@@ -79,7 +79,7 @@ public class ProcessingUnitTests
 
     [Fact(DisplayName = "ProcessingUnit can't be created without loader.")]
     [Trait("Category", "Unit")]
-    public void ProcessingUnitCantBeCreatedWithoutLoader()
+    public void ProcessingUnitCannotBeCreatedWithoutLoader()
     {
 
         // Arrange
@@ -108,7 +108,7 @@ public class ProcessingUnitTests
 
     [Fact(DisplayName = "ProcessingUnit can't be created without exporter.")]
     [Trait("Category", "Unit")]
-    public void ProcessingUnitCantBeCreatedWithoutExporter()
+    public void ProcessingUnitCannotBeCreatedWithoutExporter()
     {
 
         // Arrange
@@ -137,7 +137,7 @@ public class ProcessingUnitTests
 
     [Fact(DisplayName = "ProcessingUnit can't be created without filters factory.")]
     [Trait("Category", "Unit")]
-    public void ProcessingUnitCantBeCreatedWithoutFiltersFactory()
+    public void ProcessingUnitCannotBeCreatedWithoutFiltersFactory()
     {
 
         // Arrange
@@ -166,7 +166,7 @@ public class ProcessingUnitTests
 
     [Fact(DisplayName = "ProcessingUnit can't be created without value filters factory.")]
     [Trait("Category", "Unit")]
-    public void ProcessingUnitCantBeCreatedWithoutValueFiltersFactory()
+    public void ProcessingUnitCannotBeCreatedWithoutValueFiltersFactory()
     {
 
         // Arrange

@@ -28,7 +28,7 @@ public partial class SnapshotLoaderTests
 {
     [Fact(DisplayName = "SnapshotLoader can't load for null topic.")]
     [Trait("Category", "Unit")]
-    public async Task SnapshotLoaderCantLoadForNullTopic()
+    public async Task SnapshotLoaderCannotLoadForNullTopic()
     {
 
         // Arrange
@@ -65,7 +65,7 @@ public partial class SnapshotLoaderTests
 
     [Fact(DisplayName = "SnapshotLoader can't load for null key filter.")]
     [Trait("Category", "Unit")]
-    public async Task SnapshotLoaderCantLoadForNullKeyFilter()
+    public async Task SnapshotLoaderCannotLoadForNullKeyFilter()
     {
 
         // Arrange
@@ -103,7 +103,7 @@ public partial class SnapshotLoaderTests
 
     [Fact(DisplayName = "SnapshotLoader can't load for null value filter.")]
     [Trait("Category", "Unit")]
-    public async Task SnapshotLoaderCantLoadForNullValueFilter()
+    public async Task SnapshotLoaderCannotLoadForNullValueFilter()
     {
 
         // Arrange

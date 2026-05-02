@@ -15,7 +15,7 @@ namespace KafkaSnapshot.Export.Tests;
 
 public class JsonKeySerializerTests
 {
-    [Fact(DisplayName = "JsonKeySerializer cant be created without logger.")]
+    [Fact(DisplayName = "JsonKeySerializer can't be created without logger.")]
     [Trait("Category", "Unit")]
     public void JsonKeySerializerCanBeCreated()
     {
@@ -47,7 +47,7 @@ public class JsonKeySerializerTests
     [Trait("Category", "Unit")]
     [InlineData(true)]
     [InlineData(false)]
-    public void JsonKeySerializerCantSerializeNullData(bool isRawData)
+    public void JsonKeySerializerCannotSerializeNullData(bool isRawData)
     {
         // Arrange
         var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
@@ -65,7 +65,7 @@ public class JsonKeySerializerTests
     [Trait("Category", "Unit")]
     [InlineData(true)]
     [InlineData(false)]
-    public async Task JsonKeySerializerCantSerializeNullDataToStream(bool isRawData)
+    public async Task JsonKeySerializerCannotSerializeNullDataToStream(bool isRawData)
     {
         // Arrange
         var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
@@ -84,7 +84,7 @@ public class JsonKeySerializerTests
     [Trait("Category", "Unit")]
     [InlineData(true)]
     [InlineData(false)]
-    public async Task JsonKeySerializerCantSerializeDataToNullStream(bool isRawData)
+    public async Task JsonKeySerializerCannotSerializeDataToNullStream(bool isRawData)
     {
         // Arrange
         var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
@@ -154,9 +154,9 @@ public class JsonKeySerializerTests
         jsonString.Should().Be("[\r\n  {\r\n    \"Key\": {\r\n      \"A\": 42\r\n    },\r\n    \"Value\": {\r\n      \"Test\": 42\r\n    },\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
     }
 
-    [Fact(DisplayName = "JsonKeySerializer cant serialize non json data.")]
+    [Fact(DisplayName = "JsonKeySerializer can't serialize non json data.")]
     [Trait("Category", "Unit")]
-    public void JsonKeySerializerCantSerializeNonJsonData()
+    public void JsonKeySerializerCannotSerializeNonJsonData()
     {
         // Arrange
         var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
@@ -178,9 +178,9 @@ public class JsonKeySerializerTests
         exception.Should().NotBeNull().And.BeAssignableTo<System.Text.Json.JsonException>();
     }
 
-    [Fact(DisplayName = "JsonKeySerializer cant serialize non json data to the stream.")]
+    [Fact(DisplayName = "JsonKeySerializer can't serialize non json data to the stream.")]
     [Trait("Category", "Unit")]
-    public async Task JsonKeySerializerCantSerializeNonJsonDataToStream()
+    public async Task JsonKeySerializerCannotSerializeNonJsonDataToStream()
     {
         // Arrange
         var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
@@ -202,9 +202,9 @@ public class JsonKeySerializerTests
         exception.Should().NotBeNull().And.BeAssignableTo<System.Text.Json.JsonException>();
     }
 
-    [Fact(DisplayName = "JsonKeySerializer cant serialize non json key.")]
+    [Fact(DisplayName = "JsonKeySerializer can't serialize non json key.")]
     [Trait("Category", "Unit")]
-    public void JsonKeySerializerCantSerializeNonJsonKey()
+    public void JsonKeySerializerCannotSerializeNonJsonKey()
     {
         // Arrange
         var logger = new Mock<ILogger<JsonKeySerializer>>().Object;
@@ -226,9 +226,9 @@ public class JsonKeySerializerTests
         exception.Should().NotBeNull().And.BeAssignableTo<System.Text.Json.JsonException>();
     }
 
-    [Fact(DisplayName = "JsonKeySerializer cant serialize non json key to the stream.")]
+    [Fact(DisplayName = "JsonKeySerializer can't serialize non json key to the stream.")]
     [Trait("Category", "Unit")]
-    public async Task JsonKeySerializerCantSerializeNonJsonKeyToStream()
+    public async Task JsonKeySerializerCannotSerializeNonJsonKeyToStream()
     {
         // Arrange
         var logger = new Mock<ILogger<JsonKeySerializer>>().Object;

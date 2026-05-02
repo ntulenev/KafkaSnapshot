@@ -15,7 +15,7 @@ public class LoaderToolTests
 {
     [Fact(DisplayName = "LoaderTool can't be created without logger.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolCantBeCreatedWithoutLogger()
+    public void LoaderToolCannotBeCreatedWithoutLogger()
     {
         // Arrange
         var logger = (ILogger<LoaderTool>)null!;
@@ -33,7 +33,7 @@ public class LoaderToolTests
 
     [Fact(DisplayName = "LoaderTool can't be created without unit collection.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolCantBeCreatedWithoutNullCollection()
+    public void LoaderToolCannotBeCreatedWithoutNullCollection()
     {
         // Arrange
         var loggerMock = new Mock<ILogger<LoaderTool>>();
@@ -157,7 +157,7 @@ public class LoaderToolTests
 
     [Fact(DisplayName = "LoaderTool can't process units if token is canceled.")]
     [Trait("Category", "Unit")]
-    public async Task LoaderToolCantProcessUnitsIfCancelled()
+    public async Task LoaderToolCannotProcessUnitsIfCancelled()
     {
         // Arrange
         using var cts = new CancellationTokenSource();

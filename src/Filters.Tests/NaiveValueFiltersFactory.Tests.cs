@@ -56,7 +56,7 @@ public class NaiveValueFiltersFactoryTests
     [Theory(DisplayName = "Json Equals filter can't be created.")]
     [Trait("Category", "Unit")]
     [InlineData(ValueMessageType.Json)]
-    public void EqualsFilterCantBeCreatedForJsonOnObject(ValueMessageType messageType)
+    public void EqualsFilterCannotBeCreatedForJsonOnObject(ValueMessageType messageType)
     {
         // Arrange
         var factory = new NaiveValueFiltersFactory<object>();
@@ -77,7 +77,7 @@ public class NaiveValueFiltersFactoryTests
     [Trait("Category", "Unit")]
     [InlineData(ValueMessageType.Json)]
     [InlineData(ValueMessageType.Raw)]
-    public void GreaterOrEqualsFilterCantBeCreated(ValueMessageType messageType)
+    public void GreaterOrEqualsFilterCannotBeCreated(ValueMessageType messageType)
     {
         // Arrange
         var factory = new NaiveValueFiltersFactory<object>();
@@ -98,7 +98,7 @@ public class NaiveValueFiltersFactoryTests
     [Trait("Category", "Unit")]
     [InlineData(ValueMessageType.Json)]
     [InlineData(ValueMessageType.Raw)]
-    public void LessOrEqualsFilterCantBeCreated(ValueMessageType messageType)
+    public void LessOrEqualsFilterCannotBeCreated(ValueMessageType messageType)
     {
         // Arrange
         var factory = new NaiveValueFiltersFactory<object>();

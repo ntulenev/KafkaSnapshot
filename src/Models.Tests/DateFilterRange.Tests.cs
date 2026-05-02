@@ -106,9 +106,9 @@ public class DateFilterRangeTests
         result.EndDate!.Value.Offset.Should().Be(TimeSpan.Zero);
     }
 
-    [Fact(DisplayName = "DateFilterRange cant be created when start bigger then end.")]
+    [Fact(DisplayName = "DateFilterRange can't be created when start greater than end.")]
     [Trait("Category", "Unit")]
-    public void CantCreateDateFilterRangeWhenStardDateBigger()
+    public void CannotCreateDateFilterRangeWhenStartDateBigger()
     {
         // Arrange
         var dtStart = new DateTime(2013, 1, 1);

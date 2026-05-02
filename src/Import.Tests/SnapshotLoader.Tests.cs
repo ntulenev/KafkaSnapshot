@@ -207,7 +207,7 @@ public partial class SnapshotLoaderTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
-    [Fact(DisplayName = "SnapshotLoader can be created with valid params.")]
+    [Fact(DisplayName = "SnapshotLoader can be created with valid parameters.")]
     [Trait("Category", "Unit")]
     public void SnapshotLoaderCanBeCreated()
     {

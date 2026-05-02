@@ -47,7 +47,7 @@ public class LoaderConcurrentToolTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
-    [Fact(DisplayName = "LoaderConcurrentTool can be created with valid params.")]
+    [Fact(DisplayName = "LoaderConcurrentTool can be created with valid parameters.")]
     [Trait("Category", "Unit")]
     public void LoaderConcurrentToolCanBeCreatedWithValidParams()
     {

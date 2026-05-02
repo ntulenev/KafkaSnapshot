@@ -29,9 +29,9 @@ namespace KafkaSnapshot.Utility.Tests
             exception.Should().BeNull();
         }
 
-        [Fact(DisplayName = "LoaderService cant be created with null lifetime.")]
+        [Fact(DisplayName = "LoaderService can't be created with null lifetime.")]
         [Trait("Category", "Unit")]
-        public void LoaderServiceCantBeCreatedWithNullLifetime()
+        public void LoaderServiceCannotBeCreatedWithNullLifetime()
         {
             // Arrange
             var tool = new Mock<ILoaderTool>(MockBehavior.Strict).Object;
@@ -44,9 +44,9 @@ namespace KafkaSnapshot.Utility.Tests
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
         }
 
-        [Fact(DisplayName = "LoaderService cant be created with null tool.")]
+        [Fact(DisplayName = "LoaderService can't be created with null tool.")]
         [Trait("Category", "Unit")]
-        public void LoaderServiceCantBeCreatedWithNullTool()
+        public void LoaderServiceCannotBeCreatedWithNullTool()
         {
             // Arrange
             var lifetime = new Mock<IHostApplicationLifetime>(MockBehavior.Strict).Object;

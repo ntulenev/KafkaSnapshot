@@ -30,7 +30,7 @@ public sealed partial class LoaderToolConfigurationValidator :
         {
             result = Fail(
                 ConfigurationValidationErrorCodes.TopicNameEmpty,
-                "The topic name cannot be empty or consist of whitespaces.");
+                "The topic name cannot be empty or consist only of whitespace.");
             return true;
         }
 
@@ -38,7 +38,7 @@ public sealed partial class LoaderToolConfigurationValidator :
         {
             result = Fail(
                 ConfigurationValidationErrorCodes.TopicNameWhitespace,
-                $"The topic name {topic.Name} cannot contain whitespaces.");
+                $"The topic name {topic.Name} cannot contain whitespace.");
             return true;
         }
 
@@ -46,7 +46,7 @@ public sealed partial class LoaderToolConfigurationValidator :
         {
             result = Fail(
                 ConfigurationValidationErrorCodes.TopicNameTooLong,
-                $"The name of a topic {topic.Name} is too long.");
+                $"The topic name {topic.Name} is too long.");
             return true;
         }
 
@@ -72,7 +72,7 @@ public sealed partial class LoaderToolConfigurationValidator :
         {
             result = Fail(
                 ConfigurationValidationErrorCodes.ExportFileNameEmpty,
-                "The topic export name cannot be empty or consist of whitespaces.");
+                "The topic export name cannot be empty or consist only of whitespace.");
             return true;
         }
 
@@ -114,7 +114,7 @@ public sealed partial class LoaderToolConfigurationValidator :
             {
                 result = Fail(
                     ConfigurationValidationErrorCodes.FilterValueMissing,
-                    $"Filter value does not set for topic {topic.Name}.");
+                    $"Filter value is not set for topic {topic.Name}.");
                 return true;
             }
         }
@@ -183,7 +183,7 @@ public sealed partial class LoaderToolConfigurationValidator :
             var duplicates = string.Join(",", fileDuplicates);
             result = Fail(
                      ConfigurationValidationErrorCodes.ExportFileNameDuplicate,
-                     $"Files names duplicate in several topics ({duplicates}).");
+                     $"File names are duplicated in several topics ({duplicates}).");
             return true;
         }
 

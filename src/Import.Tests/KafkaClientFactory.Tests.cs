@@ -17,7 +17,7 @@ public class KafkaClientFactoryTests
 {
     [Fact(DisplayName = "KafkaClientFactory can't be created with null options.")]
     [Trait("Category", "Unit")]
-    public void KafkaClientFactoryCantBeCreatedWithNullOptions()
+    public void KafkaClientFactoryCannotBeCreatedWithNullOptions()
     {
         // Act
         var exception = Record.Exception(() => new KafkaClientFactory(null!));
@@ -28,7 +28,7 @@ public class KafkaClientFactoryTests
 
     [Fact(DisplayName = "KafkaClientFactory can't be created with null options value.")]
     [Trait("Category", "Unit")]
-    public void KafkaClientFactoryCantBeCreatedWithNullOptionsValue()
+    public void KafkaClientFactoryCannotBeCreatedWithNullOptionsValue()
     {
         // Arrange
         var optionsMock = new Mock<IOptions<BootstrapServersConfiguration>>(MockBehavior.Strict);

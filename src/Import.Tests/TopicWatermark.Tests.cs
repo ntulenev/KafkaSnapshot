@@ -25,7 +25,7 @@ public class TopicWatermarkTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
-    [Fact(DisplayName = "TopicWatermark could be created.")]
+    [Fact(DisplayName = "TopicWatermark can be created.")]
     [Trait("Category", "Unit")]
     public void CanCreateTopicWatermarkWithValidParams()
     {

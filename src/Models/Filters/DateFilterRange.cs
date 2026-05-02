@@ -21,7 +21,7 @@ public sealed class DateFilterRange
     /// <param name="startDate">Start offset date. Dates are converted to UTC.</param>
     /// <param name="endDate">End offset date. Dates are converted to UTC.</param>
     /// <exception cref="ArgumentException">Throws if <paramref name="startDate"/> 
-    /// greater then <paramref name="endDate"/>.</exception>
+    /// greater than <paramref name="endDate"/>.</exception>
     public DateFilterRange(DateTimeOffset? startDate, DateTimeOffset? endDate)
     {
         var utcStartDate = NormalizeToUtc(startDate);

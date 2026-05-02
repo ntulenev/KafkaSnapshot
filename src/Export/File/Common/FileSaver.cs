@@ -10,7 +10,7 @@ public sealed class FileSaver : IFileSaver
     /// <exception cref="ArgumentNullException">Thrown if fileName 
     /// or content is null.</exception>
     /// <exception cref="ArgumentException">Thrown if fileName is 
-    /// empty or consists of whitespaces.</exception>
+    /// empty or consists only of whitespace.</exception>
     public async Task SaveAsync(FileName fileName, string content, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(fileName);

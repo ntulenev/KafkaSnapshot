@@ -91,9 +91,9 @@ public class PartitionWatermarkTests
         result.Should().Be(condition);
     }
 
-    [Fact(DisplayName = "IsWatermarkAchievedBy faild on null result.")]
+    [Fact(DisplayName = "ShouldContinueReadingAfter fails on null result.")]
     [Trait("Category", "Unit")]
-    public void IsWatermarkAchievedByFailsOnNullResult()
+    public void ShouldContinueReadingAfterFailsOnNullResult()
     {
 
         // Arrange
@@ -105,15 +105,15 @@ public class PartitionWatermarkTests
         var pw = new PartitionWatermark(topicName, offsets, partition);
 
         // Act
-        var exception = Record.Exception(() => pw.IsWatermarkAchievedBy(result));
+        var exception = Record.Exception(() => pw.ShouldContinueReadingAfter(result));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
-    [Fact(DisplayName = "IsWatermarkAchievedBy reacts on offset's end.")]
+    [Fact(DisplayName = "ShouldContinueReadingAfter stops at the last readable offset.")]
     [Trait("Category", "Unit")]
-    public void IsWatermarkAchievedByReatcsOnRightOffset()
+    public void ShouldContinueReadingAfterStopsAtLastReadableOffset()
     {
 
         // Arrange
@@ -123,26 +123,26 @@ public class PartitionWatermarkTests
         var partition = new Partition(1);
         var result = new ConsumeResult<object, object>()
         {
-            Offset = offsets.High
+            Offset = offsets.High - 1
         };
         var pw = new PartitionWatermark(topicName, offsets, partition);
 
         // Act
-        var status = pw.IsWatermarkAchievedBy(result);
+        var status = pw.ShouldContinueReadingAfter(result);
 
         // Assert
-        status.Should().BeTrue();
+        status.Should().BeFalse();
     }
 
-    [Fact(DisplayName = "IsWatermarkAchievedBy reacts if offset is not reached.")]
+    [Fact(DisplayName = "ShouldContinueReadingAfter continues before the last readable offset.")]
     [Trait("Category", "Unit")]
-    public void IsWatermarkAchievedByReatcsOnNotRightOffset()
+    public void ShouldContinueReadingAfterContinuesBeforeLastReadableOffset()
     {
 
         // Arrange
         HashSet<int> partitionFilter = null!;
         var topicName = new LoadingTopic(new TopicName("Test"), true, new DateFilterRange(null!, null!), EncoderRules.String, partitionFilter);
-        var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
+        var offsets = new WatermarkOffsets(new Offset(1), new Offset(3));
         var partition = new Partition(1);
         var result = new ConsumeResult<object, object>()
         {
@@ -151,10 +151,10 @@ public class PartitionWatermarkTests
         var pw = new PartitionWatermark(topicName, offsets, partition);
 
         // Act
-        var status = pw.IsWatermarkAchievedBy(result);
+        var status = pw.ShouldContinueReadingAfter(result);
 
         // Assert
-        status.Should().BeFalse();
+        status.Should().BeTrue();
     }
 
     [Fact(DisplayName = "AssignWithConsumer fails on null consumer.")]

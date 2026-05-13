@@ -214,7 +214,7 @@ public class PartitionSnapshotReader<TKey, TMessage>
                             message);
                     }
 
-                } while (watermark.IsWatermarkAchievedBy(result));
+                } while (watermark.ShouldContinueReadingAfter(result));
             }
             finally
             {

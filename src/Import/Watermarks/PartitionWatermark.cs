@@ -50,12 +50,12 @@ public class PartitionWatermark
     public bool IsReadyToRead() => Offset.High > Offset.Low;
 
     /// <summary>
-    /// Checks that end of the partition is achieved by consumer.
+    /// Checks whether reading should continue after the consumed message.
     /// </summary>
     /// <typeparam name="TKey">Message key.</typeparam>
     /// <typeparam name="TValue">Message value.</typeparam>
     /// <param name="consumeResult">Consumer result.</param>
-    public bool IsWatermarkAchievedBy<TKey, TValue>(ConsumeResult<TKey, TValue> consumeResult)
+    public bool ShouldContinueReadingAfter<TKey, TValue>(ConsumeResult<TKey, TValue> consumeResult)
     {
         ArgumentNullException.ThrowIfNull(consumeResult);
 

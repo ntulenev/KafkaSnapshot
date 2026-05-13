@@ -57,13 +57,12 @@ public class PartitionSnapshotBatchReader<TKey, TMessage>
 
         foreach (var watermark in watermarks)
         {
-            var result = _partitionReader.Read(
-                    watermark,
-                    topicParams,
-                    keyFilter,
-                    valueFilter,
-                    ct)
-                .ToList();
+            var result = ReadPartition(
+                watermark,
+                topicParams,
+                keyFilter,
+                valueFilter,
+                ct);
 
             if (result.Count > 0)
             {
@@ -101,41 +100,74 @@ public class PartitionSnapshotBatchReader<TKey, TMessage>
             return [];
         }
 
-        var maxConcurrency = _config.MaxConcurrentPartitions.GetValueOrDefault();
+        using var concurrency = new SemaphoreSlim(ResolveMaxConcurrency(partitionWatermarks.Count));
 
-        if (maxConcurrency < 1)
-        {
-            maxConcurrency = partitionWatermarks.Count;
-        }
-
-        using var concurrency = new SemaphoreSlim(maxConcurrency);
-
-        var tasks = partitionWatermarks.Select(async watermark =>
-        {
-            await concurrency.WaitAsync(ct).ConfigureAwait(false);
-
-            try
-            {
-                return await Task.Run(
-                    () => _partitionReader.Read(
-                            watermark,
-                            topicParams,
-                            keyFilter,
-                            valueFilter,
-                            ct)
-                        .ToList(),
-                    ct).ConfigureAwait(false);
-            }
-            finally
-            {
-                _ = concurrency.Release();
-            }
-        });
+#pragma warning disable CA2025 // Task.WhenAll below completes all users of the semaphore before disposal.
+        var tasks = partitionWatermarks
+            .Select(watermark => ReadPartitionOnWorkerAsync(
+                watermark,
+                topicParams,
+                keyFilter,
+                valueFilter,
+                concurrency,
+                ct))
+            .ToArray();
+#pragma warning restore CA2025
 
         var consumedEntities = await Task.WhenAll(tasks).ConfigureAwait(false);
 
         return [.. consumedEntities.SelectMany(consumerResults => consumerResults)];
     }
+
+    private int ResolveMaxConcurrency(int partitionCount)
+    {
+        var maxConcurrency = _config.MaxConcurrentPartitions.GetValueOrDefault();
+
+        return maxConcurrency < 1
+            ? partitionCount
+            : Math.Min(maxConcurrency, partitionCount);
+    }
+
+    private async Task<List<KeyValuePair<TKey, KafkaMessage<TMessage>>>> ReadPartitionOnWorkerAsync(
+        PartitionWatermark watermark,
+        LoadingTopic topicParams,
+        IDataFilter<TKey> keyFilter,
+        IDataFilter<TMessage> valueFilter,
+        SemaphoreSlim concurrency,
+        CancellationToken ct)
+    {
+        await concurrency.WaitAsync(ct).ConfigureAwait(false);
+
+        try
+        {
+            // Confluent Kafka consumer.Consume is blocking, so partition reads run on worker threads.
+            return await Task.Run(
+                () => ReadPartition(
+                    watermark,
+                    topicParams,
+                    keyFilter,
+                    valueFilter,
+                    ct),
+                ct).ConfigureAwait(false);
+        }
+        finally
+        {
+            _ = concurrency.Release();
+        }
+    }
+
+    private List<KeyValuePair<TKey, KafkaMessage<TMessage>>> ReadPartition(
+        PartitionWatermark watermark,
+        LoadingTopic topicParams,
+        IDataFilter<TKey> keyFilter,
+        IDataFilter<TMessage> valueFilter,
+        CancellationToken ct)
+        => [.. _partitionReader.Read(
+                watermark,
+                topicParams,
+                keyFilter,
+                valueFilter,
+                ct)];
 
     private readonly SnapshotLoaderConfiguration _config;
     private readonly IPartitionSnapshotReader<TKey, TMessage> _partitionReader;

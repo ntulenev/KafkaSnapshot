@@ -1,12 +1,38 @@
-![KafkaSnapshot](logo_s.png)
+<p align="center">
+  <img src="logo_s.png" alt="KafkaSnapshot logo" width="96" />
+</p>
+
 # KafkaSnapshot
-Tool that allows reading the current data snapshot from an Apache Kafka topic to a file.
+
+KafkaSnapshot is a .NET utility for exporting the current data snapshot from Apache Kafka topics to JSON files.
+
+It is useful when you need to inspect topic state, capture data for diagnostics, export compacted views by key, or take a reproducible snapshot from a selected offset/date range.
+
+## Highlights
+
+- Export one or many Kafka topics to JSON files.
+- Read multi-partition topics with optional concurrent loading.
+- Compact messages by key to keep the latest value per key.
+- Filter by key using equality, contains, greater-or-equal, and less-or-equal rules.
+- Limit exported data by start/end timestamps or selected partition ids.
+- Support JSON, string, long, and ignored keys.
+- Decode string, MessagePack, MessagePack LZ4 block, and Base64 payloads.
+- Stream large exports directly to files to reduce memory pressure.
+- Sort exported messages by timestamp or partition when compacting is disabled.
+- Connect to secured clusters with SASL authentication.
+
+## How It Works
+
+KafkaSnapshot loads topic watermarks, reads matching messages from the selected partitions, applies optional filters/compacting/sorting, and writes the result to JSON.
+
+![KafkaSnapshot flow](Case1.PNG)
 
 ## Requirements
 
-* .NET 10 SDK
+- .NET 10 SDK
+- Access to an Apache Kafka cluster
 
-## Build and test
+## Quick Start
 
 The repository uses the modern `.slnx` solution format.
 
@@ -16,42 +42,140 @@ dotnet build src\KafkaSnapshot.slnx --no-restore
 dotnet test src\KafkaSnapshot.slnx --no-build
 ```
 
-## Run
+Configure the utility:
 
-Update `src\Utility\appsettings.json`, then run the utility project:
+```powershell
+notepad src\Utility\appsettings.json
+```
+
+Run it:
 
 ```powershell
 dotnet run --project src\Utility\Utility.csproj
 ```
 
-The optional JSON schema for editors is available at
-`src\Utility\appsettings.schema.json`.
+Exported files are written to the current working directory by default. Set `JsonFileDataExporterConfiguration.OutputDirectory` to write snapshots to a dedicated folder.
 
-## Migration notes
+## Configuration
 
-Recent versions use `DateTimeOffset` for date-based offsets and exported metadata timestamps.
+The main configuration file is [src/Utility/appsettings.json](src/Utility/appsettings.json). An optional JSON schema for editor completion and validation is available at [src/Utility/appsettings.schema.json](src/Utility/appsettings.schema.json).
 
-* `OffsetStartDate` and `OffsetEndDate` should be configured as ISO 8601 strings with an explicit UTC designator or offset, for example `2021-09-01T12:12:12Z` or `2021-09-01T14:12:12+02:00`.
-* `KafkaMetadata.Timestamp` is now a `DateTimeOffset`.
-* `DateFilterRange.StartDate`, `DateFilterRange.EndDate`, `LoadingTopic.OffsetDate`, `LoadingTopic.EndOffsetDate`, `TopicConfiguration.OffsetStartDate`, and `TopicConfiguration.OffsetEndDate` are now `DateTimeOffset` values.
-* `PartitionWatermark.TopicName` was renamed to `PartitionWatermark.Topic` because it stores the full loading topic configuration, not only the topic name.
+A minimal configuration looks like this:
 
-Supports:
-* Compacting
-* Key filtering
-* Filtering with start and end offsets
-* String keys (optionally as JSON) and long keys. The key field can also be ignored (for example, when the key is null or does not exist in the topic).
-* Multi-partition topics
-* SASL authentication mechanism
-* Message sorting
-* MessagePack payloads with automatic conversion to JSON arrays.
-* Message converting to Base64
+```json
+{
+  "BootstrapServersConfiguration": {
+    "BootstrapServers": [ "kafka-test:9092" ]
+  },
+  "TopicWatermarkLoaderConfiguration": {
+    "AdminClientTimeout": "00:00:05"
+  },
+  "SnapshotLoaderConfiguration": {
+    "DateOffsetTimeout": "00:00:05",
+    "SearchSinglePartition": false,
+    "MaxConcurrentPartitions": 4
+  },
+  "JsonFileDataExporterConfiguration": {
+    "UseFileStreaming": true,
+    "OutputDirectory": "snapshots"
+  },
+  "LoaderToolConfiguration": {
+    "UseConcurrentLoad": true,
+    "GlobalMessageSort": "Time",
+    "GlobalSortOrder": "Ascending",
+    "Topics": [
+      {
+        "Name": "orders",
+        "KeyType": "Json",
+        "Compacting": "On",
+        "ExportFileName": "orders.json"
+      }
+    ]
+  }
+}
+```
 
-By default, messages should contain JSON data. Simple strings are also supported (see the `ExportRawMessage` parameter).
+## Common Recipes
 
-![Details](Case1.PNG)
+### Export a Topic as Raw Strings
 
-Config example:
+Use this when messages are plain strings and should not be formatted as JSON objects.
+
+```json
+{
+  "Name": "events.raw",
+  "KeyType": "String",
+  "Compacting": "Off",
+  "ExportRawMessage": true,
+  "ExportFileName": "events.raw.json"
+}
+```
+
+### Export Only Selected Partitions
+
+```json
+{
+  "Name": "orders",
+  "KeyType": "Json",
+  "Compacting": "Off",
+  "PartitionsIds": [ 0, 2 ],
+  "ExportFileName": "orders.partitions-0-2.json"
+}
+```
+
+### Export a Date Range
+
+Use ISO 8601 values with an explicit UTC designator or offset.
+
+```json
+{
+  "Name": "orders",
+  "KeyType": "Json",
+  "Compacting": "Off",
+  "OffsetStartDate": "2021-09-01T12:12:12Z",
+  "OffsetEndDate": "2021-09-01T14:12:12+02:00",
+  "ExportFileName": "orders.range.json"
+}
+```
+
+### Filter by Key
+
+```json
+{
+  "Name": "users",
+  "KeyType": "Long",
+  "Compacting": "Off",
+  "FilterKeyType": "GreaterOrEquals",
+  "FilterKeyValue": 1000,
+  "ExportFileName": "users.filtered.json"
+}
+```
+
+Filter restrictions:
+
+- `Contains` can be used only with string keys.
+- `GreaterOrEquals` and `LessOrEquals` can be used only with long keys.
+- `Compacting` is not supported when `KeyType` is `Ignored`.
+
+### Decode MessagePack or Base64 Payloads
+
+```json
+{
+  "Name": "packed-events",
+  "KeyType": "Long",
+  "MessageEncoderRule": "MessagePack",
+  "ExportFileName": "packed-events.json"
+}
+```
+
+Supported `MessageEncoderRule` values:
+
+- `String`
+- `MessagePack`
+- `MessagePackLz4Block`
+- `Base64`
+
+## Full Example
 
 ```json
 {
@@ -77,7 +201,7 @@ Config example:
   "LoaderToolConfiguration": {
     "UseConcurrentLoad": true,
     "GlobalMessageSort": "Time",
-    "GlobalSortOrder": "Ask",
+    "GlobalSortOrder": "Ascending",
     "Topics": [
       {
         "Name": "topic1",
@@ -159,45 +283,42 @@ Config example:
   }
 }
 ```
-Configuration parameters:
 
-| Parameter name | Description                                                                                                                                                             |
-| -------------- |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| AdminClientTimeout | Cluster metadata loading timeout                                                                                                                                        |
-| DateOffsetTimeout | Searching offset by date timeout                                                                                                                                        |
-| SearchSinglePartition | Stops traversing partitions after the first partition with suitable data                                                                                                |
-| MaxConcurrentPartitions | Maximum number of topic partitions processed concurrently (optional). If omitted, all partitions are processed concurrently.                                           |
-| BootstrapServers | List of kafka cluster servers, like "kafka-test:9092"                                                                                                                   |
-| Username | SASL username (optional)                                                                                                                                                |
-| Password | SASL password (optional)                                                                                                                                                |
-| SecurityProtocol | Protocol used to communicate with brokers (Plaintext,Ssl,SaslPlaintext,SaslSsl) (optional)                                                                              |
-| SASLMechanism | SASL mechanism to use for authentication (Gssapi,Plain,ScramSha256,ScramSha512,OAuthBearer) (optional)                                                                  |
-| UseConcurrentLoad | Loads data in concurrent mode or one by one                                                                                                                             |
-| GlobalMessageSort | Message meta field for sorting (Time, Partition) (optional). Applies only for topics without Compacting.                                                                |
-| GlobalSortOrder | GlobalMessageSort order (Ascending, Descending, None) (optional). Legacy aliases Ask, Desk, and No are still supported. Applies only for topics without Compacting.    |
-| Name           | Apache Kafka topic name                                                                                                                                                 |
-| KeyType        | Apache Kafka topic key representation (Json,String,Long,Ignored)                                                                                                        |
-| Compacting     | Use compacting by key or not (On,Off). Not supported for Ignored keyType                                                                                                |
-| ExportFileName | File name for exported data                                                                                                                                             |
-| FilterKeyType | Equals, Contains or None (optional)                                                                                                                                     |
-| FilterKeyValue | Sample value for filtering (if FilterKeyType sets as 'Equals', 'Contains','GreaterOrEquals' or 'LessOrEquals')                                                          |
-| OffsetStartDate | First message date (optional). Use to skip old messages in large topics. Use ISO 8601 with an explicit offset, for example `2021-09-01T12:12:12Z` or `2021-09-01T14:12:12+02:00`. |
-| OffsetEndDate | Message date top limit (optional). Use to limit filtering messages in large topics. Use ISO 8601 with an explicit offset, for example `2021-09-01T12:12:12Z` or `2021-09-01T14:12:12+02:00`. |
-| ExportRawMessage | If true, export writes messages as raw strings without converting them to formatted JSON (optional)                                                                     |
-| PartitionsIds | Partitions ids filter (optional)                                                                                                                                        |
-| UseFileStreaming | Serializes loaded data to file directly via FileStream (Avoids OOM issue for large amounts of data). Better effect with disabled sorting (GlobalSortOrder No)           |
-| OutputDirectory | Directory for exported files (optional). If omitted, files are written to the current working directory.                                                                |
-|MessageEncoderRule| Allows you to choose the format in which the message body is received. By default, a String is expected, but you can choose MessagePack, MessagePackLz4Block or Base64. |
+## Configuration Reference
 
-Filter restrictions:
-* The 'Contains' key filter can be applied only to string keys.
-* The 'GreaterOrEquals' and 'LessOrEquals' filters can be applied only to long keys.
+| Parameter | Description |
+| --- | --- |
+| `BootstrapServers` | Kafka bootstrap servers, for example `kafka-test:9092`. |
+| `Username` | SASL username. Optional. |
+| `Password` | SASL password. Optional. |
+| `SecurityProtocol` | Broker communication protocol: `Plaintext`, `Ssl`, `SaslPlaintext`, or `SaslSsl`. Optional. |
+| `SASLMechanism` | SASL mechanism: `Gssapi`, `Plain`, `ScramSha256`, `ScramSha512`, or `OAuthBearer`. Optional. |
+| `AdminClientTimeout` | Timeout for loading cluster metadata. |
+| `DateOffsetTimeout` | Timeout for finding Kafka offsets by timestamp. |
+| `SearchSinglePartition` | Stops partition traversal after the first partition with suitable data. |
+| `MaxConcurrentPartitions` | Maximum number of topic partitions processed concurrently. Optional; when omitted, all partitions are processed concurrently. |
+| `UseFileStreaming` | Writes loaded data directly through `FileStream` to reduce memory usage on large exports. Works best with sorting disabled. |
+| `OutputDirectory` | Directory for exported files. Optional; when omitted, files are written to the current working directory. |
+| `UseConcurrentLoad` | Loads configured topics concurrently instead of one by one. |
+| `GlobalMessageSort` | Message metadata field used for sorting: `Time` or `Partition`. Optional. Applies only to topics without compacting. |
+| `GlobalSortOrder` | Sort order: `Ascending`, `Descending`, or `None`. Legacy aliases `Ask`, `Desk`, and `No` are also supported. Applies only to topics without compacting. |
+| `Name` | Kafka topic name. |
+| `KeyType` | Kafka key representation: `Json`, `String`, `Long`, or `Ignored`. |
+| `Compacting` | Enables or disables compacting by key: `On` or `Off`. Not supported for `Ignored` keys. |
+| `ExportFileName` | Output JSON file name for the topic. |
+| `FilterKeyType` | Key filter type: `None`, `Equals`, `Contains`, `GreaterOrEquals`, or `LessOrEquals`. Optional. |
+| `FilterKeyValue` | Value used by the selected key filter. |
+| `OffsetStartDate` | First message timestamp to include. Use ISO 8601 with an explicit offset, for example `2021-09-01T12:12:12Z` or `2021-09-01T14:12:12+02:00`. Optional. |
+| `OffsetEndDate` | Upper timestamp limit. Use ISO 8601 with an explicit offset, for example `2021-09-01T12:12:12Z` or `2021-09-01T14:12:12+02:00`. Optional. |
+| `ExportRawMessage` | Exports message values as raw strings instead of formatting them as JSON. Optional. |
+| `PartitionsIds` | Partition id filter. Optional. |
+| `MessageEncoderRule` | Message body decoder. Defaults to `String`; also supports `MessagePack`, `MessagePackLz4Block`, and `Base64`. |
 
+## Export Format
 
-Exported file example:
+By default, KafkaSnapshot expects message values to contain JSON data. Simple strings are supported when `ExportRawMessage` is enabled.
 
-
-![KafkaData](OriginalData.png)
+![Kafka data example](OriginalData.png)
 
 ```json
 [
@@ -243,13 +364,20 @@ Exported file example:
 ]
 ```
 
-Exported file JSON format:
-| Field name | Description   |
-| -------------- | ------------- |
-| Key           | Kafka message key (optional) |
-| Value           | Kafka message value |
-| Meta           | Kafka message metadata |
-| Meta.Timestamp | Kafka message creation timestamp |
-| Meta.Partition | Kafka message partition |
-| Meta.Offset | Kafka message partition offset |
+| Field | Description |
+| --- | --- |
+| `Key` | Kafka message key. Optional when `KeyType` is `Ignored`. |
+| `Value` | Kafka message value. |
+| `Meta` | Kafka message metadata. |
+| `Meta.Timestamp` | Kafka message creation timestamp. |
+| `Meta.Partition` | Kafka partition id. |
+| `Meta.Offset` | Kafka partition offset. |
 
+## Notes for Existing Users
+
+Recent versions use `DateTimeOffset` for date-based offsets and exported metadata timestamps.
+
+- `OffsetStartDate` and `OffsetEndDate` should be configured as ISO 8601 strings with an explicit UTC designator or offset.
+- `KafkaMetadata.Timestamp` is now a `DateTimeOffset`.
+- `DateFilterRange.StartDate`, `DateFilterRange.EndDate`, `LoadingTopic.OffsetDate`, `LoadingTopic.EndOffsetDate`, `TopicConfiguration.OffsetStartDate`, and `TopicConfiguration.OffsetEndDate` are now `DateTimeOffset` values.
+- `PartitionWatermark.TopicName` was renamed to `PartitionWatermark.Topic` because it stores the full loading topic configuration, not only the topic name.

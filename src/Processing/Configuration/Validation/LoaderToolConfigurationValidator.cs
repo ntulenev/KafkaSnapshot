@@ -18,6 +18,18 @@ public sealed partial class LoaderToolConfigurationValidator :
         TopicConfiguration topic,
         [NotNullWhen(returnValue: true)] out ValidateOptionsResult result)
     {
+        return TryFailOnTopicName(topic, out result) ||
+               TryFailOnExportFileName(topic, out result) ||
+               TryFailOnTopicEnums(topic, out result) ||
+               TryFailOnTopicFilter(topic, out result) ||
+               TryFailOnTopicCompacting(topic, out result) ||
+               TryFailOnTopicDateRange(topic, out result);
+    }
+
+    private static bool TryFailOnTopicName(
+        TopicConfiguration topic,
+        [NotNullWhen(returnValue: true)] out ValidateOptionsResult result)
+    {
         if (topic.Name is null)
         {
             result = Fail(
@@ -60,6 +72,14 @@ public sealed partial class LoaderToolConfigurationValidator :
             return true;
         }
 
+        result = null!;
+        return false;
+    }
+
+    private static bool TryFailOnExportFileName(
+        TopicConfiguration topic,
+        [NotNullWhen(returnValue: true)] out ValidateOptionsResult result)
+    {
         if (topic.ExportFileName is null)
         {
             result = Fail(
@@ -76,6 +96,14 @@ public sealed partial class LoaderToolConfigurationValidator :
             return true;
         }
 
+        result = null!;
+        return false;
+    }
+
+    private static bool TryFailOnTopicEnums(
+        TopicConfiguration topic,
+        [NotNullWhen(returnValue: true)] out ValidateOptionsResult result)
+    {
         if (!Enum.IsDefined(topic.KeyType))
         {
             result = Fail(
@@ -108,17 +136,31 @@ public sealed partial class LoaderToolConfigurationValidator :
             return true;
         }
 
-        if (topic.FilterKeyType is not FilterType.None)
+        result = null!;
+        return false;
+    }
+
+    private static bool TryFailOnTopicFilter(
+        TopicConfiguration topic,
+        [NotNullWhen(returnValue: true)] out ValidateOptionsResult result)
+    {
+        if (topic.FilterKeyType is not FilterType.None &&
+            topic.FilterKeyValue is null)
         {
-            if (topic.FilterKeyValue is null)
-            {
-                result = Fail(
-                    ConfigurationValidationErrorCodes.FilterValueMissing,
-                    $"Filter value is not set for topic {topic.Name}.");
-                return true;
-            }
+            result = Fail(
+                ConfigurationValidationErrorCodes.FilterValueMissing,
+                $"Filter value is not set for topic {topic.Name}.");
+            return true;
         }
 
+        result = null!;
+        return false;
+    }
+
+    private static bool TryFailOnTopicCompacting(
+        TopicConfiguration topic,
+        [NotNullWhen(returnValue: true)] out ValidateOptionsResult result)
+    {
         if (topic.KeyType == KeyType.Ignored &&
             topic.Compacting == CompactingMode.On)
         {
@@ -128,6 +170,14 @@ public sealed partial class LoaderToolConfigurationValidator :
             return true;
         }
 
+        result = null!;
+        return false;
+    }
+
+    private static bool TryFailOnTopicDateRange(
+        TopicConfiguration topic,
+        [NotNullWhen(returnValue: true)] out ValidateOptionsResult result)
+    {
         if (topic.OffsetStartDate is DateTimeOffset startDate &&
             topic.OffsetEndDate is DateTimeOffset endDate &&
             startDate > endDate)

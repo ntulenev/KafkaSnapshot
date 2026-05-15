@@ -45,7 +45,6 @@ public partial class SnapshotLoaderTests
         var sorterMock = new Mock<IMessageSorter<object, object>>(MockBehavior.Strict);
         var sorter = sorterMock.Object;
         var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
-        encoderMock.Setup(x => x.Encode(It.IsAny<byte[]>(), It.IsAny<EncoderRules>()));
         var encoder = encoderMock.Object;
         var loader = CreateLoader(logger, options, consumerFactory, topicLoader, sorter, encoder);
         var filterKeyMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
@@ -82,7 +81,6 @@ public partial class SnapshotLoaderTests
         var sorterMock = new Mock<IMessageSorter<object, object>>(MockBehavior.Strict);
         var sorter = sorterMock.Object;
         var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
-        encoderMock.Setup(x => x.Encode(It.IsAny<byte[]>(), It.IsAny<EncoderRules>()));
         var encoder = encoderMock.Object;
         var loader = CreateLoader(logger, options, consumerFactory, topicLoader, sorter, encoder);
         var withCompacting = true;
@@ -120,7 +118,6 @@ public partial class SnapshotLoaderTests
         var sorterMock = new Mock<IMessageSorter<object, object>>(MockBehavior.Strict);
         var sorter = sorterMock.Object;
         var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
-        encoderMock.Setup(x => x.Encode(It.IsAny<byte[]>(), It.IsAny<EncoderRules>()));
         var encoder = encoderMock.Object;
         var loader = CreateLoader(logger, options, consumerFactory, topicLoader, sorter, encoder);
         var withCompacting = true;

@@ -60,7 +60,9 @@ public partial class PartitionSnapshotReaderTests
     private static Mock<IMessageEncoder<byte[], object>> CreateEncoderMock()
     {
         var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
-        encoderMock.Setup(x => x.Encode(It.IsAny<byte[]>(), EncoderRules.String)).Returns("value");
+        encoderMock.Setup(x => x.Encode(
+            It.Is<byte[]>(bytes => Encoding.UTF8.GetString(bytes) == "value"),
+            EncoderRules.String)).Returns("value");
 
         return encoderMock;
     }

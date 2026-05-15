@@ -38,7 +38,7 @@ public partial class PartitionSnapshotReaderTests
         consumerMock.Setup(x => x.OffsetsForTimes(
             It.Is<IEnumerable<TopicPartitionTimestamp>>(items =>
                 items.Single().TopicPartition == topicPartition),
-            It.IsAny<TimeSpan>())).Returns(
+            TimeSpan.Zero)).Returns(
             [
                 new TopicPartitionOffset(topicPartition, Offset.End)
             ]);
@@ -79,7 +79,7 @@ public partial class PartitionSnapshotReaderTests
         consumerMock.Setup(x => x.OffsetsForTimes(
             It.Is<IEnumerable<TopicPartitionTimestamp>>(items =>
                 items.Single().TopicPartition == topicPartition),
-            It.IsAny<TimeSpan>())).Returns(
+            TimeSpan.Zero)).Returns(
             [
                 new TopicPartitionOffset(topicPartition, new Offset(0))
             ]);
@@ -174,8 +174,10 @@ public partial class PartitionSnapshotReaderTests
         var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
         var kafkaException = new KafkaException(new Error(ErrorCode.Local_Transport, "lookup failed"));
         consumerMock.Setup(x => x.OffsetsForTimes(
-            It.IsAny<IEnumerable<TopicPartitionTimestamp>>(),
-            It.IsAny<TimeSpan>())).Throws(kafkaException);
+            It.Is<IEnumerable<TopicPartitionTimestamp>>(items =>
+                items.Single().TopicPartition.Topic == topic.Value.Name
+                && items.Single().TopicPartition.Partition == partition),
+            TimeSpan.Zero)).Throws(kafkaException);
         consumerMock.Setup(x => x.Close());
         consumerMock.Setup(x => x.Dispose());
         var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);

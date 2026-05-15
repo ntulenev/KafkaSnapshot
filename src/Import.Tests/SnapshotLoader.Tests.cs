@@ -224,7 +224,6 @@ public partial class SnapshotLoaderTests
         var sorterMock = new Mock<IMessageSorter<object, object>>(MockBehavior.Strict);
         var sorter = sorterMock.Object;
         var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
-        encoderMock.Setup(x => x.Encode(It.IsAny<byte[]>(), It.IsAny<EncoderRules>()));
         var encoder = encoderMock.Object;
 
         // Act

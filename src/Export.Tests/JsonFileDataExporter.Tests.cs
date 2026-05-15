@@ -243,18 +243,22 @@ public class JsonFileDataExporterTests
                     new KafkaMetadata(DateTime.UtcNow, 1, 2)))
         };
         var saveCalls = 0;
-        fileSaver.Setup(x => x.SaveAsync(It.IsAny<FileName>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+        fileSaver.Setup(x => x.SaveAsync(topic.ExportName, "{}", token))
             .Callback(() => saveCalls++)
             .Returns(Task.CompletedTask);
         var serializeCalls = 0;
-        serializer.Setup(x => x.Serialize(It.IsAny<IEnumerable<KeyValuePair<object, KafkaMessage<object>>>>(), It.IsAny<bool>()))
+        serializer.Setup(x => x.Serialize(data, topic.ExportRawMessage))
             .Callback(() => serializeCalls++)
             .Returns("{}");
         var streamSerializeCalls = 0;
-        serializer.Setup(x => x.SerializeAsync(It.IsAny<IEnumerable<KeyValuePair<object, KafkaMessage<object>>>>(), It.IsAny<bool>(), It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
+        serializer.Setup(x => x.SerializeAsync(
+                data,
+                topic.ExportRawMessage,
+                It.Is<Stream>(stream => stream.CanWrite),
+                token))
             .Callback(() => streamSerializeCalls++);
         var createStreamCalls = 0;
-        fileStreamProvider.Setup(x => x.CreateFileStream(It.IsAny<FileName>()))
+        fileStreamProvider.Setup(x => x.CreateFileStream(topic.ExportName))
             .Callback(() => createStreamCalls++)
             .Returns(new MemoryStream());
 

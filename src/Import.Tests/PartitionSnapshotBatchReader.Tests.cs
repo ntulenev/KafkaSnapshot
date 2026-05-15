@@ -107,10 +107,10 @@ public class PartitionSnapshotBatchReaderTests
         result.Should().ContainSingle().Which.Should().Be(message);
         partitionReaderMock.Verify(x => x.Read(
             watermarks[2],
-            It.IsAny<LoadingTopic>(),
-            It.IsAny<IDataFilter<object>>(),
-            It.IsAny<IDataFilter<object>>(),
-            It.IsAny<CancellationToken>()), Times.Never);
+            topic,
+            keyFilterMock.Object,
+            valueFilterMock.Object,
+            token), Times.Never);
     }
 
     [Fact(DisplayName = "PartitionSnapshotBatchReader reads all partitions.")]

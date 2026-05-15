@@ -88,7 +88,9 @@ public partial class SnapshotLoaderTests
         sorterMock.Setup(x => x.Sort(expectedData)).Returns(expectedData);
         var sorter = sorterMock.Object;
         var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
-        encoderMock.Setup(x => x.Encode(It.IsAny<byte[]>(), It.IsAny<EncoderRules>()))
+        encoderMock.Setup(x => x.Encode(
+                It.Is<byte[]>(bytes => new[] { "value1", "value2", "value3" }.Contains(Encoding.UTF8.GetString(bytes))),
+                EncoderRules.String))
             .Returns<byte[], EncoderRules>((bytes, _) => Encoding.UTF8.GetString(bytes));
         var encoder = encoderMock.Object;
         var loader = CreateLoader(logger, options, consumerFactory, topicLoader, sorter, encoder);
@@ -96,10 +98,12 @@ public partial class SnapshotLoaderTests
         HashSet<int> partitionFilter = null!;
         var topicName = new LoadingTopic(new TopicName("test"), withCompacting, new DateFilterRange(null!, null!), EncoderRules.String, partitionFilter);
         var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
-        keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+        keyFilterMock.Setup(x => x.IsMatch(It.Is<object>(value =>
+            new[] { "key1", "key2" }.Contains((string)value)))).Returns(true);
         var keyFilter = keyFilterMock.Object;
         var valueFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
-        valueFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+        valueFilterMock.Setup(x => x.IsMatch(It.Is<object>(value =>
+            new[] { "value1", "value2", "value3" }.Contains((string)value)))).Returns(true);
         var valueFilter = valueFilterMock.Object;
         var offset = new WatermarkOffsets(new Offset(0), new Offset(3));
         var partition = new Partition(1);
@@ -145,7 +149,9 @@ public partial class SnapshotLoaderTests
 
         var sorterMock = new Mock<IMessageSorter<object, object>>(MockBehavior.Strict);
         var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
-        encoderMock.Setup(x => x.Encode(It.IsAny<byte[]>(), EncoderRules.String)).Returns("encoded");
+        encoderMock.Setup(x => x.Encode(
+            It.Is<byte[]>(bytes => Encoding.UTF8.GetString(bytes) == "v"),
+            EncoderRules.String)).Returns("encoded");
 
         var loader = CreateLoader(
             logger,
@@ -163,9 +169,9 @@ public partial class SnapshotLoaderTests
             null);
 
         var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
-        keyFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+        keyFilterMock.Setup(x => x.IsMatch("k")).Returns(true);
         var valueFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
-        valueFilterMock.Setup(x => x.IsMatch(It.IsAny<object>())).Returns(true);
+        valueFilterMock.Setup(x => x.IsMatch("encoded")).Returns(true);
 
         var partition = new Partition(1);
         var topicWatermark = new TopicWatermark(
@@ -177,7 +183,8 @@ public partial class SnapshotLoaderTests
             topic,
             token)).ReturnsAsync(topicWatermark);
 
-        consumerMock.Setup(x => x.Assign(It.IsAny<TopicPartition>()));
+        consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(item =>
+            item.Topic == topic.Value.Name && item.Partition == partition)));
         consumerMock.Setup(x => x.Consume(token)).Returns(new ConsumeResult<object, byte[]>
         {
             Message = new Message<object, byte[]>

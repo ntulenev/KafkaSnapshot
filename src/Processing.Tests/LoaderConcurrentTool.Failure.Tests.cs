@@ -42,11 +42,11 @@ public class LoaderConcurrentToolFailureTests
             throw failure;
         });
         var tool = new LoaderConcurrentTool(NullLogger<LoaderConcurrentTool>.Instance, [first.Object, second.Object]);
-        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+        using var cts = new CancellationTokenSource(TestTimeouts.Scenario);
         var pending = tool.ProcessAsync(cts.Token);
         try
         {
-            Func<Task> act = () => pending.WaitAsync(TimeSpan.FromSeconds(5));
+            Func<Task> act = () => pending.WaitAsync(TestTimeouts.Wait);
             (await act.Should().ThrowAsync<InvalidOperationException>()).Which.Should().BeSameAs(failure);
             closed.Should().BeTrue();
         }

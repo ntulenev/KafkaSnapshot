@@ -2,7 +2,9 @@
 param(
     [string]$BootstrapServers,
     [int]$Port = 19092,
-    [switch]$Measure
+    [switch]$Measure,
+    [ValidateRange(1, 600)]
+    [int]$ReadinessTimeoutSeconds = 60
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
@@ -11,6 +13,12 @@ $container = $null
 $previousBootstrap = $env:KAFKA_SNAPSHOT_TEST_BOOTSTRAP
 Push-Location $repoRoot
 try {
+    $results = Join-Path $repoRoot "artifacts/broker-results/$([guid]::NewGuid().ToString('N'))"
+    New-Item -ItemType Directory -Path $results -Force | Out-Null
+    Write-Host "Broker results and diagnostics: $results"
+    dotnet build eng/KafkaProbe/KafkaProbe.csproj --configuration Release
+    if ($LASTEXITCODE -ne 0) { throw 'Building the Kafka readiness probe failed.' }
+
     if ([string]::IsNullOrWhiteSpace($BootstrapServers)) {
         $container = "kafka-snapshot-tests-$([guid]::NewGuid().ToString('N'))"
         $BootstrapServers = "127.0.0.1:$Port"
@@ -30,19 +38,22 @@ try {
         )
         & docker @dockerArgs
         if ($LASTEXITCODE -ne 0) { throw 'Starting the Kafka test broker failed.' }
-        $deadline = [DateTime]::UtcNow.AddMinutes(1)
-        while ($true) {
-            $logs = docker logs $container 2>&1 | Out-String
-            if ($logs -match 'Kafka Server started') { break }
-            if ([DateTime]::UtcNow -ge $deadline) { throw "Kafka did not start: $logs" }
-            Start-Sleep -Milliseconds 500
-        }
     }
+    & dotnet eng/KafkaProbe/bin/Release/net10.0/KafkaProbe.dll $BootstrapServers $ReadinessTimeoutSeconds 2>&1 |
+        Tee-Object -FilePath (Join-Path $results 'readiness.log')
+    if ($LASTEXITCODE -ne 0) { throw 'Kafka readiness check failed. See readiness.log.' }
+
     $env:KAFKA_SNAPSHOT_TEST_BOOTSTRAP = $BootstrapServers
-    $results = Join-Path $repoRoot "artifacts/broker-results/$([guid]::NewGuid().ToString('N'))"
     dotnet test src/Import.Tests/Import.Tests.csproj --configuration Release `
-        --filter 'Category=Broker' --logger trx --results-directory $results
+        --filter 'Category=Broker' --logger 'trx;LogFileName=broker.trx' --results-directory $results `
+        --blame-hang-timeout 3m --blame-hang-dump-type mini
     if ($LASTEXITCODE -ne 0) { throw 'Real Kafka integration tests failed.' }
+    [xml]$trx = Get-Content -LiteralPath (Join-Path $results 'broker.trx') -Raw
+    $counters = $trx.TestRun.ResultSummary.Counters
+    if ([int]$counters.executed -le 0 -or [int]$counters.notExecuted -ne 0 -or
+        [int]$counters.passed -ne [int]$counters.total) {
+        throw 'The broker suite must execute at least one test and pass every test without skips.'
+    }
     if ($Measure) {
         & (Join-Path $PSScriptRoot 'Measure.ps1') -BootstrapServers $BootstrapServers
     }
@@ -50,7 +61,19 @@ try {
 finally {
     $env:KAFKA_SNAPSHOT_TEST_BOOTSTRAP = $previousBootstrap
     if ($container) {
-        docker rm -f $container | Out-Null
+        # Save evidence before removing only the container created by this invocation.
+        foreach ($diagnostic in @('logs', 'inspect')) {
+            try {
+                & docker $diagnostic $container 2>&1 |
+                    Out-File -LiteralPath (Join-Path $results "docker-$diagnostic.log") -Encoding utf8
+            }
+            catch { Write-Warning "Could not collect docker ${diagnostic}: $_" }
+        }
+        try {
+            docker rm -f $container | Out-Null
+            if ($LASTEXITCODE -ne 0) { Write-Warning "Could not remove test container $container." }
+        }
+        catch { Write-Warning "Could not remove test container ${container}: $_" }
     }
     Pop-Location
 }

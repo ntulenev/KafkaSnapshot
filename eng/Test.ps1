@@ -16,7 +16,8 @@ try {
 
     dotnet test src/KafkaSnapshot.slnx --configuration Release `
         --settings coverage.runsettings --collect 'XPlat Code Coverage' `
-        --results-directory $rawResults --logger trx
+        --results-directory $rawResults --logger trx `
+        --blame-hang-timeout 3m --blame-hang-dump-type mini
     if ($LASTEXITCODE -ne 0) { throw 'The test suite failed.' }
 
     $reports = @(Get-ChildItem -LiteralPath $rawResults -Filter coverage.opencover.xml -Recurse |

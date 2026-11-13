@@ -40,6 +40,7 @@ internal sealed class FakeKafkaClientFactory : IKafkaClientFactory
     {
         var consumer = new Mock<IConsumer<TKey, byte[]>>(MockBehavior.Strict);
         TopicPartition? assignedPartition = null;
+        var consumeIndex = 0;
 
         consumer
             .Setup(client => client.QueryWatermarkOffsets(
@@ -56,7 +57,7 @@ internal sealed class FakeKafkaClientFactory : IKafkaClientFactory
             .Callback<TopicPartition>(topicPartition =>
             {
                 assignedPartition = topicPartition;
-                _consumeIndexes[topicPartition] = 0;
+                consumeIndex = 0;
             });
 
         consumer
@@ -66,7 +67,7 @@ internal sealed class FakeKafkaClientFactory : IKafkaClientFactory
                 assignedPartition = topicPartitionOffset.TopicPartition;
                 var messages = GetPartitionMessages(assignedPartition);
                 var index = messages.FindIndex(message => message.Offset >= topicPartitionOffset.Offset.Value);
-                _consumeIndexes[assignedPartition] = index < 0 ? messages.Count : index;
+                consumeIndex = index < 0 ? messages.Count : index;
             });
 
         consumer
@@ -96,8 +97,7 @@ internal sealed class FakeKafkaClientFactory : IKafkaClientFactory
                 }
 
                 var messages = GetPartitionMessages(assignedPartition);
-                var index = _consumeIndexes.GetValueOrDefault(assignedPartition);
-                _consumeIndexes[assignedPartition] = index + 1;
+                var index = consumeIndex++;
 
                 if (index >= messages.Count)
                 {
@@ -149,6 +149,5 @@ internal sealed class FakeKafkaClientFactory : IKafkaClientFactory
     }
 
     private readonly Dictionary<string, IReadOnlyList<StoredKafkaMessage>> _topics = [];
-    private readonly Dictionary<TopicPartition, int> _consumeIndexes = [];
 }
 

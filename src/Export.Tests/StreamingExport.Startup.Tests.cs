@@ -61,11 +61,11 @@ public class StreamingExportStartupTests
             }
         }
 
-        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        using var cts = new CancellationTokenSource(TestTimeouts.Scenario);
         try
         {
             var pending = exporter.ExportAsync(Source(), new ExportedTopic(new TopicName("orders"), new FileName("orders.json"), true), cts.Token);
-            await started.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            await started.Task.WaitAsync(TestTimeouts.Wait);
             if (cancel)
             {
                 await cts.CancelAsync();

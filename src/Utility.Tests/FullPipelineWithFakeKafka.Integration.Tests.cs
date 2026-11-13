@@ -39,7 +39,7 @@ public class FullPipelineWithFakeKafkaIntegrationTests
                 filterKeyType: "Equals",
                 filterKeyValue: "customer-1")
             .Build();
-        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        using var cts = new CancellationTokenSource(TestTimeouts.Scenario);
 
         // Act
         var loaderTool = host.Services.GetRequiredService<ILoaderTool>();
@@ -79,7 +79,7 @@ public class FullPipelineWithFakeKafkaIntegrationTests
             .WithTopic(0, "customers", "String", "On", "customers.json", exportRawMessage: true)
             .WithTopic(1, "accounts", "Long", "On", "accounts.json", exportRawMessage: true)
             .Build();
-        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        using var cts = new CancellationTokenSource(TestTimeouts.Scenario);
 
         // Act
         var loaderTool = host.Services.GetRequiredService<ILoaderTool>();
@@ -129,7 +129,7 @@ public class FullPipelineWithFakeKafkaIntegrationTests
             .WithTimeSortAscending()
             .WithTopic(0, topicName, "String", "Off", exportFile, exportRawMessage: false)
             .Build();
-        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        using var cts = new CancellationTokenSource(TestTimeouts.Scenario);
 
         // Act
         var loaderTool = host.Services.GetRequiredService<ILoaderTool>();
@@ -177,7 +177,7 @@ public class FullPipelineWithFakeKafkaIntegrationTests
                 offsetEndDate: "1970-01-01T00:03:00Z",
                 partitionIds: [0])
             .Build();
-        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        using var cts = new CancellationTokenSource(TestTimeouts.Scenario);
 
         // Act
         var loaderTool = host.Services.GetRequiredService<ILoaderTool>();
@@ -212,7 +212,7 @@ public class FullPipelineWithFakeKafkaIntegrationTests
             .Create(testDirectory.Path, fakeKafka)
             .WithTopic(0, topicName, "Ignored", "Off", exportFile, exportRawMessage: true)
             .Build();
-        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        using var cts = new CancellationTokenSource(TestTimeouts.Scenario);
 
         // Act
         var loaderTool = host.Services.GetRequiredService<ILoaderTool>();

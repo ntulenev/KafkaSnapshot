@@ -34,7 +34,7 @@ public class StreamingExportTests
             try
             {
                 yield return Message(new string('x', 100000));
-                await wrote.Task.WaitAsync(TimeSpan.FromSeconds(5));
+                await wrote.Task.WaitAsync(TestTimeouts.Wait);
                 yield return Message("last");
             }
             finally
@@ -74,9 +74,9 @@ public class StreamingExportTests
             }
         }
 
-        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        using var cts = new CancellationTokenSource(TestTimeouts.Scenario);
         var exporting = Exporter(stream).ExportAsync(Source(), Topic(), cts.Token);
-        await wrote.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        await wrote.Task.WaitAsync(TestTimeouts.Wait);
         if (cancel)
         {
             await cts.CancelAsync();

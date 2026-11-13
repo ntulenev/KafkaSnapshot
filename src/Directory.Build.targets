@@ -5,4 +5,7 @@
 		<CodeAnalysisTreatWarningsAsErrors>false</CodeAnalysisTreatWarningsAsErrors>
 		<EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
 	</PropertyGroup>
+	<ItemGroup Condition="'$(IsTestProject)' == 'true'">
+		<Compile Include="$(MSBuildThisFileDirectory)../eng/TestSupport/TestTimeouts.cs" Link="TestTimeouts.cs" />
+	</ItemGroup>
 </Project>

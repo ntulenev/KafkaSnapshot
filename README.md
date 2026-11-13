@@ -385,7 +385,7 @@ Recent versions use `DateTimeOffset` for date-based offsets and exported metadat
 
 ## Tests and Coverage
 
-Install the .NET 10 SDK and PowerShell 7, then run from the repository root:
+Install the .NET SDK version pinned in `global.json` and PowerShell 7, then run from the repository root:
 
 ```powershell
 ./eng/Test.ps1
@@ -399,7 +399,7 @@ For a faster run without collecting coverage:
 dotnet test src/KafkaSnapshot.slnx --configuration Release
 ```
 
-GitHub Actions runs the same coverage script on pushes (including merges into `main`), pull requests, and manual dispatch. The Windows runner installs .NET 10, publishes a coverage summary, and retains test results and the HTML report as the `test-results-and-coverage` artifact for 14 days. To require this check before merging, select `.NET 10 tests and 100% coverage` in the repository's branch protection settings.
+GitHub Actions runs the same coverage script on pushes (including merges into `main`), pull requests, and manual dispatch. The `windows-2025` runner installs the SDK pinned in `global.json`, publishes a coverage summary, and retains test results and the HTML report as the `test-results-and-coverage` artifact for 14 days. To require this check before merging, select `.NET 10 tests and 100% coverage` in the repository's branch protection settings.
 
 ### Coverage audit (2026-11-13)
 
@@ -495,11 +495,20 @@ and [consumer configuration](https://docs.confluent.io/platform/current/clients/
 
 This starts a uniquely named, pinned Apache Kafka 4.4.0 Docker container, runs six
 broker tests, and removes the container in `finally`. Tests create/delete unique
-topics. Use `-Port 19093` if 19092 is occupied, or
+topics. A Kafka metadata request verifies readiness before tests start; log messages
+alone do not determine readiness. `-ReadinessTimeoutSeconds` defaults to 60.
+Readiness output, TRX, container logs, and container inspection are retained under
+`artifacts/broker-results/<run-id>/`, including after failures. External clusters
+have no owned container to inspect or remove. The broker script rejects skipped
+or empty test runs. Both test scripts terminate a test host after a three-minute
+per-test hang timeout and retain diagnostic dumps with the test results.
+Tests use event-driven synchronization with 30-second waits and a two-minute
+scenario cancellation deadline; individual native Kafka calls have bounded timeouts.
+Use `-Port 19093` if 19092 is occupied, or
 `-BootstrapServers 127.0.0.1:9092` to use an existing disposable test cluster.
 Do not point these tests at a production cluster. With no bootstrap environment
 variable, the default suite explicitly skips the six broker tests. GitHub Actions
-runs them in a separate Linux/Docker job.
+runs them in a separate `ubuntu-24.04`/Docker job using the same pinned SDK.
 
 The broker suite checks transaction-control gaps, empty partitions, growth after
 capture, retention deletion, non-monotonic timestamps, and rejected tombstones.

@@ -1,3 +1,5 @@
+using KafkaSnapshot.Models.Import;
+
 using FluentAssertions;
 
 using Moq;

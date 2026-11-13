@@ -27,14 +27,21 @@ public sealed class DateFilterRange
         var utcStartDate = NormalizeToUtc(startDate);
         var utcEndDate = NormalizeToUtc(endDate);
 
-        if (utcStartDate is DateTimeOffset start && utcEndDate is DateTimeOffset end)
+        if (!IsValid(utcStartDate, utcEndDate))
         {
-            ArgumentOutOfRangeException.ThrowIfGreaterThan(start, end, nameof(startDate));
+            throw new ArgumentOutOfRangeException(nameof(startDate), "Start date exceeds end date.");
         }
 
         StartDate = utcStartDate;
         EndDate = utcEndDate;
     }
+
+    /// <summary>Checks whether the timestamp exceeds the inclusive upper boundary.</summary>
+    public bool IsAfterEnd(DateTimeOffset timestamp) => EndDate is DateTimeOffset end && timestamp > end;
+
+    /// <summary>Checks that the date boundaries are ordered.</summary>
+    public static bool IsValid(DateTimeOffset? start, DateTimeOffset? end)
+        => !start.HasValue || !end.HasValue || start.Value <= end.Value;
 
     private static DateTimeOffset? NormalizeToUtc(DateTimeOffset? date)
         => date?.ToUniversalTime();

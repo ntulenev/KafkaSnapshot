@@ -36,7 +36,7 @@ public sealed class ProcessingUnit<TKey, TKeyMarker, TValue> : IProcessingUnit
     public ProcessingUnit(ILogger<ProcessingUnit<TKey, TKeyMarker, TValue>> logger,
                           ProcessingTopic<TKey> topic,
                           ISnapshotLoader<TKey, TValue> kafkaLoader,
-                          IDataExporter<TKey, TKeyMarker, TValue, ExportedTopic> exporter,
+                          IDataExporter<TKey, TKeyMarker, TValue> exporter,
                           IKeyFiltersFactory<TKey> keyFilterFactory,
                           IValueFilterFactory<TValue> valueFilterFactory
                           )
@@ -74,6 +74,13 @@ public sealed class ProcessingUnit<TKey, TKeyMarker, TValue> : IProcessingUnit
     public async Task ProcessAsync(CancellationToken ct)
     {
         _logger.LogDebug("Start loading data from Kafka.");
+        if (_exporter.UseStreaming)
+        {
+            await _exporter.ExportAsync(_kafkaLoader.StreamSnapshotAsync(
+                _topicParams, _keyFilter, _valueFilter, ct), _exportedTopic, ct).ConfigureAwait(false);
+            return;
+        }
+
         var items = await _kafkaLoader.LoadSnapshotAsync(
             _topicParams,
             _keyFilter,
@@ -90,7 +97,7 @@ public sealed class ProcessingUnit<TKey, TKeyMarker, TValue> : IProcessingUnit
     public TopicName TopicName => _topicParams.Value;
 
     private readonly ISnapshotLoader<TKey, TValue> _kafkaLoader;
-    private readonly IDataExporter<TKey, TKeyMarker, TValue, ExportedTopic> _exporter;
+    private readonly IDataExporter<TKey, TKeyMarker, TValue> _exporter;
     private readonly ILogger _logger;
     private readonly IDataFilter<TKey> _keyFilter;
     private readonly IDataFilter<TValue> _valueFilter;

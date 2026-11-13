@@ -114,9 +114,9 @@ public class TopicConfigurationTests
         result.FilterKeyValue.Should().Be("value");
     }
 
-    [Fact(DisplayName = "TopicConfiguration ignores filter value for ignored key.")]
+    [Fact(DisplayName = "TopicConfiguration rejects filtering ignored keys.")]
     [Trait("Category", "Unit")]
-    public void TopicConfigurationIgnoresFilterValueForIgnoredKey()
+    public void TopicConfigurationRejectsFilteringIgnoredKeys()
     {
         // Arrange
         var config = new TopicConfiguration
@@ -125,15 +125,16 @@ public class TopicConfigurationTests
             ExportFileName = "topic-4.json",
             FilterKeyType = FilterType.Equals,
             KeyType = KeyType.Ignored,
+            Compacting = CompactingMode.Off,
             FilterKeyValue = "value",
             MessageEncoderRule = EncoderRules.String
         };
 
         // Act
-        var result = TopicConfigurationMapper.ToProcessingTopic<string>(config);
+        Action act = () => TopicConfigurationMapper.ToProcessingTopic<string>(config);
 
         // Assert
-        result.FilterKeyValue.Should().BeNull();
+        act.Should().Throw<ArgumentException>();
     }
 
     [Fact(DisplayName = "TopicConfiguration can't convert invalid key type.")]

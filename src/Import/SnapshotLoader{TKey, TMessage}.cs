@@ -1,15 +1,12 @@
-using Confluent.Kafka;
+using System.Runtime.CompilerServices;
 
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 using KafkaSnapshot.Import.Metadata;
-using KafkaSnapshot.Import.Watermarks;
 using KafkaSnapshot.Abstractions.Filters;
 using KafkaSnapshot.Abstractions.Import;
 using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Message;
-using KafkaSnapshot.Import.Configuration;
 
 namespace KafkaSnapshot.Import;
 
@@ -22,27 +19,20 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
     /// Creates <see cref="SnapshotLoader{TKey, TMessage}"/>.
     /// </summary>
     public SnapshotLoader(ILogger<SnapshotLoader<TKey, TMessage>> logger,
-                          IOptions<SnapshotLoaderConfiguration> config,
-                          Func<IConsumer<TKey, byte[]>> consumerFactory,
                           ITopicWatermarkLoader topicWatermarkLoader,
                           IPartitionSnapshotBatchReader<TKey, TMessage> partitionBatchReader,
-                          ISnapshotCompactor<TKey, TMessage> snapshotCompactor
+                          ISnapshotBuilder<TKey, TMessage> snapshotBuilder
                          )
     {
         ArgumentNullException.ThrowIfNull(logger);
-        ArgumentNullException.ThrowIfNull(config);
-        ArgumentNullException.ThrowIfNull(config.Value, nameof(config));
-        ArgumentNullException.ThrowIfNull(consumerFactory);
         ArgumentNullException.ThrowIfNull(topicWatermarkLoader);
         ArgumentNullException.ThrowIfNull(partitionBatchReader);
-        ArgumentNullException.ThrowIfNull(snapshotCompactor);
+        ArgumentNullException.ThrowIfNull(snapshotBuilder);
 
         _logger = logger;
-        _consumerFactory = consumerFactory;
         _topicWatermarkLoader = topicWatermarkLoader;
-        _config = config.Value;
         _partitionBatchReader = partitionBatchReader;
-        _snapshotCompactor = snapshotCompactor;
+        _snapshotBuilder = snapshotBuilder;
 
         _logger.LogDebug("Instance created");
     }
@@ -60,12 +50,12 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
 
         _logger.LogDebug("Loading topic watermark");
         var topicWatermark = await _topicWatermarkLoader
-                                    .LoadWatermarksAsync(_consumerFactory, loadingTopic, ct)
+                                    .LoadWatermarksAsync(loadingTopic, ct)
                                     .ConfigureAwait(false);
 
         _logger.LogDebug("Loading initial state");
-        var initialState = await ConsumeInitialAsync(
-                                    topicWatermark,
+        var initialState = await _partitionBatchReader.ReadAsync(
+                                    topicWatermark.Watermarks,
                                     loadingTopic,
                                     keyFilter,
                                     valueFilter,
@@ -74,39 +64,46 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
 
         _logger.LogDebug("Creating compacting state");
 
-        return _snapshotCompactor.CreateSnapshot(initialState, loadingTopic.LoadWithCompacting);
+        return _snapshotBuilder.CreateSnapshot(initialState, loadingTopic.LoadWithCompacting);
     }
 
-    private async Task<IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>>> ConsumeInitialAsync
-       (TopicWatermark topicWatermark,
-        LoadingTopic topicParams,
+    /// <inheritdoc/>
+    public async IAsyncEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> StreamSnapshotAsync(
+        LoadingTopic loadingTopic,
         IDataFilter<TKey> keyFilter,
         IDataFilter<TMessage> valueFilter,
-        CancellationToken ct)
+        [EnumeratorCancellation] CancellationToken ct)
     {
-        if (_config.SearchSinglePartition)
+        ArgumentNullException.ThrowIfNull(loadingTopic);
+        ArgumentNullException.ThrowIfNull(keyFilter);
+        ArgumentNullException.ThrowIfNull(valueFilter);
+        ct.ThrowIfCancellationRequested();
+
+        if (_snapshotBuilder.RequiresBuffering(loadingTopic.LoadWithCompacting))
         {
-            return await _partitionBatchReader.ReadFirstNonEmptyAsync(
-                topicWatermark.Watermarks,
-                topicParams,
-                keyFilter,
-                valueFilter,
-                ct).ConfigureAwait(false);
+            var snapshot = await LoadSnapshotAsync(loadingTopic, keyFilter, valueFilter, ct)
+                .ConfigureAwait(false);
+            foreach (var item in snapshot)
+            {
+                ct.ThrowIfCancellationRequested();
+                yield return item;
+            }
+
+            yield break;
         }
 
-        return await _partitionBatchReader.ReadAllAsync(
-            topicWatermark.Watermarks,
-            topicParams,
-            keyFilter,
-            valueFilter,
-            ct).ConfigureAwait(false);
+        var watermark = await _topicWatermarkLoader.LoadWatermarksAsync(loadingTopic, ct)
+            .ConfigureAwait(false);
+        await foreach (var item in _partitionBatchReader.StreamAsync(watermark.Watermarks,
+            loadingTopic, keyFilter, valueFilter, ct).ConfigureAwait(false))
+        {
+            yield return item;
+        }
     }
 
-    private readonly SnapshotLoaderConfiguration _config;
-    private readonly Func<IConsumer<TKey, byte[]>> _consumerFactory;
     private readonly ITopicWatermarkLoader _topicWatermarkLoader;
     private readonly ILogger _logger;
     private readonly IPartitionSnapshotBatchReader<TKey, TMessage> _partitionBatchReader;
-    private readonly ISnapshotCompactor<TKey, TMessage> _snapshotCompactor;
+    private readonly ISnapshotBuilder<TKey, TMessage> _snapshotBuilder;
 }
 

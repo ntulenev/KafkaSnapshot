@@ -24,10 +24,10 @@ public sealed record KafkaMessage<TMessage>
     /// <summary>
     /// Kafka message.
     /// </summary>
-    public TMessage Message { get; init; }
+    public TMessage Message { get; }
 
     /// <summary>
     /// Message metadata.
     /// </summary>
-    public KafkaMetadata Meta { get; init; }
+    public KafkaMetadata Meta { get; }
 }

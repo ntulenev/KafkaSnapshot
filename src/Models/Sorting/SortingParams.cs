@@ -32,13 +32,16 @@ public sealed record SortingParams
         Order = order;
     }
 
+    /// <summary>Whether sorting requires the complete input.</summary>
+    public bool IsEnabled => Order != SortingOrder.None;
+
     /// <summary>
     /// Message attribute for sorting.
     /// </summary>
-    public SortingType Type { get; init; }
+    public SortingType Type { get; }
 
     /// <summary>
     /// Sort order.
     /// </summary>
-    public SortingOrder Order { get; init; }
+    public SortingOrder Order { get; }
 }

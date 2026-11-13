@@ -43,19 +43,29 @@ public sealed class LoaderConcurrentTool : ILoaderTool
                 _units.Count);
         }
 
+        ct.ThrowIfCancellationRequested();
+        using var stopped = CancellationTokenSource.CreateLinkedTokenSource(ct);
+#pragma warning disable CA2025 // WhenAll joins every unit before disposing the shared cancellation source.
         await Task.WhenAll(_units.Select(async unit =>
         {
-            using var _ = _logger.BeginScope("Topic {Topic}", unit.TopicName.Name);
+            try
+            {
+                stopped.Token.ThrowIfCancellationRequested();
+                using var _ = _logger.BeginScope("Topic {Topic}", unit.TopicName.Name);
 
-            _logger.LogInformation("Start processing topic.");
+                _logger.LogInformation("Start processing topic.");
 
-            ct.ThrowIfCancellationRequested();
+                await unit.ProcessAsync(stopped.Token).ConfigureAwait(false);
 
-            await unit.ProcessAsync(ct).ConfigureAwait(false);
-
-            _logger.LogInformation("Finish processing topic.");
-
+                _logger.LogInformation("Finish processing topic.");
+            }
+            catch
+            {
+                await stopped.CancelAsync().ConfigureAwait(false);
+                throw;
+            }
         })).ConfigureAwait(false);
+#pragma warning restore CA2025
 
         _logger.LogInformation("Done.");
     }

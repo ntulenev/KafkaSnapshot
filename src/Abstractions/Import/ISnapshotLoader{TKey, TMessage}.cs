@@ -12,6 +12,13 @@ namespace KafkaSnapshot.Abstractions.Import;
 public interface ISnapshotLoader<TKey, TMessage> where TKey : notnull
                                                  where TMessage : notnull
 {
+    /// <summary>Streams a snapshot, buffering only for compaction or sorting.</summary>
+    IAsyncEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> StreamSnapshotAsync(
+        LoadingTopic loadingTopic,
+        IDataFilter<TKey> keyFilter,
+        IDataFilter<TMessage> valueFilter,
+        CancellationToken ct);
+
     /// <summary>
     /// Loads a snapshot of Kafka messages for the specified topic.
     /// </summary>

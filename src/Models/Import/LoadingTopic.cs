@@ -1,8 +1,6 @@
 using KafkaSnapshot.Models.Filters;
 using KafkaSnapshot.Models.Names;
 
-using System.Collections.Frozen;
-
 namespace KafkaSnapshot.Models.Import;
 
 /// <summary>
@@ -50,12 +48,12 @@ public sealed class LoadingTopic
     /// <summary>
     /// Topic partitions to read from.
     /// </summary>
-    public IReadOnlySet<int> PartitionFilter { get; }
+    public IReadOnlySet<int> PartitionFilter => _partitionSelection.Partitions;
 
     /// <summary>
     /// Checks if <see cref="PartitionFilter"/> contains any items.
     /// </summary>
-    public bool HasPartitionFilter => PartitionFilter.Any();
+    public bool HasPartitionFilter => _partitionSelection.IsRestricted;
 
     /// <summary>
     /// Creates <see cref="LoadingTopic"/>.
@@ -77,19 +75,11 @@ public sealed class LoadingTopic
 
         Value = topicName;
         LoadWithCompacting = loadWithCompacting;
+        DateRange = dateParams;
         _offsetDate = dateParams.StartDate;
         _endOffsetDate = dateParams.EndDate;
 
-        if (partitionFilter != null)
-        {
-            ArgumentOutOfRangeException.ThrowIfZero(partitionFilter.Count, nameof(partitionFilter));
-
-            PartitionFilter = partitionFilter.ToFrozenSet();
-        }
-        else
-        {
-            PartitionFilter = new HashSet<int>().ToFrozenSet();
-        }
+        _partitionSelection = new PartitionSelection(partitionFilter);
 
         if (!Enum.IsDefined(valueEncoderRule))
         {
@@ -102,6 +92,13 @@ public sealed class LoadingTopic
         TopicValueEncoderRule = valueEncoderRule;
     }
 
+    /// <summary>Validated date boundaries.</summary>
+    public DateFilterRange DateRange { get; }
+
+    /// <summary>Checks whether a partition is included in the selection.</summary>
+    public bool IncludesPartition(int partition) => _partitionSelection.Includes(partition);
+
+    private readonly PartitionSelection _partitionSelection;
     private readonly DateTimeOffset? _offsetDate;
     private readonly DateTimeOffset? _endOffsetDate;
 }

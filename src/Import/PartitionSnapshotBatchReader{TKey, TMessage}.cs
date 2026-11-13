@@ -1,6 +1,8 @@
+using System.Runtime.CompilerServices;
+using System.Threading.Channels;
+
 using KafkaSnapshot.Abstractions.Filters;
 using KafkaSnapshot.Import.Configuration;
-using KafkaSnapshot.Import.Watermarks;
 using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Message;
 
@@ -35,6 +37,88 @@ public class PartitionSnapshotBatchReader<TKey, TMessage>
         _partitionReader = partitionReader;
     }
 
+    /// <summary>Streams partitions in traversal order with bounded buffering.</summary>
+    public async IAsyncEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> StreamAsync(
+        IEnumerable<PartitionWatermark> watermarks,
+        LoadingTopic topicParams,
+        IDataFilter<TKey> keyFilter,
+        IDataFilter<TMessage> valueFilter,
+        [EnumeratorCancellation] CancellationToken ct)
+    {
+        ArgumentNullException.ThrowIfNull(watermarks);
+        ArgumentNullException.ThrowIfNull(topicParams);
+        ArgumentNullException.ThrowIfNull(keyFilter);
+        ArgumentNullException.ThrowIfNull(valueFilter);
+        ct.ThrowIfCancellationRequested();
+
+        using var stopped = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        var channel = Channel.CreateBounded<KeyValuePair<TKey, KafkaMessage<TMessage>>>(
+            new BoundedChannelOptions(_config.StreamBufferCapacity)
+            {
+                SingleReader = true,
+                SingleWriter = true,
+                FullMode = BoundedChannelFullMode.Wait
+            });
+
+        // Consume is blocking. The worker owns the consumer and completes before disposal.
+#pragma warning disable CA2025 // The finally block joins the worker before disposing stopped.
+        var producer = Task.Run(async () =>
+        {
+            try
+            {
+                foreach (var watermark in watermarks)
+                {
+                    stopped.Token.ThrowIfCancellationRequested();
+                    var hasMatches = false;
+                    foreach (var item in _partitionReader.Read(watermark, topicParams,
+                        keyFilter, valueFilter, stopped.Token))
+                    {
+                        await channel.Writer.WriteAsync(item, stopped.Token).ConfigureAwait(false);
+                        hasMatches = true;
+                    }
+
+                    if (_config.SearchSinglePartition && hasMatches)
+                    {
+                        break;
+                    }
+                }
+
+                _ = channel.Writer.TryComplete();
+            }
+#pragma warning disable CA1031 // Producer errors are propagated through the channel to its reader.
+            catch (Exception exception)
+#pragma warning restore CA1031
+            {
+                _ = channel.Writer.TryComplete(exception);
+            }
+        }, CancellationToken.None);
+#pragma warning restore CA2025
+
+        try
+        {
+            await foreach (var item in channel.Reader.ReadAllAsync(ct).ConfigureAwait(false))
+            {
+                yield return item;
+            }
+        }
+        finally
+        {
+            await stopped.CancelAsync().ConfigureAwait(false);
+            await producer.ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>Reads partitions using the configured selection strategy.</summary>
+    public Task<IReadOnlyCollection<KeyValuePair<TKey, KafkaMessage<TMessage>>>> ReadAsync(
+        IEnumerable<PartitionWatermark> watermarks,
+        LoadingTopic topicParams,
+        IDataFilter<TKey> keyFilter,
+        IDataFilter<TMessage> valueFilter,
+        CancellationToken ct)
+        => _config.SearchSinglePartition
+            ? ReadFirstNonEmptyAsync(watermarks, topicParams, keyFilter, valueFilter, ct)
+            : ReadAllAsync(watermarks, topicParams, keyFilter, valueFilter, ct);
+
     /// <summary>
     /// Reads partitions one by one until the first non-empty partition snapshot is found.
     /// </summary>
@@ -54,6 +138,7 @@ public class PartitionSnapshotBatchReader<TKey, TMessage>
         ArgumentNullException.ThrowIfNull(topicParams);
         ArgumentNullException.ThrowIfNull(keyFilter);
         ArgumentNullException.ThrowIfNull(valueFilter);
+        ct.ThrowIfCancellationRequested();
 
         foreach (var watermark in watermarks)
         {
@@ -92,6 +177,7 @@ public class PartitionSnapshotBatchReader<TKey, TMessage>
         ArgumentNullException.ThrowIfNull(topicParams);
         ArgumentNullException.ThrowIfNull(keyFilter);
         ArgumentNullException.ThrowIfNull(valueFilter);
+        ct.ThrowIfCancellationRequested();
 
         var partitionWatermarks = watermarks.ToList();
 
@@ -100,6 +186,7 @@ public class PartitionSnapshotBatchReader<TKey, TMessage>
             return [];
         }
 
+        using var stopped = CancellationTokenSource.CreateLinkedTokenSource(ct);
         using var concurrency = new SemaphoreSlim(ResolveMaxConcurrency(partitionWatermarks.Count));
 
 #pragma warning disable CA2025 // Task.WhenAll below completes all users of the semaphore before disposal.
@@ -110,7 +197,7 @@ public class PartitionSnapshotBatchReader<TKey, TMessage>
                 keyFilter,
                 valueFilter,
                 concurrency,
-                ct))
+                stopped))
             .ToArray();
 #pragma warning restore CA2025
 
@@ -134,8 +221,9 @@ public class PartitionSnapshotBatchReader<TKey, TMessage>
         IDataFilter<TKey> keyFilter,
         IDataFilter<TMessage> valueFilter,
         SemaphoreSlim concurrency,
-        CancellationToken ct)
+        CancellationTokenSource stopped)
     {
+        var ct = stopped.Token;
         await concurrency.WaitAsync(ct).ConfigureAwait(false);
 
         try
@@ -149,6 +237,11 @@ public class PartitionSnapshotBatchReader<TKey, TMessage>
                     valueFilter,
                     ct),
                 ct).ConfigureAwait(false);
+        }
+        catch
+        {
+            await stopped.CancelAsync().ConfigureAwait(false);
+            throw;
         }
         finally
         {

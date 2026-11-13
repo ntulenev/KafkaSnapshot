@@ -14,9 +14,13 @@ public sealed class TopicName
     /// too long, or contains invalid characters.</exception>
     public TopicName(string name)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        var error = KafkaTopicNameRules.Validate(name);
+        if (error == TopicNameValidationError.Missing)
+        {
+            throw new ArgumentNullException(nameof(name));
+        }
 
-        if (!KafkaTopicNameRules.IsValid(name))
+        if (error != TopicNameValidationError.None)
         {
             throw new ArgumentException("Topic name contains invalid characters", nameof(name));
         }

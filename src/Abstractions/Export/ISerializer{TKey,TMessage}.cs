@@ -34,4 +34,8 @@ public interface ISerializer<TKey, TMessage, TKeyMarker>
         bool exportRawMessage,
         Stream stream,
         CancellationToken ct);
+    /// <summary>Serializes an asynchronous message stream without buffering the input.</summary>
+    Task SerializeAsync(
+        IAsyncEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> data,
+        bool exportRawMessage, Stream stream, CancellationToken ct);
 }

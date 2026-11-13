@@ -1,13 +1,18 @@
 using Confluent.Kafka;
+
 using FluentAssertions;
+
 using KafkaSnapshot.Import.Configuration;
 using KafkaSnapshot.Import.Kafka;
 using KafkaSnapshot.Import.Metadata;
 using KafkaSnapshot.Models.Filters;
 using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Names;
+
 using Microsoft.Extensions.Options;
+
 using Moq;
+
 using Xunit;
 
 namespace KafkaSnapshot.Import.Tests;
@@ -30,13 +35,14 @@ public class TopicWatermarkLoaderFailureTests
         var consumer = new Mock<IConsumer<string, byte[]>>(MockBehavior.Strict);
         consumer.Setup(x => x.Close());
         consumer.Setup(x => x.Dispose());
+        factory.Setup(x => x.CreateConsumer<string>()).Returns(consumer.Object);
         var loader = new TopicWatermarkLoader(factory.Object, Options.Create(new TopicWatermarkLoaderConfiguration
         {
             AdminClientTimeout = TimeSpan.FromSeconds(5)
         }));
         var topic = new LoadingTopic(new TopicName("customers"), false, new DateFilterRange(null, null), EncoderRules.String, null);
 
-        Func<Task> act = () => loader.LoadWatermarksAsync(() => consumer.Object, topic, CancellationToken.None);
+        Func<Task> act = () => loader.LoadWatermarksAsync(topic, CancellationToken.None);
 
         await act.Should().ThrowAsync<InvalidOperationException>().WithMessage($"*customers*{error}*");
         admin.Verify(x => x.Dispose(), Times.Once);
@@ -55,11 +61,7 @@ public class TopicWatermarkLoaderFailureTests
         using var cts = new CancellationTokenSource();
         await cts.CancelAsync();
 
-        Func<Task> act = () => loader.LoadWatermarksAsync<string, byte[]>(() =>
-        {
-            consumerCreated = true;
-            throw new InvalidOperationException("Consumer must not be created");
-        }, topic, cts.Token);
+        Func<Task> act = () => loader.LoadWatermarksAsync(topic, cts.Token);
 
         await act.Should().ThrowAsync<OperationCanceledException>();
         consumerCreated.Should().BeFalse();

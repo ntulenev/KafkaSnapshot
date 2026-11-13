@@ -11,6 +11,7 @@ using KafkaSnapshot.Models.Message;
 using KafkaSnapshot.Models.Names;
 
 using Moq;
+
 using Microsoft.Extensions.Options;
 
 using Xunit;
@@ -160,13 +161,13 @@ public class PartitionSnapshotBatchReaderTests
             topic,
             keyFilterMock.Object,
             valueFilterMock.Object,
-            token)).Returns([firstMessage]);
+            It.Is<CancellationToken>(current => current.CanBeCanceled))).Returns([firstMessage]);
         partitionReaderMock.Setup(x => x.Read(
             watermarks[1],
             topic,
             keyFilterMock.Object,
             valueFilterMock.Object,
-            token)).Returns([secondMessage]);
+            It.Is<CancellationToken>(current => current.CanBeCanceled))).Returns([secondMessage]);
         var reader = new PartitionSnapshotBatchReader<object, object>(
             Options.Create(new SnapshotLoaderConfiguration { MaxConcurrentPartitions = 1 }),
             partitionReaderMock.Object);
@@ -194,10 +195,7 @@ public class PartitionSnapshotBatchReaderTests
 
     private static PartitionWatermark CreateWatermark(LoadingTopic topic, int partition)
         =>
-        new(
-            topic,
-            new WatermarkOffsets(new Offset(0), new Offset(1)),
-            new Partition(partition));
+        new(topic, new OffsetRange(0, 1), partition);
 
     private static KeyValuePair<object, KafkaMessage<object>> CreateMessage(
         object key,

@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -14,46 +16,38 @@ namespace KafkaSnapshot.Export.File.Output;
 /// <typeparam name="TKey">Message key.</typeparam>
 /// <typeparam name="TKeyMarker">Key marker.</typeparam>
 /// <typeparam name="TValue">Message value.</typeparam>
-/// <typeparam name="TTopic">Export topic type.</typeparam>
-public sealed class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> :
-                    IDataExporter<TKey, TKeyMarker, TValue, TTopic>
-                    where TTopic : ExportedTopic
+public sealed class JsonFileDataExporter<TKey, TKeyMarker, TValue> :
+                    IDataExporter<TKey, TKeyMarker, TValue>
                     where TKeyMarker : IKeyRepresentationMarker
                     where TValue : notnull
 {
     /// <summary>
-    /// Creates <see cref="JsonFileDataExporter{TKey, TKeyMarker, TValue, TTopic}"/>.
+    /// Creates <see cref="JsonFileDataExporter{TKey, TKeyMarker, TValue}"/>.
     /// </summary>
     /// <param name="config">Exporter configuration.</param>
     /// <param name="logger">Logger for 
-    /// <see cref="JsonFileDataExporter{TKey, TKeyMarker, TValue, TTopic}"/>.</param>
-    /// <param name="fileSaver">Utility that saves content to file.</param>
-    /// <param name="streamProvider">Utility that provides output streams.</param>
+    /// <see cref="JsonFileDataExporter{TKey, TKeyMarker, TValue}"/>.</param>
+    /// <param name="storage">Export file storage.</param>
     /// <param name="serializer">Serializer for export payload.</param>
     /// <exception cref="ArgumentNullException">Thrown if any of the 
     /// constructor arguments are null.</exception>
     public JsonFileDataExporter(
-                                IOptions<JsonFileDataExporterConfiguration> config,
-                                ILogger<JsonFileDataExporter<TKey, TKeyMarker,
-                                TValue, TTopic>> logger,
-                                IFileSaver fileSaver,
-                                IFileStreamProvider streamProvider,
-                                ISerializer<TKey, TValue, TKeyMarker> serializer)
+        IOptions<JsonFileDataExporterConfiguration> config,
+        ILogger<JsonFileDataExporter<TKey, TKeyMarker, TValue>> logger,
+        IExportFileStorage storage,
+        ISerializer<TKey, TValue, TKeyMarker> serializer)
     {
         ArgumentNullException.ThrowIfNull(config);
 
         ArgumentNullException.ThrowIfNull(config.Value, nameof(config));
         ArgumentNullException.ThrowIfNull(logger);
-        ArgumentNullException.ThrowIfNull(fileSaver);
-        ArgumentNullException.ThrowIfNull(streamProvider);
+        ArgumentNullException.ThrowIfNull(storage);
         ArgumentNullException.ThrowIfNull(serializer);
 
         _logger = logger;
-        _fileSaver = fileSaver;
-        _streamProvider = streamProvider;
+        _storage = storage;
         _serializer = serializer;
         _isStreamingMode = config.Value.UseFileStreaming;
-        _outputDirectory = config.Value.OutputDirectory;
 
         _logger.LogDebug("Instance created.");
     }
@@ -63,7 +57,7 @@ public sealed class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> :
     /// or <paramref name="topic"/> is null.</exception>
     public async Task ExportAsync(
         IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> data,
-        TTopic topic,
+        ExportedTopic topic,
         CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(data);
@@ -81,21 +75,57 @@ public sealed class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> :
         }
     }
 
+    /// <inheritdoc/>
+    public bool UseStreaming => _isStreamingMode;
+
+    /// <inheritdoc/>
+    public async Task ExportAsync(
+        IAsyncEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> data,
+        ExportedTopic topic, CancellationToken ct)
+    {
+        ArgumentNullException.ThrowIfNull(data);
+        ArgumentNullException.ThrowIfNull(topic);
+        ct.ThrowIfCancellationRequested();
+
+        if (!_isStreamingMode)
+        {
+            var buffered = new List<KeyValuePair<TKey, KafkaMessage<TValue>>>();
+            await foreach (var item in data.WithCancellation(ct).ConfigureAwait(false))
+            {
+                buffered.Add(item);
+            }
+
+            await ExportAsync(buffered, topic, ct).ConfigureAwait(false);
+            return;
+        }
+
+        // Resolve metadata and the first read before truncating an existing export.
+        await using var enumerator = data.GetAsyncEnumerator(ct);
+        var hasItem = await enumerator.MoveNextAsync().ConfigureAwait(false);
+        ct.ThrowIfCancellationRequested();
+        var stream = _storage.CreateFileStream(topic.ExportName);
+        await using var streamScope = stream.ConfigureAwait(false);
+        await _serializer.SerializeAsync(
+            EnumerateAsync(enumerator, hasItem, ct), topic.ExportRawMessage, stream, ct)
+            .ConfigureAwait(false);
+        ct.ThrowIfCancellationRequested();
+    }
+
     private async Task InnerFileExportAsync(
         IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> data,
-        TTopic topic,
+        ExportedTopic topic,
         CancellationToken ct)
     {
         using var _ = _logger.BeginScope("Data from topic {Topic} to File {File}",
                             topic.TopicName.Name,
-                            ResolveExportName(topic.ExportName));
+                            topic.ExportName.FullName);
 
         _logger.LogDebug("Starting saving data.");
 
         var cancellableData = EnumerateWithCancellation(data, ct);
 
-        await _fileSaver.SaveAsync(
-                    ResolveExportName(topic.ExportName),
+        await _storage.SaveAsync(
+                    topic.ExportName,
                     _serializer.Serialize(cancellableData, topic.ExportRawMessage),
                     ct)
                     .ConfigureAwait(false);
@@ -105,16 +135,16 @@ public sealed class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> :
 
     private async Task InnerStreamExportAsync(
             IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> data,
-            TTopic topic,
+            ExportedTopic topic,
             CancellationToken ct)
     {
         using var _ = _logger.BeginScope("Data from topic {Topic} to File {File} with stream",
                         topic.TopicName.Name,
-                        ResolveExportName(topic.ExportName));
+                        topic.ExportName.FullName);
 
         ct.ThrowIfCancellationRequested();
 
-        var stream = _streamProvider.CreateFileStream(ResolveExportName(topic.ExportName));
+        var stream = _storage.CreateFileStream(topic.ExportName);
         await using var streamScope = stream.ConfigureAwait(false);
 
         await _serializer.SerializeAsync(
@@ -126,15 +156,15 @@ public sealed class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> :
         ct.ThrowIfCancellationRequested();
     }
 
-    private Models.Names.FileName ResolveExportName(Models.Names.FileName fileName)
+    private static async IAsyncEnumerable<T> EnumerateAsync<T>(IAsyncEnumerator<T> enumerator,
+        bool hasItem, [EnumeratorCancellation] CancellationToken ct)
     {
-        if (string.IsNullOrWhiteSpace(_outputDirectory))
+        while (hasItem)
         {
-            return fileName;
+            ct.ThrowIfCancellationRequested();
+            yield return enumerator.Current;
+            hasItem = await enumerator.MoveNextAsync().ConfigureAwait(false);
         }
-
-        _ = Directory.CreateDirectory(_outputDirectory);
-        return new Models.Names.FileName(Path.Combine(_outputDirectory, fileName.FullName));
     }
 
     private static IEnumerable<T> EnumerateWithCancellation<T>(
@@ -149,9 +179,7 @@ public sealed class JsonFileDataExporter<TKey, TKeyMarker, TValue, TTopic> :
     }
 
     private readonly ILogger _logger;
-    private readonly IFileSaver _fileSaver;
-    private readonly IFileStreamProvider _streamProvider;
+    private readonly IExportFileStorage _storage;
     private readonly ISerializer<TKey, TValue, TKeyMarker> _serializer;
     private readonly bool _isStreamingMode;
-    private readonly string? _outputDirectory;
 }

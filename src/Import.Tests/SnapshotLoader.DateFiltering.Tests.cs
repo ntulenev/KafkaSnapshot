@@ -63,7 +63,7 @@ public partial class SnapshotLoaderTests
         var partition = new Partition(1);
         var topicWatermark = new TopicWatermark(
         [
-            new PartitionWatermark(topicName,offset,partition)
+            KafkaSnapshot.Import.Kafka.KafkaWatermarkMapper.ToDomain(topicName,offset,partition)
         ]);
         var topicPartition = new TopicPartition(topicName.Value.Name, partition);
         var partitionWithTime = new TopicPartitionTimestamp(topicPartition, new Timestamp(testDate));
@@ -73,7 +73,7 @@ public partial class SnapshotLoaderTests
             [
                 new TopicPartitionOffset(topicPartition,new Offset(Offset.End))
             ]);
-        topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, byte[]>(consumerFactory, topicName, token))
+        topicLoaderMock.Setup(x => x.LoadWatermarksAsync(topicName, token))
             .Returns(Task.FromResult(topicWatermark));
         var dispCount = 0;
         var closeCount = 0;
@@ -173,7 +173,7 @@ public partial class SnapshotLoaderTests
         var partition = new Partition(1);
         var topicWatermark = new TopicWatermark(
         [
-            new PartitionWatermark(topicName,offset,partition)
+            KafkaSnapshot.Import.Kafka.KafkaWatermarkMapper.ToDomain(topicName,offset,partition)
         ]);
         var testDate = DateTime.UtcNow;
         var topicPartition = new TopicPartition(topicName.Value.Name, partition);
@@ -184,10 +184,10 @@ public partial class SnapshotLoaderTests
             [
                 new TopicPartitionOffset(topicPartition,new Offset(0))
             ]);
-        topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, byte[]>(consumerFactory, topicName, token))
+        topicLoaderMock.Setup(x => x.LoadWatermarksAsync(topicName, token))
             .Returns(Task.FromResult(topicWatermark));
-        consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(x => x.Topic == topicName.Value.Name && x.Partition == partition)));
-        consumerMock.Setup(x => x.Consume(token)).Returns(() => consumerData[indexer++]);
+        consumerMock.Setup(x => x.Assign(It.Is<TopicPartitionOffset>(x => x.Topic == topicName.Value.Name && x.Partition == partition)));
+        consumerMock.Setup(x => x.Consume(It.Is<CancellationToken>(current => current.CanBeCanceled))).Returns(() => consumerData[indexer++]);
         var dispCount = 0;
         var closeCount = 0;
         consumerMock.Setup(x => x.Dispose()).Callback(() => dispCount++);
@@ -240,20 +240,20 @@ public partial class SnapshotLoaderTests
         var partition = new Partition(1);
         var topicWatermark = new TopicWatermark(
         [
-            new PartitionWatermark(topicName,offset,partition)
+            KafkaSnapshot.Import.Kafka.KafkaWatermarkMapper.ToDomain(topicName,offset,partition)
         ]);
         var topicPartition = new TopicPartition(topicName.Value.Name, partition);
         var partitionWithTime = new TopicPartitionTimestamp(topicPartition, new Timestamp(testDate));
-        consumerMock.Setup(x => x.Consume(It.Is<CancellationToken>(currentToken => currentToken == token))).Returns(new ConsumeResult<object, byte[]>
+        consumerMock.Setup(x => x.Consume(It.Is<CancellationToken>(current => current.CanBeCanceled))).Returns(new ConsumeResult<object, byte[]>
         {
             Message = new Message<object, byte[]>
             {
                 Timestamp = new Timestamp(testDate.AddDays(1))
             }
         });
-        topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, byte[]>(consumerFactory, topicName, token))
+        topicLoaderMock.Setup(x => x.LoadWatermarksAsync(topicName, token))
             .Returns(Task.FromResult(topicWatermark));
-        consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(x => x.Topic == topicName.Value.Name && x.Partition == partition)));
+        consumerMock.Setup(x => x.Assign(It.Is<TopicPartitionOffset>(x => x.Topic == topicName.Value.Name && x.Partition == partition)));
         var dispCount = 0;
         var closeCount = 0;
         consumerMock.Setup(x => x.Dispose()).Callback(() => dispCount++);
@@ -361,14 +361,14 @@ public partial class SnapshotLoaderTests
         var partition = new Partition(1);
         var topicWatermark = new TopicWatermark(
         [
-            new PartitionWatermark(topicName, offset, partition)
+            KafkaSnapshot.Import.Kafka.KafkaWatermarkMapper.ToDomain(topicName, offset, partition)
         ]);
-        topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, byte[]>(consumerFactory, topicName, token))
+        topicLoaderMock.Setup(x => x.LoadWatermarksAsync(topicName, token))
             .Callback(() => topicLoaderCalls++)
             .Returns(Task.FromResult(topicWatermark));
-        consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(item => item.Topic == topicName.Value.Name && item.Partition == partition)))
+        consumerMock.Setup(x => x.Assign(It.Is<TopicPartitionOffset>(item => item.Topic == topicName.Value.Name && item.Partition == partition)))
             .Callback(() => assignCalls++);
-        consumerMock.Setup(x => x.Consume(token))
+        consumerMock.Setup(x => x.Consume(It.Is<CancellationToken>(current => current.CanBeCanceled)))
             .Returns(() => consumerData[consumeCalls++]);
         consumerMock.Setup(x => x.Dispose())
             .Callback(() => disposeCalls++);

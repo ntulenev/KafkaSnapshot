@@ -10,6 +10,9 @@ namespace KafkaSnapshot.Abstractions.Sorting;
 public interface IMessageSorter<TKey, TValue> where TKey : notnull
                                               where TValue : notnull
 {
+    /// <summary>Whether this sorter requires buffered input.</summary>
+    bool IsEnabled { get; }
+
     /// <summary>
     /// Sorts the provided collection of Kafka messages by key in ascending order.
     /// </summary>

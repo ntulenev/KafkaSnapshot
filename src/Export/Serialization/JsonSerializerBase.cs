@@ -1,4 +1,7 @@
+using System.Runtime.CompilerServices;
+
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 using Microsoft.Extensions.Logging;
 
@@ -56,6 +59,23 @@ public abstract class JsonSerializerBase
 
         Logger.LogTrace("Finish serializing data.");
     }
+
+    /// <summary>Projects a cancellable asynchronous input without buffering it.</summary>
+    protected static async IAsyncEnumerable<object> ProjectAsync<T>(
+        IAsyncEnumerable<T> source, Func<T, object> projection,
+        [EnumeratorCancellation] CancellationToken ct)
+    {
+        ArgumentNullException.ThrowIfNull(source);
+        ArgumentNullException.ThrowIfNull(projection);
+        await foreach (var item in source.WithCancellation(ct).ConfigureAwait(false))
+        {
+            yield return projection(item);
+        }
+    }
+
+    /// <summary>Parses a non-null JSON value.</summary>
+    protected static JsonNode ParseJson(string value)
+        => JsonNode.Parse(value) ?? throw new InvalidOperationException("JSON value cannot be null.");
 
     private static readonly JsonSerializerOptions _serializerOptions = new()
     {

@@ -128,7 +128,7 @@ public partial class PartitionSnapshotReaderTests
         var partition = CreatePartition();
         var watermark = CreateWatermark(topic, partition);
         var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
-        consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(
+        consumerMock.Setup(x => x.Assign(It.Is<TopicPartitionOffset>(
             item => item.Topic == topic.Value.Name && item.Partition == partition)));
         consumerMock.Setup(x => x.Consume(token)).Returns(new ConsumeResult<object, byte[]>
         {
@@ -212,7 +212,7 @@ public partial class PartitionSnapshotReaderTests
         var watermark = CreateWatermark(topic, partition);
         var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
         var kafkaException = new KafkaException(new Error(ErrorCode.Local_Transport, "consume failed"));
-        consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(
+        consumerMock.Setup(x => x.Assign(It.Is<TopicPartitionOffset>(
             item => item.Topic == topic.Value.Name && item.Partition == partition)));
         consumerMock.Setup(x => x.Consume(token)).Throws(kafkaException);
         consumerMock.Setup(x => x.Close());
@@ -248,7 +248,7 @@ public partial class PartitionSnapshotReaderTests
         var partition = CreatePartition();
         var watermark = CreateWatermark(topic, partition);
         var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
-        consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(
+        consumerMock.Setup(x => x.Assign(It.Is<TopicPartitionOffset>(
             item => item.Topic == topic.Value.Name && item.Partition == partition)));
         consumerMock.Setup(x => x.Consume(token)).Throws(new OperationCanceledException(token));
         consumerMock.Setup(x => x.Close());

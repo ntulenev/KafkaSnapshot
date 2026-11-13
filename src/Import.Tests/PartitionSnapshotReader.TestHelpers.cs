@@ -42,7 +42,7 @@ public partial class PartitionSnapshotReaderTests
         LoadingTopic topic,
         Partition partition,
         long highOffset = 1)
-        => new(
+        => KafkaSnapshot.Import.Kafka.KafkaWatermarkMapper.ToDomain(
             topic,
             new WatermarkOffsets(new Offset(0), new Offset(highOffset)),
             partition);
@@ -55,7 +55,8 @@ public partial class PartitionSnapshotReaderTests
             logger,
             Options.Create(new SnapshotLoaderConfiguration()),
             () => consumerMock.Object,
-            encoderMock.Object);
+            encoderMock.Object,
+            new KafkaSnapshot.Import.Kafka.PartitionConsumerAssignment());
 
     private static Mock<IMessageEncoder<byte[], object>> CreateEncoderMock()
     {
@@ -93,7 +94,7 @@ public partial class PartitionSnapshotReaderTests
         CancellationToken token)
     {
         var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
-        consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(
+        consumerMock.Setup(x => x.Assign(It.Is<TopicPartitionOffset>(
             item => item.Topic == topic.Value.Name && item.Partition == partition)));
         consumerMock.Setup(x => x.Consume(token)).Returns(new ConsumeResult<object, byte[]>
         {

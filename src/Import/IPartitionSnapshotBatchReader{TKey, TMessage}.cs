@@ -1,5 +1,4 @@
 using KafkaSnapshot.Abstractions.Filters;
-using KafkaSnapshot.Import.Watermarks;
 using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Message;
 
@@ -14,6 +13,22 @@ public interface IPartitionSnapshotBatchReader<TKey, TMessage>
     where TKey : notnull
     where TMessage : notnull
 {
+    /// <summary>Streams partitions in traversal order with bounded buffering.</summary>
+    IAsyncEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> StreamAsync(
+        IEnumerable<PartitionWatermark> watermarks,
+        LoadingTopic topicParams,
+        IDataFilter<TKey> keyFilter,
+        IDataFilter<TMessage> valueFilter,
+        CancellationToken ct);
+
+    /// <summary>Reads partitions using the configured selection strategy.</summary>
+    Task<IReadOnlyCollection<KeyValuePair<TKey, KafkaMessage<TMessage>>>> ReadAsync(
+        IEnumerable<PartitionWatermark> watermarks,
+        LoadingTopic topicParams,
+        IDataFilter<TKey> keyFilter,
+        IDataFilter<TMessage> valueFilter,
+        CancellationToken ct);
+
     /// <summary>
     /// Reads partitions one by one until the first non-empty partition snapshot is found.
     /// </summary>

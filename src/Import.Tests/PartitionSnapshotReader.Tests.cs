@@ -30,7 +30,7 @@ public partial class PartitionSnapshotReaderTests
                 null!,
                 Options.Create(new SnapshotLoaderConfiguration()),
                 consumerFactory,
-                encoderMock.Object));
+                encoderMock.Object, new KafkaSnapshot.Import.Kafka.PartitionConsumerAssignment()));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();

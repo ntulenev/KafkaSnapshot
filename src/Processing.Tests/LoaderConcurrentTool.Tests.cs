@@ -100,10 +100,10 @@ public class LoaderConcurrentToolTests
         unit2.Setup(x => x.TopicName).Returns(() => new TopicName("unit2"));
         var unit1ProcessCalls = 0;
         var unit2ProcessCalls = 0;
-        unit1.Setup(x => x.ProcessAsync(cts.Token))
+        unit1.Setup(x => x.ProcessAsync(It.Is<CancellationToken>(current => current.CanBeCanceled)))
             .Callback(() => unit1ProcessCalls++)
             .Returns(Task.CompletedTask);
-        unit2.Setup(x => x.ProcessAsync(cts.Token))
+        unit2.Setup(x => x.ProcessAsync(It.Is<CancellationToken>(current => current.CanBeCanceled)))
             .Callback(() => unit2ProcessCalls++)
             .Returns(Task.CompletedTask);
         var items = new[]
@@ -120,9 +120,9 @@ public class LoaderConcurrentToolTests
         unit2ProcessCalls.Should().Be(1);
     }
 
-    [Fact(DisplayName = "LoaderConcurrentTool starts all units and propagates a processing failure.")]
+    [Fact(DisplayName = "LoaderConcurrentTool skips subsequent units after an immediate processing failure.")]
     [Trait("Category", "Unit")]
-    public async Task ProcessAsyncRunsAllUnitsAndPropagatesFailure()
+    public async Task ProcessAsyncStopsSchedulingAfterFailure()
     {
         // Arrange
         using var cts = new CancellationTokenSource();
@@ -134,10 +134,10 @@ public class LoaderConcurrentToolTests
         unit2.Setup(x => x.TopicName).Returns(() => new TopicName("unit2"));
         var unit1ProcessCalls = 0;
         var unit2ProcessCalls = 0;
-        unit1.Setup(x => x.ProcessAsync(cts.Token))
+        unit1.Setup(x => x.ProcessAsync(It.Is<CancellationToken>(current => current.CanBeCanceled)))
             .Callback(() => unit1ProcessCalls++)
             .Throws<Exception>();
-        unit2.Setup(x => x.ProcessAsync(cts.Token))
+        unit2.Setup(x => x.ProcessAsync(It.Is<CancellationToken>(current => current.CanBeCanceled)))
             .Callback(() => unit2ProcessCalls++)
             .Returns(Task.CompletedTask);
         var items = new[]
@@ -152,7 +152,7 @@ public class LoaderConcurrentToolTests
         // Assert
         exception.Should().NotBeNull().And.BeOfType<Exception>();
         unit1ProcessCalls.Should().Be(1);
-        unit2ProcessCalls.Should().Be(1);
+        unit2ProcessCalls.Should().Be(0);
     }
 
     [Fact(DisplayName = "LoaderConcurrentTool can't process units if token is cancelled.")]
@@ -169,10 +169,10 @@ public class LoaderConcurrentToolTests
         unit2.Setup(x => x.TopicName).Returns(() => new TopicName("unit2"));
         var unit1ProcessCalls = 0;
         var unit2ProcessCalls = 0;
-        unit1.Setup(x => x.ProcessAsync(cts.Token))
+        unit1.Setup(x => x.ProcessAsync(It.Is<CancellationToken>(current => current.CanBeCanceled)))
             .Callback(() => unit1ProcessCalls++)
             .Returns(Task.CompletedTask);
-        unit2.Setup(x => x.ProcessAsync(cts.Token))
+        unit2.Setup(x => x.ProcessAsync(It.Is<CancellationToken>(current => current.CanBeCanceled)))
             .Callback(() => unit2ProcessCalls++)
             .Returns(Task.CompletedTask);
         var items = new[]

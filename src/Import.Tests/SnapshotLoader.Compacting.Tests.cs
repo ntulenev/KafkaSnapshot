@@ -109,12 +109,12 @@ public partial class SnapshotLoaderTests
         var partition = new Partition(1);
         var topicWatermark = new TopicWatermark(
         [
-            new PartitionWatermark(topicName,offset,partition)
+            KafkaSnapshot.Import.Kafka.KafkaWatermarkMapper.ToDomain(topicName,offset,partition)
         ]);
-        topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, byte[]>(consumerFactory, topicName, token))
+        topicLoaderMock.Setup(x => x.LoadWatermarksAsync(topicName, token))
             .Returns(Task.FromResult(topicWatermark));
-        consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(x => x.Topic == topicName.Value.Name && x.Partition == partition)));
-        consumerMock.Setup(x => x.Consume(token)).Returns(() => consumerData[indexer++]);
+        consumerMock.Setup(x => x.Assign(It.Is<TopicPartitionOffset>(x => x.Topic == topicName.Value.Name && x.Partition == partition)));
+        consumerMock.Setup(x => x.Consume(It.Is<CancellationToken>(current => current.CanBeCanceled))).Returns(() => consumerData[indexer++]);
         var dispCount = 0;
         var closeCount = 0;
         consumerMock.Setup(x => x.Dispose()).Callback(() => dispCount++);
@@ -176,16 +176,14 @@ public partial class SnapshotLoaderTests
         var partition = new Partition(1);
         var topicWatermark = new TopicWatermark(
         [
-            new PartitionWatermark(topic, new WatermarkOffsets(new Offset(0), new Offset(1)), partition)
+            KafkaSnapshot.Import.Kafka.KafkaWatermarkMapper.ToDomain(topic, new WatermarkOffsets(new Offset(0), new Offset(1)), partition)
         ]);
-        topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, byte[]>(
-            consumerFactory,
-            topic,
+        topicLoaderMock.Setup(x => x.LoadWatermarksAsync(topic,
             token)).ReturnsAsync(topicWatermark);
 
-        consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(item =>
+        consumerMock.Setup(x => x.Assign(It.Is<TopicPartitionOffset>(item =>
             item.Topic == topic.Value.Name && item.Partition == partition)));
-        consumerMock.Setup(x => x.Consume(token)).Returns(new ConsumeResult<object, byte[]>
+        consumerMock.Setup(x => x.Consume(It.Is<CancellationToken>(current => current.CanBeCanceled))).Returns(new ConsumeResult<object, byte[]>
         {
             Message = new Message<object, byte[]>
             {

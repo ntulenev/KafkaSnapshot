@@ -34,9 +34,9 @@ public partial class SnapshotLoaderTests
         CancellationToken token)
     {
         var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
-        consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(
+        consumerMock.Setup(x => x.Assign(It.Is<TopicPartitionOffset>(
             item => item.Topic == topic.Value.Name && item.Partition == partition)));
-        consumerMock.Setup(x => x.Consume(token)).Returns(new ConsumeResult<object, byte[]>
+        consumerMock.Setup(x => x.Consume(It.Is<CancellationToken>(current => current.CanBeCanceled))).Returns(new ConsumeResult<object, byte[]>
         {
             Message = new Message<object, byte[]>
             {
@@ -62,25 +62,23 @@ public partial class SnapshotLoaderTests
     {
         var readerLoggerMock = new Mock<ILogger<PartitionSnapshotReader<object, object>>>();
         readerLoggerMock.Setup(x => x.IsEnabled(It.IsAny<LogLevel>())).Returns(false);
-        var compactorLoggerMock = new Mock<ILogger<SnapshotCompactor<object, object>>>();
+        var compactorLoggerMock = new Mock<ILogger<SnapshotBuilder<object, object>>>();
         compactorLoggerMock.Setup(x => x.IsEnabled(It.IsAny<LogLevel>())).Returns(false);
 
         var partitionReader = new PartitionSnapshotReader<object, object>(
             readerLoggerMock.Object,
             config,
             consumerFactory,
-            encoder);
+            encoder, new KafkaSnapshot.Import.Kafka.PartitionConsumerAssignment());
         var batchReader = new PartitionSnapshotBatchReader<object, object>(
             config,
             partitionReader);
-        var compactor = new SnapshotCompactor<object, object>(
+        var compactor = new SnapshotBuilder<object, object>(
             compactorLoggerMock.Object,
             sorter);
 
         return new SnapshotLoader<object, object>(
             logger,
-            config,
-            consumerFactory,
             topicWatermarkLoader,
             batchReader,
             compactor);

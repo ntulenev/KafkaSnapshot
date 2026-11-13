@@ -1,10 +1,15 @@
 using Confluent.Kafka;
+
 using FluentAssertions;
+
 using KafkaSnapshot.Abstractions.Import;
 using KafkaSnapshot.Import.Configuration;
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+
 using Moq;
+
 using Xunit;
 
 namespace KafkaSnapshot.Import.Tests;
@@ -20,7 +25,7 @@ public partial class PartitionSnapshotReaderTests
         var (keyFilter, valueFilter) = CreateStrictFilters();
         var reader = new PartitionSnapshotReader<object, object>(CreateLoggerMock().Object,
             Options.Create(new SnapshotLoaderConfiguration()), () => null!,
-            new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict).Object);
+            new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict).Object, new KafkaSnapshot.Import.Kafka.PartitionConsumerAssignment());
 
         Action act = () => _ = reader.Read(watermark, topic, keyFilter.Object, valueFilter.Object, CancellationToken.None).ToList();
 

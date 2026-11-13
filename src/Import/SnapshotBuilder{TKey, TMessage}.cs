@@ -12,18 +12,18 @@ namespace KafkaSnapshot.Import;
 /// </summary>
 /// <typeparam name="TKey">Kafka message key type.</typeparam>
 /// <typeparam name="TMessage">Decoded Kafka message value type.</typeparam>
-public class SnapshotCompactor<TKey, TMessage>
-    : ISnapshotCompactor<TKey, TMessage>
+public class SnapshotBuilder<TKey, TMessage>
+    : ISnapshotBuilder<TKey, TMessage>
     where TKey : notnull
     where TMessage : notnull
 {
     /// <summary>
-    /// Creates <see cref="SnapshotCompactor{TKey, TMessage}"/>.
+    /// Creates <see cref="SnapshotBuilder{TKey, TMessage}"/>.
     /// </summary>
     /// <param name="logger">Logger.</param>
     /// <param name="sorter">Message sorter used when compaction is disabled.</param>
-    public SnapshotCompactor(
-        ILogger<SnapshotCompactor<TKey, TMessage>> logger,
+    public SnapshotBuilder(
+        ILogger<SnapshotBuilder<TKey, TMessage>> logger,
         IMessageSorter<TKey, TMessage> sorter)
     {
         ArgumentNullException.ThrowIfNull(logger);

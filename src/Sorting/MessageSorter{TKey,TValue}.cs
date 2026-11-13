@@ -27,30 +27,28 @@ public sealed class MessageSorter<TKey, TValue> : IMessageSorter<TKey, TValue>
     }
 
     /// <inheritdoc/>
-    /// <exception cref="NotImplementedException">If sorting not implemented
-    /// for these parameters.</exception>
     public IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> Sort(
         IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> source)
     {
         ArgumentNullException.ThrowIfNull(source);
 
-        return _sortingRules switch
+        if (_sortingRules.Order == SortingOrder.None)
         {
-            { Order: SortingOrder.None, Type: _ } => source,
-            { Order: SortingOrder.Ascending, Type: SortingType.Time } =>
-                source.OrderBy(x => x.Value.Meta.Timestamp),
-            { Order: SortingOrder.Descending, Type: SortingType.Time } =>
-                source.OrderByDescending(x => x.Value.Meta.Timestamp),
-            { Order: SortingOrder.Ascending, Type: SortingType.Partition } =>
-                source.OrderBy(x => x.Value.Meta.Partition)
-                      .ThenBy(x => x.Value.Meta.Timestamp),
-            { Order: SortingOrder.Descending, Type: SortingType.Partition } =>
-                source.OrderByDescending(x => x.Value.Meta.Partition)
-                      .ThenBy(x => x.Value.Meta.Timestamp),
-            _ => throw new NotImplementedException(
-                $"Sort type not implemented for Order : {_sortingRules.Order} " +
-                $"and Type: {_sortingRules.Type}")
-        };
+            return source;
+        }
+
+        if (_sortingRules.Type == SortingType.Time)
+        {
+            return _sortingRules.Order == SortingOrder.Descending
+                ? source.OrderByDescending(x => x.Value.Meta.Timestamp)
+                : source.OrderBy(x => x.Value.Meta.Timestamp);
+        }
+
+        return _sortingRules.Order == SortingOrder.Descending
+            ? source.OrderByDescending(x => x.Value.Meta.Partition)
+                    .ThenBy(x => x.Value.Meta.Timestamp)
+            : source.OrderBy(x => x.Value.Meta.Partition)
+                    .ThenBy(x => x.Value.Meta.Timestamp);
     }
 
     private readonly SortingParams _sortingRules;

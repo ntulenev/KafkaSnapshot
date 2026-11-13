@@ -1,4 +1,5 @@
 using FluentAssertions;
+
 using KafkaSnapshot.Models.Message;
 using KafkaSnapshot.Models.Sorting;
 
@@ -23,20 +24,6 @@ public class MessageSorterEdgeCasesTests
         result.Should().Equal(order == SortingOrder.Ascending
             ? [firstEarly, firstLate, secondEarly, secondLate]
             : [secondEarly, secondLate, firstEarly, firstLate]);
-    }
-
-    [Theory(DisplayName = "MessageSorter rejects unsupported sorting rules introduced by a record copy.")]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void RejectsUnsupportedRulesIntroducedByRecordCopy(bool invalidType)
-    {
-        var rules = new SortingParams(SortingType.Time, SortingOrder.Ascending);
-        rules = invalidType ? rules with { Type = (SortingType)999 } : rules with { Order = (SortingOrder)999 };
-        var sorter = new MessageSorter<int, string>(rules);
-
-        Action act = () => sorter.Sort([]);
-
-        act.Should().Throw<NotImplementedException>().WithMessage("*Sort type not implemented*");
     }
 
     [Theory(DisplayName = "MessageSorter preserves input order for equal sort keys and accepts empty input.")]

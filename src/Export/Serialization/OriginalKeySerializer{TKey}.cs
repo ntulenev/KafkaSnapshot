@@ -1,4 +1,3 @@
-using System.Text.Json.Nodes;
 
 using Microsoft.Extensions.Logging;
 
@@ -56,6 +55,4 @@ public sealed class OriginalKeySerializer<TKey>(ILogger<OriginalKeySerializer<TK
         return SerializeDataToStreamAsync(ProjectData(data, exportRawMessage), stream, ct);
     }
 
-    private static JsonNode ParseJson(string value)
-        => JsonNode.Parse(value) ?? throw new InvalidOperationException("JSON value cannot be null.");
 }

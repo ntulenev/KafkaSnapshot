@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 using Microsoft.Extensions.Logging;
 
@@ -56,6 +57,10 @@ public abstract class JsonSerializerBase
 
         Logger.LogTrace("Finish serializing data.");
     }
+
+    /// <summary>Parses a non-null JSON value.</summary>
+    protected static JsonNode ParseJson(string value)
+        => JsonNode.Parse(value) ?? throw new InvalidOperationException("JSON value cannot be null.");
 
     private static readonly JsonSerializerOptions _serializerOptions = new()
     {

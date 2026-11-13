@@ -26,15 +26,14 @@ public class JsonFileDataExporterTests
         // Arrange
         var config = new Mock<IOptions<JsonFileDataExporterConfiguration>>(MockBehavior.Strict);
         config.Setup(x => x.Value).Returns(new JsonFileDataExporterConfiguration());
-        var logger = (ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>>)null!;
-        var fileSaver = new Mock<IFileSaver>(MockBehavior.Strict);
+        var logger = (ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object>>)null!;
+        var fileSaver = new Mock<IExportFileStorage>(MockBehavior.Strict);
         var serializer = new Mock<ISerializer<object, object, OriginalKeyMarker>>(MockBehavior.Strict);
-        var fileStreamProvider = new Mock<IFileStreamProvider>(MockBehavior.Strict);
 
         // Act
         var exception = Record.Exception(() =>
-        _ = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(
-            config.Object, logger, fileSaver.Object, fileStreamProvider.Object, serializer.Object));
+        _ = new JsonFileDataExporter<object, OriginalKeyMarker, object>(
+            config.Object, logger, fileSaver.Object, serializer.Object));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -47,15 +46,14 @@ public class JsonFileDataExporterTests
         // Arrange
         var config = new Mock<IOptions<JsonFileDataExporterConfiguration>>(MockBehavior.Strict);
         config.Setup(x => x.Value).Returns((JsonFileDataExporterConfiguration)null!);
-        var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>>>();
-        var fileSaver = new Mock<IFileSaver>(MockBehavior.Strict);
+        var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object>>>();
+        var fileSaver = new Mock<IExportFileStorage>(MockBehavior.Strict);
         var serializer = new Mock<ISerializer<object, object, OriginalKeyMarker>>(MockBehavior.Strict);
-        var fileStreamProvider = new Mock<IFileStreamProvider>(MockBehavior.Strict);
 
         // Act
         var exception = Record.Exception(() =>
-        _ = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(
-            config.Object, logger.Object, fileSaver.Object, fileStreamProvider.Object, serializer.Object));
+        _ = new JsonFileDataExporter<object, OriginalKeyMarker, object>(
+            config.Object, logger.Object, fileSaver.Object, serializer.Object));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -68,18 +66,16 @@ public class JsonFileDataExporterTests
         // Arrange
         var config = new Mock<IOptions<JsonFileDataExporterConfiguration>>(MockBehavior.Strict);
         config.Setup(x => x.Value).Returns(new JsonFileDataExporterConfiguration());
-        var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>>>();
-        var fileSaver = new Mock<IFileSaver>(MockBehavior.Strict);
+        var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object>>>();
+        var fileSaver = new Mock<IExportFileStorage>(MockBehavior.Strict);
         var serializer = (ISerializer<object, object, OriginalKeyMarker>)null!;
-        var fileStreamProvider = new Mock<IFileStreamProvider>(MockBehavior.Strict);
 
         // Act
         var exception = Record.Exception(() =>
-        _ = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(
+        _ = new JsonFileDataExporter<object, OriginalKeyMarker, object>(
                 config.Object,
                 logger.Object,
                 fileSaver.Object,
-                fileStreamProvider.Object,
                 serializer));
 
         // Assert
@@ -93,43 +89,16 @@ public class JsonFileDataExporterTests
         // Arrange
         var config = new Mock<IOptions<JsonFileDataExporterConfiguration>>(MockBehavior.Strict);
         config.Setup(x => x.Value).Returns(new JsonFileDataExporterConfiguration());
-        var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>>>();
-        var fileSaver = (IFileSaver)null!;
+        var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object>>>();
+        var fileSaver = (IExportFileStorage)null!;
         var serializer = new Mock<ISerializer<object, object, OriginalKeyMarker>>(MockBehavior.Strict);
-        var fileStreamProvider = new Mock<IFileStreamProvider>(MockBehavior.Strict);
 
         // Act
         var exception = Record.Exception(() =>
-        _ = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(
+        _ = new JsonFileDataExporter<object, OriginalKeyMarker, object>(
                 config.Object,
                 logger.Object,
                 fileSaver,
-                fileStreamProvider.Object,
-                serializer.Object));
-
-        // Assert
-        exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
-    }
-
-    [Fact(DisplayName = "JsonFileDataExporter can't be created without fileStreamProvider.")]
-    [Trait("Category", "Unit")]
-    public void JsonFileDataExporterCannotBeCreatedWithoutStreamProvider()
-    {
-        // Arrange
-        var config = new Mock<IOptions<JsonFileDataExporterConfiguration>>(MockBehavior.Strict);
-        config.Setup(x => x.Value).Returns(new JsonFileDataExporterConfiguration());
-        var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>>>();
-        var fileSaver = new Mock<IFileSaver>(MockBehavior.Strict);
-        var serializer = new Mock<ISerializer<object, object, OriginalKeyMarker>>(MockBehavior.Strict);
-        var fileStreamProvider = (IFileStreamProvider)null!;
-
-        // Act
-        var exception = Record.Exception(() =>
-        _ = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(
-                config.Object,
-                logger.Object,
-                fileSaver.Object,
-                fileStreamProvider,
                 serializer.Object));
 
         // Assert
@@ -143,18 +112,16 @@ public class JsonFileDataExporterTests
         // Arrange
         var config = new Mock<IOptions<JsonFileDataExporterConfiguration>>(MockBehavior.Strict);
         config.Setup(x => x.Value).Returns(new JsonFileDataExporterConfiguration());
-        var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>>>();
-        var fileSaver = new Mock<IFileSaver>(MockBehavior.Strict);
+        var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object>>>();
+        var fileSaver = new Mock<IExportFileStorage>(MockBehavior.Strict);
         var serializer = new Mock<ISerializer<object, object, OriginalKeyMarker>>(MockBehavior.Strict);
-        var fileStreamProvider = new Mock<IFileStreamProvider>(MockBehavior.Strict);
 
         // Act
         var exception = Record.Exception(() =>
-        _ = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>(
+        _ = new JsonFileDataExporter<object, OriginalKeyMarker, object>(
                 config.Object,
                 logger.Object,
                 fileSaver.Object,
-                fileStreamProvider.Object,
                 serializer.Object));
 
         // Assert
@@ -172,12 +139,11 @@ public class JsonFileDataExporterTests
         var token = tokenSource.Token;
         var config = new Mock<IOptions<JsonFileDataExporterConfiguration>>(MockBehavior.Strict);
         config.Setup(x => x.Value).Returns(new JsonFileDataExporterConfiguration() { UseFileStreaming = isStreaming });
-        var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>>>();
-        var fileSaver = new Mock<IFileSaver>(MockBehavior.Strict);
+        var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object>>>();
+        var fileSaver = new Mock<IExportFileStorage>(MockBehavior.Strict);
         var serializer = new Mock<ISerializer<object, object, OriginalKeyMarker>>(MockBehavior.Strict);
-        var fileStreamProvider = new Mock<IFileStreamProvider>(MockBehavior.Strict);
-        var exporter = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>
-            (config.Object, logger.Object, fileSaver.Object, fileStreamProvider.Object, serializer.Object);
+        var exporter = new JsonFileDataExporter<object, OriginalKeyMarker, object>
+            (config.Object, logger.Object, fileSaver.Object, serializer.Object);
         var topic = new ExportedTopic(new TopicName("name"), new FileName("filename"), true);
         var data = (IEnumerable<KeyValuePair<object, KafkaMessage<object>>>)null!;
 
@@ -200,12 +166,11 @@ public class JsonFileDataExporterTests
         var token = tokenSource.Token;
         var config = new Mock<IOptions<JsonFileDataExporterConfiguration>>(MockBehavior.Strict);
         config.Setup(x => x.Value).Returns(new JsonFileDataExporterConfiguration() { UseFileStreaming = isStreaming });
-        var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>>>();
-        var fileSaver = new Mock<IFileSaver>(MockBehavior.Strict);
+        var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object>>>();
+        var fileSaver = new Mock<IExportFileStorage>(MockBehavior.Strict);
         var serializer = new Mock<ISerializer<object, object, OriginalKeyMarker>>(MockBehavior.Strict);
-        var fileStreamProvider = new Mock<IFileStreamProvider>(MockBehavior.Strict);
-        var exporter = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>
-            (config.Object, logger.Object, fileSaver.Object, fileStreamProvider.Object, serializer.Object);
+        var exporter = new JsonFileDataExporter<object, OriginalKeyMarker, object>
+            (config.Object, logger.Object, fileSaver.Object, serializer.Object);
         var topic = (ExportedTopic)null!;
         var data = Enumerable.Empty<KeyValuePair<object, KafkaMessage<object>>>();
 
@@ -229,12 +194,11 @@ public class JsonFileDataExporterTests
         var token = tokenSource.Token;
         var config = new Mock<IOptions<JsonFileDataExporterConfiguration>>(MockBehavior.Strict);
         config.Setup(x => x.Value).Returns(new JsonFileDataExporterConfiguration() { UseFileStreaming = isStreaming });
-        var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>>>();
-        var fileSaver = new Mock<IFileSaver>(MockBehavior.Strict);
+        var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object>>>();
+        var fileSaver = new Mock<IExportFileStorage>(MockBehavior.Strict);
         var serializer = new Mock<ISerializer<object, object, OriginalKeyMarker>>(MockBehavior.Strict);
-        var fileStreamProvider = new Mock<IFileStreamProvider>(MockBehavior.Strict);
-        var exporter = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>
-            (config.Object, logger.Object, fileSaver.Object, fileStreamProvider.Object, serializer.Object);
+        var exporter = new JsonFileDataExporter<object, OriginalKeyMarker, object>
+            (config.Object, logger.Object, fileSaver.Object, serializer.Object);
         var topic = new ExportedTopic(new TopicName("name"), new FileName("filename"), true);
         var data = new KeyValuePair<object, KafkaMessage<object>>[]
         {
@@ -258,7 +222,7 @@ public class JsonFileDataExporterTests
                 token))
             .Callback(() => streamSerializeCalls++);
         var createStreamCalls = 0;
-        fileStreamProvider.Setup(x => x.CreateFileStream(topic.ExportName))
+        fileSaver.Setup(x => x.CreateFileStream(topic.ExportName))
             .Callback(() => createStreamCalls++)
             .Returns(new MemoryStream());
 
@@ -282,13 +246,12 @@ public class JsonFileDataExporterTests
         // Arrange
         var config = new Mock<IOptions<JsonFileDataExporterConfiguration>>(MockBehavior.Strict);
         config.Setup(x => x.Value).Returns(new JsonFileDataExporterConfiguration() { UseFileStreaming = false });
-        var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>>>();
-        var fileSaver = new Mock<IFileSaver>(MockBehavior.Strict);
+        var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object>>>();
+        var fileSaver = new Mock<IExportFileStorage>(MockBehavior.Strict);
 
         var serializer = new Mock<ISerializer<object, object, OriginalKeyMarker>>(MockBehavior.Strict);
-        var fileStreamProvider = new Mock<IFileStreamProvider>(MockBehavior.Strict);
-        var exporter = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>
-            (config.Object, logger.Object, fileSaver.Object, fileStreamProvider.Object, serializer.Object);
+        var exporter = new JsonFileDataExporter<object, OriginalKeyMarker, object>
+            (config.Object, logger.Object, fileSaver.Object, serializer.Object);
         var topic = new ExportedTopic(new TopicName("name"), new FileName("filename"), isRawMessage);
         var data = new KeyValuePair<object, KafkaMessage<object>>[]
         {
@@ -321,13 +284,12 @@ public class JsonFileDataExporterTests
         // Arrange
         var config = new Mock<IOptions<JsonFileDataExporterConfiguration>>(MockBehavior.Strict);
         config.Setup(x => x.Value).Returns(new JsonFileDataExporterConfiguration() { UseFileStreaming = true });
-        var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>>>();
-        var fileSaver = new Mock<IFileSaver>(MockBehavior.Strict);
+        var logger = new Mock<ILogger<JsonFileDataExporter<object, OriginalKeyMarker, object>>>();
+        var fileSaver = new Mock<IExportFileStorage>(MockBehavior.Strict);
 
         var serializer = new Mock<ISerializer<object, object, OriginalKeyMarker>>(MockBehavior.Strict);
-        var fileStreamProvider = new Mock<IFileStreamProvider>(MockBehavior.Strict);
-        var exporter = new JsonFileDataExporter<object, OriginalKeyMarker, object, ExportedTopic>
-            (config.Object, logger.Object, fileSaver.Object, fileStreamProvider.Object, serializer.Object);
+        var exporter = new JsonFileDataExporter<object, OriginalKeyMarker, object>
+            (config.Object, logger.Object, fileSaver.Object, serializer.Object);
         var topic = new ExportedTopic(new TopicName("name"), new FileName("filename"), isRawMessage);
         var data = new KeyValuePair<object, KafkaMessage<object>>[]
         {
@@ -336,7 +298,7 @@ public class JsonFileDataExporterTests
                     new KafkaMetadata(DateTime.UtcNow,1,2)))
         };
         var testStream = new Mock<Stream>().Object;
-        fileStreamProvider.Setup(x => x.CreateFileStream(topic.ExportName)).Returns(() => testStream);
+        fileSaver.Setup(x => x.CreateFileStream(topic.ExportName)).Returns(() => testStream);
         var fileSaverRunCount = 0;
         using var tcs = new CancellationTokenSource();
         var token = tcs.Token;

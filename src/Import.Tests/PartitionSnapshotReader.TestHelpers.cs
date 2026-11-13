@@ -55,7 +55,8 @@ public partial class PartitionSnapshotReaderTests
             logger,
             Options.Create(new SnapshotLoaderConfiguration()),
             () => consumerMock.Object,
-            encoderMock.Object);
+            encoderMock.Object,
+            new KafkaSnapshot.Import.Kafka.PartitionConsumerAssignment());
 
     private static Mock<IMessageEncoder<byte[], object>> CreateEncoderMock()
     {

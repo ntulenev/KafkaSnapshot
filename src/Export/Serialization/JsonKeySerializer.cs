@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging;
 
-using System.Text.Json.Nodes;
 
 using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Export.Markers;
@@ -55,6 +54,4 @@ public sealed class JsonKeySerializer(ILogger<JsonKeySerializer> logger) :
         return SerializeDataToStreamAsync(ProjectData(data, exportRawMessage), stream, ct);
     }
 
-    private static JsonNode ParseJson(string value)
-        => JsonNode.Parse(value) ?? throw new InvalidOperationException("JSON value cannot be null.");
 }

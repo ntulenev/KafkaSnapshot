@@ -24,15 +24,15 @@ public sealed record KafkaMetadata
     /// <summary>
     /// Message creation timestamp.
     /// </summary>
-    public DateTimeOffset Timestamp { get; init; }
+    public DateTimeOffset Timestamp { get; }
 
     /// <summary>
     /// Message partition number.
     /// </summary>
-    public int Partition { get; init; }
+    public int Partition { get; }
 
     /// <summary>
     /// Message partition offset.
     /// </summary>
-    public long Offset { get; init; }
+    public long Offset { get; }
 }

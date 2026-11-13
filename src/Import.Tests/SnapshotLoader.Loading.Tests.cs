@@ -120,7 +120,7 @@ public partial class SnapshotLoaderTests
         [
             new PartitionWatermark(topicName, offset, partition)
         ]);
-        topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, byte[]>(consumerFactory, topicName, token))
+        topicLoaderMock.Setup(x => x.LoadWatermarksAsync(topicName, token))
             .Callback(() => topicLoaderCalls++)
             .Returns(Task.FromResult(topicWatermark));
         consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(item => item.Topic == topicName.Value.Name && item.Partition == partition)))
@@ -255,7 +255,7 @@ public partial class SnapshotLoaderTests
         [
             new PartitionWatermark(topicName, offset, partition)
         ]);
-        topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, byte[]>(consumerFactory, topicName, token))
+        topicLoaderMock.Setup(x => x.LoadWatermarksAsync(topicName, token))
             .Callback(() => topicLoaderCalls++)
             .Returns(Task.FromResult(topicWatermark));
         consumerMock.Setup(x => x.OffsetsForTimes(
@@ -342,9 +342,7 @@ public partial class SnapshotLoaderTests
             null);
         var keyFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
         var valueFilterMock = new Mock<IDataFilter<object>>(MockBehavior.Strict);
-        topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, byte[]>(
-            consumerFactory,
-            topic,
+        topicLoaderMock.Setup(x => x.LoadWatermarksAsync(topic,
             token)).ReturnsAsync(new TopicWatermark([]));
 
         // Act
@@ -413,9 +411,7 @@ public partial class SnapshotLoaderTests
             new PartitionWatermark(topic, new WatermarkOffsets(new Offset(0), new Offset(1)), matchedPartition),
             new PartitionWatermark(topic, new WatermarkOffsets(new Offset(0), new Offset(1)), untouchedPartition)
         ]);
-        topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, byte[]>(
-            consumerFactory,
-            topic,
+        topicLoaderMock.Setup(x => x.LoadWatermarksAsync(topic,
             token)).ReturnsAsync(topicWatermark);
 
         consumers.Enqueue(CreateSingleMessageConsumer(topic, skippedPartition, "skipped", "value", token));

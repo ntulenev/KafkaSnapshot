@@ -28,6 +28,7 @@ internal static class ImportRegistrationHelper
         _ = services.ConfigureImport(configuration);
         _ = services.AddSingleton<IMessageEncoder<byte[], string>, ByteMessageEncoder>();
         _ = services.AddSingleton<IKafkaClientFactory, KafkaClientFactory>();
+        _ = services.AddSingleton<IPartitionConsumerAssignment, PartitionConsumerAssignment>();
         _ = services.AddSingleton<ITopicWatermarkLoader, TopicWatermarkLoader>();
         _ = services.AddSingleton<Func<IConsumer<string, byte[]>>>(
             serviceProvider => serviceProvider.GetRequiredService<IKafkaClientFactory>().CreateConsumer<string>);
@@ -43,8 +44,8 @@ internal static class ImportRegistrationHelper
             typeof(IPartitionSnapshotBatchReader<,>),
             typeof(PartitionSnapshotBatchReader<,>));
         _ = services.AddSingleton(
-            typeof(ISnapshotCompactor<,>),
-            typeof(SnapshotCompactor<,>));
+            typeof(ISnapshotBuilder<,>),
+            typeof(SnapshotBuilder<,>));
         _ = services.AddSingleton<IMessageSorter<string, string>>(CreateStringSorter);
         _ = services.AddSingleton<IMessageSorter<long, string>>(CreateLongSorter);
 

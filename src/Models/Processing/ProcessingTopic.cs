@@ -39,105 +39,83 @@ public sealed record ProcessingTopic<TKey>
         ArgumentNullException.ThrowIfNull(exportName);
         ArgumentNullException.ThrowIfNull(dateRange);
 
-        if (!Enum.IsDefined(filterKeyType))
+        KeyFilter = new KeyFilterDefinition<TKey>(filterKeyType, keyType, filterKeyValue);
+        if (!ProcessingTopicRules.SupportsCompacting(keyType, loadWithCompacting))
         {
-            throw new ArgumentOutOfRangeException(
-                nameof(filterKeyType),
-                filterKeyType,
-                $"Invalid FilterType value {filterKeyType}.");
+            throw new ArgumentException("Compacting is not supported for ignored keys.", nameof(loadWithCompacting));
         }
 
-        if (!Enum.IsDefined(keyType))
-        {
-            throw new ArgumentOutOfRangeException(
-                nameof(keyType),
-                keyType,
-                $"Invalid KeyType value {keyType}.");
-        }
+        _loadingTopic = new LoadingTopic(topicName, loadWithCompacting, dateRange,
+            valueEncoderRule, partitionIdsFilter);
+        _exportedTopic = new ExportedTopic(topicName, exportName, exportRawMessage);
 
-        if (!Enum.IsDefined(valueEncoderRule))
-        {
-            throw new ArgumentOutOfRangeException(
-                nameof(valueEncoderRule),
-                valueEncoderRule,
-                $"Invalid EncoderRules value {valueEncoderRule}.");
-        }
-
-        if (partitionIdsFilter is not null)
-        {
-            ArgumentOutOfRangeException.ThrowIfZero(partitionIdsFilter.Count, nameof(partitionIdsFilter));
-        }
-
-        TopicName = topicName;
-        ExportName = exportName;
-        LoadWithCompacting = loadWithCompacting;
-        FilterKeyType = filterKeyType;
-        KeyType = keyType;
-        FilterKeyValue = filterKeyValue;
-        DateRange = dateRange;
-        ExportRawMessage = exportRawMessage;
-        ValueEncoderRule = valueEncoderRule;
-        PartitionIdsFilter = partitionIdsFilter;
     }
 
     /// <summary>
     /// Topic name.
     /// </summary>
-    public TopicName TopicName { get; init; }
+    public TopicName TopicName => _exportedTopic.TopicName;
 
     /// <summary>
     /// Export name.
     /// </summary>
-    public FileName ExportName { get; init; }
+    public FileName ExportName => _exportedTopic.ExportName;
 
     /// <summary>
     /// Whether duplicated keys should be compacted.
     /// </summary>
-    public bool LoadWithCompacting { get; init; }
+    public bool LoadWithCompacting => _loadingTopic.LoadWithCompacting;
 
     /// <summary>
     /// Filtering key type.
     /// </summary>
-    public FilterType FilterKeyType { get; init; }
+    public FilterType FilterKeyType => KeyFilter.Type;
 
     /// <summary>
     /// Message key type.
     /// </summary>
-    public KeyType KeyType { get; init; }
+    public KeyType KeyType => KeyFilter.KeyType;
 
     /// <summary>
     /// Filter key value.
     /// </summary>
-    public TKey FilterKeyValue { get; init; }
+    public TKey FilterKeyValue => KeyFilter.Value;
 
     /// <summary>
     /// Date interval for offsets.
     /// </summary>
-    public DateFilterRange DateRange { get; init; }
+    public DateFilterRange DateRange => _loadingTopic.DateRange;
 
     /// <summary>
     /// Whether to export message values as raw strings instead of JSON.
     /// </summary>
-    public bool ExportRawMessage { get; init; }
+    public bool ExportRawMessage => _exportedTopic.ExportRawMessage;
 
     /// <summary>
     /// Encoding rule for topic values.
     /// </summary>
-    public EncoderRules ValueEncoderRule { get; init; }
+    public EncoderRules ValueEncoderRule => _loadingTopic.TopicValueEncoderRule;
 
     /// <summary>
     /// Optional partition filter.
     /// </summary>
-    public IReadOnlySet<int>? PartitionIdsFilter { get; init; }
+    public IReadOnlySet<int>? PartitionIdsFilter => _loadingTopic.HasPartitionFilter
+        ? _loadingTopic.PartitionFilter
+        : null;
+
+    /// <summary>Validated key filter.</summary>
+    public KeyFilterDefinition<TKey> KeyFilter { get; }
 
     /// <summary>
     /// Creates <see cref="LoadingTopic"/>.
     /// </summary>
-    public LoadingTopic CreateLoadingParams() =>
-        new(TopicName, LoadWithCompacting, DateRange, ValueEncoderRule, PartitionIdsFilter);
+    public LoadingTopic CreateLoadingParams() => _loadingTopic;
 
     /// <summary>
     /// Creates <see cref="ExportedTopic"/>.
     /// </summary>
-    public ExportedTopic CreateExportParams() => new(TopicName, ExportName, ExportRawMessage);
+    public ExportedTopic CreateExportParams() => _exportedTopic;
+
+    private readonly LoadingTopic _loadingTopic;
+    private readonly ExportedTopic _exportedTopic;
 }

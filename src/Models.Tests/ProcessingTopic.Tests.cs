@@ -27,7 +27,7 @@ public class ProcessingTopicTests
 
         // Act
         var exception = Record.Exception(() => _ =
-        new ProcessingTopic<int>(
+        new ProcessingTopic<long>(
                 name,
                 exName,
                 loadCompact,
@@ -60,7 +60,7 @@ public class ProcessingTopicTests
 
         // Act
         var result =
-        new ProcessingTopic<int>(
+        new ProcessingTopic<long>(
                 name,
                 exName,
                 loadCompact,
@@ -95,7 +95,7 @@ public class ProcessingTopicTests
         var dateRange = new Filters.DateFilterRange(null!, null!);
 
         // Act
-        var result = new ProcessingTopic<int>(
+        var result = new ProcessingTopic<long>(
             name,
             exName,
             true,
@@ -120,7 +120,7 @@ public class ProcessingTopicTests
 
         // Act
         var exception = Record.Exception(() =>
-            new ProcessingTopic<int>(
+            new ProcessingTopic<long>(
                 null!,
                 exportName,
                 true,
@@ -145,7 +145,7 @@ public class ProcessingTopicTests
 
         // Act
         var exception = Record.Exception(() =>
-            new ProcessingTopic<int>(
+            new ProcessingTopic<long>(
                 topicName,
                 null!,
                 true,
@@ -170,7 +170,7 @@ public class ProcessingTopicTests
 
         // Act
         var exception = Record.Exception(() =>
-            new ProcessingTopic<int>(
+            new ProcessingTopic<long>(
                 topicName,
                 exportName,
                 true,
@@ -202,7 +202,7 @@ public class ProcessingTopicTests
 
         // Act
         var exception = Record.Exception(() =>
-            new ProcessingTopic<int>(
+            new ProcessingTopic<long>(
                 topicName,
                 exportName,
                 true,
@@ -228,7 +228,7 @@ public class ProcessingTopicTests
 
         // Act
         var exception = Record.Exception(() =>
-            new ProcessingTopic<int>(
+            new ProcessingTopic<long>(
                 topicName,
                 exportName,
                 true,
@@ -258,7 +258,7 @@ public class ProcessingTopicTests
         var filterKeyValue = 1;
         var isRaw = true;
         var partitions = new HashSet<int> { 1, 2, 3 };
-        var processingTopic = new ProcessingTopic<int>(
+        var processingTopic = new ProcessingTopic<long>(
                 name,
                 exName,
                 loadCompact,
@@ -291,7 +291,7 @@ public class ProcessingTopicTests
         var filterKeyValue = 1;
         var isRaw = true;
         var partitions = new HashSet<int> { 1, 2, 3 };
-        var processingTopic = new ProcessingTopic<int>(
+        var processingTopic = new ProcessingTopic<long>(
                 name,
                 exName,
                 loadCompact,
@@ -331,7 +331,7 @@ public class ProcessingTopicTests
         var filterKeyValue = 1;
         var isRaw = true;
         var partitions = new HashSet<int> { 1, 2, 3 };
-        var processingTopic = new ProcessingTopic<int>(
+        var processingTopic = new ProcessingTopic<long>(
                 name,
                 exName,
                 loadCompact,
@@ -371,7 +371,7 @@ public class ProcessingTopicTests
         var filterKeyValue = 1;
         var isRaw = true;
         var partitions = new HashSet<int> { 1, 2, 3 };
-        var processingTopic = new ProcessingTopic<int>(
+        var processingTopic = new ProcessingTopic<long>(
                 name,
                 exName,
                 loadCompact,
@@ -404,7 +404,7 @@ public class ProcessingTopicTests
         var filterKeyValue = 1;
         var isRaw = true;
         var partitions = new HashSet<int> { 1, 2, 3 };
-        var processingTopic = new ProcessingTopic<int>(
+        var processingTopic = new ProcessingTopic<long>(
                 name,
                 exName,
                 loadCompact,

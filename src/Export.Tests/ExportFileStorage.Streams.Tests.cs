@@ -1,31 +1,33 @@
 using FluentAssertions;
 
 using KafkaSnapshot.Export.File.Common;
+using KafkaSnapshot.Export.Configuration;
+using Microsoft.Extensions.Options;
 using KafkaSnapshot.Models.Names;
 
 using Xunit;
 
 namespace KafkaSnapshot.Export.Tests
 {
-    public class FileStreamProviderTests
+    public class ExportFileStorageStreamTests
     {
-    [Fact(DisplayName = "FileStreamProvider can be created.")]
+        [Fact(DisplayName = "ExportFileStorage can be created.")]
         [Trait("Category", "Unit")]
-    public void FileStreamProviderCanBeCreated()
+        public void StorageCanBeCreated()
         {
             // Act
-            var exception = Record.Exception(() => _ = new FileStreamProvider());
+            var exception = Record.Exception(() => _ = new ExportFileStorage(Options.Create(new JsonFileDataExporterConfiguration())));
 
             // Assert
             exception.Should().BeNull();
         }
 
-        [Fact(DisplayName = "FileStreamProvider can't create stream for null name.")]
+        [Fact(DisplayName = "ExportFileStorage can't create stream for null name.")]
         [Trait("Category", "Unit")]
         public void CannotCreateStreamWithNullFileName()
         {
             // Arrange
-            var provider = new FileStreamProvider();
+            var provider = new ExportFileStorage(Options.Create(new JsonFileDataExporterConfiguration()));
             var fileName = (FileName)null!;
 
             // Act
@@ -35,12 +37,12 @@ namespace KafkaSnapshot.Export.Tests
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
         }
 
-        [Fact(DisplayName = "FileStreamProvider can create stream with valid file name.")]
+        [Fact(DisplayName = "ExportFileStorage can create stream with valid file name.")]
         [Trait("Category", "Unit")]
         public void CanCreateStreamWithValidFileName()
         {
             // Arrange
-            var provider = new FileStreamProvider();
+            var provider = new ExportFileStorage(Options.Create(new JsonFileDataExporterConfiguration()));
             var tempPath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.tmp");
             var fileName = new FileName(tempPath);
 

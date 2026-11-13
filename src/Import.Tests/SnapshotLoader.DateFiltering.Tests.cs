@@ -73,7 +73,7 @@ public partial class SnapshotLoaderTests
             [
                 new TopicPartitionOffset(topicPartition,new Offset(Offset.End))
             ]);
-        topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, byte[]>(consumerFactory, topicName, token))
+        topicLoaderMock.Setup(x => x.LoadWatermarksAsync(topicName, token))
             .Returns(Task.FromResult(topicWatermark));
         var dispCount = 0;
         var closeCount = 0;
@@ -184,7 +184,7 @@ public partial class SnapshotLoaderTests
             [
                 new TopicPartitionOffset(topicPartition,new Offset(0))
             ]);
-        topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, byte[]>(consumerFactory, topicName, token))
+        topicLoaderMock.Setup(x => x.LoadWatermarksAsync(topicName, token))
             .Returns(Task.FromResult(topicWatermark));
         consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(x => x.Topic == topicName.Value.Name && x.Partition == partition)));
         consumerMock.Setup(x => x.Consume(token)).Returns(() => consumerData[indexer++]);
@@ -251,7 +251,7 @@ public partial class SnapshotLoaderTests
                 Timestamp = new Timestamp(testDate.AddDays(1))
             }
         });
-        topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, byte[]>(consumerFactory, topicName, token))
+        topicLoaderMock.Setup(x => x.LoadWatermarksAsync(topicName, token))
             .Returns(Task.FromResult(topicWatermark));
         consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(x => x.Topic == topicName.Value.Name && x.Partition == partition)));
         var dispCount = 0;
@@ -363,7 +363,7 @@ public partial class SnapshotLoaderTests
         [
             new PartitionWatermark(topicName, offset, partition)
         ]);
-        topicLoaderMock.Setup(x => x.LoadWatermarksAsync<object, byte[]>(consumerFactory, topicName, token))
+        topicLoaderMock.Setup(x => x.LoadWatermarksAsync(topicName, token))
             .Callback(() => topicLoaderCalls++)
             .Returns(Task.FromResult(topicWatermark));
         consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(item => item.Topic == topicName.Value.Name && item.Partition == partition)))

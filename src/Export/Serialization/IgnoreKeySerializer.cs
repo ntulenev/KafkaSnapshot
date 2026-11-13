@@ -1,4 +1,3 @@
-using System.Text.Json.Nodes;
 
 using Microsoft.Extensions.Logging;
 
@@ -20,23 +19,26 @@ public sealed class IgnoreKeySerializer(ILogger<IgnoreKeySerializer> logger) :
     JsonSerializerBase(logger),
     ISerializer<string, string, IgnoreKeyMarker>
 {
-    private object ProjectData(
+    private IEnumerable<object> ProjectData(
                     IEnumerable<KeyValuePair<string, KafkaMessage<string>>> data,
                     bool exportRawMessage)
     {
-        if (data.Any(x => x.Key is not null))
+        var warned = false;
+        foreach (var item in data)
         {
-            Logger.LogWarning("Serialization data contains non-null keys. " +
-                "These keys will be ignored.");
+            if (!warned && item.Key is not null)
+            {
+                Logger.LogWarning("Serialization data contains non-null keys. " +
+                    "These keys will be ignored.");
+                warned = true;
+            }
+
+            yield return new
+            {
+                Value = exportRawMessage ? item.Value.Message : (object)ParseJson(item.Value.Message),
+                item.Value.Meta
+            };
         }
-
-        var items = data.Select(x => new
-        {
-            Value = exportRawMessage ? x.Value.Message : ParseJson(x.Value.Message),
-            x.Value.Meta
-        });
-
-        return items;
     }
 
     /// <inheritdoc/>
@@ -64,6 +66,4 @@ public sealed class IgnoreKeySerializer(ILogger<IgnoreKeySerializer> logger) :
         return SerializeDataToStreamAsync(ProjectData(data, exportRawMessage), stream, ct);
     }
 
-    private static JsonNode ParseJson(string value)
-        => JsonNode.Parse(value) ?? throw new InvalidOperationException("JSON value cannot be null.");
 }

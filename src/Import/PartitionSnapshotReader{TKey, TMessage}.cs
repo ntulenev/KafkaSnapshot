@@ -1,5 +1,7 @@
 using Confluent.Kafka;
 
+using KafkaSnapshot.Import.Kafka;
+
 using KafkaSnapshot.Abstractions.Filters;
 using KafkaSnapshot.Abstractions.Import;
 using KafkaSnapshot.Import.Configuration;
@@ -28,12 +30,14 @@ public class PartitionSnapshotReader<TKey, TMessage>
     /// <param name="logger">Logger.</param>
     /// <param name="config">Snapshot loader configuration.</param>
     /// <param name="consumerFactory">Kafka consumer factory.</param>
+    /// <param name="assignment">Consumer assignment adapter.</param>
     /// <param name="encoder">Raw message value encoder.</param>
     public PartitionSnapshotReader(
         ILogger<PartitionSnapshotReader<TKey, TMessage>> logger,
         IOptions<SnapshotLoaderConfiguration> config,
         Func<IConsumer<TKey, byte[]>> consumerFactory,
-        IMessageEncoder<byte[], TMessage> encoder)
+        IMessageEncoder<byte[], TMessage> encoder,
+        IPartitionConsumerAssignment assignment)
     {
         ArgumentNullException.ThrowIfNull(logger);
         ArgumentNullException.ThrowIfNull(config);
@@ -41,6 +45,8 @@ public class PartitionSnapshotReader<TKey, TMessage>
         ArgumentNullException.ThrowIfNull(consumerFactory);
         ArgumentNullException.ThrowIfNull(encoder);
 
+        ArgumentNullException.ThrowIfNull(assignment);
+        _assignment = assignment;
         _logger = logger;
         _config = config.Value;
         _consumerFactory = consumerFactory;
@@ -114,7 +120,7 @@ public class PartitionSnapshotReader<TKey, TMessage>
     {
         if (!topicParams.HasOffsetDate)
         {
-            watermark.AssignWithConsumer(consumer);
+            _assignment.Assign(watermark, consumer);
             return true;
         }
 
@@ -132,8 +138,8 @@ public class PartitionSnapshotReader<TKey, TMessage>
 
         try
         {
-            offsetAssigned = watermark.AssignWithConsumer(
-                consumer,
+            offsetAssigned = _assignment.Assign(
+                watermark, consumer,
                 topicParams.OffsetDate,
                 _config.DateOffsetTimeout,
                 out assignedOffset);
@@ -190,6 +196,11 @@ public class PartitionSnapshotReader<TKey, TMessage>
         {
             result = ConsumeNext(consumer, topicParams, watermark, ct);
 
+            if (!watermark.Contains(result.Offset.Value))
+            {
+                break;
+            }
+
             if (IsFinalOffsetDateReached(topicParams, result))
             {
                 LogFinalOffsetDateReached(topicParams, watermark, result);
@@ -206,7 +217,7 @@ public class PartitionSnapshotReader<TKey, TMessage>
 
             yield return CreateMessage(result, messageValue, watermark);
 
-        } while (watermark.ShouldContinueReadingAfter(result));
+        } while (watermark.ShouldContinueReadingAfter(result.Offset.Value));
     }
 
     private ConsumeResult<TKey, byte[]> ConsumeNext(
@@ -233,8 +244,7 @@ public class PartitionSnapshotReader<TKey, TMessage>
     private static bool IsFinalOffsetDateReached(
         LoadingTopic topicParams,
         ConsumeResult<TKey, byte[]> result)
-        => topicParams.HasEndOffsetDate &&
-           GetResultTimestamp(result) > topicParams.EndOffsetDate;
+        => topicParams.DateRange.IsAfterEnd(GetResultTimestamp(result));
 
     private void LogFinalOffsetDateReached(
         LoadingTopic topicParams,
@@ -281,6 +291,7 @@ public class PartitionSnapshotReader<TKey, TMessage>
     private static DateTimeOffset GetResultTimestamp(ConsumeResult<TKey, byte[]> result)
         => new(result.Message.Timestamp.UtcDateTime, TimeSpan.Zero);
 
+    private readonly IPartitionConsumerAssignment _assignment;
     private readonly SnapshotLoaderConfiguration _config;
     private readonly Func<IConsumer<TKey, byte[]>> _consumerFactory;
     private readonly ILogger _logger;

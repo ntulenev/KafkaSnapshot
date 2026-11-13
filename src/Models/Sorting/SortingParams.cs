@@ -35,10 +35,10 @@ public sealed record SortingParams
     /// <summary>
     /// Message attribute for sorting.
     /// </summary>
-    public SortingType Type { get; init; }
+    public SortingType Type { get; }
 
     /// <summary>
     /// Sort order.
     /// </summary>
-    public SortingOrder Order { get; init; }
+    public SortingOrder Order { get; }
 }

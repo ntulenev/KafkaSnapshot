@@ -77,12 +77,17 @@ public sealed class LoadingTopic
 
         Value = topicName;
         LoadWithCompacting = loadWithCompacting;
+        DateRange = dateParams;
         _offsetDate = dateParams.StartDate;
         _endOffsetDate = dateParams.EndDate;
 
         if (partitionFilter != null)
         {
             ArgumentOutOfRangeException.ThrowIfZero(partitionFilter.Count, nameof(partitionFilter));
+            foreach (var partition in partitionFilter)
+            {
+                ArgumentOutOfRangeException.ThrowIfNegative(partition, nameof(partitionFilter));
+            }
 
             PartitionFilter = partitionFilter.ToFrozenSet();
         }
@@ -101,6 +106,12 @@ public sealed class LoadingTopic
 
         TopicValueEncoderRule = valueEncoderRule;
     }
+
+    /// <summary>Validated date boundaries.</summary>
+    public DateFilterRange DateRange { get; }
+
+    /// <summary>Checks whether a partition is included in the selection.</summary>
+    public bool IncludesPartition(int partition) => !HasPartitionFilter || PartitionFilter.Contains(partition);
 
     private readonly DateTimeOffset? _offsetDate;
     private readonly DateTimeOffset? _endOffsetDate;

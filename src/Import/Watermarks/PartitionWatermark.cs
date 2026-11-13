@@ -49,79 +49,9 @@ public class PartitionWatermark
     /// </summary>
     public bool IsReadyToRead() => Offset.High > Offset.Low;
 
-    /// <summary>
-    /// Checks whether reading should continue after the consumed message.
-    /// </summary>
-    /// <typeparam name="TKey">Message key.</typeparam>
-    /// <typeparam name="TValue">Message value.</typeparam>
-    /// <param name="consumeResult">Consumer result.</param>
-    public bool ShouldContinueReadingAfter<TKey, TValue>(ConsumeResult<TKey, TValue> consumeResult)
-    {
-        ArgumentNullException.ThrowIfNull(consumeResult);
+    /// <summary>Checks whether reading should continue after an offset.</summary>
+    public bool ShouldContinueReadingAfter(long offset) => offset < Offset.High.Value - 1;
 
-        return consumeResult.Offset != Offset.High - 1;
-    }
-
-    /// <summary>
-    /// Assigns the consumer to the partition topic.
-    /// </summary>
-    /// <typeparam name="TKey">Message key.</typeparam>
-    /// <typeparam name="TValue">Message value.</typeparam>
-    /// <param name="consumer">Consumer.</param>
-    public void AssignWithConsumer<TKey, TValue>(IConsumer<TKey, TValue> consumer)
-    {
-        ArgumentNullException.ThrowIfNull(consumer);
-
-        consumer.Assign(new TopicPartition(Topic.Value.Name, Partition));
-
-    }
-
-    /// <summary>
-    /// Assigns the consumer to the partition topic with an offset resolved from <paramref name="startDate"/>.
-    /// </summary>
-    /// <typeparam name="TKey">Message key.</typeparam>
-    /// <typeparam name="TValue">Message value.</typeparam>
-    /// <param name="consumer">Consumer.</param>
-    /// <param name="startDate">Start date for offset.</param>
-    /// <param name="timeout">Timeout for offset lookup.</param>
-    public bool AssignWithConsumer<TKey, TValue>(IConsumer<TKey, TValue> consumer, DateTimeOffset startDate, TimeSpan timeout)
-        => AssignWithConsumer(consumer, startDate, timeout, out _);
-
-    /// <summary>
-    /// Assigns the consumer to the partition topic with an offset resolved from <paramref name="startDate"/>.
-    /// </summary>
-    /// <typeparam name="TKey">Message key.</typeparam>
-    /// <typeparam name="TValue">Message value.</typeparam>
-    /// <param name="consumer">Consumer.</param>
-    /// <param name="startDate">Start date for offset.</param>
-    /// <param name="timeout">Timeout for offset lookup.</param>
-    /// <param name="assignedOffset">Resolved Kafka offset assigned to the consumer.</param>
-    public bool AssignWithConsumer<TKey, TValue>(
-        IConsumer<TKey, TValue> consumer,
-        DateTimeOffset startDate,
-        TimeSpan timeout,
-        out TopicPartitionOffset assignedOffset)
-    {
-        ArgumentNullException.ThrowIfNull(consumer);
-
-        var topicPartition = new TopicPartition(Topic.Value.Name, Partition);
-
-        var partitionTimestamp = new TopicPartitionTimestamp(topicPartition, new Timestamp(startDate.UtcDateTime));
-
-        var offsets = consumer.OffsetsForTimes([partitionTimestamp], timeout);
-
-        var singleOffset = offsets.Single();
-
-        if (singleOffset.Offset.IsSpecial)
-        {
-            assignedOffset = singleOffset;
-            return false;
-        }
-
-        consumer.Assign(singleOffset);
-
-        assignedOffset = singleOffset;
-        return true;
-    }
-
+    /// <summary>Checks whether an offset belongs to this snapshot.</summary>
+    public bool Contains(long offset) => offset >= Offset.Low.Value && offset < Offset.High.Value;
 }

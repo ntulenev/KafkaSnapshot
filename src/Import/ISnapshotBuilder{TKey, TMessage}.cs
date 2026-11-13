@@ -7,7 +7,7 @@ namespace KafkaSnapshot.Import;
 /// </summary>
 /// <typeparam name="TKey">Kafka message key type.</typeparam>
 /// <typeparam name="TMessage">Decoded Kafka message value type.</typeparam>
-public interface ISnapshotCompactor<TKey, TMessage>
+public interface ISnapshotBuilder<TKey, TMessage>
     where TKey : notnull
     where TMessage : notnull
 {

@@ -1,4 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+
+using KafkaSnapshot.Models.Processing;
 
 using KafkaSnapshot.Models.Configuration;
 using KafkaSnapshot.Models.Filters;
@@ -21,8 +24,8 @@ public sealed partial class LoaderToolConfigurationValidator :
         return TryFailOnTopicName(topic, out result) ||
                TryFailOnExportFileName(topic, out result) ||
                TryFailOnTopicEnums(topic, out result) ||
-               TryFailOnTopicFilter(topic, out result) ||
                TryFailOnTopicCompacting(topic, out result) ||
+               TryFailOnTopicFilter(topic, out result) ||
                TryFailOnTopicDateRange(topic, out result);
     }
 
@@ -153,6 +156,29 @@ public sealed partial class LoaderToolConfigurationValidator :
             return true;
         }
 
+        if (!KeyFilterRules.IsSupported(topic.FilterKeyType, topic.KeyType))
+        {
+            result = Fail(ConfigurationValidationErrorCodes.FilterKeyIncompatible,
+                $"Filter {topic.FilterKeyType} is incompatible with key type {topic.KeyType}.");
+            return true;
+        }
+
+        if (topic.FilterKeyType != FilterType.None && topic.KeyType == KeyType.Long &&
+            !long.TryParse(topic.FilterKeyValue, NumberStyles.Integer, CultureInfo.InvariantCulture, out _))
+        {
+            result = Fail(ConfigurationValidationErrorCodes.FilterValueInvalid,
+                $"Filter value for topic {topic.Name} must be a long integer.");
+            return true;
+        }
+
+        if (topic.PartitionsIds is not null &&
+            (topic.PartitionsIds.Count == 0 || topic.PartitionsIds.Any(id => id < 0)))
+        {
+            result = Fail(ConfigurationValidationErrorCodes.PartitionFilterInvalid,
+                $"Partition selection for topic {topic.Name} must be non-empty and non-negative.");
+            return true;
+        }
+
         result = null!;
         return false;
     }
@@ -161,8 +187,7 @@ public sealed partial class LoaderToolConfigurationValidator :
         TopicConfiguration topic,
         [NotNullWhen(returnValue: true)] out ValidateOptionsResult result)
     {
-        if (topic.KeyType == KeyType.Ignored &&
-            topic.Compacting == CompactingMode.On)
+        if (!ProcessingTopicRules.SupportsCompacting(topic.KeyType, topic.Compacting == CompactingMode.On))
         {
             result = Fail(
                 ConfigurationValidationErrorCodes.CompactingIgnoredKey,
@@ -178,9 +203,7 @@ public sealed partial class LoaderToolConfigurationValidator :
         TopicConfiguration topic,
         [NotNullWhen(returnValue: true)] out ValidateOptionsResult result)
     {
-        if (topic.OffsetStartDate is DateTimeOffset startDate &&
-            topic.OffsetEndDate is DateTimeOffset endDate &&
-            startDate > endDate)
+        if (!DateFilterRange.IsValid(topic.OffsetStartDate, topic.OffsetEndDate))
         {
             result = Fail(
                 ConfigurationValidationErrorCodes.TopicDateRangeInvalid,

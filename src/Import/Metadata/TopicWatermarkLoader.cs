@@ -72,7 +72,7 @@ public class TopicWatermarkLoader : ITopicWatermarkLoader
         if (loadingTopic.HasPartitionFilter)
         {
             partitions = partitions.Where(
-                x => loadingTopic.PartitionFilter.Contains(x.PartitionId));
+                x => loadingTopic.IncludesPartition(x.PartitionId));
         }
 
         return partitions.Select(
@@ -95,18 +95,16 @@ public class TopicWatermarkLoader : ITopicWatermarkLoader
     }
 
     /// <inheritdoc />
-    public Task<TopicWatermark> LoadWatermarksAsync<TKey, TValue>(
-                        Func<IConsumer<TKey, TValue>> consumerFactory,
+    public Task<TopicWatermark> LoadWatermarksAsync(
                         LoadingTopic loadingTopic,
                         CancellationToken ct
                         )
     {
-        ArgumentNullException.ThrowIfNull(consumerFactory);
         ArgumentNullException.ThrowIfNull(loadingTopic);
 
         ct.ThrowIfCancellationRequested();
 
-        using var consumer = consumerFactory();
+        using var consumer = _kafkaClientFactory.CreateConsumer<string>();
 
         try
         {

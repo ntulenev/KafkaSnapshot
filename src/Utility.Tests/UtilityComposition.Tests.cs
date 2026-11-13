@@ -56,13 +56,13 @@ public class UtilityCompositionTests
         var snapshotLoader = provider.GetRequiredService<ISnapshotLoader<string, string>>();
         var partitionReader = provider.GetRequiredService<IPartitionSnapshotReader<string, string>>();
         var partitionBatchReader = provider.GetRequiredService<IPartitionSnapshotBatchReader<string, string>>();
-        var snapshotCompactor = provider.GetRequiredService<ISnapshotCompactor<string, string>>();
+        var snapshotCompactor = provider.GetRequiredService<ISnapshotBuilder<string, string>>();
 
         // Assert
         snapshotLoader.Should().BeOfType<SnapshotLoader<string, string>>();
         partitionReader.Should().BeOfType<PartitionSnapshotReader<string, string>>();
         partitionBatchReader.Should().BeOfType<PartitionSnapshotBatchReader<string, string>>();
-        snapshotCompactor.Should().BeOfType<SnapshotCompactor<string, string>>();
+        snapshotCompactor.Should().BeOfType<SnapshotBuilder<string, string>>();
     }
 }
 

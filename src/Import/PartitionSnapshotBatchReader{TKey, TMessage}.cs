@@ -35,6 +35,17 @@ public class PartitionSnapshotBatchReader<TKey, TMessage>
         _partitionReader = partitionReader;
     }
 
+    /// <summary>Reads partitions using the configured selection strategy.</summary>
+    public Task<IReadOnlyCollection<KeyValuePair<TKey, KafkaMessage<TMessage>>>> ReadAsync(
+        IEnumerable<PartitionWatermark> watermarks,
+        LoadingTopic topicParams,
+        IDataFilter<TKey> keyFilter,
+        IDataFilter<TMessage> valueFilter,
+        CancellationToken ct)
+        => _config.SearchSinglePartition
+            ? ReadFirstNonEmptyAsync(watermarks, topicParams, keyFilter, valueFilter, ct)
+            : ReadAllAsync(watermarks, topicParams, keyFilter, valueFilter, ct);
+
     /// <summary>
     /// Reads partitions one by one until the first non-empty partition snapshot is found.
     /// </summary>

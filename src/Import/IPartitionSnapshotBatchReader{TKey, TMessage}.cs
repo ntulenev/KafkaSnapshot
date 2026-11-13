@@ -14,6 +14,14 @@ public interface IPartitionSnapshotBatchReader<TKey, TMessage>
     where TKey : notnull
     where TMessage : notnull
 {
+    /// <summary>Reads partitions using the configured selection strategy.</summary>
+    Task<IReadOnlyCollection<KeyValuePair<TKey, KafkaMessage<TMessage>>>> ReadAsync(
+        IEnumerable<PartitionWatermark> watermarks,
+        LoadingTopic topicParams,
+        IDataFilter<TKey> keyFilter,
+        IDataFilter<TMessage> valueFilter,
+        CancellationToken ct);
+
     /// <summary>
     /// Reads partitions one by one until the first non-empty partition snapshot is found.
     /// </summary>

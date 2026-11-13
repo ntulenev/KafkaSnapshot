@@ -39,6 +39,9 @@ public static class ConfigurationValidationErrorCodes
     public static string CompactingModeUnsupported { get; } = "KS_CFG_030";
     public static string EncoderRuleUnsupported { get; } = "KS_CFG_031";
     public static string SortingTypeUnsupported { get; } = "KS_CFG_032";
+    public static string FilterKeyIncompatible { get; } = "KS_CFG_034";
+    public static string FilterValueInvalid { get; } = "KS_CFG_035";
+    public static string PartitionFilterInvalid { get; } = "KS_CFG_036";
     public static string SortingOrderUnsupported { get; } = "KS_CFG_033";
 }
 

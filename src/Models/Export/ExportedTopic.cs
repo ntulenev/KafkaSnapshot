@@ -26,15 +26,15 @@ public record ExportedTopic
     /// <summary>
     /// Topic name.
     /// </summary>
-    public TopicName TopicName { get; init; }
+    public TopicName TopicName { get; }
 
     /// <summary>
     /// Export name.
     /// </summary>
-    public FileName ExportName { get; init; }
+    public FileName ExportName { get; }
 
     /// <summary>
     /// Whether to export message values as raw strings.
     /// </summary>
-    public bool ExportRawMessage { get; init; }
+    public bool ExportRawMessage { get; }
 }

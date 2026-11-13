@@ -91,26 +91,6 @@ public class PartitionWatermarkTests
         result.Should().Be(condition);
     }
 
-    [Fact(DisplayName = "ShouldContinueReadingAfter fails on null result.")]
-    [Trait("Category", "Unit")]
-    public void ShouldContinueReadingAfterFailsOnNullResult()
-    {
-
-        // Arrange
-        HashSet<int> partitionFilter = null!;
-        var topicName = new LoadingTopic(new TopicName("Test"), true, new DateFilterRange(null!, null!), EncoderRules.String, partitionFilter);
-        var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
-        var partition = new Partition(1);
-        ConsumeResult<object, object> result = null!;
-        var pw = new PartitionWatermark(topicName, offsets, partition);
-
-        // Act
-        var exception = Record.Exception(() => pw.ShouldContinueReadingAfter(result));
-
-        // Assert
-        exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
-    }
-
     [Fact(DisplayName = "ShouldContinueReadingAfter stops at the last readable offset.")]
     [Trait("Category", "Unit")]
     public void ShouldContinueReadingAfterStopsAtLastReadableOffset()
@@ -128,7 +108,7 @@ public class PartitionWatermarkTests
         var pw = new PartitionWatermark(topicName, offsets, partition);
 
         // Act
-        var status = pw.ShouldContinueReadingAfter(result);
+        var status = pw.ShouldContinueReadingAfter(result.Offset.Value);
 
         // Assert
         status.Should().BeFalse();
@@ -151,7 +131,7 @@ public class PartitionWatermarkTests
         var pw = new PartitionWatermark(topicName, offsets, partition);
 
         // Act
-        var status = pw.ShouldContinueReadingAfter(result);
+        var status = pw.ShouldContinueReadingAfter(result.Offset.Value);
 
         // Assert
         status.Should().BeTrue();
@@ -171,7 +151,7 @@ public class PartitionWatermarkTests
         IConsumer<object, object> consumer = null!;
 
         // Act
-        var exception = Record.Exception(() => pw.AssignWithConsumer(consumer));
+        var exception = Record.Exception(() => new KafkaSnapshot.Import.Kafka.PartitionConsumerAssignment().Assign(pw, consumer));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -195,7 +175,7 @@ public class PartitionWatermarkTests
         var consumer = consumerMock.Object;
 
         // Act
-        pw.AssignWithConsumer(consumer);
+        new KafkaSnapshot.Import.Kafka.PartitionConsumerAssignment().Assign(pw, consumer);
 
         // Assert
         assignCalls.Should().Be(1);
@@ -237,7 +217,7 @@ public class PartitionWatermarkTests
         var consumer = consumerMock.Object;
 
         // Act
-        var result = pw.AssignWithConsumer(consumer, date, timeout, out var assignedOffset);
+        var result = new KafkaSnapshot.Import.Kafka.PartitionConsumerAssignment().Assign(pw, consumer, date, timeout, out var assignedOffset);
 
         // Assert
         result.Should().BeTrue();
@@ -285,7 +265,7 @@ public class PartitionWatermarkTests
         var consumer = consumerMock.Object;
 
         // Act
-        var result = pw.AssignWithConsumer(consumer, date, timeout);
+        var result = new KafkaSnapshot.Import.Kafka.PartitionConsumerAssignment().Assign(pw, consumer, date, timeout);
 
         // Assert
         result.Should().BeFalse();

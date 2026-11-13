@@ -17,7 +17,7 @@ It is useful when you need to inspect topic state, capture data for diagnostics,
 - Limit exported data by start/end timestamps or selected partition ids.
 - Support JSON, string, long, and ignored keys.
 - Decode string, MessagePack, MessagePack LZ4 block, and Base64 payloads.
-- Stream large exports directly to files to reduce memory pressure.
+- Serialize exports directly to files to avoid buffering the complete JSON string.
 - Sort exported messages by timestamp or partition when compacting is disabled.
 - Connect to secured clusters with SASL authentication.
 
@@ -297,7 +297,7 @@ Supported `MessageEncoderRule` values:
 | `DateOffsetTimeout` | Timeout for finding Kafka offsets by timestamp. |
 | `SearchSinglePartition` | Stops partition traversal after the first partition with suitable data. |
 | `MaxConcurrentPartitions` | Maximum number of topic partitions processed concurrently. Optional; when omitted, all partitions are processed concurrently. |
-| `UseFileStreaming` | Writes loaded data directly through `FileStream` to reduce memory usage on large exports. Works best with sorting disabled. |
+| `UseFileStreaming` | Serializes already loaded data through `FileStream`, avoiding a complete JSON string in memory. Kafka reads are currently buffered. |
 | `OutputDirectory` | Directory for exported files. Optional; when omitted, files are written to the current working directory. |
 | `UseConcurrentLoad` | Loads configured topics concurrently instead of one by one. |
 | `GlobalMessageSort` | Message metadata field used for sorting: `Time` or `Partition`. Optional. Applies only to topics without compacting. |
@@ -414,3 +414,47 @@ Both measurements below use the updated dependencies, Coverlet 10.1.0, Release b
 The additional tests cover invalid security and enum settings, metadata failures and client cleanup, cancellation and background service shutdown, JSON `null` payloads, topic name boundaries, rejected messages, compaction logging, and stable sorting within partitions. Existing validation tests now assert specific error codes; ambiguous method names and display names were clarified, including previously reversed date accessor test names and a null-stream test that previously failed on null data first.
 
 The seven executable production assemblies are Export, Filters, Import, Models, Processing, Sorting, and Utility. Abstractions contains interfaces with no executable code. Integration tests exercise the full pipeline with fake Kafka clients, command-line startup validation, and native Kafka client creation/disposal. A running Kafka broker is not required; real broker connectivity, authentication, and delivery behavior remain outside this suite.
+
+## Architecture and Streaming Design
+
+`Models` owns validated domain state. Models expose read-only properties; partition
+selections are copied into frozen sets. `ProcessingTopic` composes loading, export,
+and key-filter models. `KeyFilterDefinition` validates filter compatibility and
+sample types. Configuration validation reuses domain compatibility rules and keeps
+stable `KS_CFG_*` diagnostics for startup errors.
+
+`SnapshotLoader` coordinates metadata, partition reading, and `ISnapshotBuilder`.
+The batch reader owns selection and concurrency settings. `TopicWatermarkLoader`
+creates its metadata consumer through `IKafkaClientFactory`. Kafka assignment and
+timestamp lookup belong to `IPartitionConsumerAssignment`, rather than watermark
+models. `IExportFileStorage` owns output paths, directory creation, and file I/O;
+exporters own serialization and dispose the returned streams.
+
+The current pipeline still buffers partition results before export. A future
+end-to-end streaming implementation should follow these contracts:
+
+- Use an asynchronous message stream for reads and export. Enable streaming when
+  compaction and sorting are disabled; keep buffered processing for operations
+  that need the complete snapshot.
+- Capture watermarks before reading. Exclude offsets outside the captured range;
+  finish on a captured partition boundary even when no record exists at `high - 1`.
+  The latter requires explicit handling of consumer position/partition EOF; the
+  current blocking reader can still wait when the tail contains no readable record.
+- Preserve partition traversal order and message order within each partition.
+  Current compaction keeps the last enumerated value for a key; parallel worker
+  completion must not change that result. Cross-partition keys have no global
+  offset ordering in the application contract.
+- Bound queues between readers and writers. Backpressure must limit retained
+  messages; cancellation, writer failures, and early disposal must stop workers
+  and close every consumer. Preserve the first non-empty partition mode after
+  applying filters.
+- Preserve the current inclusive end timestamp and stop-on-first-later-timestamp
+  behavior until a separate behavior change defines non-monotonic timestamp
+  handling. The decoder currently rejects null payloads; tombstone handling also
+  needs an explicit policy before introducing streaming compaction.
+- Verify bounded buffering and early output with a slow writer, cancellation during
+  reads/writes, empty and sparse partitions, offset overshoot, non-monotonic dates,
+  and duplicate keys across partitions. Broker tests are needed for EOF and
+  position semantics; the existing fake-client suite cannot establish those.
+
+This design does not change the JSON configuration or export format.

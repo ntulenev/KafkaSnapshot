@@ -94,32 +94,6 @@ public class TopicWatermarkLoaderTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
-    [Fact(DisplayName = "TopicWatermarkLoader can't load data with null factory.")]
-    [Trait("Category", "Unit")]
-    public async Task TopicWatermarkLoaderCannotLoadWithNullFactory()
-    {
-
-        // Arrange
-        using var cts = new CancellationTokenSource();
-        var client = (new Mock<IAdminClient>(MockBehavior.Strict)).Object;
-        var options = (new Mock<IOptions<TopicWatermarkLoaderConfiguration>>(MockBehavior.Strict));
-        options.Setup(x => x.Value).Returns(new TopicWatermarkLoaderConfiguration
-        {
-
-        });
-        var loader = CreateLoader(client, options.Object);
-        var consumerFactory = (Func<IConsumer<string, string>>)null!;
-        HashSet<int> partitionFilter = null!;
-        var topicName = new LoadingTopic(new TopicName("test"), true, new DateFilterRange(null!, null!), EncoderRules.String, partitionFilter);
-
-        // Act
-        var exception = await Record.ExceptionAsync(async () =>
-        await loader.LoadWatermarksAsync(consumerFactory, topicName, cts.Token));
-
-        // Assert
-        exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
-    }
-
     [Fact(DisplayName = "TopicWatermarkLoader can't load data with null topic.")]
     [Trait("Category", "Unit")]
     public async Task TopicWatermarkLoaderCannotLoadWithNullTopic()
@@ -134,12 +108,12 @@ public class TopicWatermarkLoaderTests
 
         });
         var loader = CreateLoader(client, options.Object);
-        static IConsumer<string, string> consumerFactory() => null!;
+        static IConsumer<string, byte[]> consumerFactory() => null!;
         var topicName = (LoadingTopic)null!;
 
         // Act
         var exception = await Record.ExceptionAsync(async () =>
-        await loader.LoadWatermarksAsync(consumerFactory, topicName, cts.Token));
+        await LoadWatermarksAsync(loader, consumerFactory, topicName, cts.Token));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -163,8 +137,8 @@ public class TopicWatermarkLoaderTests
             AdminClientTimeout = TimeSpan.FromSeconds(timeout)
         });
         var loader = CreateLoader(client, options.Object);
-        var consumerMock = new Mock<IConsumer<object, object>>(MockBehavior.Strict);
-        IConsumer<object, object> consumerFactory() => consumerMock!.Object;
+        var consumerMock = new Mock<IConsumer<string, byte[]>>(MockBehavior.Strict);
+        IConsumer<string, byte[]> consumerFactory() => consumerMock!.Object;
         var adminClientPartition = new TopicPartition(topic.Value.Name, new Partition(1));
         var adminParitions = new[] { adminClientPartition };
         var borkerMeta = new BrokerMetadata(1, "testHost", 1000);
@@ -191,7 +165,7 @@ public class TopicWatermarkLoaderTests
             .Callback(() => closeCalls++);
 
         // Act
-        var result = await loader.LoadWatermarksAsync(consumerFactory, topic, cts.Token);
+        var result = await LoadWatermarksAsync(loader, consumerFactory, topic, cts.Token);
 
         // Assert
         result.Should().NotBeNull();
@@ -222,8 +196,8 @@ public class TopicWatermarkLoaderTests
             AdminClientTimeout = TimeSpan.FromSeconds(timeout)
         });
         var loader = CreateLoader(client, options.Object);
-        var consumerMock = new Mock<IConsumer<object, object>>(MockBehavior.Strict);
-        IConsumer<object, object> consumerFactory() => consumerMock!.Object;
+        var consumerMock = new Mock<IConsumer<string, byte[]>>(MockBehavior.Strict);
+        IConsumer<string, byte[]> consumerFactory() => consumerMock!.Object;
         var adminClientPartition1 = new TopicPartition(topic.Value.Name, new Partition(1));
         var adminClientPartition2 = new TopicPartition(topic.Value.Name, new Partition(2));
         var adminParitions = new[] { adminClientPartition1, adminClientPartition2 };
@@ -256,7 +230,7 @@ public class TopicWatermarkLoaderTests
             .Callback(() => closeCalls++);
 
         // Act
-        var result = await loader.LoadWatermarksAsync(consumerFactory, topic, cts.Token);
+        var result = await LoadWatermarksAsync(loader, consumerFactory, topic, cts.Token);
 
         // Assert
         result.Should().NotBeNull();
@@ -288,8 +262,8 @@ public class TopicWatermarkLoaderTests
             AdminClientTimeout = TimeSpan.FromSeconds(timeout)
         });
         var loader = CreateLoader(clientMock.Object, options.Object);
-        var consumerMock = new Mock<IConsumer<object, object>>(MockBehavior.Strict);
-        IConsumer<object, object> consumerFactory() => consumerMock.Object;
+        var consumerMock = new Mock<IConsumer<string, byte[]>>(MockBehavior.Strict);
+        IConsumer<string, byte[]> consumerFactory() => consumerMock.Object;
 
         var brokerMeta = new BrokerMetadata(1, "testHost", 1000);
         var partitionMeta = new PartitionMetadata(1, 1, new[] { 1 }, new[] { 1 }, null);
@@ -312,7 +286,7 @@ public class TopicWatermarkLoaderTests
 
         // Act
         var exception = await Record.ExceptionAsync(
-            async () => await loader.LoadWatermarksAsync(consumerFactory, topic, cts.Token));
+            async () => await LoadWatermarksAsync(loader, consumerFactory, topic, cts.Token));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<InvalidOperationException>()
@@ -338,8 +312,8 @@ public class TopicWatermarkLoaderTests
             AdminClientTimeout = TimeSpan.FromSeconds(timeout)
         });
         var loader = CreateLoader(clientMock.Object, options.Object);
-        var consumerMock = new Mock<IConsumer<object, object>>(MockBehavior.Strict);
-        IConsumer<object, object> consumerFactory() => consumerMock.Object;
+        var consumerMock = new Mock<IConsumer<string, byte[]>>(MockBehavior.Strict);
+        IConsumer<string, byte[]> consumerFactory() => consumerMock.Object;
 
         var brokerMeta = new BrokerMetadata(1, "testHost", 1000);
         var topicMeta = new TopicMetadata(
@@ -364,7 +338,7 @@ public class TopicWatermarkLoaderTests
 
         // Act
         var exception = await Record.ExceptionAsync(
-            async () => await loader.LoadWatermarksAsync(consumerFactory, topic, cts.Token));
+            async () => await LoadWatermarksAsync(loader, consumerFactory, topic, cts.Token));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<InvalidOperationException>()
@@ -390,8 +364,8 @@ public class TopicWatermarkLoaderTests
             AdminClientTimeout = TimeSpan.FromSeconds(timeout)
         });
         var loader = CreateLoader(clientMock.Object, options.Object);
-        var consumerMock = new Mock<IConsumer<object, object>>(MockBehavior.Strict);
-        IConsumer<object, object> consumerFactory() => consumerMock.Object;
+        var consumerMock = new Mock<IConsumer<string, byte[]>>(MockBehavior.Strict);
+        IConsumer<string, byte[]> consumerFactory() => consumerMock.Object;
 
         var requestedPartition = new TopicPartition(topic.Value.Name, new Partition(1));
         var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
@@ -422,7 +396,7 @@ public class TopicWatermarkLoaderTests
                     .Callback(() => disposeCalls++);
 
         // Act
-        var result = await loader.LoadWatermarksAsync(consumerFactory, topic, cts.Token);
+        var result = await LoadWatermarksAsync(loader, consumerFactory, topic, cts.Token);
 
         // Assert
         result.Should().NotBeNull();
@@ -437,10 +411,23 @@ public class TopicWatermarkLoaderTests
         disposeCalls.Should().Be(1);
     }
 
-    private static TopicWatermarkLoader CreateLoader(
+    private Task<KafkaSnapshot.Import.Watermarks.TopicWatermark> LoadWatermarksAsync(
+        TopicWatermarkLoader loader, Func<IConsumer<string, byte[]>> consumerFactory,
+        LoadingTopic topic, CancellationToken ct)
+    {
+        Mock.Get(_factory).Setup(x => x.CreateConsumer<string>()).Returns(consumerFactory);
+        return loader.LoadWatermarksAsync(topic, ct);
+    }
+
+    private TopicWatermarkLoader CreateLoader(
         IAdminClient adminClient,
         IOptions<TopicWatermarkLoaderConfiguration> options)
-        => new(CreateKafkaClientFactory(adminClient), options);
+    {
+        _factory = CreateKafkaClientFactory(adminClient);
+        return new TopicWatermarkLoader(_factory, options);
+    }
+
+    private IKafkaClientFactory _factory = null!;
 
     private static IKafkaClientFactory CreateKafkaClientFactory(IAdminClient adminClient)
     {

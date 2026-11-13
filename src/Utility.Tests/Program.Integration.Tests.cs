@@ -26,4 +26,15 @@ public class ProgramTests
         // Assert
         exception.Should().BeNull();
     }
+
+    [Fact(DisplayName = "HostBuildHelper applies command-line overrides to loader configuration.")]
+    [Trait("Category", "Integration")]
+    public void CreateHostAppliesCommandLineOverrides()
+    {
+        using var host = HostBuildHelper.CreateHost(["--LoaderToolConfiguration:UseConcurrentLoad=true"]);
+
+        var options = host.Services.GetRequiredService<Microsoft.Extensions.Options.IOptions<KafkaSnapshot.Processing.Configuration.LoaderToolConfiguration>>();
+
+        options.Value.UseConcurrentLoad.Should().BeTrue();
+    }
 }

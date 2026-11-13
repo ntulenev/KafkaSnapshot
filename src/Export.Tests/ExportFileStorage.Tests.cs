@@ -37,14 +37,14 @@ public class ExportFileStorageTests
             if (streaming)
             {
                 await using var stream = storage.CreateFileStream(new FileName("orders.json"));
-                await stream.WriteAsync(new byte[] { 49 });
+                await stream.WriteAsync(new byte[] { 49 }, TestContext.Current.CancellationToken);
             }
             else
             {
                 await storage.SaveAsync(new FileName("orders.json"), "1", CancellationToken.None);
             }
 
-            (await System.IO.File.ReadAllTextAsync(Path.Combine(directory, "orders.json"))).Should().Be("1");
+            (await System.IO.File.ReadAllTextAsync(Path.Combine(directory, "orders.json"), TestContext.Current.CancellationToken)).Should().Be("1");
         }
         finally
         {

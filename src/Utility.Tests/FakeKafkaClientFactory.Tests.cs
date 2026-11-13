@@ -29,7 +29,7 @@ public class FakeKafkaClientFactoryTests
     public async Task ParallelConsumersReadCompletePartitions()
     {
         var factory = CreateFactory();
-        using var timeout = new CancellationTokenSource(TestTimeouts.Scenario);
+        using var timeout = TestTimeouts.CreateScenarioCancellation();
         var start = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var reads = Enumerable.Range(0, 16).Select(async _ =>
         {

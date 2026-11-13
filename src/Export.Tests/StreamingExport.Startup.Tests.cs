@@ -33,7 +33,7 @@ public class StreamingExportStartupTests
         Directory.CreateDirectory(directory);
         var path = Path.Combine(directory, "orders.json");
         const string previous = "[\"previous snapshot\"]";
-        await System.IO.File.WriteAllTextAsync(path, previous);
+        await System.IO.File.WriteAllTextAsync(path, previous, TestContext.Current.CancellationToken);
         var options = Options.Create(new JsonFileDataExporterConfiguration { UseFileStreaming = true, OutputDirectory = directory });
         var exporter = new JsonFileDataExporter<string, OriginalKeyMarker, string>(options,
             NullLogger<JsonFileDataExporter<string, OriginalKeyMarker, string>>.Instance,
@@ -61,11 +61,11 @@ public class StreamingExportStartupTests
             }
         }
 
-        using var cts = new CancellationTokenSource(TestTimeouts.Scenario);
+        using var cts = TestTimeouts.CreateScenarioCancellation();
         try
         {
-            var pending = exporter.ExportAsync(Source(), new ExportedTopic(new TopicName("orders"), new FileName("orders.json"), true), cts.Token);
-            await started.Task.WaitAsync(TestTimeouts.Wait);
+            var pending = exporter.ExportAsync(Source(cts.Token), new ExportedTopic(new TopicName("orders"), new FileName("orders.json"), true), cts.Token);
+            await started.Task.WaitAsync(TestTimeouts.Wait, TestContext.Current.CancellationToken);
             if (cancel)
             {
                 await cts.CancelAsync();
@@ -82,7 +82,7 @@ public class StreamingExportStartupTests
             }
 
             closed.Should().BeTrue();
-            (await System.IO.File.ReadAllTextAsync(path)).Should().Be(previous);
+            (await System.IO.File.ReadAllTextAsync(path, TestContext.Current.CancellationToken)).Should().Be(previous);
         }
         finally
         {

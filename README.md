@@ -385,6 +385,8 @@ Recent versions use `DateTimeOffset` for date-based offsets and exported metadat
 
 ## Tests and Coverage
 
+The dependency versions, .NET 10 compatibility constraints, and update verification are documented in [eng/DEPENDENCIES.md](eng/DEPENDENCIES.md).
+
 Install the .NET SDK version pinned in `global.json` and PowerShell 7, then run from the repository root:
 
 ```powershell

@@ -79,7 +79,7 @@ public class ExportFileStorageTextTests
 
             // Assert
             System.IO.File.Exists(tempPath).Should().BeTrue();
-            (await System.IO.File.ReadAllTextAsync(tempPath)).Should().Be(content);
+            (await System.IO.File.ReadAllTextAsync(tempPath, TestContext.Current.CancellationToken)).Should().Be(content);
         }
         finally
         {

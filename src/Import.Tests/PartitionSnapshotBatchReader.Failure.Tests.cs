@@ -53,12 +53,12 @@ public class PartitionSnapshotBatchReaderFailureTests
                 (watermark, _, _, _, ct) => Read(watermark, ct));
         var reader = new PartitionSnapshotBatchReader<string, string>(Options.Create(
             new SnapshotLoaderConfiguration { MaxConcurrentPartitions = 2 }), partitionReader.Object);
-        using var cts = new CancellationTokenSource(TestTimeouts.Scenario);
+        using var cts = TestTimeouts.CreateScenarioCancellation();
         var pending = reader.ReadAllAsync([new(topic, new OffsetRange(0, 1), 0), new(topic, new OffsetRange(0, 1), 1), new(topic, new OffsetRange(0, 1), 2)],
             topic, Mock.Of<IDataFilter<string>>(), Mock.Of<IDataFilter<string>>(), cts.Token);
         try
         {
-            Func<Task> act = () => pending.WaitAsync(TestTimeouts.Wait);
+            Func<Task> act = () => pending.WaitAsync(TestTimeouts.Wait, TestContext.Current.CancellationToken);
             (await act.Should().ThrowAsync<InvalidOperationException>()).Which.Should().BeSameAs(failure);
             closed.Should().BeTrue();
             partitionReader.Verify(x => x.Read(It.Is<PartitionWatermark>(w => w.Partition == 2), topic,

@@ -46,19 +46,20 @@ public class PartitionSnapshotStreamingTests
         }
 
         var (reader, topic, watermarks, key, value) = Setup((_, ct) => Source(ct));
-        var enumerator = reader.StreamAsync(watermarks, topic, key, value, CancellationToken.None).GetAsyncEnumerator();
+        var enumerator = reader.StreamAsync(watermarks, topic, key, value, CancellationToken.None).GetAsyncEnumerator(TestContext.Current.CancellationToken);
         try
         {
             (await enumerator.MoveNextAsync()).Should().BeTrue();
-            await blocked.Task.WaitAsync(TestTimeouts.Wait);
+            await blocked.Task.WaitAsync(TestTimeouts.Wait, TestContext.Current.CancellationToken);
             Volatile.Read(ref produced).Should().Be(3);
         }
         finally
         {
-            await enumerator.DisposeAsync().AsTask().WaitAsync(TestTimeouts.Wait);
+            // Cleanup must join the worker even when the test was canceled.
+            await enumerator.DisposeAsync().AsTask().WaitAsync(TestTimeouts.Wait, CancellationToken.None);
         }
 
-        await closed.Task.WaitAsync(TestTimeouts.Wait);
+        await closed.Task.WaitAsync(TestTimeouts.Wait, TestContext.Current.CancellationToken);
     }
 
     [Fact(DisplayName = "Canceling a streaming reader interrupts a blocking partition read and joins its worker.")]
@@ -83,9 +84,9 @@ public class PartitionSnapshotStreamingTests
 
         var (reader, topic, watermarks, key, value) = Setup((_, ct) => Source(ct));
         using var cts = new CancellationTokenSource();
-        await using var enumerator = reader.StreamAsync(watermarks, topic, key, value, cts.Token).GetAsyncEnumerator();
+        await using var enumerator = reader.StreamAsync(watermarks, topic, key, value, cts.Token).GetAsyncEnumerator(TestContext.Current.CancellationToken);
         (await enumerator.MoveNextAsync()).Should().BeTrue();
-        await blocked.Task.WaitAsync(TestTimeouts.Wait);
+        await blocked.Task.WaitAsync(TestTimeouts.Wait, TestContext.Current.CancellationToken);
         await cts.CancelAsync();
         Func<Task> act = async () => await enumerator.MoveNextAsync();
         await act.Should().ThrowAsync<OperationCanceledException>();

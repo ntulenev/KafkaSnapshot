@@ -138,6 +138,7 @@ public class PartitionSnapshotBatchReader<TKey, TMessage>
         ArgumentNullException.ThrowIfNull(topicParams);
         ArgumentNullException.ThrowIfNull(keyFilter);
         ArgumentNullException.ThrowIfNull(valueFilter);
+        ct.ThrowIfCancellationRequested();
 
         foreach (var watermark in watermarks)
         {
@@ -176,6 +177,7 @@ public class PartitionSnapshotBatchReader<TKey, TMessage>
         ArgumentNullException.ThrowIfNull(topicParams);
         ArgumentNullException.ThrowIfNull(keyFilter);
         ArgumentNullException.ThrowIfNull(valueFilter);
+        ct.ThrowIfCancellationRequested();
 
         var partitionWatermarks = watermarks.ToList();
 
@@ -184,6 +186,7 @@ public class PartitionSnapshotBatchReader<TKey, TMessage>
             return [];
         }
 
+        using var stopped = CancellationTokenSource.CreateLinkedTokenSource(ct);
         using var concurrency = new SemaphoreSlim(ResolveMaxConcurrency(partitionWatermarks.Count));
 
 #pragma warning disable CA2025 // Task.WhenAll below completes all users of the semaphore before disposal.
@@ -194,7 +197,7 @@ public class PartitionSnapshotBatchReader<TKey, TMessage>
                 keyFilter,
                 valueFilter,
                 concurrency,
-                ct))
+                stopped))
             .ToArray();
 #pragma warning restore CA2025
 
@@ -218,8 +221,9 @@ public class PartitionSnapshotBatchReader<TKey, TMessage>
         IDataFilter<TKey> keyFilter,
         IDataFilter<TMessage> valueFilter,
         SemaphoreSlim concurrency,
-        CancellationToken ct)
+        CancellationTokenSource stopped)
     {
+        var ct = stopped.Token;
         await concurrency.WaitAsync(ct).ConfigureAwait(false);
 
         try
@@ -233,6 +237,11 @@ public class PartitionSnapshotBatchReader<TKey, TMessage>
                     valueFilter,
                     ct),
                 ct).ConfigureAwait(false);
+        }
+        catch
+        {
+            await stopped.CancelAsync().ConfigureAwait(false);
+            throw;
         }
         finally
         {

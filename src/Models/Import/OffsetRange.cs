@@ -24,6 +24,13 @@ public sealed record OffsetRange
     /// <summary>Checks whether an offset belongs to the captured interval.</summary>
     public bool Contains(long offset) => offset >= Low && offset < High;
 
+    /// <summary>Clamps a requested start to the lower boundary and checks that data remains.</summary>
+    public bool TryResolveStart(long requestedOffset, out long startOffset)
+    {
+        startOffset = Math.Max(requestedOffset, Low);
+        return startOffset < High;
+    }
+
     /// <summary>Checks whether more offsets remain after the consumed offset.</summary>
     public bool ShouldContinueReadingAfter(long offset) => !IsEmpty && offset < High - 1;
 }

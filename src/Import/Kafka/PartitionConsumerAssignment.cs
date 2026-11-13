@@ -64,15 +64,18 @@ public sealed class PartitionConsumerAssignment : IPartitionConsumerAssignment
 
         var singleOffset = offsets.Single();
 
-        if (singleOffset.Offset.IsSpecial || singleOffset.Offset.Value >= watermark.Offset.High)
+        if (singleOffset.Offset.IsSpecial ||
+            !watermark.Offset.TryResolveStart(singleOffset.Offset.Value, out var startOffset))
         {
             assignedOffset = singleOffset;
             return false;
         }
 
-        consumer.Assign(singleOffset);
+        var start = new TopicPartitionOffset(singleOffset.TopicPartition,
+            new Offset(startOffset));
+        consumer.Assign(start);
 
-        assignedOffset = singleOffset;
+        assignedOffset = start;
         return true;
     }
 

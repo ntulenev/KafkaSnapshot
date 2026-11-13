@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -97,9 +99,14 @@ public sealed class JsonFileDataExporter<TKey, TKeyMarker, TValue> :
             return;
         }
 
+        // Resolve metadata and the first read before truncating an existing export.
+        await using var enumerator = data.GetAsyncEnumerator(ct);
+        var hasItem = await enumerator.MoveNextAsync().ConfigureAwait(false);
+        ct.ThrowIfCancellationRequested();
         var stream = _storage.CreateFileStream(topic.ExportName);
         await using var streamScope = stream.ConfigureAwait(false);
-        await _serializer.SerializeAsync(data, topic.ExportRawMessage, stream, ct)
+        await _serializer.SerializeAsync(
+            EnumerateAsync(enumerator, hasItem, ct), topic.ExportRawMessage, stream, ct)
             .ConfigureAwait(false);
         ct.ThrowIfCancellationRequested();
     }
@@ -147,6 +154,17 @@ public sealed class JsonFileDataExporter<TKey, TKeyMarker, TValue> :
             ct).ConfigureAwait(false);
 
         ct.ThrowIfCancellationRequested();
+    }
+
+    private static async IAsyncEnumerable<T> EnumerateAsync<T>(IAsyncEnumerator<T> enumerator,
+        bool hasItem, [EnumeratorCancellation] CancellationToken ct)
+    {
+        while (hasItem)
+        {
+            ct.ThrowIfCancellationRequested();
+            yield return enumerator.Current;
+            hasItem = await enumerator.MoveNextAsync().ConfigureAwait(false);
+        }
     }
 
     private static IEnumerable<T> EnumerateWithCancellation<T>(

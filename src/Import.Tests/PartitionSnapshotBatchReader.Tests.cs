@@ -161,13 +161,13 @@ public class PartitionSnapshotBatchReaderTests
             topic,
             keyFilterMock.Object,
             valueFilterMock.Object,
-            token)).Returns([firstMessage]);
+            It.Is<CancellationToken>(current => current.CanBeCanceled))).Returns([firstMessage]);
         partitionReaderMock.Setup(x => x.Read(
             watermarks[1],
             topic,
             keyFilterMock.Object,
             valueFilterMock.Object,
-            token)).Returns([secondMessage]);
+            It.Is<CancellationToken>(current => current.CanBeCanceled))).Returns([secondMessage]);
         var reader = new PartitionSnapshotBatchReader<object, object>(
             Options.Create(new SnapshotLoaderConfiguration { MaxConcurrentPartitions = 1 }),
             partitionReaderMock.Object);

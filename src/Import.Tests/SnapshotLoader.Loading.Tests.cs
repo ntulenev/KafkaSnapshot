@@ -125,7 +125,7 @@ public partial class SnapshotLoaderTests
             .Returns(Task.FromResult(topicWatermark));
         consumerMock.Setup(x => x.Assign(It.Is<TopicPartitionOffset>(item => item.Topic == topicName.Value.Name && item.Partition == partition)))
             .Callback(() => assignCalls++);
-        consumerMock.Setup(x => x.Consume(token))
+        consumerMock.Setup(x => x.Consume(It.Is<CancellationToken>(current => current.CanBeCanceled)))
             .Returns(() => consumerData[consumeCalls++]);
         consumerMock.Setup(x => x.Dispose())
             .Callback(() => disposeCalls++);
@@ -275,7 +275,7 @@ public partial class SnapshotLoaderTests
                 && item.Partition == partition
                 && item.Offset == new Offset(0))))
             .Callback(() => assignCalls++);
-        consumerMock.Setup(x => x.Consume(token))
+        consumerMock.Setup(x => x.Consume(It.Is<CancellationToken>(current => current.CanBeCanceled)))
             .Returns(() => consumerData[consumeCalls++]);
         consumerMock.Setup(x => x.Dispose())
             .Callback(() => disposeCalls++);

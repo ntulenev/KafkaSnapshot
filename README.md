@@ -472,6 +472,13 @@ The application preserves these snapshot rules:
   rather than comparing timestamps or unrelated offsets.
 - Null payloads, including tombstones, remain explicit decoding errors. Ignored
   keys remain supported. First-match partition selection is applied after filters.
+- The output file is opened only after the first read succeeds (or confirms an
+  empty snapshot). Metadata failures or cancellation before that point preserve
+  the previous file. Failure to open the output disposes the primed source.
+- A buffered partition or concurrent-topic failure cancels sibling work and waits
+  for its cleanup before propagating the failure; queued work is not started.
+- Timestamp lookup cannot move reading below the captured low offset or extend
+  it beyond the captured high offset.
 - Cancellation, output errors, and early enumeration disposal cancel the producer
   and join its worker before returning. Every reader closes/disposes its consumer.
   As with the previous file-stream serializer, a failed export may leave a partial
@@ -509,7 +516,8 @@ first-match selection, and buffering decisions for sorting/compaction.
 ./eng/Test-Kafka.ps1 -Measure
 ```
 
-Medians of three Release runs per mode, each in a new process: Windows build 26200,
+Measurements were taken on commit `b78719e`. Medians of three Release runs per mode,
+each in a new process: Windows build 26200,
 .NET 10.0.9, local Docker Kafka 4.4.0, one partition, 1,010-byte values, channel
 capacity 64. Both modes stream JSON to disk; the baseline buffers Kafka messages
 first. Timing includes metadata/loading/export and excludes seeding and output
@@ -530,3 +538,23 @@ streaming managed memory stayed near 6–7 MiB while the buffered path grew roug
 fourfold. This measures local single-partition behavior; it does not establish
 multi-partition or remote-cluster throughput. Raw measurements and methodology are
 in [results-2026-11-13.json](eng/Measurements/results-2026-11-13.json).
+
+### Public API Migration
+
+This branch changes source-level library contracts; the CLI configuration and JSON
+export shape remain compatible. Callers implementing interfaces must account for
+these changes:
+
+- `IDataExporter` and `JsonFileDataExporter` now have three type parameters; pass
+  `ExportedTopic` directly rather than supplying `TTopic`.
+- `IExportFileStorage` replaces `IFileSaver` and `IFileStreamProvider`.
+- `ISnapshotBuilder` / `SnapshotBuilder` replace the compactor names.
+- `PartitionWatermark` is in `Models.Import`, with `int Partition` and an
+  `OffsetRange`; Kafka values are converted by `KafkaWatermarkMapper`.
+- Snapshot loaders, exporters and serializers expose async-stream methods;
+  sorters expose `IsEnabled`, and snapshot builders expose `RequiresBuffering`.
+- `ITopicWatermarkLoader` owns consumer creation rather than accepting a factory
+  delegate from the caller. Reader assignment is injected through
+  `IPartitionConsumerAssignment`.
+- Domain state properties are read-only. Replace property assignment / `with`
+  mutation with construction of a validated model.

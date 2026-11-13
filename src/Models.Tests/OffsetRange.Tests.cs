@@ -61,6 +61,19 @@ public class OffsetRangeTests
         range.Contains(long.MaxValue).Should().BeFalse();
     }
 
+    [Theory(DisplayName = "Requested starts are clamped to low and cannot extend the captured upper boundary.")]
+    [InlineData(0, 7, true)]
+    [InlineData(7, 7, true)]
+    [InlineData(8, 8, true)]
+    [InlineData(10, 10, false)]
+    [InlineData(12, 12, false)]
+    public void StartsRespectCapturedRange(long requested, long expected, bool hasData)
+    {
+        var range = new OffsetRange(7, 10);
+        range.TryResolveStart(requested, out var resolved).Should().Be(hasData);
+        resolved.Should().Be(expected);
+    }
+
     [Fact(DisplayName = "Domain watermarks require a topic, interval, and non-negative partition.")]
     public void WatermarkInvariantsAreProtected()
     {

@@ -40,4 +40,18 @@ public class PartitionConsumerAssignmentBoundariesTests
         consumer.VerifyAll();
         consumer.VerifyNoOtherCalls();
     }
+    [Fact(DisplayName = "A date offset below the captured low is clamped to the snapshot start.")]
+    public void DateBeforeSnapshotStartsAtCapturedLow()
+    {
+        var topic = new LoadingTopic(new TopicName("orders"), false, new DateFilterRange(null, null), EncoderRules.String, null);
+        var consumer = new Mock<IConsumer<string, byte[]>>(MockBehavior.Strict);
+        consumer.Setup(x => x.OffsetsForTimes(It.IsAny<IEnumerable<TopicPartitionTimestamp>>(), It.IsAny<TimeSpan>()))
+            .Returns([new TopicPartitionOffset("orders", 0, 0)]);
+        consumer.Setup(x => x.Assign(It.Is<TopicPartitionOffset>(p => p.Offset.Value == 7)));
+        var result = new PartitionConsumerAssignment().Assign(new PartitionWatermark(topic, new OffsetRange(7, 10), 0),
+            consumer.Object, DateTimeOffset.UnixEpoch, TimeSpan.FromSeconds(1), out var assigned);
+        result.Should().BeTrue();
+        assigned.Offset.Value.Should().Be(7);
+        consumer.VerifyAll();
+    }
 }

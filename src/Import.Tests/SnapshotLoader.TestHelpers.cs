@@ -36,7 +36,7 @@ public partial class SnapshotLoaderTests
         var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
         consumerMock.Setup(x => x.Assign(It.Is<TopicPartitionOffset>(
             item => item.Topic == topic.Value.Name && item.Partition == partition)));
-        consumerMock.Setup(x => x.Consume(token)).Returns(new ConsumeResult<object, byte[]>
+        consumerMock.Setup(x => x.Consume(It.Is<CancellationToken>(current => current.CanBeCanceled))).Returns(new ConsumeResult<object, byte[]>
         {
             Message = new Message<object, byte[]>
             {

@@ -1,8 +1,12 @@
 using System.Reflection;
+
 using FluentAssertions;
+
 using KafkaSnapshot.Models.Configuration;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+
 using Xunit;
 
 namespace KafkaSnapshot.Utility.Tests;
@@ -29,7 +33,7 @@ public class ProgramEntryPointTests
                 {
                     await task;
                 }
-            }).WaitAsync(TimeSpan.FromSeconds(10));
+            }).WaitAsync(TestTimeouts.Wait);
         });
 
         var failure = exception is TargetInvocationException invocation ? invocation.InnerException : exception;

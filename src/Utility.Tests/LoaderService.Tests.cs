@@ -90,8 +90,8 @@ namespace KafkaSnapshot.Utility.Tests
 
             // Act
             await loader.StartAsync(token.Token);
-            await processStarted.Task.WaitAsync(TimeSpan.FromSeconds(1));
-            await stopRequested.Task.WaitAsync(TimeSpan.FromSeconds(1));
+            await processStarted.Task.WaitAsync(TestTimeouts.Wait);
+            await stopRequested.Task.WaitAsync(TestTimeouts.Wait);
 
             // Assert
             processCount.Should().Be(1);

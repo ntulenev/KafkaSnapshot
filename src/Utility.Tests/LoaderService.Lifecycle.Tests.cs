@@ -1,9 +1,13 @@
 using FluentAssertions;
+
 using KafkaSnapshot.Abstractions.Processing;
+
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+
 using Moq;
+
 using Xunit;
 
 namespace KafkaSnapshot.Utility.Tests;
@@ -32,7 +36,7 @@ public class LoaderServiceLifecycleTests
         using var loader = new LoaderService(tool.Object, lifetime.Object, logger.Object);
 
         await loader.StartAsync(CancellationToken.None);
-        Func<Task> completed = () => loader.ExecuteTask!.WaitAsync(TimeSpan.FromSeconds(10));
+        Func<Task> completed = () => loader.ExecuteTask!.WaitAsync(TestTimeouts.Wait);
 
         if (outcome == 2)
         {
@@ -66,7 +70,7 @@ public class LoaderServiceLifecycleTests
         var lifetime = new Mock<IHostApplicationLifetime>(MockBehavior.Strict);
         lifetime.Setup(x => x.StopApplication());
         using var loader = new LoaderService(tool.Object, lifetime.Object, NullLogger<LoaderService>.Instance);
-        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        using var timeout = new CancellationTokenSource(TestTimeouts.Scenario);
 
         await loader.StartAsync(timeout.Token);
         var processingToken = await started.Task.WaitAsync(timeout.Token);

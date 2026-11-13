@@ -18,7 +18,8 @@ public class ProgramTests
         // Act
         var exception = Record.Exception(() =>
         {
-            using var serviceScope = HostBuildHelper.CreateHost().Services.CreateScope();
+            using var host = HostBuildHelper.CreateHost();
+            using var serviceScope = host.Services.CreateScope();
             var services = serviceScope.ServiceProvider;
             _ = services.GetRequiredService<ILoaderTool>();
         });

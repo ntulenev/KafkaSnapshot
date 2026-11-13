@@ -50,15 +50,15 @@ public class PartitionSnapshotStreamingTests
         try
         {
             (await enumerator.MoveNextAsync()).Should().BeTrue();
-            await blocked.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            await blocked.Task.WaitAsync(TestTimeouts.Wait);
             Volatile.Read(ref produced).Should().Be(3);
         }
         finally
         {
-            await enumerator.DisposeAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(5));
+            await enumerator.DisposeAsync().AsTask().WaitAsync(TestTimeouts.Wait);
         }
 
-        await closed.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        await closed.Task.WaitAsync(TestTimeouts.Wait);
     }
 
     [Fact(DisplayName = "Canceling a streaming reader interrupts a blocking partition read and joins its worker.")]
@@ -85,7 +85,7 @@ public class PartitionSnapshotStreamingTests
         using var cts = new CancellationTokenSource();
         await using var enumerator = reader.StreamAsync(watermarks, topic, key, value, cts.Token).GetAsyncEnumerator();
         (await enumerator.MoveNextAsync()).Should().BeTrue();
-        await blocked.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        await blocked.Task.WaitAsync(TestTimeouts.Wait);
         await cts.CancelAsync();
         Func<Task> act = async () => await enumerator.MoveNextAsync();
         await act.Should().ThrowAsync<OperationCanceledException>();

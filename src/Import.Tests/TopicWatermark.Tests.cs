@@ -6,7 +6,7 @@ using Xunit;
 
 using KafkaSnapshot.Import.Watermarks;
 
-namespace KafkaAsTable.Tests;
+namespace KafkaSnapshot.Import.Tests;
 
 public class TopicWatermarkTests
 {

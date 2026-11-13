@@ -15,7 +15,7 @@ using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Filters;
 using KafkaSnapshot.Models.Names;
 
-namespace KafkaAsTable.Tests;
+namespace KafkaSnapshot.Import.Tests;
 
 public class TopicWatermarkLoaderTests
 {

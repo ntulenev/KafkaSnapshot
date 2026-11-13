@@ -381,3 +381,36 @@ Recent versions use `DateTimeOffset` for date-based offsets and exported metadat
 - `KafkaMetadata.Timestamp` is now a `DateTimeOffset`.
 - `DateFilterRange.StartDate`, `DateFilterRange.EndDate`, `LoadingTopic.OffsetDate`, `LoadingTopic.EndOffsetDate`, `TopicConfiguration.OffsetStartDate`, and `TopicConfiguration.OffsetEndDate` are now `DateTimeOffset` values.
 - `PartitionWatermark.TopicName` was renamed to `PartitionWatermark.Topic` because it stores the full loading topic configuration, not only the topic name.
+
+## Tests and Coverage
+
+Install the .NET 10 SDK and PowerShell 7, then run from the repository root:
+
+```powershell
+./eng/Test.ps1
+```
+
+The script restores the pinned ReportGenerator tool, runs all seven test projects in Release mode with NuGet auditing enabled, merges coverage, and checks exact covered/total counts. It requires **100% line, branch, and method coverage** across the production assemblies. Each run writes TRX, OpenCover, Cobertura, and HTML reports under its own `artifacts/test-results/<run-id>/` directory; the final console output links to `report/index.html`. Old results are never included in a new run.
+
+For a faster run without collecting coverage:
+
+```powershell
+dotnet test src/KafkaSnapshot.slnx --configuration Release
+```
+
+GitHub Actions runs the same coverage script on pushes (including merges into `main`), pull requests, and manual dispatch. The Windows runner installs .NET 10, publishes a coverage summary, and retains test results and the HTML report as the `test-results-and-coverage` artifact for 14 days. To require this check before merging, select `.NET 10 tests and 100% coverage` in the repository's branch protection settings.
+
+### Coverage audit (2026-11-13)
+
+Both measurements below use the updated dependencies, Coverlet 10.1.0, Release builds, and merged OpenCover reports. The baseline contains the original tests; no production code or executable source files were excluded to reach the final result.
+
+| Metric | Before | After |
+| --- | --- | --- |
+| Passing test cases | 390 | 452 |
+| Covered lines | 1,304 / 1,361 (95.8%) | 1,361 / 1,361 (100%) |
+| Covered branches | 297 / 323 (91.9%) | 323 / 323 (100%) |
+| Covered methods | 256 / 260 (98.4%) | 260 / 260 (100%) |
+
+The additional tests cover invalid security and enum settings, metadata failures and client cleanup, cancellation and background service shutdown, JSON `null` payloads, topic name boundaries, rejected messages, compaction logging, and stable sorting within partitions. Existing validation tests now assert specific error codes; ambiguous method names and display names were clarified, including previously reversed date accessor test names and a null-stream test that previously failed on null data first.
+
+The seven executable production assemblies are Export, Filters, Import, Models, Processing, Sorting, and Utility. Abstractions contains interfaces with no executable code. Integration tests exercise the full pipeline with fake Kafka clients, command-line startup validation, and native Kafka client creation/disposal. A running Kafka broker is not required; real broker connectivity, authentication, and delivery behavior remain outside this suite.

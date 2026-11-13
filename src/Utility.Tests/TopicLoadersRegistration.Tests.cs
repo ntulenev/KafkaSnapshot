@@ -17,6 +17,25 @@ namespace KafkaSnapshot.Utility.Tests;
 
 public class TopicLoadersRegistrationTests
 {
+    [Fact(DisplayName = "Topic loader registration rejects an unsupported key type when options validation is bypassed.")]
+    [Trait("Category", "Unit")]
+    public void CreateTopicLoadersRejectsUnsupportedKeyTypeWithoutValidator()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton(Options.Create(new LoaderToolConfiguration
+        {
+            Topics = [new TopicConfiguration { Name = "customers", ExportFileName = "customers.json", KeyType = (KeyType)999 }]
+        }));
+        using var provider = services.BuildServiceProvider();
+        var method = GetStaticMethod("KafkaSnapshot.Utility.Helpers.TopicLoadersRegistrationHelper",
+            "CreateTopicLoaders", BindingFlags.NonPublic | BindingFlags.Static);
+
+        Action act = () => method.Invoke(null, [provider]);
+
+        act.Should().Throw<TargetInvocationException>().Which.InnerException.Should()
+            .BeOfType<InvalidOperationException>().Which.Message.Should().Contain("999");
+    }
+
     [Fact(DisplayName = "TopicLoadersRegistrationHelper throws options validation for unsupported key type.")]
     [Trait("Category", "Unit")]
     public void TopicLoadersRegistrationHelperCreateTopicLoadersThrowsForUnsupportedKeyType()

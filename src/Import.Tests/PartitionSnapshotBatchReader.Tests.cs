@@ -19,6 +19,30 @@ namespace KafkaSnapshot.Import.Tests;
 
 public class PartitionSnapshotBatchReaderTests
 {
+    [Theory(DisplayName = "PartitionSnapshotBatchReader returns an empty first-match snapshot when all partitions are empty.")]
+    [Trait("Category", "Unit")]
+    [InlineData(0)]
+    [InlineData(2)]
+    public async Task ReadFirstNonEmptyReturnsEmptyWhenNoPartitionMatches(int partitionCount)
+    {
+        var topic = CreateTopic();
+        var watermarks = Enumerable.Range(1, partitionCount).Select(id => CreateWatermark(topic, id)).ToList();
+        var keyFilter = new Mock<IDataFilter<object>>(MockBehavior.Strict);
+        var valueFilter = new Mock<IDataFilter<object>>(MockBehavior.Strict);
+        var partitionReader = new Mock<IPartitionSnapshotReader<object, object>>(MockBehavior.Strict);
+        foreach (var watermark in watermarks)
+        {
+            partitionReader.Setup(x => x.Read(watermark, topic, keyFilter.Object, valueFilter.Object, CancellationToken.None)).Returns([]);
+        }
+        var reader = new PartitionSnapshotBatchReader<object, object>(Options.Create(new SnapshotLoaderConfiguration()), partitionReader.Object);
+
+        var result = await reader.ReadFirstNonEmptyAsync(watermarks, topic, keyFilter.Object, valueFilter.Object, CancellationToken.None);
+
+        result.Should().BeEmpty();
+        partitionReader.VerifyAll();
+        partitionReader.VerifyNoOtherCalls();
+    }
+
     [Fact(DisplayName = "PartitionSnapshotBatchReader can't be created with null config.")]
     [Trait("Category", "Unit")]
     public void PartitionSnapshotBatchReaderCannotBeCreatedWithNullConfig()

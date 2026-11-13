@@ -11,9 +11,9 @@ namespace Utility.Tests;
 
 public class ProgramTests
 {
-    [Fact(DisplayName = "Utility can be created.")]
+    [Fact(DisplayName = "HostBuildHelper creates a host that resolves the configured loader tool.")]
     [Trait("Category", "Integration")]
-    public void UtilityCanBeCreated()
+    public void CreateHostResolvesConfiguredLoaderTool()
     {
         // Act
         var exception = Record.Exception(() =>

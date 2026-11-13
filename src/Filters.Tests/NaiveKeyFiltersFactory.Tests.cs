@@ -9,7 +9,7 @@ namespace KafkaSnapshot.Filters.Tests;
 
 public class NaiveKeyFiltersFactoryTests
 {
-    [Fact(DisplayName = "Default filter can be created.")]
+    [Fact(DisplayName = "NaiveKeyFiltersFactory: Default filter can be created.")]
     [Trait("Category", "Unit")]
     public void DefaultFilterCanBeCreatedByFactory()
     {
@@ -23,7 +23,7 @@ public class NaiveKeyFiltersFactoryTests
         result.Should().BeOfType(typeof(DefaultFilter<object>));
     }
 
-    [Theory(DisplayName = "Equals filter can be created.")]
+    [Theory(DisplayName = "NaiveKeyFiltersFactory: Equals filter can be created.")]
     [Trait("Category", "Unit")]
     [InlineData(KeyType.Long)]
     [InlineData(KeyType.String)]
@@ -39,7 +39,7 @@ public class NaiveKeyFiltersFactoryTests
         result.Should().BeOfType(typeof(EqualsFilter<object>));
     }
 
-    [Fact(DisplayName = "GreaterOrEquals filter can be created for long key.")]
+    [Fact(DisplayName = "NaiveKeyFiltersFactory: GreaterOrEquals filter can be created for long key.")]
     [Trait("Category", "Unit")]
     public void GreaterOrEqualsFilterCanBeCreatedByFactory()
     {
@@ -53,7 +53,7 @@ public class NaiveKeyFiltersFactoryTests
         result.Should().BeOfType(typeof(CompareFilter<long>));
     }
 
-    [Fact(DisplayName = "LessOrEquals filter can be created for long key.")]
+    [Fact(DisplayName = "NaiveKeyFiltersFactory: LessOrEquals filter can be created for long key.")]
     [Trait("Category", "Unit")]
     public void LessOrEqualsFilterCanBeCreatedByFactory()
     {
@@ -67,7 +67,7 @@ public class NaiveKeyFiltersFactoryTests
         result.Should().BeOfType(typeof(CompareFilter<long>));
     }
 
-    [Fact(DisplayName = "Json Equals filter can be created.")]
+    [Fact(DisplayName = "NaiveKeyFiltersFactory: Json Equals filter can be created.")]
     [Trait("Category", "Unit")]
     public void JsonEqualsFilterCanBeCreatedByFactory()
     {
@@ -82,7 +82,7 @@ public class NaiveKeyFiltersFactoryTests
         result.Should().BeOfType(typeof(JsonEqualsFilter));
     }
 
-    [Fact(DisplayName = "Equals filter can't be created for ignored type.")]
+    [Fact(DisplayName = "NaiveKeyFiltersFactory: Equals filter can't be created for ignored type.")]
     [Trait("Category", "Unit")]
     public void EqualsFilterCannotBeCreatedForIgnoreKeyByFactory()
     {
@@ -102,7 +102,7 @@ public class NaiveKeyFiltersFactoryTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentOutOfRangeException>();
     }
 
-    [Fact(DisplayName = "Contains filter can be created for string type.")]
+    [Fact(DisplayName = "NaiveKeyFiltersFactory: Contains filter can be created for string type.")]
     [Trait("Category", "Unit")]
     public void ContainsFilterCanBeCreatedForStringKeyByFactory()
     {
@@ -117,7 +117,7 @@ public class NaiveKeyFiltersFactoryTests
         result.Should().BeOfType(typeof(StringContainsFilter));
     }
 
-    [Theory(DisplayName = "Contains filter can't be created for non string type.")]
+    [Theory(DisplayName = "NaiveKeyFiltersFactory: Contains filter can't be created for non string type.")]
     [Trait("Category", "Unit")]
     [InlineData(KeyType.Json)]
     [InlineData(KeyType.Long)]

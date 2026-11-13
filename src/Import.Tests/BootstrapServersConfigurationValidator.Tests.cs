@@ -94,7 +94,9 @@ public class BootstrapServersConfigurationValidatorTests
         var result = validator.Validate("Test", options);
 
         // Assert
-        result.Succeeded.Should().BeFalse();
+        result.Failed.Should().BeTrue();
+        result.Failures.Should().ContainSingle().Which.Should()
+            .StartWith(ConfigurationValidationErrorCodes.BootstrapServersEmpty);
     }
 
     [Fact(DisplayName = "BootstrapServersConfigurationValidator rejects whitespace bootstrap server.")]
@@ -109,7 +111,9 @@ public class BootstrapServersConfigurationValidatorTests
         var result = validator.Validate("Test", options);
 
         // Assert
-        result.Succeeded.Should().BeFalse();
+        result.Failed.Should().BeTrue();
+        result.Failures.Should().ContainSingle().Which.Should()
+            .StartWith(ConfigurationValidationErrorCodes.BootstrapServersWhitespaceItem);
     }
 
     [Fact(DisplayName = "BootstrapServersConfigurationValidator rejects SASL protocol without mechanism.")]
@@ -124,7 +128,9 @@ public class BootstrapServersConfigurationValidatorTests
         var result = validator.Validate("Test", options);
 
         // Assert
-        result.Succeeded.Should().BeFalse();
+        result.Failed.Should().BeTrue();
+        result.Failures.Should().ContainSingle().Which.Should()
+            .StartWith(ConfigurationValidationErrorCodes.SaslMechanismMissing);
     }
 
     [Fact(DisplayName = "BootstrapServersConfigurationValidator rejects missing username for credential-based SASL mechanism.")]
@@ -139,7 +145,9 @@ public class BootstrapServersConfigurationValidatorTests
         var result = validator.Validate("Test", options);
 
         // Assert
-        result.Succeeded.Should().BeFalse();
+        result.Failed.Should().BeTrue();
+        result.Failures.Should().ContainSingle().Which.Should()
+            .StartWith(ConfigurationValidationErrorCodes.SaslUsernameMissing);
     }
 
     [Fact(DisplayName = "BootstrapServersConfigurationValidator rejects missing password for credential-based SASL mechanism.")]
@@ -154,7 +162,9 @@ public class BootstrapServersConfigurationValidatorTests
         var result = validator.Validate("Test", options);
 
         // Assert
-        result.Succeeded.Should().BeFalse();
+        result.Failed.Should().BeTrue();
+        result.Failures.Should().ContainSingle().Which.Should()
+            .StartWith(ConfigurationValidationErrorCodes.SaslPasswordMissing);
     }
 
     [Fact(DisplayName = "BootstrapServersConfigurationValidator accepts SASL mechanisms without username and password requirements.")]
@@ -191,7 +201,9 @@ public class BootstrapServersConfigurationValidatorTests
         var result = validator.Validate("Test", options);
 
         // Assert
-        result.Succeeded.Should().BeFalse();
+        result.Failed.Should().BeTrue();
+        result.Failures.Should().ContainSingle().Which.Should()
+            .StartWith(ConfigurationValidationErrorCodes.SaslProtocolMissing);
     }
 
     [Fact(DisplayName = "BootstrapServersConfigurationValidator rejects username for non-SASL protocol.")]

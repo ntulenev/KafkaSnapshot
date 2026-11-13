@@ -59,9 +59,9 @@ namespace KafkaSnapshot.Utility.Tests
             exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
         }
 
-        [Fact(DisplayName = "LoaderService can be started.")]
+        [Fact(DisplayName = "LoaderService processes once and requests application shutdown after completion.")]
         [Trait("Category", "Unit")]
-        public async Task LoaderServiceCanBeStarted()
+        public async Task StartAsyncProcessesOnceAndStopsApplication()
         {
             // Arrange
             using var token = new CancellationTokenSource();

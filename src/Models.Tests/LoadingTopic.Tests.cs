@@ -34,11 +34,11 @@ public class LoadingTopicTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
-    [Theory(DisplayName = "Topic with valid name can be created.")]
+    [Theory(DisplayName = "LoadingTopic preserves compaction mode without enabling date filters.")]
     [Trait("Category", "Unit")]
     [InlineData(true)]
     [InlineData(false)]
-    public void CanCreateValidTopic(bool compactingRule)
+    public void ConstructorWithoutDateFiltersPreservesCompactionMode(bool compactingRule)
     {
 
         // Arrange
@@ -84,11 +84,11 @@ public class LoadingTopicTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
-    [Theory(DisplayName = "Topic with valid name can be created 2.")]
+    [Theory(DisplayName = "LoadingTopic enables start and end date filters when both dates are configured.")]
     [Trait("Category", "Unit")]
     [InlineData(true)]
     [InlineData(false)]
-    public void CanCreateValidTopic2(bool compactingRule)
+    public void ConstructorWithDateRangeEnablesBothDateFilters(bool compactingRule)
     {
 
         // Arrange
@@ -113,9 +113,9 @@ public class LoadingTopicTests
         item.HasEndOffsetDate.Should().BeTrue();
     }
 
-    [Fact(DisplayName = "Can't get topic offset date if not set.")]
+    [Fact(DisplayName = "LoadingTopic.OffsetDate throws when no start date is configured.")]
     [Trait("Category", "Unit")]
-    public void CanGetTopicOffsetDate()
+    public void OffsetDateThrowsWhenStartDateIsMissing()
     {
 
         // Arrange
@@ -136,9 +136,9 @@ public class LoadingTopicTests
         exception.Should().NotBeNull().And.BeOfType<InvalidOperationException>();
     }
 
-    [Fact(DisplayName = "Can get topic offset date if date is set.")]
+    [Fact(DisplayName = "LoadingTopic.OffsetDate returns the configured start date.")]
     [Trait("Category", "Unit")]
-    public void CannotGetTopicOffsetDate()
+    public void OffsetDateReturnsConfiguredStartDate()
     {
 
         // Arrange
@@ -161,9 +161,9 @@ public class LoadingTopicTests
         resultedDate.Should().Be(date);
     }
 
-    [Fact(DisplayName = "Can't get topic end offset date if not set.")]
+    [Fact(DisplayName = "LoadingTopic.EndOffsetDate throws when no end date is configured.")]
     [Trait("Category", "Unit")]
-    public void CannotGetTopicEndOffsetDate()
+    public void EndOffsetDateThrowsWhenEndDateIsMissing()
     {
 
         // Arrange
@@ -183,9 +183,9 @@ public class LoadingTopicTests
         exception.Should().NotBeNull().And.BeOfType<InvalidOperationException>();
     }
 
-    [Fact(DisplayName = "Can get topic end offset date if date is set.")]
+    [Fact(DisplayName = "LoadingTopic.EndOffsetDate returns the configured end date.")]
     [Trait("Category", "Unit")]
-    public void CanGetTopicEndOffsetDate()
+    public void EndOffsetDateReturnsConfiguredEndDate()
     {
 
         // Arrange

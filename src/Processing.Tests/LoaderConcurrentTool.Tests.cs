@@ -120,9 +120,9 @@ public class LoaderConcurrentToolTests
         unit2ProcessCalls.Should().Be(1);
     }
 
-    [Fact(DisplayName = "LoaderConcurrentTool can process units if any thorws error.")]
+    [Fact(DisplayName = "LoaderConcurrentTool starts all units and propagates a processing failure.")]
     [Trait("Category", "Unit")]
-    public async Task LoaderConcurrentToolProcessUnitsWithError()
+    public async Task ProcessAsyncRunsAllUnitsAndPropagatesFailure()
     {
         // Arrange
         using var cts = new CancellationTokenSource();

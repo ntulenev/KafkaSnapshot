@@ -9,7 +9,7 @@ namespace KafkaSnapshot.Filters.Tests;
 
 public class NaiveValueFiltersFactoryTests
 {
-    [Fact(DisplayName = "Default filter can be created.")]
+    [Fact(DisplayName = "NaiveValueFiltersFactory: Default filter can be created.")]
     [Trait("Category", "Unit")]
     public void DefaultFilterCanBeCreatedByFactory()
     {
@@ -23,7 +23,7 @@ public class NaiveValueFiltersFactoryTests
         result.Should().BeOfType(typeof(DefaultFilter<object>));
     }
 
-    [Theory(DisplayName = "Equals filter can be created.")]
+    [Theory(DisplayName = "NaiveValueFiltersFactory: Equals filter can be created.")]
     [Trait("Category", "Unit")]
     [InlineData(ValueMessageType.Raw)]
     public void EqualsFilterCanBeCreatedByFactory(ValueMessageType messageType)
@@ -38,7 +38,7 @@ public class NaiveValueFiltersFactoryTests
         result.Should().BeOfType(typeof(EqualsFilter<object>));
     }
 
-    [Fact(DisplayName = "Json Equals filter can be created.")]
+    [Fact(DisplayName = "NaiveValueFiltersFactory: Json Equals filter can be created.")]
     [Trait("Category", "Unit")]
     public void JsonEqualsFilterCanBeCreatedByFactory()
     {
@@ -53,7 +53,7 @@ public class NaiveValueFiltersFactoryTests
         result.Should().BeOfType(typeof(JsonEqualsFilter));
     }
 
-    [Theory(DisplayName = "Json Equals filter can't be created.")]
+    [Theory(DisplayName = "NaiveValueFiltersFactory: JSON equality requires string values.")]
     [Trait("Category", "Unit")]
     [InlineData(ValueMessageType.Json)]
     public void EqualsFilterCannotBeCreatedForJsonOnObject(ValueMessageType messageType)
@@ -73,7 +73,7 @@ public class NaiveValueFiltersFactoryTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentOutOfRangeException>();
     }
 
-    [Theory(DisplayName = "GreaterOrEquals filter can't be created.")]
+    [Theory(DisplayName = "NaiveValueFiltersFactory: GreaterOrEquals is unsupported for message values.")]
     [Trait("Category", "Unit")]
     [InlineData(ValueMessageType.Json)]
     [InlineData(ValueMessageType.Raw)]
@@ -94,7 +94,7 @@ public class NaiveValueFiltersFactoryTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentOutOfRangeException>();
     }
 
-    [Theory(DisplayName = "LessOrEquals filter can't be created.")]
+    [Theory(DisplayName = "NaiveValueFiltersFactory: LessOrEquals is unsupported for message values.")]
     [Trait("Category", "Unit")]
     [InlineData(ValueMessageType.Json)]
     [InlineData(ValueMessageType.Raw)]

@@ -27,9 +27,9 @@ public class LoaderToolConfigurationValidatorTests
         exception.Should().BeNull();
     }
 
-    [Fact(DisplayName = "LoaderToolConfigurationValidator can be validated.")]
+    [Fact(DisplayName = "LoaderToolConfigurationValidator accepts valid topic settings.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolConfigurationValidatorCanBeValidated()
+    public void ValidateAcceptsValidTopics()
     {
 
         // Arrange
@@ -61,9 +61,9 @@ public class LoaderToolConfigurationValidatorTests
         result.Succeeded.Should().BeTrue();
     }
 
-    [Fact(DisplayName = "LoaderToolConfigurationValidator can be validated with valid date range.")]
+    [Fact(DisplayName = "LoaderToolConfigurationValidator accepts an ordered date range.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolConfigurationValidatorCanBeValidatedWithDates()
+    public void ValidateAcceptsOrderedDateRange()
     {
 
         // Arrange
@@ -98,9 +98,9 @@ public class LoaderToolConfigurationValidatorTests
     }
 
 
-    [Fact(DisplayName = "LoaderToolConfigurationValidator can't be validated for same files.")]
+    [Fact(DisplayName = "LoaderToolConfigurationValidator rejects duplicate export file names.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolConfigurationValidatorCannotBeValidatedForSameFiles()
+    public void ValidateRejectsDuplicateExportFileNames()
     {
 
         // Arrange
@@ -139,7 +139,9 @@ public class LoaderToolConfigurationValidatorTests
 
         // Assert
         exception.Should().BeNull();
-        result.Succeeded.Should().BeFalse();
+        result.Failed.Should().BeTrue();
+        result.Failures.Should().ContainSingle().Which.Should()
+            .StartWith(ConfigurationValidationErrorCodes.ExportFileNameDuplicate);
         result.Failures.Should().ContainSingle()
             .Which.Should().StartWith(
                 ConfigurationValidationErrorCodes.ExportFileNameDuplicate);
@@ -162,9 +164,9 @@ public class LoaderToolConfigurationValidatorTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
-    [Fact(DisplayName = "LoaderToolConfigurationValidator can't be validated with null topics.")]
+    [Fact(DisplayName = "LoaderToolConfigurationValidator rejects a missing topics collection.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolConfigurationValidatorCannotBeValidatedWithNullTopics()
+    public void ValidateRejectsMissingTopics()
     {
 
         // Arrange
@@ -182,12 +184,14 @@ public class LoaderToolConfigurationValidatorTests
 
         // Assert
         exception.Should().BeNull();
-        result.Succeeded.Should().BeFalse();
+        result.Failed.Should().BeTrue();
+        result.Failures.Should().ContainSingle().Which.Should()
+            .StartWith(ConfigurationValidationErrorCodes.TopicsMissing);
     }
 
-    [Fact(DisplayName = "LoaderToolConfigurationValidator can't be validated with empty topics.")]
+    [Fact(DisplayName = "LoaderToolConfigurationValidator rejects an empty topics collection.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolConfigurationValidatorCannotBeValidatedWithEmptyTopics()
+    public void ValidateRejectsEmptyTopics()
     {
 
         // Arrange
@@ -205,12 +209,14 @@ public class LoaderToolConfigurationValidatorTests
 
         // Assert
         exception.Should().BeNull();
-        result.Succeeded.Should().BeFalse();
+        result.Failed.Should().BeTrue();
+        result.Failures.Should().ContainSingle().Which.Should()
+            .StartWith(ConfigurationValidationErrorCodes.TopicsEmpty);
     }
 
-    [Fact(DisplayName = "LoaderToolConfigurationValidator can't be validated with null topic name.")]
+    [Fact(DisplayName = "LoaderToolConfigurationValidator rejects a null topic name.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolConfigurationValidatorCannotBeValidatedWithNullTopicName()
+    public void ValidateRejectsMissingTopicName()
     {
 
         // Arrange
@@ -248,12 +254,14 @@ public class LoaderToolConfigurationValidatorTests
 
         // Assert
         exception.Should().BeNull();
-        result.Succeeded.Should().BeFalse();
+        result.Failed.Should().BeTrue();
+        result.Failures.Should().ContainSingle().Which.Should()
+            .StartWith(ConfigurationValidationErrorCodes.TopicNameMissing);
     }
 
-    [Fact(DisplayName = "LoaderToolConfigurationValidator can't be validated with empty topic name.")]
+    [Fact(DisplayName = "LoaderToolConfigurationValidator rejects an empty topic name.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolConfigurationValidatorCannotBeValidatedWithEmptyTopicName()
+    public void ValidateRejectsEmptyTopicName()
     {
 
         // Arrange
@@ -291,12 +299,14 @@ public class LoaderToolConfigurationValidatorTests
 
         // Assert
         exception.Should().BeNull();
-        result.Succeeded.Should().BeFalse();
+        result.Failed.Should().BeTrue();
+        result.Failures.Should().ContainSingle().Which.Should()
+            .StartWith(ConfigurationValidationErrorCodes.TopicNameEmpty);
     }
 
-    [Fact(DisplayName = "LoaderToolConfigurationValidator can't be validated with space topic name.")]
+    [Fact(DisplayName = "LoaderToolConfigurationValidator rejects a whitespace-only topic name.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolConfigurationValidatorCannotBeValidatedWithSpaceTopicName()
+    public void ValidateRejectsWhitespaceOnlyTopicName()
     {
 
         // Arrange
@@ -334,15 +344,17 @@ public class LoaderToolConfigurationValidatorTests
 
         // Assert
         exception.Should().BeNull();
-        result.Succeeded.Should().BeFalse();
+        result.Failed.Should().BeTrue();
+        result.Failures.Should().ContainSingle().Which.Should()
+            .StartWith(ConfigurationValidationErrorCodes.TopicNameEmpty);
     }
 
-    [Theory(DisplayName = "LoaderToolConfigurationValidator can't be validated with any space topic name.")]
+    [Theory(DisplayName = "LoaderToolConfigurationValidator rejects whitespace inside a topic name.")]
     [Trait("Category", "Unit")]
     [InlineData(" test")]
     [InlineData("test ")]
     [InlineData("te st")]
-    public void LoaderToolConfigurationValidatorCannotBeValidatedWithAnySpaceTopicName(string topicName)
+    public void ValidateRejectsWhitespaceInsideTopicName(string topicName)
     {
 
         // Arrange
@@ -380,12 +392,14 @@ public class LoaderToolConfigurationValidatorTests
 
         // Assert
         exception.Should().BeNull();
-        result.Succeeded.Should().BeFalse();
+        result.Failed.Should().BeTrue();
+        result.Failures.Should().ContainSingle().Which.Should()
+            .StartWith(ConfigurationValidationErrorCodes.TopicNameWhitespace);
     }
 
-    [Fact(DisplayName = "LoaderToolConfigurationValidator can't be validated with long topic name.")]
+    [Fact(DisplayName = "LoaderToolConfigurationValidator rejects a topic name longer than 249 characters.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolConfigurationValidatorCannotBeValidatedWithLongTopicName()
+    public void ValidateRejectsTopicNameOver249Characters()
     {
 
         // Arrange
@@ -423,13 +437,15 @@ public class LoaderToolConfigurationValidatorTests
 
         // Assert
         exception.Should().BeNull();
-        result.Succeeded.Should().BeFalse();
+        result.Failed.Should().BeTrue();
+        result.Failures.Should().ContainSingle().Which.Should()
+            .StartWith(ConfigurationValidationErrorCodes.TopicNameTooLong);
     }
 
 
-    [Fact(DisplayName = "LoaderToolConfigurationValidator can't be validated with bad topic name.")]
+    [Fact(DisplayName = "LoaderToolConfigurationValidator rejects unsupported characters in a topic name.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolConfigurationValidatorCannotBeValidatedWithBadTopicName()
+    public void ValidateRejectsUnsupportedTopicNameCharacters()
     {
 
         // Arrange
@@ -467,13 +483,15 @@ public class LoaderToolConfigurationValidatorTests
 
         // Assert
         exception.Should().BeNull();
-        result.Succeeded.Should().BeFalse();
+        result.Failed.Should().BeTrue();
+        result.Failures.Should().ContainSingle().Which.Should()
+            .StartWith(ConfigurationValidationErrorCodes.TopicNameInvalid);
     }
 
 
-    [Fact(DisplayName = "LoaderToolConfigurationValidator can't be validated with null export name.")]
+    [Fact(DisplayName = "LoaderToolConfigurationValidator rejects a null export file name.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolConfigurationValidatorCannotBeValidatedWithNullExportName()
+    public void ValidateRejectsMissingExportFileName()
     {
 
         // Arrange
@@ -511,12 +529,14 @@ public class LoaderToolConfigurationValidatorTests
 
         // Assert
         exception.Should().BeNull();
-        result.Succeeded.Should().BeFalse();
+        result.Failed.Should().BeTrue();
+        result.Failures.Should().ContainSingle().Which.Should()
+            .StartWith(ConfigurationValidationErrorCodes.ExportFileNameMissing);
     }
 
-    [Fact(DisplayName = "LoaderToolConfigurationValidator can't be validated with empty export name.")]
+    [Fact(DisplayName = "LoaderToolConfigurationValidator rejects an empty export file name.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolConfigurationValidatorCannotBeValidatedWithEmptyExportName()
+    public void ValidateRejectsEmptyExportFileName()
     {
 
         // Arrange
@@ -554,13 +574,15 @@ public class LoaderToolConfigurationValidatorTests
 
         // Assert
         exception.Should().BeNull();
-        result.Succeeded.Should().BeFalse();
+        result.Failed.Should().BeTrue();
+        result.Failures.Should().ContainSingle().Which.Should()
+            .StartWith(ConfigurationValidationErrorCodes.ExportFileNameEmpty);
     }
 
 
-    [Fact(DisplayName = "LoaderToolConfigurationValidator can't be validated with space export name.")]
+    [Fact(DisplayName = "LoaderToolConfigurationValidator rejects a whitespace-only export file name.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolConfigurationValidatorCannotBeValidatedWithSpaceExportName()
+    public void ValidateRejectsWhitespaceOnlyExportFileName()
     {
 
         // Arrange
@@ -598,12 +620,14 @@ public class LoaderToolConfigurationValidatorTests
 
         // Assert
         exception.Should().BeNull();
-        result.Succeeded.Should().BeFalse();
+        result.Failed.Should().BeTrue();
+        result.Failures.Should().ContainSingle().Which.Should()
+            .StartWith(ConfigurationValidationErrorCodes.ExportFileNameEmpty);
     }
 
-    [Fact(DisplayName = "LoaderToolConfigurationValidator can be validated with filter.")]
+    [Fact(DisplayName = "LoaderToolConfigurationValidator accepts a key filter with a configured value.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolConfigurationValidatorCanBeValidatedWithFilter()
+    public void ValidateAcceptsConfiguredKeyFilter()
     {
 
         // Arrange
@@ -636,9 +660,9 @@ public class LoaderToolConfigurationValidatorTests
         result.Succeeded.Should().BeTrue();
     }
 
-    [Fact(DisplayName = "LoaderToolConfigurationValidator can't be validated with null filter.")]
+    [Fact(DisplayName = "LoaderToolConfigurationValidator rejects a missing value for an enabled key filter.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolConfigurationValidatorCannotBeValidatedWithNullFilter()
+    public void ValidateRejectsMissingFilterValue()
     {
 
         // Arrange
@@ -678,12 +702,14 @@ public class LoaderToolConfigurationValidatorTests
 
         // Assert
         exception.Should().BeNull();
-        result.Succeeded.Should().BeFalse();
+        result.Failed.Should().BeTrue();
+        result.Failures.Should().ContainSingle().Which.Should()
+            .StartWith(ConfigurationValidationErrorCodes.FilterValueMissing);
     }
 
-    [Fact(DisplayName = "LoaderToolConfigurationValidator can't be validated with compacting and key ignored.")]
+    [Fact(DisplayName = "LoaderToolConfigurationValidator rejects compaction when keys are ignored.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolConfigurationValidatorCannotBeCompactedAndKeyIgnored()
+    public void ValidateRejectsCompactionWithIgnoredKeys()
     {
 
         // Arrange
@@ -723,12 +749,14 @@ public class LoaderToolConfigurationValidatorTests
 
         // Assert
         exception.Should().BeNull();
-        result.Succeeded.Should().BeFalse();
+        result.Failed.Should().BeTrue();
+        result.Failures.Should().ContainSingle().Which.Should()
+            .StartWith(ConfigurationValidationErrorCodes.CompactingIgnoredKey);
     }
 
-    [Fact(DisplayName = "LoaderToolConfigurationValidator can't be validated with start date greater than end date.")]
+    [Fact(DisplayName = "LoaderToolConfigurationValidator rejects a start date after the end date.")]
     [Trait("Category", "Unit")]
-    public void LoaderToolConfigurationValidatorCannotBeValidatedWithIncorrectDates()
+    public void ValidateRejectsReversedDateRange()
     {
 
         // Arrange
@@ -757,7 +785,9 @@ public class LoaderToolConfigurationValidatorTests
 
         // Assert
         exception.Should().BeNull();
-        result.Succeeded.Should().BeFalse();
+        result.Failed.Should().BeTrue();
+        result.Failures.Should().ContainSingle().Which.Should()
+            .StartWith(ConfigurationValidationErrorCodes.TopicDateRangeInvalid);
     }
 }
 

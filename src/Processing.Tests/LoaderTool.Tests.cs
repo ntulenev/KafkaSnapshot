@@ -120,9 +120,9 @@ public class LoaderToolTests
         unit2ProcessCalls.Should().Be(1);
     }
 
-    [Fact(DisplayName = "LoaderTool can process units if error.")]
+    [Fact(DisplayName = "LoaderTool propagates the first failure and skips remaining units.")]
     [Trait("Category", "Unit")]
-    public async Task LoaderToolProcessUnitsIfError()
+    public async Task ProcessAsyncStopsAtFirstFailure()
     {
         // Arrange
         using var cts = new CancellationTokenSource();

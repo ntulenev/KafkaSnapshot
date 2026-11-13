@@ -54,5 +54,5 @@ public class MessageSorterEdgeCasesTests
     }
 
     private static KeyValuePair<int, KafkaMessage<string>> Message(int key, int partition, int seconds)
-        => new(key, new KafkaMessage<string>(key.ToString(), new KafkaMetadata(DateTime.UnixEpoch.AddSeconds(seconds), partition, key)));
+        => new(key, new KafkaMessage<string>(key.ToString(System.Globalization.CultureInfo.InvariantCulture), new KafkaMetadata(DateTime.UnixEpoch.AddSeconds(seconds), partition, key)));
 }

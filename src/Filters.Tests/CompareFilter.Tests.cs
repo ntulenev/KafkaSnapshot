@@ -10,7 +10,7 @@ public class CompareFilterTests
     [Trait("Category", "Unit")]
     [InlineData(true)]
     [InlineData(false)]
-    public void UnableToCreateCompareFilter(bool side)
+    public void ConstructorRejectsNullSample(bool side)
     {
 
         // Arrange
@@ -27,7 +27,7 @@ public class CompareFilterTests
     [Trait("Category", "Unit")]
     [InlineData(true)]
     [InlineData(false)]
-    public void CompareFilterCanBeCreated(bool side)
+    public void ConstructorPreservesComparisonDirection(bool side)
     {
 
         // Arrange
@@ -40,11 +40,11 @@ public class CompareFilterTests
         result.IsGreaterOrEquals.Should().Be(side);
     }
 
-    [Theory(DisplayName = "Unable to create Compare filter with null match.")]
+    [Theory(DisplayName = "CompareFilter.IsMatch rejects null input.")]
     [Trait("Category", "Unit")]
     [InlineData(true)]
     [InlineData(false)]
-    public void UnableToCompareWithNull(bool side)
+    public void IsMatchRejectsNullInput(bool side)
     {
 
         // Arrange
@@ -57,7 +57,7 @@ public class CompareFilterTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
-    [Theory(DisplayName = "Unable to create Compare filter with null match.")]
+    [Theory(DisplayName = "CompareFilter compares the input with the sample using inclusive bounds.")]
     [Trait("Category", "Unit")]
     [InlineData(true, 1, 2, true)]
     [InlineData(true, 2, 2, true)]
@@ -65,7 +65,7 @@ public class CompareFilterTests
     [InlineData(false, 1, 2, false)]
     [InlineData(false, 2, 2, true)]
     [InlineData(false, 3, 2, true)]
-    public void FilterCanCompareData(bool isGreaterOrEquals, int sample, int data, bool targetResult)
+    public void IsMatchComparesInputWithSampleInclusively(bool isGreaterOrEquals, int sample, int data, bool targetResult)
     {
 
         // Arrange

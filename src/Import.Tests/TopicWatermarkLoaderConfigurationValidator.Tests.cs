@@ -43,9 +43,9 @@ public class TopicWatermarkLoaderConfigurationValidatorTests
         result.Succeeded.Should().BeTrue();
     }
 
-    [Fact(DisplayName = "TopicWatermarkLoaderConfigurationValidator time span validation.")]
+    [Fact(DisplayName = "TopicWatermarkLoaderConfigurationValidator rejects a zero admin client timeout.")]
     [Trait("Category", "Unit")]
-    public void TopicWatermarkLoaderConfigurationValidatorTimeSpanValidation()
+    public void ValidateRejectsZeroAdminClientTimeout()
     {
 
         // Arrange

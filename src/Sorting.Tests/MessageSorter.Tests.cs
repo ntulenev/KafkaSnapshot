@@ -61,9 +61,9 @@ public class MessageSorterTests
         result.Should().BeSameAs(data);
     }
 
-    [Fact(DisplayName = "MessageSorter can sort partition ask.")]
+    [Fact(DisplayName = "MessageSorter sorts partitions in ascending order.")]
     [Trait("Category", "Unit")]
-    public void MessageSorterCanSortingPartitionAsk()
+    public void SortByPartitionAscendingOrdersPartitionsAscending()
     {
         // Arrange 
         var date = DateTime.Now;
@@ -81,9 +81,9 @@ public class MessageSorterTests
         result.Should().Equal(msg1, msg2, msg3);
     }
 
-    [Fact(DisplayName = "MessageSorter can sort partition desc.")]
+    [Fact(DisplayName = "MessageSorter sorts partitions in descending order.")]
     [Trait("Category", "Unit")]
-    public void MessageSorterCanSortingPartitionDesc()
+    public void SortByPartitionDescendingOrdersPartitionsDescending()
     {
         // Arrange 
         var date = DateTime.Now;
@@ -101,9 +101,9 @@ public class MessageSorterTests
         result.Should().Equal(msg3, msg2, msg1);
     }
 
-    [Fact(DisplayName = "MessageSorter can sort date ask.")]
+    [Fact(DisplayName = "MessageSorter sorts timestamps in ascending order.")]
     [Trait("Category", "Unit")]
-    public void MessageSorterCanSortingDateAsk()
+    public void SortByTimeAscendingOrdersTimestampsAscending()
     {
         // Arrange 
         var date1 = DateTime.Now;
@@ -123,9 +123,9 @@ public class MessageSorterTests
         result.Should().Equal(msg2, msg1, msg3);
     }
 
-    [Fact(DisplayName = "MessageSorter can sort date desc.")]
+    [Fact(DisplayName = "MessageSorter sorts timestamps in descending order.")]
     [Trait("Category", "Unit")]
-    public void MessageSorterCanSortingDateDesc()
+    public void SortByTimeDescendingOrdersTimestampsDescending()
     {
         // Arrange 
         var date1 = DateTime.Now;

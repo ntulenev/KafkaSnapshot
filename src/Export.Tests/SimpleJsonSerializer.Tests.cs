@@ -80,22 +80,22 @@ public class SimpleJsonSerializerTests
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
     }
 
-    [Theory(DisplayName = "SimpleJsonSerializer can't serialize null data to the null stream.")]
+    [Theory(DisplayName = "SimpleJsonSerializer rejects a null output stream when data is valid.")]
     [Trait("Category", "Unit")]
     [InlineData(true)]
     [InlineData(false)]
-    public async Task SimpleJsonSerializerCannotSerializeNullDataToNullStream(bool isRawData)
+    public async Task SerializeAsyncRejectsNullStreamWithValidData(bool isRawData)
     {
         // Arrange
         var logger = new Mock<ILogger<SimpleJsonSerializer<object, object>>>().Object;
         var serializer = new SimpleJsonSerializer<object, object>(logger);
-        var data = (IEnumerable<KeyValuePair<object, KafkaMessage<object>>>)null!;
+        var data = Array.Empty<KeyValuePair<object, KafkaMessage<object>>>();
 
         // Act
         var exception = await Record.ExceptionAsync(() => serializer.SerializeAsync(data, isRawData, null!, CancellationToken.None)).ConfigureAwait(false);
 
         // Assert
-        exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
+        exception.Should().BeOfType<ArgumentNullException>().Which.ParamName.Should().Be("stream");
     }
 
     [Theory(DisplayName = "SimpleJsonSerializer can serialize data.")]

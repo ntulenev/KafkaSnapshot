@@ -22,12 +22,16 @@ public sealed class JsonKeySerializer(ILogger<JsonKeySerializer> logger) :
     private static object ProjectData(
                 IEnumerable<KeyValuePair<string, KafkaMessage<string>>> data,
                 bool exportRawMessage)
-        => data.Select(x => new
+        => data.Select(item => ProjectMessage(item, exportRawMessage));
+
+    private static object ProjectMessage(KeyValuePair<string, KafkaMessage<string>> x,
+        bool exportRawMessage)
+        => new
         {
             Key = ParseJson(x.Key),
             Value = exportRawMessage ? x.Value.Message : ParseJson(x.Value.Message),
             x.Value.Meta
-        });
+        };
 
     /// <inheritdoc/>
     /// <exception cref="ArgumentNullException">Thrown when data is null.</exception>
@@ -52,6 +56,17 @@ public sealed class JsonKeySerializer(ILogger<JsonKeySerializer> logger) :
         ArgumentNullException.ThrowIfNull(stream);
 
         return SerializeDataToStreamAsync(ProjectData(data, exportRawMessage), stream, ct);
+    }
+
+    /// <inheritdoc/>
+    public Task SerializeAsync(
+        IAsyncEnumerable<KeyValuePair<string, KafkaMessage<string>>> data,
+        bool exportRawMessage, Stream stream, CancellationToken ct)
+    {
+        ArgumentNullException.ThrowIfNull(data);
+        ArgumentNullException.ThrowIfNull(stream);
+        return SerializeDataToStreamAsync(
+            ProjectAsync(data, item => ProjectMessage(item, exportRawMessage), ct), stream, ct);
     }
 
 }

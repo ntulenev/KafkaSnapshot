@@ -73,6 +73,37 @@ public sealed class JsonFileDataExporter<TKey, TKeyMarker, TValue> :
         }
     }
 
+    /// <inheritdoc/>
+    public bool UseStreaming => _isStreamingMode;
+
+    /// <inheritdoc/>
+    public async Task ExportAsync(
+        IAsyncEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> data,
+        ExportedTopic topic, CancellationToken ct)
+    {
+        ArgumentNullException.ThrowIfNull(data);
+        ArgumentNullException.ThrowIfNull(topic);
+        ct.ThrowIfCancellationRequested();
+
+        if (!_isStreamingMode)
+        {
+            var buffered = new List<KeyValuePair<TKey, KafkaMessage<TValue>>>();
+            await foreach (var item in data.WithCancellation(ct).ConfigureAwait(false))
+            {
+                buffered.Add(item);
+            }
+
+            await ExportAsync(buffered, topic, ct).ConfigureAwait(false);
+            return;
+        }
+
+        var stream = _storage.CreateFileStream(topic.ExportName);
+        await using var streamScope = stream.ConfigureAwait(false);
+        await _serializer.SerializeAsync(data, topic.ExportRawMessage, stream, ct)
+            .ConfigureAwait(false);
+        ct.ThrowIfCancellationRequested();
+    }
+
     private async Task InnerFileExportAsync(
         IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> data,
         ExportedTopic topic,

@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -56,6 +58,19 @@ public abstract class JsonSerializerBase
         await JsonSerializer.SerializeAsync(stream, data, _serializerOptions, ct).ConfigureAwait(false);
 
         Logger.LogTrace("Finish serializing data.");
+    }
+
+    /// <summary>Projects a cancellable asynchronous input without buffering it.</summary>
+    protected static async IAsyncEnumerable<object> ProjectAsync<T>(
+        IAsyncEnumerable<T> source, Func<T, object> projection,
+        [EnumeratorCancellation] CancellationToken ct)
+    {
+        ArgumentNullException.ThrowIfNull(source);
+        ArgumentNullException.ThrowIfNull(projection);
+        await foreach (var item in source.WithCancellation(ct).ConfigureAwait(false))
+        {
+            yield return projection(item);
+        }
     }
 
     /// <summary>Parses a non-null JSON value.</summary>

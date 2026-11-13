@@ -31,6 +31,12 @@ public class SnapshotLoaderConfigurationValidator :
                 "MaxConcurrentPartitions should be positive when set.");
         }
 
+        if (options.StreamBufferCapacity <= 0)
+        {
+            return Fail(ConfigurationValidationErrorCodes.StreamBufferCapacityInvalid,
+                "StreamBufferCapacity should be positive.");
+        }
+
         return ValidateOptionsResult.Success;
     }
 

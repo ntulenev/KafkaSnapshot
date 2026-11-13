@@ -19,7 +19,8 @@ public sealed class PartitionConsumerAssignment : IPartitionConsumerAssignment
         ArgumentNullException.ThrowIfNull(watermark);
         ArgumentNullException.ThrowIfNull(consumer);
 
-        consumer.Assign(new TopicPartition(watermark.Topic.Value.Name, watermark.Partition));
+        consumer.Assign(new TopicPartitionOffset(
+            watermark.Topic.Value.Name, watermark.Partition, new Offset(watermark.Offset.Low)));
 
     }
 
@@ -63,7 +64,7 @@ public sealed class PartitionConsumerAssignment : IPartitionConsumerAssignment
 
         var singleOffset = offsets.Single();
 
-        if (singleOffset.Offset.IsSpecial)
+        if (singleOffset.Offset.IsSpecial || singleOffset.Offset.Value >= watermark.Offset.High)
         {
             assignedOffset = singleOffset;
             return false;

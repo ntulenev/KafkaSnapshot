@@ -170,7 +170,7 @@ public class PartitionWatermarkTests
         var pw = KafkaSnapshot.Import.Kafka.KafkaWatermarkMapper.ToDomain(topicName, offsets, partition);
         var consumerMock = new Mock<IConsumer<object, object>>(MockBehavior.Strict);
         var assignCalls = 0;
-        consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(a => a.Topic == topicName.Value.Name && a.Partition == partition)))
+        consumerMock.Setup(x => x.Assign(It.Is<TopicPartitionOffset>(a => a.Topic == topicName.Value.Name && a.Partition == partition)))
             .Callback(() => assignCalls++);
         var consumer = consumerMock.Object;
 

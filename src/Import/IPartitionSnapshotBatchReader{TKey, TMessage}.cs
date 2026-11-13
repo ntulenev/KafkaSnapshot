@@ -13,6 +13,14 @@ public interface IPartitionSnapshotBatchReader<TKey, TMessage>
     where TKey : notnull
     where TMessage : notnull
 {
+    /// <summary>Streams partitions in traversal order with bounded buffering.</summary>
+    IAsyncEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> StreamAsync(
+        IEnumerable<PartitionWatermark> watermarks,
+        LoadingTopic topicParams,
+        IDataFilter<TKey> keyFilter,
+        IDataFilter<TMessage> valueFilter,
+        CancellationToken ct);
+
     /// <summary>Reads partitions using the configured selection strategy.</summary>
     Task<IReadOnlyCollection<KeyValuePair<TKey, KafkaMessage<TMessage>>>> ReadAsync(
         IEnumerable<PartitionWatermark> watermarks,

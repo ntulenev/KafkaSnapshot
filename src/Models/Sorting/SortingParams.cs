@@ -32,6 +32,9 @@ public sealed record SortingParams
         Order = order;
     }
 
+    /// <summary>Whether sorting requires the complete input.</summary>
+    public bool IsEnabled => Order != SortingOrder.None;
+
     /// <summary>
     /// Message attribute for sorting.
     /// </summary>

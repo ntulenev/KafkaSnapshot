@@ -11,6 +11,9 @@ public interface ISnapshotBuilder<TKey, TMessage>
     where TKey : notnull
     where TMessage : notnull
 {
+    /// <summary>Checks whether sorting or compaction requires buffered input.</summary>
+    bool RequiresBuffering(bool withCompacting);
+
     /// <summary>
     /// Creates a snapshot from consumed messages.
     /// </summary>

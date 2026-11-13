@@ -27,6 +27,9 @@ public sealed class MessageSorter<TKey, TValue> : IMessageSorter<TKey, TValue>
     }
 
     /// <inheritdoc/>
+    public bool IsEnabled => _sortingRules.IsEnabled;
+
+    /// <inheritdoc/>
     public IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> Sort(
         IEnumerable<KeyValuePair<TKey, KafkaMessage<TValue>>> source)
     {

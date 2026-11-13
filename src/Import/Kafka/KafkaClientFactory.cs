@@ -52,6 +52,7 @@ public class KafkaClientFactory : IKafkaClientFactory
             AutoOffsetReset = AutoOffsetReset.Earliest,
             GroupId = Guid.NewGuid().ToString(),
             EnableAutoCommit = false,
+            EnablePartitionEof = true,
             SecurityProtocol = _config.SecurityProtocol,
             SaslMechanism = _config.SASLMechanism,
             SaslUsername = _config.Username,

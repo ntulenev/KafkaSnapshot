@@ -15,6 +15,9 @@ public class SnapshotLoaderConfiguration
     /// </summary>
     public bool SearchSinglePartition { get; init; }
 
+    /// <summary>Maximum decoded messages queued by the streaming reader.</summary>
+    public int StreamBufferCapacity { get; init; } = 256;
+
     /// <summary>
     /// Maximum number of partitions to consume concurrently. Null or less than 1 means no limit.
     /// </summary>

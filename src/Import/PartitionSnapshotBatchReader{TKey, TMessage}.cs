@@ -1,3 +1,6 @@
+using System.Runtime.CompilerServices;
+using System.Threading.Channels;
+
 using KafkaSnapshot.Abstractions.Filters;
 using KafkaSnapshot.Import.Configuration;
 using KafkaSnapshot.Models.Import;
@@ -32,6 +35,77 @@ public class PartitionSnapshotBatchReader<TKey, TMessage>
 
         _config = config.Value;
         _partitionReader = partitionReader;
+    }
+
+    /// <summary>Streams partitions in traversal order with bounded buffering.</summary>
+    public async IAsyncEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> StreamAsync(
+        IEnumerable<PartitionWatermark> watermarks,
+        LoadingTopic topicParams,
+        IDataFilter<TKey> keyFilter,
+        IDataFilter<TMessage> valueFilter,
+        [EnumeratorCancellation] CancellationToken ct)
+    {
+        ArgumentNullException.ThrowIfNull(watermarks);
+        ArgumentNullException.ThrowIfNull(topicParams);
+        ArgumentNullException.ThrowIfNull(keyFilter);
+        ArgumentNullException.ThrowIfNull(valueFilter);
+        ct.ThrowIfCancellationRequested();
+
+        using var stopped = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        var channel = Channel.CreateBounded<KeyValuePair<TKey, KafkaMessage<TMessage>>>(
+            new BoundedChannelOptions(_config.StreamBufferCapacity)
+            {
+                SingleReader = true,
+                SingleWriter = true,
+                FullMode = BoundedChannelFullMode.Wait
+            });
+
+        // Consume is blocking. The worker owns the consumer and completes before disposal.
+#pragma warning disable CA2025 // The finally block joins the worker before disposing stopped.
+        var producer = Task.Run(async () =>
+        {
+            try
+            {
+                foreach (var watermark in watermarks)
+                {
+                    stopped.Token.ThrowIfCancellationRequested();
+                    var hasMatches = false;
+                    foreach (var item in _partitionReader.Read(watermark, topicParams,
+                        keyFilter, valueFilter, stopped.Token))
+                    {
+                        await channel.Writer.WriteAsync(item, stopped.Token).ConfigureAwait(false);
+                        hasMatches = true;
+                    }
+
+                    if (_config.SearchSinglePartition && hasMatches)
+                    {
+                        break;
+                    }
+                }
+
+                _ = channel.Writer.TryComplete();
+            }
+#pragma warning disable CA1031 // Producer errors are propagated through the channel to its reader.
+            catch (Exception exception)
+#pragma warning restore CA1031
+            {
+                _ = channel.Writer.TryComplete(exception);
+            }
+        }, CancellationToken.None);
+#pragma warning restore CA2025
+
+        try
+        {
+            await foreach (var item in channel.Reader.ReadAllAsync(ct).ConfigureAwait(false))
+            {
+                yield return item;
+            }
+        }
+        finally
+        {
+            await stopped.CancelAsync().ConfigureAwait(false);
+            await producer.ConfigureAwait(false);
+        }
     }
 
     /// <summary>Reads partitions using the configured selection strategy.</summary>

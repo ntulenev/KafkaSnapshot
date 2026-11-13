@@ -50,4 +50,14 @@ public sealed class SimpleJsonSerializer<TKey, TMessage>(ILogger<SimpleJsonSeria
 
         return SerializeDataToStreamAsync(data, stream, ct);
     }
+    /// <inheritdoc/>
+    public Task SerializeAsync(
+        IAsyncEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> data,
+        bool exportRawMessage, Stream stream, CancellationToken ct)
+    {
+        ArgumentNullException.ThrowIfNull(data);
+        ArgumentNullException.ThrowIfNull(stream);
+        _ = exportRawMessage;
+        return SerializeDataToStreamAsync(data, stream, ct);
+    }
 }

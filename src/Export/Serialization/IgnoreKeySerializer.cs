@@ -22,9 +22,12 @@ public sealed class IgnoreKeySerializer(ILogger<IgnoreKeySerializer> logger) :
     private IEnumerable<object> ProjectData(
                     IEnumerable<KeyValuePair<string, KafkaMessage<string>>> data,
                     bool exportRawMessage)
+        => data.Select(CreateProjection(exportRawMessage));
+
+    private Func<KeyValuePair<string, KafkaMessage<string>>, object> CreateProjection(bool exportRawMessage)
     {
         var warned = false;
-        foreach (var item in data)
+        return item =>
         {
             if (!warned && item.Key is not null)
             {
@@ -33,12 +36,12 @@ public sealed class IgnoreKeySerializer(ILogger<IgnoreKeySerializer> logger) :
                 warned = true;
             }
 
-            yield return new
+            return new
             {
                 Value = exportRawMessage ? item.Value.Message : (object)ParseJson(item.Value.Message),
                 item.Value.Meta
             };
-        }
+        };
     }
 
     /// <inheritdoc/>
@@ -64,6 +67,17 @@ public sealed class IgnoreKeySerializer(ILogger<IgnoreKeySerializer> logger) :
         ArgumentNullException.ThrowIfNull(stream);
 
         return SerializeDataToStreamAsync(ProjectData(data, exportRawMessage), stream, ct);
+    }
+
+    /// <inheritdoc/>
+    public Task SerializeAsync(
+        IAsyncEnumerable<KeyValuePair<string, KafkaMessage<string>>> data,
+        bool exportRawMessage, Stream stream, CancellationToken ct)
+    {
+        ArgumentNullException.ThrowIfNull(data);
+        ArgumentNullException.ThrowIfNull(stream);
+        return SerializeDataToStreamAsync(
+            ProjectAsync(data, CreateProjection(exportRawMessage), ct), stream, ct);
     }
 
 }

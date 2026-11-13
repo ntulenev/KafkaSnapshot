@@ -13,6 +13,13 @@ public interface IDataExporter<TKey, TKeyMarker, TMessage>
     where TKeyMarker : IKeyRepresentationMarker
     where TMessage : notnull
 {
+    /// <summary>Whether export is configured to stream messages directly to a file.</summary>
+    bool UseStreaming { get; }
+
+    /// <summary>Exports an asynchronous message stream.</summary>
+    Task ExportAsync(IAsyncEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>> data,
+        ExportedTopic topic, CancellationToken ct);
+
     /// <summary>
     /// Exports the data to a file.
     /// </summary>

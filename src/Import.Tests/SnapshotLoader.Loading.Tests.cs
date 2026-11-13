@@ -123,7 +123,7 @@ public partial class SnapshotLoaderTests
         topicLoaderMock.Setup(x => x.LoadWatermarksAsync(topicName, token))
             .Callback(() => topicLoaderCalls++)
             .Returns(Task.FromResult(topicWatermark));
-        consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(item => item.Topic == topicName.Value.Name && item.Partition == partition)))
+        consumerMock.Setup(x => x.Assign(It.Is<TopicPartitionOffset>(item => item.Topic == topicName.Value.Name && item.Partition == partition)))
             .Callback(() => assignCalls++);
         consumerMock.Setup(x => x.Consume(token))
             .Returns(() => consumerData[consumeCalls++]);

@@ -338,6 +338,7 @@ public class ProcessingUnitTests
         var factory = factoryMock.Object;
         var loader = loaderMock.Object;
         var exporterMock = new Mock<IDataExporter<object, IKeyRepresentationMarker, object>>(MockBehavior.Strict);
+        exporterMock.SetupGet(x => x.UseStreaming).Returns(false);
         var exportCalls = 0;
         exporterMock.Setup(x => x.ExportAsync(snapshot,
                                 It.Is<ExportedTopic>(e => e.TopicName.Name == topic.TopicName.Name && e.ExportName == topic.ExportName),

@@ -33,6 +33,9 @@ public class SnapshotBuilder<TKey, TMessage>
         _sorter = sorter;
     }
 
+    /// <inheritdoc/>
+    public bool RequiresBuffering(bool withCompacting) => withCompacting || _sorter.IsEnabled;
+
     /// <summary>
     /// Creates a snapshot from consumed messages.
     /// </summary>

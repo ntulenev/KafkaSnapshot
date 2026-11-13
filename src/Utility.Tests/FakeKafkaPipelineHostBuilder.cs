@@ -19,6 +19,7 @@ internal sealed class FakeKafkaPipelineHostBuilder
         _configuration = new Dictionary<string, string?>
         {
             ["LoaderToolConfiguration:UseConcurrentLoad"] = "false",
+            ["JsonFileDataExporterConfiguration:UseFileStreaming"] = "true",
             ["JsonFileDataExporterConfiguration:OutputDirectory"] = outputDirectory,
             ["BootstrapServersConfiguration:BootstrapServers:0"] = "fake-kafka:9092",
             ["TopicWatermarkLoaderConfiguration:AdminClientTimeout"] = "00:00:01",

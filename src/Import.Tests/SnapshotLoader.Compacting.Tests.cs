@@ -113,7 +113,7 @@ public partial class SnapshotLoaderTests
         ]);
         topicLoaderMock.Setup(x => x.LoadWatermarksAsync(topicName, token))
             .Returns(Task.FromResult(topicWatermark));
-        consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(x => x.Topic == topicName.Value.Name && x.Partition == partition)));
+        consumerMock.Setup(x => x.Assign(It.Is<TopicPartitionOffset>(x => x.Topic == topicName.Value.Name && x.Partition == partition)));
         consumerMock.Setup(x => x.Consume(token)).Returns(() => consumerData[indexer++]);
         var dispCount = 0;
         var closeCount = 0;
@@ -181,7 +181,7 @@ public partial class SnapshotLoaderTests
         topicLoaderMock.Setup(x => x.LoadWatermarksAsync(topic,
             token)).ReturnsAsync(topicWatermark);
 
-        consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(item =>
+        consumerMock.Setup(x => x.Assign(It.Is<TopicPartitionOffset>(item =>
             item.Topic == topic.Value.Name && item.Partition == partition)));
         consumerMock.Setup(x => x.Consume(token)).Returns(new ConsumeResult<object, byte[]>
         {

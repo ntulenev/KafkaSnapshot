@@ -72,6 +72,12 @@ public class PartitionSnapshotReader<TKey, TMessage>
         ArgumentNullException.ThrowIfNull(keyFilter);
         ArgumentNullException.ThrowIfNull(valueFilter);
 
+        ct.ThrowIfCancellationRequested();
+        if (!watermark.IsReadyToRead())
+        {
+            yield break;
+        }
+
         var logScope = _logger.IsEnabled(LogLevel.Information)
             ? _logger.BeginScope("Partition {Partition}", watermark.Partition)
             : null;
@@ -194,6 +200,17 @@ public class PartitionSnapshotReader<TKey, TMessage>
         do
         {
             result = ConsumeNext(consumer, topicParams, watermark, ct);
+
+            if (result.IsPartitionEOF)
+            {
+                if (result.Offset.Value < watermark.Offset.High)
+                {
+                    throw new InvalidOperationException(
+                        $"Partition {watermark.Partition} ended before captured offset {watermark.Offset.High}.");
+                }
+
+                break;
+            }
 
             if (!watermark.Contains(result.Offset.Value))
             {

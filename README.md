@@ -418,16 +418,25 @@ The seven executable production assemblies are Export, Filters, Import, Models, 
 ## Architecture and Streaming Design
 
 `Models` owns validated domain state. Models expose read-only properties; partition
-selections are copied into frozen sets. `ProcessingTopic` composes loading, export,
+selections are validated and copied into frozen sets by `PartitionSelection`. `ProcessingTopic` composes loading, export,
 and key-filter models. `KeyFilterDefinition` validates filter compatibility and
 sample types. Configuration validation reuses domain compatibility rules and keeps
-stable `KS_CFG_*` diagnostics for startup errors.
+stable `KS_CFG_*` diagnostics for startup errors. Name validation exposes domain
+failure categories for the configuration adapter; file names, date ranges, partition
+selections, sorting, and required filter values are checked through model creation.
+The configuration validator retains section/enum binding checks and duplicate output
+checks. Filter value conversion is shared with the mapper, and the untyped value is
+validated before conversion to `TKey`, so a missing long filter cannot become zero.
 
 `SnapshotLoader` coordinates metadata, partition reading, and `ISnapshotBuilder`.
 The batch reader owns selection and concurrency settings. `TopicWatermarkLoader`
 creates its metadata consumer through `IKafkaClientFactory`. Kafka assignment and
 timestamp lookup belong to `IPartitionConsumerAssignment`, rather than watermark
-models. `IExportFileStorage` owns output paths, directory creation, and file I/O;
+models. `PartitionWatermark` now lives in `Models.Import`, with an `int` partition
+and an `OffsetRange` instead of Kafka SDK values. `OffsetRange` owns the inclusive
+low/exclusive high boundaries, emptiness, membership, and reading completion rules.
+Negative or reversed intervals are rejected; equal boundaries represent an empty
+snapshot. `KafkaWatermarkMapper` converts broker values at the Import boundary. `IExportFileStorage` owns output paths, directory creation, and file I/O;
 exporters own serialization and dispose the returned streams.
 
 The current pipeline still buffers partition results before export. A future

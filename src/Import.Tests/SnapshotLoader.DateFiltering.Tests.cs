@@ -63,7 +63,7 @@ public partial class SnapshotLoaderTests
         var partition = new Partition(1);
         var topicWatermark = new TopicWatermark(
         [
-            new PartitionWatermark(topicName,offset,partition)
+            KafkaSnapshot.Import.Kafka.KafkaWatermarkMapper.ToDomain(topicName,offset,partition)
         ]);
         var topicPartition = new TopicPartition(topicName.Value.Name, partition);
         var partitionWithTime = new TopicPartitionTimestamp(topicPartition, new Timestamp(testDate));
@@ -173,7 +173,7 @@ public partial class SnapshotLoaderTests
         var partition = new Partition(1);
         var topicWatermark = new TopicWatermark(
         [
-            new PartitionWatermark(topicName,offset,partition)
+            KafkaSnapshot.Import.Kafka.KafkaWatermarkMapper.ToDomain(topicName,offset,partition)
         ]);
         var testDate = DateTime.UtcNow;
         var topicPartition = new TopicPartition(topicName.Value.Name, partition);
@@ -240,7 +240,7 @@ public partial class SnapshotLoaderTests
         var partition = new Partition(1);
         var topicWatermark = new TopicWatermark(
         [
-            new PartitionWatermark(topicName,offset,partition)
+            KafkaSnapshot.Import.Kafka.KafkaWatermarkMapper.ToDomain(topicName,offset,partition)
         ]);
         var topicPartition = new TopicPartition(topicName.Value.Name, partition);
         var partitionWithTime = new TopicPartitionTimestamp(topicPartition, new Timestamp(testDate));
@@ -361,7 +361,7 @@ public partial class SnapshotLoaderTests
         var partition = new Partition(1);
         var topicWatermark = new TopicWatermark(
         [
-            new PartitionWatermark(topicName, offset, partition)
+            KafkaSnapshot.Import.Kafka.KafkaWatermarkMapper.ToDomain(topicName, offset, partition)
         ]);
         topicLoaderMock.Setup(x => x.LoadWatermarksAsync(topicName, token))
             .Callback(() => topicLoaderCalls++)

@@ -5,7 +5,6 @@ using KafkaSnapshot.Import.Kafka;
 using KafkaSnapshot.Abstractions.Filters;
 using KafkaSnapshot.Abstractions.Import;
 using KafkaSnapshot.Import.Configuration;
-using KafkaSnapshot.Import.Watermarks;
 using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Message;
 
@@ -74,7 +73,7 @@ public class PartitionSnapshotReader<TKey, TMessage>
         ArgumentNullException.ThrowIfNull(valueFilter);
 
         var logScope = _logger.IsEnabled(LogLevel.Information)
-            ? _logger.BeginScope("Partition {Partition}", watermark.Partition.Value)
+            ? _logger.BeginScope("Partition {Partition}", watermark.Partition)
             : null;
 
         using (logScope)
@@ -129,7 +128,7 @@ public class PartitionSnapshotReader<TKey, TMessage>
             _logger.LogInformation(
                 "Searching offset for topic {Topic}, partition {Partition}, date {Date}",
                 topicParams.Value.Name,
-                watermark.Partition.Value,
+                watermark.Partition,
                 topicParams.OffsetDate);
         }
 
@@ -150,7 +149,7 @@ public class PartitionSnapshotReader<TKey, TMessage>
                 exception,
                 "Failed to resolve offset for topic {Topic}, partition {Partition}, date {Date}",
                 topicParams.Value.Name,
-                watermark.Partition.Value,
+                watermark.Partition,
                 topicParams.OffsetDate);
             throw;
         }
@@ -162,7 +161,7 @@ public class PartitionSnapshotReader<TKey, TMessage>
                 _logger.LogWarning(
                     "No actual offset for topic {Topic}, partition {Partition}, date {Date}",
                     topicParams.Value.Name,
-                    watermark.Partition.Value,
+                    watermark.Partition,
                     topicParams.OffsetDate);
             }
 
@@ -175,7 +174,7 @@ public class PartitionSnapshotReader<TKey, TMessage>
                 "Resolved offset {Offset} for topic {Topic}, partition {Partition}, date {Date}",
                 assignedOffset.Offset.Value,
                 topicParams.Value.Name,
-                watermark.Partition.Value,
+                watermark.Partition,
                 topicParams.OffsetDate);
         }
 
@@ -236,7 +235,7 @@ public class PartitionSnapshotReader<TKey, TMessage>
                 exception,
                 "Failed to consume message from topic {Topic}, partition {Partition}",
                 topicParams.Value.Name,
-                watermark.Partition.Value);
+                watermark.Partition);
             throw;
         }
     }
@@ -260,7 +259,7 @@ public class PartitionSnapshotReader<TKey, TMessage>
             "Final date offset {Date} reached by message timestamp {MessageTimestamp} at partition {Partition}, offset {Offset}",
             topicParams.EndOffsetDate,
             GetResultTimestamp(result),
-            watermark.Partition.Value,
+            watermark.Partition,
             result.Offset.Value);
     }
 
@@ -278,7 +277,7 @@ public class PartitionSnapshotReader<TKey, TMessage>
 
         var meta = new KafkaMetadata(
             GetResultTimestamp(result),
-            watermark.Partition.Value,
+            watermark.Partition,
             result.Offset.Value);
 
         var message = new KafkaMessage<TMessage>(messageValue, meta);

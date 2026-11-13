@@ -18,7 +18,8 @@ public static class TopicConfigurationMapper
     {
         ArgumentNullException.ThrowIfNull(configuration);
 
-        var typedFilterKeyValue = ParseFilterKeyValue<TKey>(configuration);
+        var filterKeyValue = CreateKeyFilter(configuration).Value;
+        var typedFilterKeyValue = filterKeyValue is null ? default : (TKey)filterKeyValue;
         var dateRange = new DateFilterRange(configuration.OffsetStartDate, configuration.OffsetEndDate);
 
         return new ProcessingTopic<TKey>(
@@ -34,7 +35,11 @@ public static class TopicConfigurationMapper
             configuration.PartitionsIds);
     }
 
-    private static TKey? ParseFilterKeyValue<TKey>(TopicConfiguration configuration)
+    internal static KeyFilterDefinition<object?> CreateKeyFilter(TopicConfiguration configuration)
+        => new(configuration.FilterKeyType, configuration.KeyType,
+            ParseFilterKeyValue(configuration));
+
+    private static object? ParseFilterKeyValue(TopicConfiguration configuration)
     {
         if (configuration.FilterKeyType == FilterType.None || configuration.FilterKeyValue is null)
         {
@@ -43,11 +48,11 @@ public static class TopicConfigurationMapper
 
         return configuration.KeyType switch
         {
-            KeyType.Long => (TKey)(object)long.Parse(
+            KeyType.Long => long.Parse(
                 configuration.FilterKeyValue,
                 NumberStyles.Integer,
                 CultureInfo.InvariantCulture),
-            KeyType.Json or KeyType.String => (TKey)(object)configuration.FilterKeyValue,
+            KeyType.Json or KeyType.String => configuration.FilterKeyValue,
             KeyType.Ignored => default,
             _ => throw new InvalidOperationException(
                 $"Invalid Key type {configuration.KeyType} for processing.")

@@ -26,7 +26,7 @@ public class PartitionWatermarkTests
         var partition = new Partition(1);
 
         // Act
-        var exception = Record.Exception(() => new PartitionWatermark(topicName, offsets, partition));
+        var exception = Record.Exception(() => KafkaSnapshot.Import.Kafka.KafkaWatermarkMapper.ToDomain(topicName, offsets, partition));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -44,7 +44,7 @@ public class PartitionWatermarkTests
         var partition = new Partition(1);
 
         // Act
-        var exception = Record.Exception(() => new PartitionWatermark(topicName, offsets, partition));
+        var exception = Record.Exception(() => KafkaSnapshot.Import.Kafka.KafkaWatermarkMapper.ToDomain(topicName, offsets, partition));
 
         // Assert
         exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
@@ -62,17 +62,17 @@ public class PartitionWatermarkTests
         var partition = new Partition(1);
 
         // Act
-        var result = new PartitionWatermark(topicName, offsets, partition);
+        var result = KafkaSnapshot.Import.Kafka.KafkaWatermarkMapper.ToDomain(topicName, offsets, partition);
 
         // Assert
-        result.Partition.Should().Be(partition);
-        result.Offset.Should().Be(offsets);
+        result.Partition.Should().Be(partition.Value);
+        result.Offset.Should().Be(new OffsetRange(offsets.Low.Value, offsets.High.Value));
         result.Topic.Should().Be(topicName);
     }
 
     [Theory(DisplayName = "PartitionWatermark is ready to read only valid offsets.")]
     [InlineData(0, 1, true)]
-    [InlineData(1, 0, false)]
+    [InlineData(1, 1, false)]
     [Trait("Category", "Unit")]
     public void IsReadyToReadReactsCorrectlyOnOffsetValues(int startOffset, int endOffset, bool condition)
     {
@@ -82,7 +82,7 @@ public class PartitionWatermarkTests
         var topicName = new LoadingTopic(new TopicName("Test"), true, new DateFilterRange(null!, null!), EncoderRules.String, partitionFilter);
         var offsets = new WatermarkOffsets(new Offset(startOffset), new Offset(endOffset));
         var partition = new Partition(1);
-        var pw = new PartitionWatermark(topicName, offsets, partition);
+        var pw = KafkaSnapshot.Import.Kafka.KafkaWatermarkMapper.ToDomain(topicName, offsets, partition);
 
         // Act
         var result = pw.IsReadyToRead();
@@ -105,7 +105,7 @@ public class PartitionWatermarkTests
         {
             Offset = offsets.High - 1
         };
-        var pw = new PartitionWatermark(topicName, offsets, partition);
+        var pw = KafkaSnapshot.Import.Kafka.KafkaWatermarkMapper.ToDomain(topicName, offsets, partition);
 
         // Act
         var status = pw.ShouldContinueReadingAfter(result.Offset.Value);
@@ -128,7 +128,7 @@ public class PartitionWatermarkTests
         {
             Offset = offsets.Low
         };
-        var pw = new PartitionWatermark(topicName, offsets, partition);
+        var pw = KafkaSnapshot.Import.Kafka.KafkaWatermarkMapper.ToDomain(topicName, offsets, partition);
 
         // Act
         var status = pw.ShouldContinueReadingAfter(result.Offset.Value);
@@ -147,7 +147,7 @@ public class PartitionWatermarkTests
         var topicName = new LoadingTopic(new TopicName("Test"), true, new DateFilterRange(null!, null!), EncoderRules.String, partitionFilter);
         var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
         var partition = new Partition(1);
-        var pw = new PartitionWatermark(topicName, offsets, partition);
+        var pw = KafkaSnapshot.Import.Kafka.KafkaWatermarkMapper.ToDomain(topicName, offsets, partition);
         IConsumer<object, object> consumer = null!;
 
         // Act
@@ -167,7 +167,7 @@ public class PartitionWatermarkTests
         var topicName = new LoadingTopic(new TopicName("Test"), true, new DateFilterRange(null!, null!), EncoderRules.String, partitionFilter);
         var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
         var partition = new Partition(1);
-        var pw = new PartitionWatermark(topicName, offsets, partition);
+        var pw = KafkaSnapshot.Import.Kafka.KafkaWatermarkMapper.ToDomain(topicName, offsets, partition);
         var consumerMock = new Mock<IConsumer<object, object>>(MockBehavior.Strict);
         var assignCalls = 0;
         consumerMock.Setup(x => x.Assign(It.Is<TopicPartition>(a => a.Topic == topicName.Value.Name && a.Partition == partition)))
@@ -194,7 +194,7 @@ public class PartitionWatermarkTests
         var topicName = new LoadingTopic(new TopicName("Test"), true, new DateFilterRange(date, null!), EncoderRules.String, partitionFilter);
         var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
         var partition = new Partition(1);
-        var pw = new PartitionWatermark(topicName, offsets, partition);
+        var pw = KafkaSnapshot.Import.Kafka.KafkaWatermarkMapper.ToDomain(topicName, offsets, partition);
         var consumerMock = new Mock<IConsumer<object, object>>(MockBehavior.Strict);
         var topicWithOffset = new TopicPartitionOffset(new TopicPartition(topicName.Value.Name, new Partition()), new Offset(1));
         var expectedTimestamp = new Timestamp(date).UnixTimestampMs;
@@ -242,7 +242,7 @@ public class PartitionWatermarkTests
         var topicName = new LoadingTopic(new TopicName("Test"), true, new DateFilterRange(date, null!), EncoderRules.String, partitionFilter);
         var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
         var partition = new Partition(1);
-        var pw = new PartitionWatermark(topicName, offsets, partition);
+        var pw = KafkaSnapshot.Import.Kafka.KafkaWatermarkMapper.ToDomain(topicName, offsets, partition);
         var consumerMock = new Mock<IConsumer<object, object>>(MockBehavior.Strict);
         var topicWithOffset = new TopicPartitionOffset(new TopicPartition(topicName.Value.Name, new Partition()), new Offset(specialOffset));
         var expectedTimestamp = new Timestamp(date).UnixTimestampMs;

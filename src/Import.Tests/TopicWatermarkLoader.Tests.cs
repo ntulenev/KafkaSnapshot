@@ -172,8 +172,8 @@ public class TopicWatermarkLoaderTests
         var watermarks = result.Watermarks.ToList();
         watermarks.Should().ContainSingle();
         watermarks.Single().Topic.Should().Be(topic);
-        watermarks.Single().Partition.Value.Should().Be(partitionMeta.PartitionId);
-        watermarks.Single().Offset.Should().Be(offets);
+        watermarks.Single().Partition.Should().Be(partitionMeta.PartitionId);
+        watermarks.Single().Offset.Should().Be(new OffsetRange(offets.Low.Value, offets.High.Value));
         getMetadataCalls.Should().Be(1);
         queryWatermarkOffsetsCalls.Should().Be(1);
         closeCalls.Should().Be(1);
@@ -237,8 +237,8 @@ public class TopicWatermarkLoaderTests
         var watermarks = result.Watermarks.ToList();
         watermarks.Should().ContainSingle();
         watermarks.Single().Topic.Should().Be(topic);
-        watermarks.Single().Partition.Value.Should().Be(partitionMeta2.PartitionId);
-        watermarks.Single().Offset.Should().Be(offets);
+        watermarks.Single().Partition.Should().Be(partitionMeta2.PartitionId);
+        watermarks.Single().Offset.Should().Be(new OffsetRange(offets.Low.Value, offets.High.Value));
         getMetadataCalls.Should().Be(1);
         queryWatermarkOffsetsPartition1Calls.Should().Be(0);
         queryWatermarkOffsetsPartition2Calls.Should().Be(1);
@@ -403,8 +403,8 @@ public class TopicWatermarkLoaderTests
         var watermarks = result.Watermarks.ToList();
         watermarks.Should().ContainSingle();
         watermarks.Single().Topic.Should().Be(topic);
-        watermarks.Single().Partition.Value.Should().Be(requestedPartitionMeta.PartitionId);
-        watermarks.Single().Offset.Should().Be(offsets);
+        watermarks.Single().Partition.Should().Be(requestedPartitionMeta.PartitionId);
+        watermarks.Single().Offset.Should().Be(new OffsetRange(offsets.Low.Value, offsets.High.Value));
         getMetadataCalls.Should().Be(1);
         queryWatermarkOffsetsCalls.Should().Be(1);
         closeCalls.Should().Be(1);

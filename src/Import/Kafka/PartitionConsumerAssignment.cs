@@ -1,6 +1,6 @@
 using Confluent.Kafka;
 
-using KafkaSnapshot.Import.Watermarks;
+using KafkaSnapshot.Models.Import;
 
 namespace KafkaSnapshot.Import.Kafka;
 

@@ -91,7 +91,7 @@ public class TopicWatermarkLoader : ITopicWatermarkLoader
                                 topicPartition,
                                 _metaTimeout);
 
-        return new PartitionWatermark(topicName, watermarkOffsets, topicPartition.Partition);
+        return KafkaWatermarkMapper.ToDomain(topicName, watermarkOffsets, topicPartition.Partition);
     }
 
     /// <inheritdoc />

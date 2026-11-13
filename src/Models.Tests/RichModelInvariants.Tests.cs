@@ -39,7 +39,7 @@ public class RichModelInvariantsTests
     [InlineData(FilterType.None, (KeyType)999, null)]
     public void InvalidFiltersAreRejected(FilterType type, KeyType keyType, object? value)
     {
-        Action act = () => new KeyFilterDefinition<object?>(type, keyType, value);
+        Action act = () => _ = new KeyFilterDefinition<object?>(type, keyType, value);
         act.Should().Throw<ArgumentException>();
     }
 

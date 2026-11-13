@@ -118,7 +118,7 @@ public partial class SnapshotLoaderTests
         var partition = new Partition(1);
         var topicWatermark = new TopicWatermark(
         [
-            new PartitionWatermark(topicName, offset, partition)
+            KafkaSnapshot.Import.Kafka.KafkaWatermarkMapper.ToDomain(topicName, offset, partition)
         ]);
         topicLoaderMock.Setup(x => x.LoadWatermarksAsync(topicName, token))
             .Callback(() => topicLoaderCalls++)
@@ -253,7 +253,7 @@ public partial class SnapshotLoaderTests
         var expectedTimestamp = new Timestamp(testDate).UnixTimestampMs;
         var topicWatermark = new TopicWatermark(
         [
-            new PartitionWatermark(topicName, offset, partition)
+            KafkaSnapshot.Import.Kafka.KafkaWatermarkMapper.ToDomain(topicName, offset, partition)
         ]);
         topicLoaderMock.Setup(x => x.LoadWatermarksAsync(topicName, token))
             .Callback(() => topicLoaderCalls++)
@@ -407,9 +407,9 @@ public partial class SnapshotLoaderTests
         var untouchedPartition = new Partition(3);
         var topicWatermark = new TopicWatermark(
         [
-            new PartitionWatermark(topic, new WatermarkOffsets(new Offset(0), new Offset(1)), skippedPartition),
-            new PartitionWatermark(topic, new WatermarkOffsets(new Offset(0), new Offset(1)), matchedPartition),
-            new PartitionWatermark(topic, new WatermarkOffsets(new Offset(0), new Offset(1)), untouchedPartition)
+            KafkaSnapshot.Import.Kafka.KafkaWatermarkMapper.ToDomain(topic, new WatermarkOffsets(new Offset(0), new Offset(1)), skippedPartition),
+            KafkaSnapshot.Import.Kafka.KafkaWatermarkMapper.ToDomain(topic, new WatermarkOffsets(new Offset(0), new Offset(1)), matchedPartition),
+            KafkaSnapshot.Import.Kafka.KafkaWatermarkMapper.ToDomain(topic, new WatermarkOffsets(new Offset(0), new Offset(1)), untouchedPartition)
         ]);
         topicLoaderMock.Setup(x => x.LoadWatermarksAsync(topic,
             token)).ReturnsAsync(topicWatermark);

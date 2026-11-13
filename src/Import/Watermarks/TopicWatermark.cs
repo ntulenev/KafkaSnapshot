@@ -1,3 +1,5 @@
+using KafkaSnapshot.Models.Import;
+
 namespace KafkaSnapshot.Import.Watermarks;
 
 /// <summary>

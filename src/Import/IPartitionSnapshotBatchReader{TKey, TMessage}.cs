@@ -1,5 +1,4 @@
 using KafkaSnapshot.Abstractions.Filters;
-using KafkaSnapshot.Import.Watermarks;
 using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Message;
 

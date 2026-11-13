@@ -42,7 +42,7 @@ public partial class PartitionSnapshotReaderTests
         LoadingTopic topic,
         Partition partition,
         long highOffset = 1)
-        => new(
+        => KafkaSnapshot.Import.Kafka.KafkaWatermarkMapper.ToDomain(
             topic,
             new WatermarkOffsets(new Offset(0), new Offset(highOffset)),
             partition);

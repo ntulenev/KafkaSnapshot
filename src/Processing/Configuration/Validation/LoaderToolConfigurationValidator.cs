@@ -1,11 +1,11 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
-
-using KafkaSnapshot.Models.Processing;
 
 using KafkaSnapshot.Models.Configuration;
 using KafkaSnapshot.Models.Filters;
+using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Names;
+using KafkaSnapshot.Models.Processing;
+using KafkaSnapshot.Models.Sorting;
 
 using Microsoft.Extensions.Options;
 
@@ -26,6 +26,7 @@ public sealed partial class LoaderToolConfigurationValidator :
                TryFailOnTopicEnums(topic, out result) ||
                TryFailOnTopicCompacting(topic, out result) ||
                TryFailOnTopicFilter(topic, out result) ||
+               TryFailOnTopicPartitions(topic, out result) ||
                TryFailOnTopicDateRange(topic, out result);
     }
 
@@ -33,74 +34,36 @@ public sealed partial class LoaderToolConfigurationValidator :
         TopicConfiguration topic,
         [NotNullWhen(returnValue: true)] out ValidateOptionsResult result)
     {
-        if (topic.Name is null)
+        var error = KafkaTopicNameRules.Validate(topic.Name);
+        if (error == TopicNameValidationError.None)
         {
-            result = Fail(
-                ConfigurationValidationErrorCodes.TopicNameMissing,
-                "Topic name is not set.");
-            return true;
+            result = null!;
+            return false;
         }
 
-        if (string.IsNullOrWhiteSpace(topic.Name))
-        {
-            result = Fail(
-                ConfigurationValidationErrorCodes.TopicNameEmpty,
-                "The topic name cannot be empty or consist only of whitespace.");
-            return true;
-        }
-
-        if (topic.Name.Any(char.IsWhiteSpace))
-        {
-            result = Fail(
-                ConfigurationValidationErrorCodes.TopicNameWhitespace,
-                $"The topic name {topic.Name} cannot contain whitespace.");
-            return true;
-        }
-
-        if (topic.Name.Length > KafkaTopicNameRules.MaxLength)
-        {
-            result = Fail(
-                ConfigurationValidationErrorCodes.TopicNameTooLong,
-                $"The topic name {topic.Name} is too long.");
-            return true;
-        }
-
-        if (!KafkaTopicNameRules.IsValid(topic.Name))
-        {
-            result = Fail(
-               ConfigurationValidationErrorCodes.TopicNameInvalid,
-               $"Incorrect topic name {topic.Name}. " +
-               $"The topic name may consist of characters 'a' to 'z', 'A' to 'Z', " +
-               $"digits, dots, underscores, and minus signs.");
-            return true;
-        }
-
-        result = null!;
-        return false;
+        var code = _topicNameErrorCodes[error];
+        result = Fail(code, $"Invalid topic name '{topic.Name}': {error}.");
+        return true;
     }
 
     private static bool TryFailOnExportFileName(
         TopicConfiguration topic,
         [NotNullWhen(returnValue: true)] out ValidateOptionsResult result)
     {
-        if (topic.ExportFileName is null)
+        try
         {
-            result = Fail(
-                ConfigurationValidationErrorCodes.ExportFileNameMissing,
-                "Topic export name is not set.");
+            _ = new FileName(topic.ExportFileName);
+            result = null!;
+            return false;
+        }
+        catch (ArgumentException exception)
+        {
+            var code = exception is ArgumentNullException
+                ? ConfigurationValidationErrorCodes.ExportFileNameMissing
+                : ConfigurationValidationErrorCodes.ExportFileNameEmpty;
+            result = Fail(code, $"Invalid export file name for topic {topic.Name}: {exception.Message}");
             return true;
         }
-
-        if (string.IsNullOrWhiteSpace(topic.ExportFileName))
-        {
-            result = Fail(
-                ConfigurationValidationErrorCodes.ExportFileNameEmpty,
-                "The topic export name cannot be empty or consist only of whitespace.");
-            return true;
-        }
-
-        result = null!;
-        return false;
     }
 
     private static bool TryFailOnTopicEnums(
@@ -147,40 +110,51 @@ public sealed partial class LoaderToolConfigurationValidator :
         TopicConfiguration topic,
         [NotNullWhen(returnValue: true)] out ValidateOptionsResult result)
     {
-        if (topic.FilterKeyType is not FilterType.None &&
-            topic.FilterKeyValue is null)
+        try
         {
-            result = Fail(
-                ConfigurationValidationErrorCodes.FilterValueMissing,
-                $"Filter value is not set for topic {topic.Name}.");
+            // Representation conversion belongs to the configuration boundary.
+            // Compatibility and required-value rules belong to the domain model.
+            if (!KeyFilterRules.IsSupported(topic.FilterKeyType, topic.KeyType))
+            {
+                result = Fail(ConfigurationValidationErrorCodes.FilterKeyIncompatible,
+                    $"Filter {topic.FilterKeyType} is incompatible with key type {topic.KeyType}.");
+                return true;
+            }
+
+            _ = TopicConfigurationMapper.CreateKeyFilter(topic);
+            result = null!;
+            return false;
+        }
+        catch (ArgumentNullException exception)
+        {
+            result = Fail(ConfigurationValidationErrorCodes.FilterValueMissing,
+                $"Filter value is not set for topic {topic.Name}: {exception.Message}");
             return true;
         }
-
-        if (!KeyFilterRules.IsSupported(topic.FilterKeyType, topic.KeyType))
-        {
-            result = Fail(ConfigurationValidationErrorCodes.FilterKeyIncompatible,
-                $"Filter {topic.FilterKeyType} is incompatible with key type {topic.KeyType}.");
-            return true;
-        }
-
-        if (topic.FilterKeyType != FilterType.None && topic.KeyType == KeyType.Long &&
-            !long.TryParse(topic.FilterKeyValue, NumberStyles.Integer, CultureInfo.InvariantCulture, out _))
+        catch (Exception exception) when (exception is FormatException or OverflowException)
         {
             result = Fail(ConfigurationValidationErrorCodes.FilterValueInvalid,
-                $"Filter value for topic {topic.Name} must be a long integer.");
+                $"Invalid filter value for topic {topic.Name}: {exception.Message}");
             return true;
         }
+    }
 
-        if (topic.PartitionsIds is not null &&
-            (topic.PartitionsIds.Count == 0 || topic.PartitionsIds.Any(id => id < 0)))
+    private static bool TryFailOnTopicPartitions(
+        TopicConfiguration topic,
+        [NotNullWhen(returnValue: true)] out ValidateOptionsResult result)
+    {
+        try
+        {
+            _ = new PartitionSelection(topic.PartitionsIds);
+            result = null!;
+            return false;
+        }
+        catch (ArgumentOutOfRangeException exception)
         {
             result = Fail(ConfigurationValidationErrorCodes.PartitionFilterInvalid,
-                $"Partition selection for topic {topic.Name} must be non-empty and non-negative.");
+                $"Invalid partition selection for topic {topic.Name}: {exception.Message}");
             return true;
         }
-
-        result = null!;
-        return false;
     }
 
     private static bool TryFailOnTopicCompacting(
@@ -203,17 +177,18 @@ public sealed partial class LoaderToolConfigurationValidator :
         TopicConfiguration topic,
         [NotNullWhen(returnValue: true)] out ValidateOptionsResult result)
     {
-        if (!DateFilterRange.IsValid(topic.OffsetStartDate, topic.OffsetEndDate))
+        try
         {
-            result = Fail(
-                ConfigurationValidationErrorCodes.TopicDateRangeInvalid,
-                $"Topic start date ({topic.OffsetStartDate}) is greater than " +
-                $"end date ({topic.OffsetEndDate}). Topic {topic.Name}.");
+            _ = new DateFilterRange(topic.OffsetStartDate, topic.OffsetEndDate);
+            result = null!;
+            return false;
+        }
+        catch (ArgumentOutOfRangeException exception)
+        {
+            result = Fail(ConfigurationValidationErrorCodes.TopicDateRangeInvalid,
+                $"Invalid date range for topic {topic.Name}: {exception.Message}");
             return true;
         }
-
-        result = null!;
-        return false;
     }
 
     private static bool TryFailOnEmptyConfig(
@@ -276,18 +251,16 @@ public sealed partial class LoaderToolConfigurationValidator :
             return error;
         }
 
-        if (!Enum.IsDefined(options.GlobalMessageSort))
+        try
         {
-            return Fail(
-                ConfigurationValidationErrorCodes.SortingTypeUnsupported,
-                $"Unsupported GlobalMessageSort value {options.GlobalMessageSort}.");
+            _ = new SortingParams(options.GlobalMessageSort, options.GlobalSortOrder);
         }
-
-        if (!Enum.IsDefined(options.GlobalSortOrder))
+        catch (ArgumentOutOfRangeException exception)
         {
-            return Fail(
-                ConfigurationValidationErrorCodes.SortingOrderUnsupported,
-                $"Unsupported GlobalSortOrder value {options.GlobalSortOrder}.");
+            var code = exception.ParamName == "type"
+                ? ConfigurationValidationErrorCodes.SortingTypeUnsupported
+                : ConfigurationValidationErrorCodes.SortingOrderUnsupported;
+            return Fail(code, exception.Message);
         }
 
         foreach (var topic in options.Topics)
@@ -305,6 +278,16 @@ public sealed partial class LoaderToolConfigurationValidator :
 
         return ValidateOptionsResult.Success;
     }
+
+    private static readonly Dictionary<TopicNameValidationError, string> _topicNameErrorCodes =
+        new()
+        {
+            [TopicNameValidationError.Missing] = ConfigurationValidationErrorCodes.TopicNameMissing,
+            [TopicNameValidationError.Empty] = ConfigurationValidationErrorCodes.TopicNameEmpty,
+            [TopicNameValidationError.Whitespace] = ConfigurationValidationErrorCodes.TopicNameWhitespace,
+            [TopicNameValidationError.TooLong] = ConfigurationValidationErrorCodes.TopicNameTooLong,
+            [TopicNameValidationError.InvalidCharacters] = ConfigurationValidationErrorCodes.TopicNameInvalid
+        };
 
     private static ValidateOptionsResult Fail(string code, string message)
         => ValidateOptionsResult.Fail(ConfigurationValidationError.Create(code, message));

@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Text;
 
 using Confluent.Kafka;
@@ -128,7 +129,7 @@ public class KafkaBrokerIntegrationTests
     private static async Task WithTopic(Func<string, CancellationToken, Task> test)
     {
         var topic = "snapshot-tests-" + Guid.NewGuid().ToString("N");
-        using var timeout = new CancellationTokenSource(TestTimeouts.Scenario);
+        using var timeout = TestTimeouts.CreateScenarioCancellation();
         var failure = await Record.ExceptionAsync(async () =>
         {
             await CreateTopic(topic, timeout.Token);
@@ -241,7 +242,10 @@ public class KafkaBrokerIntegrationTests
 
 internal sealed class KafkaFactAttribute : FactAttribute
 {
-    public KafkaFactAttribute()
+    public KafkaFactAttribute(
+        [CallerFilePath] string? sourceFilePath = null,
+        [CallerLineNumber] int sourceLineNumber = -1)
+        : base(sourceFilePath, sourceLineNumber)
     {
         if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("KAFKA_SNAPSHOT_TEST_BOOTSTRAP")))
         {

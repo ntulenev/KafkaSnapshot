@@ -33,7 +33,7 @@ public class ProgramEntryPointTests
                 {
                     await task;
                 }
-            }).WaitAsync(TestTimeouts.Wait);
+            }, TestContext.Current.CancellationToken).WaitAsync(TestTimeouts.Wait, TestContext.Current.CancellationToken);
         });
 
         var failure = exception is TargetInvocationException invocation ? invocation.InnerException : exception;

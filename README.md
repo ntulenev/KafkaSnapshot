@@ -387,7 +387,9 @@ Recent versions use `DateTimeOffset` for date-based offsets and exported metadat
 
 The dependency versions, .NET 10 compatibility constraints, and update verification are documented in [eng/DEPENDENCIES.md](eng/DEPENDENCIES.md).
 
-Install the .NET SDK version pinned in `global.json` and PowerShell 7, then run from the repository root:
+Install a stable .NET 10 SDK and PowerShell 7, then run from the repository root.
+`global.json` selects the latest installed stable SDK in the 10.0 line; a specific
+patch or feature band is not required:
 
 ```powershell
 ./eng/Test.ps1
@@ -401,7 +403,7 @@ For a faster run without collecting coverage:
 dotnet test src/KafkaSnapshot.slnx --configuration Release
 ```
 
-GitHub Actions runs the same coverage script on pushes (including merges into `main`), pull requests, and manual dispatch. The `windows-2025` runner installs the SDK pinned in `global.json`, publishes a coverage summary, and retains test results and the HTML report as the `test-results-and-coverage` artifact for 14 days. To require this check before merging, select `.NET 10 tests and 100% coverage` in the repository's branch protection settings.
+GitHub Actions runs the same coverage script on pushes (including merges into `main`), pull requests, and manual dispatch. The `windows-2025` runner installs the latest stable .NET 10 SDK, publishes a coverage summary, and retains test results and the HTML report as the `test-results-and-coverage` artifact for 14 days. To require this check before merging, select `.NET 10 tests and 100% coverage` in the repository's branch protection settings.
 
 ### Coverage audit (2026-11-13)
 
@@ -510,7 +512,7 @@ Use `-Port 19093` if 19092 is occupied, or
 `-BootstrapServers 127.0.0.1:9092` to use an existing disposable test cluster.
 Do not point these tests at a production cluster. With no bootstrap environment
 variable, the default suite explicitly skips the six broker tests. GitHub Actions
-runs them in a separate `ubuntu-24.04`/Docker job using the same pinned SDK.
+runs them in a separate `ubuntu-24.04`/Docker job using the same .NET 10 SDK line.
 
 The broker suite checks transaction-control gaps, empty partitions, growth after
 capture, retention deletion, non-monotonic timestamps, and rejected tombstones.

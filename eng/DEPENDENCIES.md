@@ -1,7 +1,12 @@
 # Dependency audit — 2026-11-13
 
 The application and all test/tool projects target `net10.0`. The SDK stays on the
-.NET 10 LTS line and is pinned to `10.0.404` in `global.json` (runtime `10.0.15`).
+.NET 10 LTS line. `global.json` uses `10.0.100` as the minimum version with
+`rollForward: latestFeature` and previews disabled, selecting the latest installed
+stable 10.0 SDK. CI installs the latest stable SDK in that line via `10.0.x`.
+The dependency audit below was originally validated with SDK `10.0.404` (runtime
+`10.0.15`); that exact version is not required for development.
+
 Stable package versions were checked against the NuGet v3 feed; pre-release
 versions were excluded. GitHub Actions releases and the Kafka distribution were
 also checked.
@@ -10,7 +15,7 @@ also checked.
 
 | Dependency | Previous | Selected |
 | --- | --- | --- |
-| .NET SDK | 10.0.301 | 10.0.404 |
+| .NET SDK used for the audit | 10.0.301 | 10.0.404 |
 | Microsoft.Extensions.Configuration.Binder / Json | 10.0.15 | 11.0.0 |
 | Microsoft.Extensions.Hosting | 10.0.15 | 11.0.0 |
 | Microsoft.Extensions.Logging / Abstractions | 10.0.15 | 11.0.0 |
@@ -53,7 +58,7 @@ also remains current.
 
 ## Verification
 
-Run `./eng/Test.ps1` and `./eng/Test-Kafka.ps1` with the pinned SDK. Build
+Run `./eng/Test.ps1` and `./eng/Test-Kafka.ps1` with an installed stable .NET 10 SDK. Build
 `eng/Measurements/Measurements.csproj` in Release as well. Audit each of
 `src/KafkaSnapshot.slnx`, `eng/KafkaProbe/KafkaProbe.csproj`, and
 `eng/Measurements/Measurements.csproj` with both:
@@ -67,6 +72,8 @@ Verified with SDK 10.0.404: the solution and both tools build without warnings;
 556 default test cases pass, with the six broker cases intentionally skipped in
 that run; production coverage remains 1,549/1,549 lines, 371/371 branches, and
 309/309 methods. All six broker cases also pass separately on Windows and Linux.
+On 2026-11-14, the full coverage gate also passed with the globally installed SDK
+10.0.301 after enabling flexible SDK selection.
 The solution and both tool graphs have no reported vulnerable packages. Their
 only outdated package identity is the documented StringTools constraint above.
 

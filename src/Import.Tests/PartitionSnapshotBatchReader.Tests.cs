@@ -1,18 +1,15 @@
-using Confluent.Kafka;
-
 using FluentAssertions;
 
 using KafkaSnapshot.Abstractions.Filters;
 using KafkaSnapshot.Import.Configuration;
-using KafkaSnapshot.Import.Watermarks;
 using KafkaSnapshot.Models.Filters;
 using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Message;
 using KafkaSnapshot.Models.Names;
 
-using Moq;
-
 using Microsoft.Extensions.Options;
+
+using Moq;
 
 using Xunit;
 
@@ -189,7 +186,7 @@ public class PartitionSnapshotBatchReaderTests
         new(
             new TopicName("test"),
             false,
-            new DateFilterRange(null!, null!),
+            new DateFilterRange(null, null),
             EncoderRules.String,
             null);
 

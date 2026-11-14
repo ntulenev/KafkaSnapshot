@@ -1,7 +1,10 @@
 using FluentAssertions;
+
 using KafkaSnapshot.Export.Serialization;
 using KafkaSnapshot.Models.Message;
+
 using Microsoft.Extensions.Logging.Abstractions;
+
 using Xunit;
 
 namespace KafkaSnapshot.Export.Tests;

@@ -1,10 +1,12 @@
 using FluentAssertions;
+
 using KafkaSnapshot.Models.Configuration;
 using KafkaSnapshot.Models.Filters;
 using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Sorting;
 using KafkaSnapshot.Processing.Configuration;
 using KafkaSnapshot.Processing.Configuration.Validation;
+
 using Xunit;
 
 namespace KafkaSnapshot.Processing.Tests;

@@ -1,5 +1,7 @@
 using FluentAssertions;
+
 using KafkaSnapshot.Models.Names;
+
 using Xunit;
 
 namespace KafkaSnapshot.Models.Tests;

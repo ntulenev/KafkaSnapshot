@@ -1,13 +1,13 @@
 using FluentAssertions;
 
+using KafkaSnapshot.Abstractions.Processing;
+using KafkaSnapshot.Models.Names;
+
 using Microsoft.Extensions.Logging;
 
 using Moq;
 
 using Xunit;
-
-using KafkaSnapshot.Abstractions.Processing;
-using KafkaSnapshot.Models.Names;
 
 namespace KafkaSnapshot.Processing.Tests;
 
@@ -21,7 +21,7 @@ public class LoaderToolTests
         var logger = (ILogger<LoaderTool>)null!;
         var items = new[]
         {
-            (new Mock<IProcessingUnit>(MockBehavior.Strict)).Object
+            new Mock<IProcessingUnit>(MockBehavior.Strict).Object
         };
 
         // Act
@@ -56,7 +56,7 @@ public class LoaderToolTests
         var logger = loggerMock.Object;
         var items = new[]
         {
-            (new Mock<IProcessingUnit>(MockBehavior.Strict)).Object
+            new Mock<IProcessingUnit>(MockBehavior.Strict).Object
         };
 
         // Act
@@ -76,7 +76,7 @@ public class LoaderToolTests
         var logger = loggerMock.Object;
         var items = new[]
         {
-            (new Mock<IProcessingUnit>(MockBehavior.Strict)).Object
+            new Mock<IProcessingUnit>(MockBehavior.Strict).Object
         };
 
         // Act

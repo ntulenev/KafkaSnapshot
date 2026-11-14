@@ -1,13 +1,12 @@
-using Xunit;
-
-using Microsoft.Extensions.Options;
-
-
 using FluentAssertions;
 
 using KafkaSnapshot.Models.Configuration;
 using KafkaSnapshot.Processing.Configuration;
 using KafkaSnapshot.Processing.Configuration.Validation;
+
+using Microsoft.Extensions.Options;
+
+using Xunit;
 
 namespace KafkaSnapshot.Processing.Tests;
 
@@ -39,10 +38,9 @@ public class LoaderToolConfigurationValidatorTests
         var options = new LoaderToolConfiguration
         {
             UseConcurrentLoad = true,
-            Topics = new List<TopicConfiguration>
-             {
-                  new TopicConfiguration
-                  {
+            Topics =
+             [
+                  new() {
                       Name = "test",
                       Compacting = CompactingMode.On,
                       ExportFileName = "export",
@@ -50,7 +48,7 @@ public class LoaderToolConfigurationValidatorTests
                       FilterKeyType = Models.Filters.FilterType.None,
                       KeyType = Models.Filters.KeyType.Json,
                   }
-             }
+             ]
         };
 
         // Act
@@ -110,10 +108,9 @@ public class LoaderToolConfigurationValidatorTests
         var options = new LoaderToolConfiguration
         {
             UseConcurrentLoad = true,
-            Topics = new List<TopicConfiguration>
-             {
-                  new TopicConfiguration
-                  {
+            Topics =
+             [
+                  new() {
                       Name = "test",
                       Compacting = CompactingMode.On,
                       ExportFileName = "export",
@@ -121,8 +118,7 @@ public class LoaderToolConfigurationValidatorTests
                       FilterKeyType = Models.Filters.FilterType.None,
                       KeyType = Models.Filters.KeyType.Json,
                   },
-                  new TopicConfiguration
-                  {
+                  new() {
                       Name = "test",
                       Compacting = CompactingMode.On,
                       ExportFileName = "Export",
@@ -131,7 +127,7 @@ public class LoaderToolConfigurationValidatorTests
                       KeyType = Models.Filters.KeyType.Json,
                   },
 
-             }
+             ]
         };
 
         // Act
@@ -201,7 +197,7 @@ public class LoaderToolConfigurationValidatorTests
         var options = new LoaderToolConfiguration
         {
             UseConcurrentLoad = true,
-            Topics = new List<TopicConfiguration>()
+            Topics = []
         };
 
         // Act
@@ -226,10 +222,9 @@ public class LoaderToolConfigurationValidatorTests
         var options = new LoaderToolConfiguration
         {
             UseConcurrentLoad = true,
-            Topics = new List<TopicConfiguration>()
-            {
-                  new TopicConfiguration
-                  {
+            Topics =
+            [
+                  new() {
                       Name = "test",
                       Compacting = CompactingMode.On,
                       ExportFileName = "export",
@@ -237,8 +232,7 @@ public class LoaderToolConfigurationValidatorTests
                       FilterKeyType = Models.Filters.FilterType.None,
                       KeyType = Models.Filters.KeyType.Json,
                   },
-                  new TopicConfiguration
-                  {
+                  new() {
                       Name = null!,
                       Compacting = CompactingMode.On,
                       ExportFileName = "export",
@@ -246,7 +240,7 @@ public class LoaderToolConfigurationValidatorTests
                       FilterKeyType = Models.Filters.FilterType.None,
                       KeyType = Models.Filters.KeyType.Json,
                   }
-            }
+            ]
         };
 
         // Act
@@ -271,10 +265,9 @@ public class LoaderToolConfigurationValidatorTests
         var options = new LoaderToolConfiguration
         {
             UseConcurrentLoad = true,
-            Topics = new List<TopicConfiguration>()
-            {
-                  new TopicConfiguration
-                  {
+            Topics =
+            [
+                  new() {
                       Name = "test",
                       Compacting = CompactingMode.On,
                       ExportFileName = "export",
@@ -282,8 +275,7 @@ public class LoaderToolConfigurationValidatorTests
                       FilterKeyType = Models.Filters.FilterType.None,
                       KeyType = Models.Filters.KeyType.Json,
                   },
-                  new TopicConfiguration
-                  {
+                  new() {
                       Name = string.Empty,
                       Compacting = CompactingMode.On,
                       ExportFileName = "export",
@@ -291,7 +283,7 @@ public class LoaderToolConfigurationValidatorTests
                       FilterKeyType = Models.Filters.FilterType.None,
                       KeyType = Models.Filters.KeyType.Json,
                   }
-            }
+            ]
         };
 
         // Act
@@ -316,10 +308,9 @@ public class LoaderToolConfigurationValidatorTests
         var options = new LoaderToolConfiguration
         {
             UseConcurrentLoad = true,
-            Topics = new List<TopicConfiguration>()
-            {
-                  new TopicConfiguration
-                  {
+            Topics =
+            [
+                  new() {
                       Name = "test",
                       Compacting = CompactingMode.On,
                       ExportFileName = "export",
@@ -327,8 +318,7 @@ public class LoaderToolConfigurationValidatorTests
                       FilterKeyType = Models.Filters.FilterType.None,
                       KeyType = Models.Filters.KeyType.Json,
                   },
-                  new TopicConfiguration
-                  {
+                  new() {
                       Name = "   ",
                       Compacting = CompactingMode.On,
                       ExportFileName = "export",
@@ -336,7 +326,7 @@ public class LoaderToolConfigurationValidatorTests
                       FilterKeyType = Models.Filters.FilterType.None,
                       KeyType = Models.Filters.KeyType.Json,
                   }
-            }
+            ]
         };
 
         // Act
@@ -364,10 +354,9 @@ public class LoaderToolConfigurationValidatorTests
         var options = new LoaderToolConfiguration
         {
             UseConcurrentLoad = true,
-            Topics = new List<TopicConfiguration>()
-            {
-                  new TopicConfiguration
-                  {
+            Topics =
+            [
+                  new() {
                       Name = "test",
                       Compacting = CompactingMode.On,
                       ExportFileName = "export",
@@ -375,8 +364,7 @@ public class LoaderToolConfigurationValidatorTests
                       FilterKeyType = Models.Filters.FilterType.None,
                       KeyType = Models.Filters.KeyType.Json,
                   },
-                  new TopicConfiguration
-                  {
+                  new() {
                       Name = topicName,
                       Compacting = CompactingMode.On,
                       ExportFileName = "export",
@@ -384,7 +372,7 @@ public class LoaderToolConfigurationValidatorTests
                       FilterKeyType = Models.Filters.FilterType.None,
                       KeyType = Models.Filters.KeyType.Json,
                   }
-            }
+            ]
         };
 
         // Act
@@ -409,10 +397,9 @@ public class LoaderToolConfigurationValidatorTests
         var options = new LoaderToolConfiguration
         {
             UseConcurrentLoad = true,
-            Topics = new List<TopicConfiguration>()
-            {
-                  new TopicConfiguration
-                  {
+            Topics =
+            [
+                  new() {
                       Name = "test",
                       Compacting = CompactingMode.On,
                       ExportFileName = "export",
@@ -420,8 +407,7 @@ public class LoaderToolConfigurationValidatorTests
                       FilterKeyType = Models.Filters.FilterType.None,
                       KeyType = Models.Filters.KeyType.Json,
                   },
-                  new TopicConfiguration
-                  {
+                  new() {
                       Name = new string('a',250),
                       Compacting = CompactingMode.On,
                       ExportFileName = "export",
@@ -429,7 +415,7 @@ public class LoaderToolConfigurationValidatorTests
                       FilterKeyType = Models.Filters.FilterType.None,
                       KeyType = Models.Filters.KeyType.Json,
                   }
-            }
+            ]
         };
 
         // Act
@@ -455,10 +441,9 @@ public class LoaderToolConfigurationValidatorTests
         var options = new LoaderToolConfiguration
         {
             UseConcurrentLoad = true,
-            Topics = new List<TopicConfiguration>()
-            {
-                  new TopicConfiguration
-                  {
+            Topics =
+            [
+                  new() {
                       Name = "test",
                       Compacting = CompactingMode.On,
                       ExportFileName = "export",
@@ -466,8 +451,7 @@ public class LoaderToolConfigurationValidatorTests
                       FilterKeyType = Models.Filters.FilterType.None,
                       KeyType = Models.Filters.KeyType.Json,
                   },
-                  new TopicConfiguration
-                  {
+                  new() {
                       Name = "*()=%$#@!!",
                       Compacting = CompactingMode.On,
                       ExportFileName = "export",
@@ -475,7 +459,7 @@ public class LoaderToolConfigurationValidatorTests
                       FilterKeyType = Models.Filters.FilterType.None,
                       KeyType = Models.Filters.KeyType.Json,
                   }
-            }
+            ]
         };
 
         // Act
@@ -501,10 +485,9 @@ public class LoaderToolConfigurationValidatorTests
         var options = new LoaderToolConfiguration
         {
             UseConcurrentLoad = true,
-            Topics = new List<TopicConfiguration>()
-            {
-                  new TopicConfiguration
-                  {
+            Topics =
+            [
+                  new() {
                       Name = "test",
                       Compacting = CompactingMode.On,
                       ExportFileName = "export",
@@ -512,8 +495,7 @@ public class LoaderToolConfigurationValidatorTests
                       FilterKeyType = Models.Filters.FilterType.None,
                       KeyType = Models.Filters.KeyType.Json,
                   },
-                  new TopicConfiguration
-                  {
+                  new() {
                       Name = "test",
                       Compacting = CompactingMode.On,
                       ExportFileName = null!,
@@ -521,7 +503,7 @@ public class LoaderToolConfigurationValidatorTests
                       FilterKeyType = Models.Filters.FilterType.None,
                       KeyType = Models.Filters.KeyType.Json,
                   }
-            }
+            ]
         };
 
         // Act
@@ -546,10 +528,9 @@ public class LoaderToolConfigurationValidatorTests
         var options = new LoaderToolConfiguration
         {
             UseConcurrentLoad = true,
-            Topics = new List<TopicConfiguration>()
-            {
-                  new TopicConfiguration
-                  {
+            Topics =
+            [
+                  new() {
                       Name = "test",
                       Compacting = CompactingMode.On,
                       ExportFileName = "export",
@@ -557,8 +538,7 @@ public class LoaderToolConfigurationValidatorTests
                       FilterKeyType = Models.Filters.FilterType.None,
                       KeyType = Models.Filters.KeyType.Json,
                   },
-                  new TopicConfiguration
-                  {
+                  new() {
                       Name = "test",
                       Compacting = CompactingMode.On,
                       ExportFileName = string.Empty,
@@ -566,7 +546,7 @@ public class LoaderToolConfigurationValidatorTests
                       FilterKeyType = Models.Filters.FilterType.None,
                       KeyType = Models.Filters.KeyType.Json,
                   }
-            }
+            ]
         };
 
         // Act
@@ -592,10 +572,9 @@ public class LoaderToolConfigurationValidatorTests
         var options = new LoaderToolConfiguration
         {
             UseConcurrentLoad = true,
-            Topics = new List<TopicConfiguration>()
-            {
-                  new TopicConfiguration
-                  {
+            Topics =
+            [
+                  new() {
                       Name = "test",
                       Compacting = CompactingMode.On,
                       ExportFileName = "export",
@@ -603,8 +582,7 @@ public class LoaderToolConfigurationValidatorTests
                       FilterKeyType = Models.Filters.FilterType.None,
                       KeyType = Models.Filters.KeyType.Json,
                   },
-                  new TopicConfiguration
-                  {
+                  new() {
                       Name = "test",
                       Compacting = CompactingMode.On,
                       ExportFileName = "  ",
@@ -612,7 +590,7 @@ public class LoaderToolConfigurationValidatorTests
                       FilterKeyType = Models.Filters.FilterType.None,
                       KeyType = Models.Filters.KeyType.Json,
                   }
-            }
+            ]
         };
 
         // Act
@@ -637,10 +615,9 @@ public class LoaderToolConfigurationValidatorTests
         var options = new LoaderToolConfiguration
         {
             UseConcurrentLoad = true,
-            Topics = new List<TopicConfiguration>()
-            {
-                  new TopicConfiguration
-                  {
+            Topics =
+            [
+                  new() {
                       Name = "test",
                       Compacting = CompactingMode.On,
                       ExportFileName = "export",
@@ -649,7 +626,7 @@ public class LoaderToolConfigurationValidatorTests
                       FilterKeyValue = "{}",
                       KeyType = Models.Filters.KeyType.Json,
                   }
-            }
+            ]
         };
 
         // Act
@@ -672,10 +649,9 @@ public class LoaderToolConfigurationValidatorTests
         var options = new LoaderToolConfiguration
         {
             UseConcurrentLoad = true,
-            Topics = new List<TopicConfiguration>()
-            {
-                  new TopicConfiguration
-                  {
+            Topics =
+            [
+                  new() {
                       Name = "test",
                       Compacting = CompactingMode.On,
                       ExportFileName = "export",
@@ -684,8 +660,7 @@ public class LoaderToolConfigurationValidatorTests
                       FilterKeyValue = "{}",
                       KeyType = Models.Filters.KeyType.Json,
                   },
-                  new TopicConfiguration
-                  {
+                  new() {
                       Name = "test",
                       Compacting = CompactingMode.On,
                       ExportFileName = "export",
@@ -694,7 +669,7 @@ public class LoaderToolConfigurationValidatorTests
                       FilterKeyValue = null!,
                       KeyType = Models.Filters.KeyType.Json,
                   }
-            }
+            ]
         };
 
         // Act
@@ -719,10 +694,9 @@ public class LoaderToolConfigurationValidatorTests
         var options = new LoaderToolConfiguration
         {
             UseConcurrentLoad = true,
-            Topics = new List<TopicConfiguration>()
-            {
-                  new TopicConfiguration
-                  {
+            Topics =
+            [
+                  new() {
                       Name = "test",
                       Compacting = CompactingMode.On,
                       ExportFileName = "export",
@@ -731,8 +705,7 @@ public class LoaderToolConfigurationValidatorTests
                       FilterKeyValue = "{}",
                       KeyType = Models.Filters.KeyType.Json,
                   },
-                  new TopicConfiguration
-                  {
+                  new() {
                       Name = "test",
                       Compacting = CompactingMode.On,
                       ExportFileName = "export",
@@ -741,7 +714,7 @@ public class LoaderToolConfigurationValidatorTests
                       FilterKeyValue = "{}",
                       KeyType = Models.Filters.KeyType.Ignored,
                   }
-            }
+            ]
         };
 
         // Act
@@ -767,17 +740,16 @@ public class LoaderToolConfigurationValidatorTests
         ValidateOptionsResult result = null!;
         var options = new LoaderToolConfiguration
         {
-            Topics = new List<TopicConfiguration>()
-            {
-                  new TopicConfiguration
-                  {
+            Topics =
+            [
+                  new() {
                       Name = "test",
                       ExportFileName = "export",
                       KeyType = Models.Filters.KeyType.Json,
                       OffsetStartDate = startDate,
                       OffsetEndDate = endDate
                   }
-            }
+            ]
         };
 
         // Act

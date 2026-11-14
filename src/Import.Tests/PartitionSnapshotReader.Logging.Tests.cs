@@ -4,9 +4,7 @@ using Confluent.Kafka;
 
 using FluentAssertions;
 
-using KafkaSnapshot.Abstractions.Filters;
 using KafkaSnapshot.Abstractions.Import;
-using KafkaSnapshot.Import.Watermarks;
 using KafkaSnapshot.Models.Filters;
 
 using Microsoft.Extensions.Logging;

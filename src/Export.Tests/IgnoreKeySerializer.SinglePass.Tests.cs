@@ -21,12 +21,9 @@ public class IgnoreKeySerializerSinglePassTests
         IEnumerable<KeyValuePair<string, KafkaMessage<string>>> Source()
         {
             enumerations++;
-            if (enumerations > 1)
-            {
-                throw new InvalidOperationException("Input can only be enumerated once.");
-            }
-
-            yield return new("ignored", new("1", new(DateTimeOffset.UnixEpoch, 0, 0)));
+            yield return enumerations > 1
+                ? throw new InvalidOperationException("Input can only be enumerated once.")
+                : new("ignored", new("1", new(DateTimeOffset.UnixEpoch, 0, 0)));
             yield return new("also ignored", new("2", new(DateTimeOffset.UnixEpoch, 0, 1)));
         }
 

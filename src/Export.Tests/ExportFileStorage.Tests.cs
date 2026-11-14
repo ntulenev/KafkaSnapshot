@@ -37,7 +37,7 @@ public class ExportFileStorageTests
             if (streaming)
             {
                 await using var stream = storage.CreateFileStream(new FileName("orders.json"));
-                await stream.WriteAsync(new byte[] { 49 }, TestContext.Current.CancellationToken);
+                await stream.WriteAsync("1"u8.ToArray(), TestContext.Current.CancellationToken);
             }
             else
             {

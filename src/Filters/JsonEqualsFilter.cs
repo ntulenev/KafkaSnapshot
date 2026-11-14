@@ -1,6 +1,6 @@
-using Newtonsoft.Json.Linq;
-
 using KafkaSnapshot.Abstractions.Filters;
+
+using Newtonsoft.Json.Linq;
 
 namespace KafkaSnapshot.Filters;
 

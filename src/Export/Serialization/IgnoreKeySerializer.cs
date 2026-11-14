@@ -1,9 +1,9 @@
 
-using Microsoft.Extensions.Logging;
-
 using KafkaSnapshot.Abstractions.Export;
 using KafkaSnapshot.Export.Markers;
 using KafkaSnapshot.Models.Message;
+
+using Microsoft.Extensions.Logging;
 
 namespace KafkaSnapshot.Export.Serialization;
 

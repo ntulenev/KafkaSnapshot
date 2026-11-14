@@ -1,26 +1,25 @@
+using System.Text;
+
 using Confluent.Kafka;
 
 using FluentAssertions;
 
-using Microsoft.Extensions.Logging;
+using KafkaSnapshot.Abstractions.Filters;
+using KafkaSnapshot.Abstractions.Import;
+using KafkaSnapshot.Abstractions.Sorting;
+using KafkaSnapshot.Import.Configuration;
+using KafkaSnapshot.Import.Metadata;
+using KafkaSnapshot.Import.Watermarks;
+using KafkaSnapshot.Models.Filters;
+using KafkaSnapshot.Models.Import;
+using KafkaSnapshot.Models.Message;
+using KafkaSnapshot.Models.Names;
+
 using Microsoft.Extensions.Options;
 
 using Moq;
 
 using Xunit;
-
-using KafkaSnapshot.Import.Metadata;
-using KafkaSnapshot.Models.Import;
-using KafkaSnapshot.Abstractions.Filters;
-using KafkaSnapshot.Models.Message;
-using KafkaSnapshot.Import.Watermarks;
-using KafkaSnapshot.Import.Configuration;
-using KafkaSnapshot.Models.Filters;
-using KafkaSnapshot.Abstractions.Sorting;
-using KafkaSnapshot.Models.Names;
-using KafkaSnapshot.Abstractions.Import;
-
-using System.Text;
 
 namespace KafkaSnapshot.Import.Tests;
 
@@ -38,7 +37,7 @@ public partial class SnapshotLoaderTests
         var loggerMock = CreateLoggerMock();
         var logger = loggerMock.Object;
         var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
-        Func<IConsumer<object, byte[]>> consumerFactory = () => consumerMock.Object;
+        IConsumer<object, byte[]> consumerFactory() => consumerMock.Object;
         var topicLoaderMock = new Mock<ITopicWatermarkLoader>(MockBehavior.Strict);
         var topicLoader = topicLoaderMock.Object;
         var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>(MockBehavior.Strict);
@@ -63,7 +62,7 @@ public partial class SnapshotLoaderTests
         var partition = new Partition(1);
         var topicWatermark = new TopicWatermark(
         [
-            KafkaSnapshot.Import.Kafka.KafkaWatermarkMapper.ToDomain(topicName,offset,partition)
+            Kafka.KafkaWatermarkMapper.ToDomain(topicName,offset,partition)
         ]);
         var topicPartition = new TopicPartition(topicName.Value.Name, partition);
         var partitionWithTime = new TopicPartitionTimestamp(topicPartition, new Timestamp(testDate));
@@ -141,7 +140,7 @@ public partial class SnapshotLoaderTests
         var loggerMock = CreateLoggerMock();
         var logger = loggerMock.Object;
         var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
-        Func<IConsumer<object, byte[]>> consumerFactory = () => consumerMock.Object;
+        IConsumer<object, byte[]> consumerFactory() => consumerMock.Object;
         var topicLoaderMock = new Mock<ITopicWatermarkLoader>(MockBehavior.Strict);
         var topicLoader = topicLoaderMock.Object;
         var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>(MockBehavior.Strict);
@@ -173,7 +172,7 @@ public partial class SnapshotLoaderTests
         var partition = new Partition(1);
         var topicWatermark = new TopicWatermark(
         [
-            KafkaSnapshot.Import.Kafka.KafkaWatermarkMapper.ToDomain(topicName,offset,partition)
+            Kafka.KafkaWatermarkMapper.ToDomain(topicName,offset,partition)
         ]);
         var testDate = DateTime.UtcNow;
         var topicPartition = new TopicPartition(topicName.Value.Name, partition);
@@ -214,7 +213,7 @@ public partial class SnapshotLoaderTests
         var loggerMock = CreateLoggerMock();
         var logger = loggerMock.Object;
         var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
-        Func<IConsumer<object, byte[]>> consumerFactory = () => consumerMock.Object;
+        IConsumer<object, byte[]> consumerFactory() => consumerMock.Object;
         var topicLoaderMock = new Mock<ITopicWatermarkLoader>(MockBehavior.Strict);
         var topicLoader = topicLoaderMock.Object;
         var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>(MockBehavior.Strict);
@@ -240,7 +239,7 @@ public partial class SnapshotLoaderTests
         var partition = new Partition(1);
         var topicWatermark = new TopicWatermark(
         [
-            KafkaSnapshot.Import.Kafka.KafkaWatermarkMapper.ToDomain(topicName,offset,partition)
+            Kafka.KafkaWatermarkMapper.ToDomain(topicName,offset,partition)
         ]);
         var topicPartition = new TopicPartition(topicName.Value.Name, partition);
         var partitionWithTime = new TopicPartitionTimestamp(topicPartition, new Timestamp(testDate));
@@ -320,7 +319,7 @@ public partial class SnapshotLoaderTests
 
         var loggerMock = CreateLoggerMock();
         var consumerMock = new Mock<IConsumer<object, byte[]>>(MockBehavior.Strict);
-        Func<IConsumer<object, byte[]>> consumerFactory = () => consumerMock.Object;
+        IConsumer<object, byte[]> consumerFactory() => consumerMock.Object;
         var topicLoaderMock = new Mock<ITopicWatermarkLoader>(MockBehavior.Strict);
         var optionsMock = new Mock<IOptions<SnapshotLoaderConfiguration>>(MockBehavior.Strict);
         optionsMock.Setup(x => x.Value).Returns(new SnapshotLoaderConfiguration());
@@ -328,7 +327,7 @@ public partial class SnapshotLoaderTests
         sorterMock.Setup(x => x.Sort(It.Is<IEnumerable<KeyValuePair<object, KafkaMessage<object>>>>(items =>
                 items.Count() == 2)))
             .Callback(() => sortCalls++)
-            .Returns<IEnumerable<KeyValuePair<object, KafkaMessage<object>>>>(items => items.ToList());
+            .Returns<IEnumerable<KeyValuePair<object, KafkaMessage<object>>>>(items => [.. items]);
         var encoderMock = new Mock<IMessageEncoder<byte[], object>>(MockBehavior.Strict);
         encoderMock.Setup(x => x.Encode(
                 It.Is<byte[]>(bytes => new[] { "value1", "value2" }.Contains(Encoding.UTF8.GetString(bytes))),
@@ -339,7 +338,7 @@ public partial class SnapshotLoaderTests
         var loader = CreateLoader(
             loggerMock.Object,
             optionsMock.Object,
-            consumerFactory,
+consumerFactory,
             topicLoaderMock.Object,
             sorterMock.Object,
             encoderMock.Object);
@@ -361,7 +360,7 @@ public partial class SnapshotLoaderTests
         var partition = new Partition(1);
         var topicWatermark = new TopicWatermark(
         [
-            KafkaSnapshot.Import.Kafka.KafkaWatermarkMapper.ToDomain(topicName, offset, partition)
+            Kafka.KafkaWatermarkMapper.ToDomain(topicName, offset, partition)
         ]);
         topicLoaderMock.Setup(x => x.LoadWatermarksAsync(topicName, token))
             .Callback(() => topicLoaderCalls++)

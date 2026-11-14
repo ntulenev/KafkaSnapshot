@@ -31,7 +31,7 @@ public class CompareFilterTests
     {
 
         // Arrange
-        string value = "data";
+        var value = "data";
 
         // Act
         var result = new CompareFilter<string>(value, side);
@@ -72,7 +72,7 @@ public class CompareFilterTests
         var filters = new CompareFilter<int>(sample, greaterOrEquals: isGreaterOrEquals);
 
         // Act
-        bool result = filters.IsMatch(data);
+        var result = filters.IsMatch(data);
 
         // Assert
         result.Should().Be(targetResult);

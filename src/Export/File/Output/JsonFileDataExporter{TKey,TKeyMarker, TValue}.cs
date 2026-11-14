@@ -1,12 +1,12 @@
 using System.Runtime.CompilerServices;
 
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-
 using KafkaSnapshot.Abstractions.Export;
+using KafkaSnapshot.Export.Configuration;
 using KafkaSnapshot.Models.Export;
 using KafkaSnapshot.Models.Message;
-using KafkaSnapshot.Export.Configuration;
+
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace KafkaSnapshot.Export.File.Output;
 
@@ -47,7 +47,7 @@ public sealed class JsonFileDataExporter<TKey, TKeyMarker, TValue> :
         _logger = logger;
         _storage = storage;
         _serializer = serializer;
-        _isStreamingMode = config.Value.UseFileStreaming;
+        UseStreaming = config.Value.UseFileStreaming;
 
         _logger.LogDebug("Instance created.");
     }
@@ -65,7 +65,7 @@ public sealed class JsonFileDataExporter<TKey, TKeyMarker, TValue> :
 
         ct.ThrowIfCancellationRequested();
 
-        if (_isStreamingMode)
+        if (UseStreaming)
         {
             await InnerStreamExportAsync(data, topic, ct).ConfigureAwait(false);
         }
@@ -76,7 +76,7 @@ public sealed class JsonFileDataExporter<TKey, TKeyMarker, TValue> :
     }
 
     /// <inheritdoc/>
-    public bool UseStreaming => _isStreamingMode;
+    public bool UseStreaming { get; }
 
     /// <inheritdoc/>
     public async Task ExportAsync(
@@ -87,7 +87,7 @@ public sealed class JsonFileDataExporter<TKey, TKeyMarker, TValue> :
         ArgumentNullException.ThrowIfNull(topic);
         ct.ThrowIfCancellationRequested();
 
-        if (!_isStreamingMode)
+        if (!UseStreaming)
         {
             var buffered = new List<KeyValuePair<TKey, KafkaMessage<TValue>>>();
             await foreach (var item in data.WithCancellation(ct).ConfigureAwait(false))
@@ -100,7 +100,8 @@ public sealed class JsonFileDataExporter<TKey, TKeyMarker, TValue> :
         }
 
         // Resolve metadata and the first read before truncating an existing export.
-        await using var enumerator = data.GetAsyncEnumerator(ct);
+        var enumerator = data.GetAsyncEnumerator(ct);
+        await using var enumeratorScope = enumerator.ConfigureAwait(false);
         var hasItem = await enumerator.MoveNextAsync().ConfigureAwait(false);
         ct.ThrowIfCancellationRequested();
         var stream = _storage.CreateFileStream(topic.ExportName);
@@ -181,5 +182,4 @@ public sealed class JsonFileDataExporter<TKey, TKeyMarker, TValue> :
     private readonly ILogger _logger;
     private readonly IExportFileStorage _storage;
     private readonly ISerializer<TKey, TValue, TKeyMarker> _serializer;
-    private readonly bool _isStreamingMode;
 }

@@ -41,21 +41,18 @@ public static class TopicConfigurationMapper
 
     private static object? ParseFilterKeyValue(TopicConfiguration configuration)
     {
-        if (configuration.FilterKeyType == FilterType.None || configuration.FilterKeyValue is null)
-        {
-            return default;
-        }
-
-        return configuration.KeyType switch
-        {
-            KeyType.Long => long.Parse(
-                configuration.FilterKeyValue,
-                NumberStyles.Integer,
-                CultureInfo.InvariantCulture),
-            KeyType.Json or KeyType.String => configuration.FilterKeyValue,
-            KeyType.Ignored => default,
-            _ => throw new InvalidOperationException(
-                $"Invalid Key type {configuration.KeyType} for processing.")
-        };
+        return configuration.FilterKeyType == FilterType.None || configuration.FilterKeyValue is null
+            ? default
+            : configuration.KeyType switch
+            {
+                KeyType.Long => long.Parse(
+                    configuration.FilterKeyValue,
+                    NumberStyles.Integer,
+                    CultureInfo.InvariantCulture),
+                KeyType.Json or KeyType.String => configuration.FilterKeyValue,
+                KeyType.Ignored => default,
+                _ => throw new InvalidOperationException(
+                    $"Invalid Key type {configuration.KeyType} for processing.")
+            };
     }
 }

@@ -1,10 +1,9 @@
 using Confluent.Kafka;
 
-using KafkaSnapshot.Import.Kafka;
-
 using KafkaSnapshot.Abstractions.Filters;
 using KafkaSnapshot.Abstractions.Import;
 using KafkaSnapshot.Import.Configuration;
+using KafkaSnapshot.Import.Kafka;
 using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Message;
 

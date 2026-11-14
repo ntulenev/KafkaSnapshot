@@ -1,6 +1,5 @@
 using FluentAssertions;
 
-using KafkaSnapshot.Models.Configuration;
 using KafkaSnapshot.Models.Filters;
 using KafkaSnapshot.Processing.Configuration;
 using KafkaSnapshot.Processing.Configuration.Validation;

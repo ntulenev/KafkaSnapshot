@@ -271,12 +271,7 @@ public sealed partial class LoaderToolConfigurationValidator :
             }
         }
 
-        if (TryFailOnDuplicateFiles(options, out var duplicateError))
-        {
-            return duplicateError;
-        }
-
-        return ValidateOptionsResult.Success;
+        return TryFailOnDuplicateFiles(options, out var duplicateError) ? duplicateError : ValidateOptionsResult.Success;
     }
 
     private static readonly Dictionary<TopicNameValidationError, string> _topicNameErrorCodes =

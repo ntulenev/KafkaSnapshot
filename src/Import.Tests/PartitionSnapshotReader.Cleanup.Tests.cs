@@ -4,7 +4,6 @@ using Confluent.Kafka;
 
 using FluentAssertions;
 
-using KafkaSnapshot.Abstractions.Filters;
 using KafkaSnapshot.Abstractions.Import;
 using KafkaSnapshot.Models.Filters;
 

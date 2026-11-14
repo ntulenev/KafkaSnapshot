@@ -1,15 +1,15 @@
+using System.Text;
+
 using FluentAssertions;
-
-using Xunit;
-
-using Moq;
-
-using Microsoft.Extensions.Logging;
 
 using KafkaSnapshot.Export.Serialization;
 using KafkaSnapshot.Models.Message;
 
-using System.Text;
+using Microsoft.Extensions.Logging;
+
+using Moq;
+
+using Xunit;
 
 namespace KafkaSnapshot.Export.Tests;
 
@@ -93,7 +93,7 @@ public class IgnoreKeySerializerTests
         var data = new[]
         {
             new KeyValuePair<string, KafkaMessage<string>>(null!,
-                new KafkaMessage<string>("{\"Test\":42}",
+                new KafkaMessage<string>(/*lang=json,strict*/ "{\"Test\":42}",
                     new KafkaMetadata(dateTime,1,2)))
         };
 
@@ -116,7 +116,7 @@ public class IgnoreKeySerializerTests
         var data = new[]
         {
             new KeyValuePair<string, KafkaMessage<string>>(null!,
-                new KafkaMessage<string>("{\"Test\":42}",
+                new KafkaMessage<string>(/*lang=json,strict*/ "{\"Test\":42}",
                     new KafkaMetadata(dateTime,1,2)))
         };
 
@@ -124,7 +124,7 @@ public class IgnoreKeySerializerTests
         var result = serializer.Serialize(data, isRaw);
 
         // Assert
-        result.Should().Be("[\r\n  {\r\n    \"Value\": {\r\n      \"Test\": 42\r\n    },\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
+        result.Should().Be(/*lang=json,strict*/ "[\r\n  {\r\n    \"Value\": {\r\n      \"Test\": 42\r\n    },\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
     }
 
     [Fact(DisplayName = "IgnoreKeySerializer can serialize data to stream.")]
@@ -139,7 +139,7 @@ public class IgnoreKeySerializerTests
         var data = new[]
         {
             new KeyValuePair<string, KafkaMessage<string>>(null!,
-                new KafkaMessage<string>("{\"Test\":42}",
+                new KafkaMessage<string>(/*lang=json,strict*/ "{\"Test\":42}",
                     new KafkaMetadata(dateTime,1,2)))
         };
         using var stream = new MemoryStream();
@@ -148,8 +148,8 @@ public class IgnoreKeySerializerTests
         var exception = await Record.ExceptionAsync(() => serializer.SerializeAsync(data, isRaw, stream, CancellationToken.None)).ConfigureAwait(false);
 
         // Assert
-        var jsonString = Encoding.Default.GetString((stream.ToArray()));
-        jsonString.Should().Be("[\r\n  {\r\n    \"Value\": {\r\n      \"Test\": 42\r\n    },\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
+        var jsonString = Encoding.Default.GetString(stream.ToArray());
+        jsonString.Should().Be(/*lang=json,strict*/ "[\r\n  {\r\n    \"Value\": {\r\n      \"Test\": 42\r\n    },\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
     }
 
     [Fact(DisplayName = "IgnoreKeySerializer can't serialize non-JSON data.")]
@@ -218,7 +218,7 @@ public class IgnoreKeySerializerTests
         var result = serializer.Serialize(data, isRaw);
 
         // Assert
-        result.Should().Be("[\r\n  {\r\n    \"Value\": \"Test\",\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
+        result.Should().Be(/*lang=json,strict*/ "[\r\n  {\r\n    \"Value\": \"Test\",\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
     }
 
     [Fact(DisplayName = "IgnoreKeySerializer can serialize raw data to the stream.")]
@@ -242,8 +242,8 @@ public class IgnoreKeySerializerTests
         await serializer.SerializeAsync(data, isRaw, stream, CancellationToken.None).ConfigureAwait(false);
 
         // Assert
-        var jsonString = Encoding.Default.GetString((stream.ToArray()));
-        jsonString.Should().Be("[\r\n  {\r\n    \"Value\": \"Test\",\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
+        var jsonString = Encoding.Default.GetString(stream.ToArray());
+        jsonString.Should().Be(/*lang=json,strict*/ "[\r\n  {\r\n    \"Value\": \"Test\",\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
     }
 
     [Fact(DisplayName = "IgnoreKeySerializer can serialize data with non null keys by ignoring them.")]

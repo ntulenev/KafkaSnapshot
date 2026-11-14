@@ -1,11 +1,9 @@
-using Xunit;
-
 using FluentAssertions;
 
-using Microsoft.Extensions.Options;
-
-using KafkaSnapshot.Import.Configuration.Validation;
 using KafkaSnapshot.Import.Configuration;
+using KafkaSnapshot.Import.Configuration.Validation;
+
+using Xunit;
 
 namespace KafkaSnapshot.Import.Tests;
 

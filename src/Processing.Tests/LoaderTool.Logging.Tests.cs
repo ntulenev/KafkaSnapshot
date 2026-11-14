@@ -1,8 +1,12 @@
 using FluentAssertions;
+
 using KafkaSnapshot.Abstractions.Processing;
 using KafkaSnapshot.Models.Names;
+
 using Microsoft.Extensions.Logging;
+
 using Moq;
+
 using Xunit;
 
 namespace KafkaSnapshot.Processing.Tests;

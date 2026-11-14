@@ -31,7 +31,9 @@ if (mode == "prepare")
     await admin.CreateTopicsAsync([new TopicSpecification { Name = topicName, NumPartitions = 1, ReplicationFactor = 1 }]);
     using var producer = new ProducerBuilder<string, byte[]>(new ProducerConfig
     {
-        BootstrapServers = bootstrap, LingerMs = 5, BatchSize = 1024 * 1024,
+        BootstrapServers = bootstrap,
+        LingerMs = 5,
+        BatchSize = 1024 * 1024,
         MessageTimeoutMs = 30000
     }).Build();
     for (var offset = 0; offset < count; offset += 1000)
@@ -56,7 +58,9 @@ if (mode == "delete")
 var output = args[3];
 var config = Options.Create(new SnapshotLoaderConfiguration
 {
-    DateOffsetTimeout = TimeSpan.FromSeconds(5), MaxConcurrentPartitions = 1, StreamBufferCapacity = 64
+    DateOffsetTimeout = TimeSpan.FromSeconds(5),
+    MaxConcurrentPartitions = 1,
+    StreamBufferCapacity = 64
 });
 var factory = new KafkaClientFactory(Options.Create(new BootstrapServersConfiguration { BootstrapServers = [bootstrap] }));
 var reader = new PartitionSnapshotReader<string, string>(NullLogger<PartitionSnapshotReader<string, string>>.Instance,

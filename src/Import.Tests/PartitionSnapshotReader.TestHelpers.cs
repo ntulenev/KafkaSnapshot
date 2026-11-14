@@ -5,7 +5,6 @@ using Confluent.Kafka;
 using KafkaSnapshot.Abstractions.Filters;
 using KafkaSnapshot.Abstractions.Import;
 using KafkaSnapshot.Import.Configuration;
-using KafkaSnapshot.Import.Watermarks;
 using KafkaSnapshot.Models.Filters;
 using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Names;
@@ -32,7 +31,7 @@ public partial class PartitionSnapshotReaderTests
         => new(
             new TopicName("test"),
             false,
-            dateRange ?? new DateFilterRange(null!, null!),
+            dateRange ?? new DateFilterRange(null, null),
             EncoderRules.String,
             null);
 
@@ -42,7 +41,7 @@ public partial class PartitionSnapshotReaderTests
         LoadingTopic topic,
         Partition partition,
         long highOffset = 1)
-        => KafkaSnapshot.Import.Kafka.KafkaWatermarkMapper.ToDomain(
+        => Kafka.KafkaWatermarkMapper.ToDomain(
             topic,
             new WatermarkOffsets(new Offset(0), new Offset(highOffset)),
             partition);
@@ -114,7 +113,7 @@ public partial class PartitionSnapshotReaderTests
 
     private sealed class RecordingLogger<T>(params LogLevel[] enabledLogLevels) : ILogger<T>
     {
-        private readonly HashSet<LogLevel> _enabledLogLevels = enabledLogLevels.ToHashSet();
+        private readonly HashSet<LogLevel> _enabledLogLevels = [.. enabledLogLevels];
         private readonly List<(LogLevel Level, string Message)> _entries = [];
 
         public IDisposable? BeginScope<TState>(TState state)
@@ -128,10 +127,7 @@ public partial class PartitionSnapshotReaderTests
             EventId eventId,
             TState state,
             Exception? exception,
-            Func<TState, Exception?, string> formatter)
-        {
-            _entries.Add((logLevel, formatter(state, exception)));
-        }
+            Func<TState, Exception?, string> formatter) => _entries.Add((logLevel, formatter(state, exception)));
 
         public bool Contains(LogLevel logLevel, string message)
             => _entries.Any(entry =>

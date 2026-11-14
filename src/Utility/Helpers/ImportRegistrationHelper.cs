@@ -2,10 +2,10 @@ using Confluent.Kafka;
 
 using KafkaSnapshot.Abstractions.Import;
 using KafkaSnapshot.Abstractions.Sorting;
+using KafkaSnapshot.Import;
 using KafkaSnapshot.Import.Encoders;
 using KafkaSnapshot.Import.Kafka;
 using KafkaSnapshot.Import.Metadata;
-using KafkaSnapshot.Import;
 using KafkaSnapshot.Processing.Configuration;
 using KafkaSnapshot.Sorting;
 
@@ -36,7 +36,7 @@ internal static class ImportRegistrationHelper
             serviceProvider => serviceProvider.GetRequiredService<IKafkaClientFactory>().CreateConsumer<long>);
         _ = services.AddSingleton(
             typeof(ISnapshotLoader<,>),
-            typeof(KafkaSnapshot.Import.SnapshotLoader<,>));
+            typeof(SnapshotLoader<,>));
         _ = services.AddSingleton(
             typeof(IPartitionSnapshotReader<,>),
             typeof(PartitionSnapshotReader<,>));

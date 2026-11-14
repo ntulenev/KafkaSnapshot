@@ -47,7 +47,7 @@ public class ProgramEntryPointTests
     public void RegisterApplicationSettingsLoadsJsonConfiguration()
     {
         using var directory = new TestDirectory();
-        File.WriteAllText(Path.Combine(directory.Path, "appsettings.json"), "{\"TestSetting\":\"loaded\"}");
+        File.WriteAllText(Path.Combine(directory.Path, "appsettings.json"), /*lang=json,strict*/ "{\"TestSetting\":\"loaded\"}");
         var builder = new ConfigurationBuilder().SetBasePath(directory.Path);
         var helper = typeof(HostBuildHelper).Assembly.GetType("KafkaSnapshot.Utility.Helpers.ConfigHelper")!;
 

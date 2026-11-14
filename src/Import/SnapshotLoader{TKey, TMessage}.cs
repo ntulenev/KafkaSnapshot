@@ -1,12 +1,12 @@
 using System.Runtime.CompilerServices;
 
-using Microsoft.Extensions.Logging;
-
-using KafkaSnapshot.Import.Metadata;
 using KafkaSnapshot.Abstractions.Filters;
 using KafkaSnapshot.Abstractions.Import;
+using KafkaSnapshot.Import.Metadata;
 using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Message;
+
+using Microsoft.Extensions.Logging;
 
 namespace KafkaSnapshot.Import;
 

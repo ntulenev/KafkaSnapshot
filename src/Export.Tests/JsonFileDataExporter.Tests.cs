@@ -1,19 +1,19 @@
+using FluentAssertions;
+
+using KafkaSnapshot.Abstractions.Export;
+using KafkaSnapshot.Export.Configuration;
+using KafkaSnapshot.Export.File.Output;
+using KafkaSnapshot.Export.Markers;
+using KafkaSnapshot.Models.Export;
+using KafkaSnapshot.Models.Message;
+using KafkaSnapshot.Models.Names;
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 using Moq;
 
 using Xunit;
-
-using FluentAssertions;
-
-using KafkaSnapshot.Abstractions.Export;
-using KafkaSnapshot.Export.File.Output;
-using KafkaSnapshot.Export.Markers;
-using KafkaSnapshot.Models.Export;
-using KafkaSnapshot.Models.Message;
-using KafkaSnapshot.Export.Configuration;
-using KafkaSnapshot.Models.Names;
 
 namespace KafkaSnapshot.Export.Tests;
 

@@ -9,93 +9,92 @@ using Moq;
 
 using Xunit;
 
-namespace KafkaSnapshot.Utility.Tests
+namespace KafkaSnapshot.Utility.Tests;
+
+public class LoaderServiceTests
 {
-    public class LoaderServiceTests
+    [Fact(DisplayName = "LoaderService can be created.")]
+    [Trait("Category", "Unit")]
+    public void LoaderServiceCanBeCreated()
     {
-        [Fact(DisplayName = "LoaderService can be created.")]
-        [Trait("Category", "Unit")]
-        public void LoaderServiceCanBeCreated()
-        {
-            // Arrange
-            var tool = new Mock<ILoaderTool>(MockBehavior.Strict).Object;
-            var lifetime = new Mock<IHostApplicationLifetime>(MockBehavior.Strict).Object;
-            var logger = new Mock<ILogger<LoaderService>>(MockBehavior.Strict).Object;
+        // Arrange
+        var tool = new Mock<ILoaderTool>(MockBehavior.Strict).Object;
+        var lifetime = new Mock<IHostApplicationLifetime>(MockBehavior.Strict).Object;
+        var logger = new Mock<ILogger<LoaderService>>(MockBehavior.Strict).Object;
 
-            // Act
-            var exception = Record.Exception(() => new LoaderService(tool, lifetime, logger));
+        // Act
+        var exception = Record.Exception(() => new LoaderService(tool, lifetime, logger));
 
-            // Assert
-            exception.Should().BeNull();
-        }
+        // Assert
+        exception.Should().BeNull();
+    }
 
-        [Fact(DisplayName = "LoaderService can't be created with null lifetime.")]
-        [Trait("Category", "Unit")]
-        public void LoaderServiceCannotBeCreatedWithNullLifetime()
-        {
-            // Arrange
-            var tool = new Mock<ILoaderTool>(MockBehavior.Strict).Object;
-            var logger = new Mock<ILogger<LoaderService>>(MockBehavior.Strict).Object;
+    [Fact(DisplayName = "LoaderService can't be created with null lifetime.")]
+    [Trait("Category", "Unit")]
+    public void LoaderServiceCannotBeCreatedWithNullLifetime()
+    {
+        // Arrange
+        var tool = new Mock<ILoaderTool>(MockBehavior.Strict).Object;
+        var logger = new Mock<ILogger<LoaderService>>(MockBehavior.Strict).Object;
 
-            // Act
-            var exception = Record.Exception(() => new LoaderService(tool, null!, logger));
+        // Act
+        var exception = Record.Exception(() => new LoaderService(tool, null!, logger));
 
-            // Assert
-            exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
-        }
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
+    }
 
-        [Fact(DisplayName = "LoaderService can't be created with null tool.")]
-        [Trait("Category", "Unit")]
-        public void LoaderServiceCannotBeCreatedWithNullTool()
-        {
-            // Arrange
-            var lifetime = new Mock<IHostApplicationLifetime>(MockBehavior.Strict).Object;
-            var logger = new Mock<ILogger<LoaderService>>(MockBehavior.Strict).Object;
+    [Fact(DisplayName = "LoaderService can't be created with null tool.")]
+    [Trait("Category", "Unit")]
+    public void LoaderServiceCannotBeCreatedWithNullTool()
+    {
+        // Arrange
+        var lifetime = new Mock<IHostApplicationLifetime>(MockBehavior.Strict).Object;
+        var logger = new Mock<ILogger<LoaderService>>(MockBehavior.Strict).Object;
 
-            // Act
-            var exception = Record.Exception(() => new LoaderService(null!, lifetime, logger));
+        // Act
+        var exception = Record.Exception(() => new LoaderService(null!, lifetime, logger));
 
-            // Assert
-            exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
-        }
+        // Assert
+        exception.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
+    }
 
-        [Fact(DisplayName = "LoaderService processes once and requests application shutdown after completion.")]
-        [Trait("Category", "Unit")]
-        public async Task StartAsyncProcessesOnceAndStopsApplication()
-        {
-            // Arrange
-            using var token = new CancellationTokenSource();
-            var toolMock = new Mock<ILoaderTool>(MockBehavior.Strict);
-            var processCount = 0;
-            var processStarted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-            toolMock.Setup(x => x.ProcessAsync(It.Is<CancellationToken>(token => token.CanBeCanceled)))
-                .Returns(() => Task.CompletedTask)
-                .Callback(() =>
-                {
-                    processCount++;
-                    processStarted.SetResult();
-                });
-            var lifetimeMock = new Mock<IHostApplicationLifetime>(MockBehavior.Strict);
-            var stopCount = 0;
-            var stopRequested = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-            lifetimeMock.Setup(x => x.StopApplication()).Callback(() =>
+    [Fact(DisplayName = "LoaderService processes once and requests application shutdown after completion.")]
+    [Trait("Category", "Unit")]
+    public async Task StartAsyncProcessesOnceAndStopsApplication()
+    {
+        // Arrange
+        using var token = new CancellationTokenSource();
+        var toolMock = new Mock<ILoaderTool>(MockBehavior.Strict);
+        var processCount = 0;
+        var processStarted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        toolMock.Setup(x => x.ProcessAsync(It.Is<CancellationToken>(token => token.CanBeCanceled)))
+            .Returns(() => Task.CompletedTask)
+            .Callback(() =>
             {
-                stopCount++;
-                stopRequested.SetResult();
+                processCount++;
+                processStarted.SetResult();
             });
-            var lifetime = lifetimeMock.Object;
-            var tool = toolMock.Object;
-            var logger = new Mock<ILogger<LoaderService>>().Object;
-            using var loader = new LoaderService(tool, lifetime, logger);
+        var lifetimeMock = new Mock<IHostApplicationLifetime>(MockBehavior.Strict);
+        var stopCount = 0;
+        var stopRequested = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        lifetimeMock.Setup(x => x.StopApplication()).Callback(() =>
+        {
+            stopCount++;
+            stopRequested.SetResult();
+        });
+        var lifetime = lifetimeMock.Object;
+        var tool = toolMock.Object;
+        var logger = new Mock<ILogger<LoaderService>>().Object;
+        using var loader = new LoaderService(tool, lifetime, logger);
 
-            // Act
-            await loader.StartAsync(token.Token);
-            await processStarted.Task.WaitAsync(TestTimeouts.Wait, TestContext.Current.CancellationToken);
-            await stopRequested.Task.WaitAsync(TestTimeouts.Wait, TestContext.Current.CancellationToken);
+        // Act
+        await loader.StartAsync(token.Token);
+        await processStarted.Task.WaitAsync(TestTimeouts.Wait, TestContext.Current.CancellationToken);
+        await stopRequested.Task.WaitAsync(TestTimeouts.Wait, TestContext.Current.CancellationToken);
 
-            // Assert
-            processCount.Should().Be(1);
-            stopCount.Should().Be(1);
-        }
+        // Assert
+        processCount.Should().Be(1);
+        stopCount.Should().Be(1);
     }
 }

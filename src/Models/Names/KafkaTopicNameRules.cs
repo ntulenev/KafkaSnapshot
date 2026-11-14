@@ -18,29 +18,15 @@ public static class KafkaTopicNameRules
     /// <summary>Returns the first failed topic name invariant.</summary>
     public static TopicNameValidationError Validate(string? name)
     {
-        if (name is null)
+        return name switch
         {
-            return TopicNameValidationError.Missing;
-        }
-
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            return TopicNameValidationError.Empty;
-        }
-
-        if (name.Any(char.IsWhiteSpace))
-        {
-            return TopicNameValidationError.Whitespace;
-        }
-
-        if (name.Length > MaxLength)
-        {
-            return TopicNameValidationError.TooLong;
-        }
-
-        return name.All(IsValidCharacter)
-            ? TopicNameValidationError.None
-            : TopicNameValidationError.InvalidCharacters;
+            null => TopicNameValidationError.Missing,
+            _ when string.IsNullOrWhiteSpace(name) => TopicNameValidationError.Empty,
+            _ when name.Any(char.IsWhiteSpace) => TopicNameValidationError.Whitespace,
+            _ when name.Length > MaxLength => TopicNameValidationError.TooLong,
+            _ when name.All(IsValidCharacter) => TopicNameValidationError.None,
+            _ => TopicNameValidationError.InvalidCharacters
+        };
     }
 
     private static bool IsValidCharacter(char value)

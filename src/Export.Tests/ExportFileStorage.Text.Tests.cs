@@ -1,11 +1,12 @@
 using FluentAssertions;
 
-using Xunit;
-
-using KafkaSnapshot.Export.File.Common;
 using KafkaSnapshot.Export.Configuration;
-using Microsoft.Extensions.Options;
+using KafkaSnapshot.Export.File.Common;
 using KafkaSnapshot.Models.Names;
+
+using Microsoft.Extensions.Options;
+
+using Xunit;
 
 namespace KafkaSnapshot.Export.Tests;
 

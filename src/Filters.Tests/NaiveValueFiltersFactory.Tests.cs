@@ -44,7 +44,7 @@ public class NaiveValueFiltersFactoryTests
     {
         // Arrange
         var factory = new NaiveValueFiltersFactory<string>();
-        string value = "{\"value\": 1 }";
+        var value = /*lang=json,strict*/ "{\"value\": 1 }";
 
         // Act
         var result = factory.Create(FilterType.Equals, ValueMessageType.Json, value);

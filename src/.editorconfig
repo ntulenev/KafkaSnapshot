@@ -19,8 +19,8 @@ tab_width = 4
 csharp_new_line_before_else = true
 #require members of object intializers to be on separate lines
 csharp_new_line_before_members_in_object_initializers = true
-#require braces to be on a new line for methods, lambdas, control_blocks, object_collection_array_initializers, and types (also known as "Allman" style)
-csharp_new_line_before_open_brace = methods, lambdas, control_blocks, object_collection_array_initializers, types, anonymous_types, accessors
+#use Allman braces for declarations, properties, accessors, and control flow
+csharp_new_line_before_open_brace = methods, lambdas, control_blocks, object_collection_array_initializers, types, anonymous_types, properties, accessors
 
 csharp_new_line_before_catch = true
 csharp_new_line_before_finally = true

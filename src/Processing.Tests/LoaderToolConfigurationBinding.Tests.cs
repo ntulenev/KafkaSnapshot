@@ -17,7 +17,7 @@ public class LoaderToolConfigurationBindingTests
     public void LoaderToolConfigurationBindsOffsetDates()
     {
         // Arrange
-        const string json = """
+        const string json = /*lang=json,strict*/ """
         {
           "LoaderToolConfiguration": {
             "Topics": [

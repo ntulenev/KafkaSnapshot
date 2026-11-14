@@ -6,7 +6,6 @@ using KafkaSnapshot.Models.Configuration;
 using KafkaSnapshot.Models.Filters;
 using KafkaSnapshot.Processing.Configuration;
 using KafkaSnapshot.Processing.Configuration.Validation;
-using KafkaSnapshot.Utility.DependencyInjection;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;

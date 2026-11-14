@@ -1,6 +1,6 @@
-using Microsoft.Extensions.Logging;
-
 using KafkaSnapshot.Abstractions.Processing;
+
+using Microsoft.Extensions.Logging;
 
 namespace KafkaSnapshot.Processing;
 

@@ -1,13 +1,12 @@
+using FluentAssertions;
+
+using KafkaSnapshot.Abstractions.Processing;
+
 using Microsoft.Extensions.DependencyInjection;
 
 using Xunit;
 
-using FluentAssertions;
-
-using KafkaSnapshot.Abstractions.Processing;
-using KafkaSnapshot.Utility;
-
-namespace Utility.Tests;
+namespace KafkaSnapshot.Utility.Tests;
 
 public class ProgramTests
 {

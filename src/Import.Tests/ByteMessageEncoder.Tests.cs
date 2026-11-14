@@ -25,10 +25,10 @@ public class ByteMessageEncoderTests
         var result = "[\"" + strData1 + "\",0,\"" + strData2 + "\"]";
 
         var parametersNone = MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.None);
-        byte[] serializedDataNone = MessagePackSerializer.Serialize(testObject, parametersNone);
+        var serializedDataNone = MessagePackSerializer.Serialize(testObject, parametersNone);
 
         var parametersLZ4 = MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4Block);
-        byte[] serializedDataLZ4 = MessagePackSerializer.Serialize(testObject, parametersLZ4);
+        var serializedDataLZ4 = MessagePackSerializer.Serialize(testObject, parametersLZ4);
 
         return new TheoryData<byte[], EncoderRules, string>
         {
@@ -61,7 +61,7 @@ public class ByteMessageEncoderTests
         // Arrange
         var encoder = new ByteMessageEncoder();
         byte[] message = null!;
-        EncoderRules rule = EncoderRules.String;
+        var rule = EncoderRules.String;
 
         // Act
         Action act = () => encoder.Encode(message, rule);
@@ -76,8 +76,8 @@ public class ByteMessageEncoderTests
     {
         // Arrange
         var encoder = new ByteMessageEncoder();
-        byte[] message = Array.Empty<byte>();
-        EncoderRules rule = (EncoderRules)99;
+        var message = Array.Empty<byte>();
+        var rule = (EncoderRules)99;
 
         // Act
         Action act = () => encoder.Encode(message, rule);

@@ -26,7 +26,7 @@ public class StringContainsFilterTests
     {
 
         // Arrange
-        string value = string.Empty;
+        var value = string.Empty;
         // Act
         var exception = Record.Exception(() => new StringContainsFilter(value));
 
@@ -40,7 +40,7 @@ public class StringContainsFilterTests
     {
 
         // Arrange
-        string value = "    ";
+        var value = "    ";
         // Act
         var exception = Record.Exception(() => new StringContainsFilter(value));
 
@@ -54,7 +54,7 @@ public class StringContainsFilterTests
     {
 
         // Arrange
-        string value = " some data ";
+        var value = " some data ";
         // Act
         var exception = Record.Exception(() => new StringContainsFilter(value));
 
@@ -68,7 +68,7 @@ public class StringContainsFilterTests
     {
 
         // Arrange
-        string value = " some data ";
+        var value = " some data ";
         var filter = new StringContainsFilter(value);
         string comparand = null!;
 
@@ -85,9 +85,9 @@ public class StringContainsFilterTests
     {
 
         // Arrange
-        string value = " some data ";
+        var value = " some data ";
         var filter = new StringContainsFilter(value);
-        string comparand = "this string has some data inside";
+        var comparand = "this string has some data inside";
 
         // Act
         var result = filter.IsMatch(comparand);
@@ -102,9 +102,9 @@ public class StringContainsFilterTests
     {
 
         // Arrange
-        string value = " some data ";
+        var value = " some data ";
         var filter = new StringContainsFilter(value);
-        string comparand = "this string has nothing inside";
+        var comparand = "this string has nothing inside";
 
         // Act
         var result = filter.IsMatch(comparand);

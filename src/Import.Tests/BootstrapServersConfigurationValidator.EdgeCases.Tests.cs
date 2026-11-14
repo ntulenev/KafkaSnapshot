@@ -1,8 +1,11 @@
 using Confluent.Kafka;
+
 using FluentAssertions;
+
 using KafkaSnapshot.Import.Configuration;
 using KafkaSnapshot.Import.Configuration.Validation;
 using KafkaSnapshot.Models.Configuration;
+
 using Xunit;
 
 namespace KafkaSnapshot.Import.Tests;

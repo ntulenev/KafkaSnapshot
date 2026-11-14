@@ -28,7 +28,7 @@ public class JsonEqualsFilterTests
     {
 
         // Arrange
-        string value = "aaaaaa";
+        var value = "aaaaaa";
         // Act
         var exception = Record.Exception(() => new JsonEqualsFilter(value));
 
@@ -42,7 +42,7 @@ public class JsonEqualsFilterTests
     {
 
         // Arrange
-        string value = "{\"value\": 1 }";
+        var value = /*lang=json,strict*/ "{\"value\": 1 }";
         // Act
         var exception = Record.Exception(() => new JsonEqualsFilter(value));
 
@@ -56,7 +56,7 @@ public class JsonEqualsFilterTests
     {
 
         // Arrange
-        string value = "{\"value\": 1 }";
+        var value = /*lang=json,strict*/ "{\"value\": 1 }";
         var filter = new JsonEqualsFilter(value);
         string comparand = null!;
 
@@ -73,9 +73,9 @@ public class JsonEqualsFilterTests
     {
 
         // Arrange
-        string value = "{\"value\": 1 }";
+        var value = /*lang=json,strict*/ "{\"value\": 1 }";
         var filter = new JsonEqualsFilter(value);
-        string comparand = "aaaa";
+        var comparand = "aaaa";
 
         // Act
         var exception = Record.Exception(() => _ = filter.IsMatch(comparand));
@@ -91,9 +91,9 @@ public class JsonEqualsFilterTests
     {
 
         // Arrange
-        string value = "{\"value\": 1 }";
+        var value = /*lang=json,strict*/ "{\"value\": 1 }";
         var filter = new JsonEqualsFilter(value);
-        string comparand = "{\"value\": 1 }";
+        var comparand = /*lang=json,strict*/ "{\"value\": 1 }";
 
         // Act
         var result = filter.IsMatch(comparand);
@@ -109,9 +109,9 @@ public class JsonEqualsFilterTests
     {
 
         // Arrange
-        string value = "{\"value\": 1 }";
+        var value = /*lang=json,strict*/ "{\"value\": 1 }";
         var filter = new JsonEqualsFilter(value);
-        string comparand = "{\"value\": 2 }";
+        var comparand = /*lang=json,strict*/ "{\"value\": 2 }";
 
         // Act
         var result = filter.IsMatch(comparand);

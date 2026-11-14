@@ -4,7 +4,6 @@ using System.Text.Json.Nodes;
 using FluentAssertions;
 
 using KafkaSnapshot.Abstractions.Export;
-using KafkaSnapshot.Export.Markers;
 using KafkaSnapshot.Export.Serialization;
 using KafkaSnapshot.Models.Message;
 
@@ -33,8 +32,8 @@ public class AsyncSerializersTests
     {
         KeyValuePair<string, KafkaMessage<string>>[] items =
         [
-            new("{\"id\":1}", new("{\"value\":1}", new(DateTimeOffset.UnixEpoch, 0, 0))),
-            new("{\"id\":2}", new("{\"value\":2}", new(DateTimeOffset.UnixEpoch, 1, 0)))
+            new(/*lang=json,strict*/ "{\"id\":1}", new(/*lang=json,strict*/ "{\"value\":1}", new(DateTimeOffset.UnixEpoch, 0, 0))),
+            new(/*lang=json,strict*/ "{\"id\":2}", new(/*lang=json,strict*/ "{\"value\":2}", new(DateTimeOffset.UnixEpoch, 1, 0)))
         ];
         var expected = JsonNode.Parse(serializer.Serialize(items, raw));
         await using var stream = new MemoryStream();

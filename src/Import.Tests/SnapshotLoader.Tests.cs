@@ -2,25 +2,17 @@ using Confluent.Kafka;
 
 using FluentAssertions;
 
+using KafkaSnapshot.Abstractions.Import;
+using KafkaSnapshot.Abstractions.Sorting;
+using KafkaSnapshot.Import.Configuration;
+using KafkaSnapshot.Import.Metadata;
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 using Moq;
 
 using Xunit;
-
-using KafkaSnapshot.Import.Metadata;
-using KafkaSnapshot.Models.Import;
-using KafkaSnapshot.Abstractions.Filters;
-using KafkaSnapshot.Models.Message;
-using KafkaSnapshot.Import.Watermarks;
-using KafkaSnapshot.Import.Configuration;
-using KafkaSnapshot.Models.Filters;
-using KafkaSnapshot.Abstractions.Sorting;
-using KafkaSnapshot.Models.Names;
-using KafkaSnapshot.Abstractions.Import;
-
-using System.Text;
 
 namespace KafkaSnapshot.Import.Tests;
 

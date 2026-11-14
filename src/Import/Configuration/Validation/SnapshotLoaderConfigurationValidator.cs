@@ -17,27 +17,18 @@ public class SnapshotLoaderConfigurationValidator :
     {
         ArgumentNullException.ThrowIfNull(options);
 
-        if (options.DateOffsetTimeout <= TimeSpan.Zero)
-        {
-            return Fail(
+        return options.DateOffsetTimeout <= TimeSpan.Zero
+            ? Fail(
                 ConfigurationValidationErrorCodes.DateOffsetTimeoutInvalid,
-                "DateOffsetTimeout should be positive.");
-        }
-
-        if (options.MaxConcurrentPartitions is <= 0)
-        {
-            return Fail(
+                "DateOffsetTimeout should be positive.")
+            : options.MaxConcurrentPartitions is <= 0
+            ? Fail(
                 ConfigurationValidationErrorCodes.MaxConcurrentPartitionsInvalid,
-                "MaxConcurrentPartitions should be positive when set.");
-        }
-
-        if (options.StreamBufferCapacity <= 0)
-        {
-            return Fail(ConfigurationValidationErrorCodes.StreamBufferCapacityInvalid,
-                "StreamBufferCapacity should be positive.");
-        }
-
-        return ValidateOptionsResult.Success;
+                "MaxConcurrentPartitions should be positive when set.")
+            : options.StreamBufferCapacity <= 0
+            ? Fail(ConfigurationValidationErrorCodes.StreamBufferCapacityInvalid,
+                "StreamBufferCapacity should be positive.")
+            : ValidateOptionsResult.Success;
     }
 
     private static ValidateOptionsResult Fail(string code, string message)

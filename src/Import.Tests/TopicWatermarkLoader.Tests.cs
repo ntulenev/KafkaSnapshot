@@ -1,19 +1,19 @@
-using Microsoft.Extensions.Options;
-
 using Confluent.Kafka;
 
 using FluentAssertions;
 
-using Moq;
-
-using Xunit;
-
 using KafkaSnapshot.Import.Configuration;
 using KafkaSnapshot.Import.Kafka;
 using KafkaSnapshot.Import.Metadata;
-using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Filters;
+using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Names;
+
+using Microsoft.Extensions.Options;
+
+using Moq;
+
+using Xunit;
 
 namespace KafkaSnapshot.Import.Tests;
 
@@ -25,8 +25,8 @@ public class TopicWatermarkLoaderTests
     {
 
         // Arrange
-        var client = (new Mock<IAdminClient>(MockBehavior.Strict)).Object;
-        var options = (new Mock<IOptions<TopicWatermarkLoaderConfiguration>>(MockBehavior.Strict));
+        var client = new Mock<IAdminClient>(MockBehavior.Strict).Object;
+        var options = new Mock<IOptions<TopicWatermarkLoaderConfiguration>>(MockBehavior.Strict);
         options.Setup(x => x.Value).Returns(new TopicWatermarkLoaderConfiguration
         {
 
@@ -46,7 +46,7 @@ public class TopicWatermarkLoaderTests
 
         // Arrange
         var client = (IKafkaClientFactory)null!;
-        var options = (new Mock<IOptions<TopicWatermarkLoaderConfiguration>>(MockBehavior.Strict));
+        var options = new Mock<IOptions<TopicWatermarkLoaderConfiguration>>(MockBehavior.Strict);
         options.Setup(x => x.Value).Returns(new TopicWatermarkLoaderConfiguration
         {
 
@@ -65,7 +65,7 @@ public class TopicWatermarkLoaderTests
     {
 
         // Arrange
-        var client = (new Mock<IAdminClient>(MockBehavior.Strict)).Object;
+        var client = new Mock<IAdminClient>(MockBehavior.Strict).Object;
         var options = (IOptions<TopicWatermarkLoaderConfiguration>)null!;
 
         // Act
@@ -83,8 +83,8 @@ public class TopicWatermarkLoaderTests
     {
 
         // Arrange
-        var client = (new Mock<IAdminClient>(MockBehavior.Strict)).Object;
-        var options = (new Mock<IOptions<TopicWatermarkLoaderConfiguration>>(MockBehavior.Strict));
+        var client = new Mock<IAdminClient>(MockBehavior.Strict).Object;
+        var options = new Mock<IOptions<TopicWatermarkLoaderConfiguration>>(MockBehavior.Strict);
         options.SetupGet(x => x.Value).Returns(() => null!);
 
         // Act
@@ -101,8 +101,8 @@ public class TopicWatermarkLoaderTests
 
         // Arrange
         using var cts = new CancellationTokenSource();
-        var client = (new Mock<IAdminClient>(MockBehavior.Strict)).Object;
-        var options = (new Mock<IOptions<TopicWatermarkLoaderConfiguration>>(MockBehavior.Strict));
+        var client = new Mock<IAdminClient>(MockBehavior.Strict).Object;
+        var options = new Mock<IOptions<TopicWatermarkLoaderConfiguration>>(MockBehavior.Strict);
         options.Setup(x => x.Value).Returns(new TopicWatermarkLoaderConfiguration
         {
 
@@ -131,7 +131,7 @@ public class TopicWatermarkLoaderTests
         var clientMock = new Mock<IAdminClient>(MockBehavior.Strict);
         var client = clientMock.Object;
         var timeout = 1;
-        var options = (new Mock<IOptions<TopicWatermarkLoaderConfiguration>>(MockBehavior.Strict));
+        var options = new Mock<IOptions<TopicWatermarkLoaderConfiguration>>(MockBehavior.Strict);
         options.Setup(x => x.Value).Returns(new TopicWatermarkLoaderConfiguration
         {
             AdminClientTimeout = TimeSpan.FromSeconds(timeout)
@@ -142,11 +142,11 @@ public class TopicWatermarkLoaderTests
         var adminClientPartition = new TopicPartition(topic.Value.Name, new Partition(1));
         var adminParitions = new[] { adminClientPartition };
         var borkerMeta = new BrokerMetadata(1, "testHost", 1000);
-        var partitionMeta = new PartitionMetadata(1, 1, new[] { 1 }, new[] { 1 }, null);
-        var topicMeta = new TopicMetadata(topic.Value.Name, new[] { partitionMeta }.ToList(), null);
+        var partitionMeta = new PartitionMetadata(1, 1, [1], [1], null);
+        var topicMeta = new TopicMetadata(topic.Value.Name, [partitionMeta], null);
         var meta = new Confluent.Kafka.Metadata(
-                new[] { borkerMeta }.ToList(),
-                new[] { topicMeta }.ToList(), 1, "test"
+                [borkerMeta],
+                [topicMeta], 1, "test"
                 );
         var getMetadataCalls = 0;
         clientMock.Setup(c => c.GetMetadata(topic.Value.Name, TimeSpan.FromSeconds(timeout)))
@@ -186,11 +186,11 @@ public class TopicWatermarkLoaderTests
     {
         //Arrange
         using var cts = new CancellationTokenSource();
-        var topic = new LoadingTopic(new TopicName("test"), true, new DateFilterRange(null!, null!), EncoderRules.String, new HashSet<int>(new[] { 2 }));
+        var topic = new LoadingTopic(new TopicName("test"), true, new DateFilterRange(null!, null!), EncoderRules.String, new HashSet<int>([2]));
         var clientMock = new Mock<IAdminClient>(MockBehavior.Strict);
         var client = clientMock.Object;
         var timeout = 1;
-        var options = (new Mock<IOptions<TopicWatermarkLoaderConfiguration>>(MockBehavior.Strict));
+        var options = new Mock<IOptions<TopicWatermarkLoaderConfiguration>>(MockBehavior.Strict);
         options.Setup(x => x.Value).Returns(new TopicWatermarkLoaderConfiguration
         {
             AdminClientTimeout = TimeSpan.FromSeconds(timeout)
@@ -202,12 +202,12 @@ public class TopicWatermarkLoaderTests
         var adminClientPartition2 = new TopicPartition(topic.Value.Name, new Partition(2));
         var adminParitions = new[] { adminClientPartition1, adminClientPartition2 };
         var borkerMeta = new BrokerMetadata(1, "testHost", 1000);
-        var partitionMeta1 = new PartitionMetadata(1, 1, new[] { 1 }, new[] { 1 }, null);
-        var partitionMeta2 = new PartitionMetadata(2, 1, new[] { 1 }, new[] { 1 }, null);
-        var topicMeta = new TopicMetadata(topic.Value.Name, new[] { partitionMeta1, partitionMeta2 }.ToList(), null);
+        var partitionMeta1 = new PartitionMetadata(1, 1, [1], [1], null);
+        var partitionMeta2 = new PartitionMetadata(2, 1, [1], [1], null);
+        var topicMeta = new TopicMetadata(topic.Value.Name, [partitionMeta1, partitionMeta2], null);
         var meta = new Confluent.Kafka.Metadata(
-                new[] { borkerMeta }.ToList(),
-                new[] { topicMeta }.ToList(), 1, "test"
+                [borkerMeta],
+                [topicMeta], 1, "test"
                 );
         var getMetadataCalls = 0;
         clientMock.Setup(c => c.GetMetadata(topic.Value.Name, TimeSpan.FromSeconds(timeout)))
@@ -266,11 +266,11 @@ public class TopicWatermarkLoaderTests
         IConsumer<string, byte[]> consumerFactory() => consumerMock.Object;
 
         var brokerMeta = new BrokerMetadata(1, "testHost", 1000);
-        var partitionMeta = new PartitionMetadata(1, 1, new[] { 1 }, new[] { 1 }, null);
-        var anotherTopicMeta = new TopicMetadata("another-topic", new[] { partitionMeta }.ToList(), null);
+        var partitionMeta = new PartitionMetadata(1, 1, [1], [1], null);
+        var anotherTopicMeta = new TopicMetadata("another-topic", [partitionMeta], null);
         var metadata = new Confluent.Kafka.Metadata(
-            new[] { brokerMeta }.ToList(),
-            new[] { anotherTopicMeta }.ToList(),
+            [brokerMeta],
+            [anotherTopicMeta],
             1,
             "test");
         var getMetadataCalls = 0;
@@ -321,8 +321,8 @@ public class TopicWatermarkLoaderTests
             [],
             new Error(ErrorCode.UnknownTopicOrPart, "Unknown topic"));
         var metadata = new Confluent.Kafka.Metadata(
-            new[] { brokerMeta }.ToList(),
-            new[] { topicMeta }.ToList(),
+            [brokerMeta],
+            [topicMeta],
             1,
             "test");
         var getMetadataCalls = 0;
@@ -371,13 +371,13 @@ public class TopicWatermarkLoaderTests
         var offsets = new WatermarkOffsets(new Offset(1), new Offset(2));
 
         var brokerMeta = new BrokerMetadata(1, "testHost", 1000);
-        var requestedPartitionMeta = new PartitionMetadata(1, 1, new[] { 1 }, new[] { 1 }, null);
-        var anotherTopicPartitionMeta = new PartitionMetadata(2, 1, new[] { 1 }, new[] { 1 }, null);
-        var anotherTopicMeta = new TopicMetadata("another-topic", new[] { anotherTopicPartitionMeta }.ToList(), null);
-        var requestedTopicMeta = new TopicMetadata(topic.Value.Name, new[] { requestedPartitionMeta }.ToList(), null);
+        var requestedPartitionMeta = new PartitionMetadata(1, 1, [1], [1], null);
+        var anotherTopicPartitionMeta = new PartitionMetadata(2, 1, [1], [1], null);
+        var anotherTopicMeta = new TopicMetadata("another-topic", [anotherTopicPartitionMeta], null);
+        var requestedTopicMeta = new TopicMetadata(topic.Value.Name, [requestedPartitionMeta], null);
         var metadata = new Confluent.Kafka.Metadata(
-            new[] { brokerMeta }.ToList(),
-            new[] { anotherTopicMeta, requestedTopicMeta }.ToList(),
+            [brokerMeta],
+            [anotherTopicMeta, requestedTopicMeta],
             1,
             "test");
         var getMetadataCalls = 0;

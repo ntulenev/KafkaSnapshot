@@ -1,10 +1,10 @@
-using Xunit;
-
 using FluentAssertions;
 
-using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Filters;
+using KafkaSnapshot.Models.Import;
 using KafkaSnapshot.Models.Names;
+
+using Xunit;
 
 namespace KafkaSnapshot.Models.Tests;
 

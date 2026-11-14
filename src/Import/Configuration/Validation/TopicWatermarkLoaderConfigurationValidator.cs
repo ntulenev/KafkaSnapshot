@@ -18,14 +18,11 @@ public class TopicWatermarkLoaderConfigurationValidator :
     {
         ArgumentNullException.ThrowIfNull(options);
 
-        if (options.AdminClientTimeout <= TimeSpan.Zero)
-        {
-            return Fail(
+        return options.AdminClientTimeout <= TimeSpan.Zero
+            ? Fail(
                 ConfigurationValidationErrorCodes.AdminClientTimeoutInvalid,
-                "AdminClientTimeout should be positive.");
-        }
-
-        return ValidateOptionsResult.Success;
+                "AdminClientTimeout should be positive.")
+            : ValidateOptionsResult.Success;
     }
 
     private static ValidateOptionsResult Fail(string code, string message)

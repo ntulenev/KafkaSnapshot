@@ -223,7 +223,7 @@ public class KafkaBrokerIntegrationTests
         var reader = new PartitionSnapshotReader<string, string>(NullLogger<PartitionSnapshotReader<string, string>>.Instance,
             Options.Create(new SnapshotLoaderConfiguration { DateOffsetTimeout = TimeSpan.FromSeconds(5) }),
             Factory().CreateConsumer<string>, new ByteMessageEncoder(), new PartitionConsumerAssignment());
-        var filter = Mock.Of<IDataFilter<string>>(x => x.IsMatch(It.IsAny<string>()) == true);
+        var filter = Mock.Of<IDataFilter<string>>(x => x.IsMatch(It.IsAny<string>()));
         return await Task.Run(() => reader.Read(watermark, topic, filter, filter, cancellationToken).ToList(), cancellationToken);
     }
 

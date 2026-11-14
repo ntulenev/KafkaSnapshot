@@ -35,23 +35,16 @@ public sealed class MessageSorter<TKey, TValue> : IMessageSorter<TKey, TValue>
     {
         ArgumentNullException.ThrowIfNull(source);
 
-        if (_sortingRules.Order == SortingOrder.None)
+        return (_sortingRules.Type, _sortingRules.Order) switch
         {
-            return source;
-        }
-
-        if (_sortingRules.Type == SortingType.Time)
-        {
-            return _sortingRules.Order == SortingOrder.Descending
-                ? source.OrderByDescending(x => x.Value.Meta.Timestamp)
-                : source.OrderBy(x => x.Value.Meta.Timestamp);
-        }
-
-        return _sortingRules.Order == SortingOrder.Descending
-            ? source.OrderByDescending(x => x.Value.Meta.Partition)
-                    .ThenBy(x => x.Value.Meta.Timestamp)
-            : source.OrderBy(x => x.Value.Meta.Partition)
-                    .ThenBy(x => x.Value.Meta.Timestamp);
+            (_, SortingOrder.None) => source,
+            (SortingType.Time, SortingOrder.Descending) => source.OrderByDescending(x => x.Value.Meta.Timestamp),
+            (SortingType.Time, _) => source.OrderBy(x => x.Value.Meta.Timestamp),
+            (_, SortingOrder.Descending) => source.OrderByDescending(x => x.Value.Meta.Partition)
+                .ThenBy(x => x.Value.Meta.Timestamp),
+            _ => source.OrderBy(x => x.Value.Meta.Partition)
+                .ThenBy(x => x.Value.Meta.Timestamp)
+        };
     }
 
     private readonly SortingParams _sortingRules;

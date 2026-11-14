@@ -136,7 +136,7 @@ public class StreamingExportTests
     private sealed class ObservedStream(Action onWrite, string? mode = null) : MemoryStream
     {
         public bool Disposed { get; private set; }
-        public override async ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken ct = default)
+        public async override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken ct = default)
         {
             onWrite();
             if (mode == "fail")

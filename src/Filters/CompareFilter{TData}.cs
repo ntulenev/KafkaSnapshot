@@ -25,14 +25,7 @@ public class CompareFilter<TData>(TData sample, bool greaterOrEquals) :
 
         var result = data.CompareTo(_sample);
 
-        if (IsGreaterOrEquals)
-        {
-            return result >= 0;
-        }
-        else
-        {
-            return result <= 0;
-        }
+        return IsGreaterOrEquals ? result >= 0 : result <= 0;
     }
 
     /// <summary>

@@ -1,15 +1,15 @@
+using System.Text;
+
 using FluentAssertions;
-
-using Xunit;
-
-using Moq;
-
-using Microsoft.Extensions.Logging;
 
 using KafkaSnapshot.Export.Serialization;
 using KafkaSnapshot.Models.Message;
 
-using System.Text;
+using Microsoft.Extensions.Logging;
+
+using Moq;
+
+using Xunit;
 
 namespace KafkaSnapshot.Export.Tests;
 
@@ -119,7 +119,7 @@ public class SimpleJsonSerializerTests
         var result = serializer.Serialize(data, isRaw);
 
         // Assert
-        result.Should().Be("[\r\n  {\r\n    \"Key\": 1,\r\n    \"Value\": {\r\n      \"Message\": \"Test\",\r\n      \"Meta\": {\r\n        \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n        \"Partition\": 1,\r\n        \"Offset\": 2\r\n      }\r\n    }\r\n  }\r\n]");
+        result.Should().Be(/*lang=json,strict*/ "[\r\n  {\r\n    \"Key\": 1,\r\n    \"Value\": {\r\n      \"Message\": \"Test\",\r\n      \"Meta\": {\r\n        \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n        \"Partition\": 1,\r\n        \"Offset\": 2\r\n      }\r\n    }\r\n  }\r\n]");
     }
 
     [Theory(DisplayName = "SimpleJsonSerializer can serialize data to the stream.")]
@@ -145,7 +145,7 @@ public class SimpleJsonSerializerTests
         await serializer.SerializeAsync(data, isRaw, stream, CancellationToken.None).ConfigureAwait(false);
 
         // Assert
-        var jsonString = Encoding.Default.GetString((stream.ToArray()));
-        jsonString.Should().Be("[\r\n  {\r\n    \"Key\": 1,\r\n    \"Value\": {\r\n      \"Message\": \"Test\",\r\n      \"Meta\": {\r\n        \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n        \"Partition\": 1,\r\n        \"Offset\": 2\r\n      }\r\n    }\r\n  }\r\n]");
+        var jsonString = Encoding.Default.GetString(stream.ToArray());
+        jsonString.Should().Be(/*lang=json,strict*/ "[\r\n  {\r\n    \"Key\": 1,\r\n    \"Value\": {\r\n      \"Message\": \"Test\",\r\n      \"Meta\": {\r\n        \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n        \"Partition\": 1,\r\n        \"Offset\": 2\r\n      }\r\n    }\r\n  }\r\n]");
     }
 }

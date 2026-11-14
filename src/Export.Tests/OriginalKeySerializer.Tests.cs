@@ -1,15 +1,15 @@
+using System.Text;
+
 using FluentAssertions;
-
-using Xunit;
-
-using Moq;
-
-using Microsoft.Extensions.Logging;
 
 using KafkaSnapshot.Export.Serialization;
 using KafkaSnapshot.Models.Message;
 
-using System.Text;
+using Microsoft.Extensions.Logging;
+
+using Moq;
+
+using Xunit;
 
 namespace KafkaSnapshot.Export.Tests;
 
@@ -93,7 +93,7 @@ public class OriginalKeySerializerTests
         var data = new[]
         {
             new KeyValuePair<object, KafkaMessage<string>>(1,
-                new KafkaMessage<string>("{\"Test\":42}",
+                new KafkaMessage<string>(/*lang=json,strict*/ "{\"Test\":42}",
                     new KafkaMetadata(dateTime,1,2)))
         };
 
@@ -116,7 +116,7 @@ public class OriginalKeySerializerTests
         var data = new[]
         {
             new KeyValuePair<object, KafkaMessage<string>>(1,
-                new KafkaMessage<string>("{\"Test\":42}",
+                new KafkaMessage<string>(/*lang=json,strict*/ "{\"Test\":42}",
                     new KafkaMetadata(dateTime,1,2)))
         };
 
@@ -124,7 +124,7 @@ public class OriginalKeySerializerTests
         var result = serializer.Serialize(data, isRaw);
 
         // Assert
-        result.Should().Be("[\r\n  {\r\n    \"Key\": 1,\r\n    \"Value\": {\r\n      \"Test\": 42\r\n    },\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
+        result.Should().Be(/*lang=json,strict*/ "[\r\n  {\r\n    \"Key\": 1,\r\n    \"Value\": {\r\n      \"Test\": 42\r\n    },\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
     }
 
     [Fact(DisplayName = "OriginalKeySerializer can serialize data to the stream.")]
@@ -139,7 +139,7 @@ public class OriginalKeySerializerTests
         var data = new[]
         {
             new KeyValuePair<object, KafkaMessage<string>>(1,
-                new KafkaMessage<string>("{\"Test\":42}",
+                new KafkaMessage<string>(/*lang=json,strict*/ "{\"Test\":42}",
                     new KafkaMetadata(dateTime,1,2)))
         };
 
@@ -149,8 +149,8 @@ public class OriginalKeySerializerTests
         await serializer.SerializeAsync(data, isRaw, stream, CancellationToken.None).ConfigureAwait(false);
 
         // Assert
-        var jsonString = Encoding.Default.GetString((stream.ToArray()));
-        jsonString.Should().Be("[\r\n  {\r\n    \"Key\": 1,\r\n    \"Value\": {\r\n      \"Test\": 42\r\n    },\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
+        var jsonString = Encoding.Default.GetString(stream.ToArray());
+        jsonString.Should().Be(/*lang=json,strict*/ "[\r\n  {\r\n    \"Key\": 1,\r\n    \"Value\": {\r\n      \"Test\": 42\r\n    },\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
     }
 
     [Fact(DisplayName = "OriginalKeySerializer can't serialize non-JSON data.")]
@@ -221,7 +221,7 @@ public class OriginalKeySerializerTests
         var result = serializer.Serialize(data, isRaw);
 
         // Assert
-        result.Should().Be("[\r\n  {\r\n    \"Key\": 1,\r\n    \"Value\": \"Test\",\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
+        result.Should().Be(/*lang=json,strict*/ "[\r\n  {\r\n    \"Key\": 1,\r\n    \"Value\": \"Test\",\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
     }
 
     [Fact(DisplayName = "OriginalKeySerializer can serialize raw data to the stream.")]
@@ -245,7 +245,7 @@ public class OriginalKeySerializerTests
         await serializer.SerializeAsync(data, isRaw, stream, CancellationToken.None).ConfigureAwait(false);
 
         // Assert
-        var jsonString = Encoding.Default.GetString((stream.ToArray()));
-        jsonString.Should().Be("[\r\n  {\r\n    \"Key\": 1,\r\n    \"Value\": \"Test\",\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
+        var jsonString = Encoding.Default.GetString(stream.ToArray());
+        jsonString.Should().Be(/*lang=json,strict*/ "[\r\n  {\r\n    \"Key\": 1,\r\n    \"Value\": \"Test\",\r\n    \"Meta\": {\r\n      \"Timestamp\": \"2020-12-12T01:02:03+00:00\",\r\n      \"Partition\": 1,\r\n      \"Offset\": 2\r\n    }\r\n  }\r\n]");
     }
 }

@@ -1,12 +1,11 @@
-using KafkaSnapshot.Models.Import;
-
 using FluentAssertions;
+
+using KafkaSnapshot.Import.Watermarks;
+using KafkaSnapshot.Models.Import;
 
 using Moq;
 
 using Xunit;
-
-using KafkaSnapshot.Import.Watermarks;
 
 namespace KafkaSnapshot.Import.Tests;
 
@@ -33,7 +32,7 @@ public class TopicWatermarkTests
     {
 
         // Arrange
-        var partitionWatermarks = (new Mock<IEnumerable<PartitionWatermark>>(MockBehavior.Strict)).Object;
+        var partitionWatermarks = new Mock<IEnumerable<PartitionWatermark>>(MockBehavior.Strict).Object;
 
         // Act
         var result = new TopicWatermark(partitionWatermarks);

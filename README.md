@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="logo_s.png" alt="KafkaSnapshot logo" width="96" />
+  <img src="logo-terminal-green.png" alt="Pixel-art KafkaSnapshot logo: Kafka messages assembled into a snapshot on a green retro terminal" width="256" />
 </p>
 
 # KafkaSnapshot

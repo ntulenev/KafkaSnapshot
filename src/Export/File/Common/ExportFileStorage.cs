@@ -36,13 +36,12 @@ public sealed class ExportFileStorage : IExportFileStorage
 
     private string ResolvePath(FileName fileName)
     {
-        if (string.IsNullOrWhiteSpace(_outputDirectory))
+        if (!string.IsNullOrWhiteSpace(_outputDirectory))
         {
-            return fileName.FullName;
+            _ = Directory.CreateDirectory(_outputDirectory);
         }
 
-        _ = Directory.CreateDirectory(_outputDirectory);
-        return Path.Combine(_outputDirectory, fileName.FullName);
+        return fileName.ResolvePath(_outputDirectory);
     }
 
     private readonly string? _outputDirectory;

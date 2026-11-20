@@ -26,8 +26,9 @@ internal static class ConfigHelper
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configuration);
 
-        _ = services.AddSingleton<IValidateOptions<LoaderToolConfiguration>,
-                                               LoaderToolConfigurationValidator>();
+        _ = services.AddSingleton<IValidateOptions<LoaderToolConfiguration>>(provider =>
+            new LoaderToolConfigurationValidator(provider
+                .GetRequiredService<IOptions<JsonFileDataExporterConfiguration>>().Value.OutputDirectory));
         _ = services.AddOptions<LoaderToolConfiguration>()
             .Bind(configuration.GetSection(nameof(LoaderToolConfiguration)))
             .ValidateOnStart();

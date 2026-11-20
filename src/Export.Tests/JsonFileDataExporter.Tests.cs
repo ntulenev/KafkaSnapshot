@@ -222,6 +222,7 @@ public class JsonFileDataExporterTests
                 token))
             .Callback(() => streamSerializeCalls++);
         var createStreamCalls = 0;
+        fileSaver.Setup(x => x.WriteAsync(It.IsAny<FileName>(), It.IsAny<Func<Stream, Task>>(), It.IsAny<CancellationToken>())).CallBase();
         fileSaver.Setup(x => x.CreateFileStream(topic.ExportName))
             .Callback(() => createStreamCalls++)
             .Returns(new MemoryStream());
@@ -298,6 +299,7 @@ public class JsonFileDataExporterTests
                     new KafkaMetadata(DateTime.UtcNow,1,2)))
         };
         var testStream = new Mock<Stream>().Object;
+        fileSaver.Setup(x => x.WriteAsync(It.IsAny<FileName>(), It.IsAny<Func<Stream, Task>>(), It.IsAny<CancellationToken>())).CallBase();
         fileSaver.Setup(x => x.CreateFileStream(topic.ExportName)).Returns(() => testStream);
         var fileSaverRunCount = 0;
         using var tcs = new CancellationTokenSource();

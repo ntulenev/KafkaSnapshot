@@ -23,8 +23,40 @@ public sealed class ExportFileStorage : IExportFileStorage
         ArgumentNullException.ThrowIfNull(fileName);
         ArgumentNullException.ThrowIfNull(content);
         ct.ThrowIfCancellationRequested();
-        await System.IO.File.WriteAllTextAsync(ResolvePath(fileName), content, ct)
-            .ConfigureAwait(false);
+        await WriteAsync(fileName, async stream =>
+        {
+            using var writer = new StreamWriter(stream, leaveOpen: true);
+            await writer.WriteAsync(content.AsMemory(), ct).ConfigureAwait(false);
+            await writer.FlushAsync(ct).ConfigureAwait(false);
+        }, ct).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public async Task WriteAsync(FileName fileName, Func<Stream, Task> write, CancellationToken ct)
+    {
+        ArgumentNullException.ThrowIfNull(fileName);
+        ArgumentNullException.ThrowIfNull(write);
+        ct.ThrowIfCancellationRequested();
+
+        var destination = ResolvePath(fileName);
+        var temporary = Path.Combine(Path.GetDirectoryName(destination)!, Path.GetRandomFileName());
+        var stream = new FileStream(temporary, FileMode.CreateNew, FileAccess.Write,
+            FileShare.None, 4096, FileOptions.Asynchronous);
+        try
+        {
+            await using (stream.ConfigureAwait(false))
+            {
+                await write(stream).ConfigureAwait(false);
+            }
+
+            ct.ThrowIfCancellationRequested();
+            System.IO.File.Move(temporary, destination, overwrite: true);
+        }
+        catch
+        {
+            System.IO.File.Delete(temporary);
+            throw;
+        }
     }
 
     /// <inheritdoc/>

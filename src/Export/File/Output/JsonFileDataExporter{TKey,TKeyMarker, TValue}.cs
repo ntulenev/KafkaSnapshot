@@ -104,12 +104,9 @@ public sealed class JsonFileDataExporter<TKey, TKeyMarker, TValue> :
         await using var enumeratorScope = enumerator.ConfigureAwait(false);
         var hasItem = await enumerator.MoveNextAsync().ConfigureAwait(false);
         ct.ThrowIfCancellationRequested();
-        var stream = _storage.CreateFileStream(topic.ExportName);
-        await using var streamScope = stream.ConfigureAwait(false);
-        await _serializer.SerializeAsync(
-            EnumerateAsync(enumerator, hasItem, ct), topic.ExportRawMessage, stream, ct)
+        await _storage.WriteAsync(topic.ExportName, stream => _serializer.SerializeAsync(
+            EnumerateAsync(enumerator, hasItem, ct), topic.ExportRawMessage, stream, ct), ct)
             .ConfigureAwait(false);
-        ct.ThrowIfCancellationRequested();
     }
 
     private async Task InnerFileExportAsync(
@@ -145,16 +142,9 @@ public sealed class JsonFileDataExporter<TKey, TKeyMarker, TValue> :
 
         ct.ThrowIfCancellationRequested();
 
-        var stream = _storage.CreateFileStream(topic.ExportName);
-        await using var streamScope = stream.ConfigureAwait(false);
-
-        await _serializer.SerializeAsync(
-            EnumerateWithCancellation(data, ct),
-            topic.ExportRawMessage,
-            stream,
-            ct).ConfigureAwait(false);
-
-        ct.ThrowIfCancellationRequested();
+        await _storage.WriteAsync(topic.ExportName, stream => _serializer.SerializeAsync(
+            EnumerateWithCancellation(data, ct), topic.ExportRawMessage, stream, ct), ct)
+            .ConfigureAwait(false);
     }
 
     private static async IAsyncEnumerable<T> EnumerateAsync<T>(IAsyncEnumerator<T> enumerator,

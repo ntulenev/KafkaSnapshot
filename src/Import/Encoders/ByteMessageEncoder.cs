@@ -7,15 +7,13 @@ using MessagePack;
 
 namespace KafkaSnapshot.Import.Encoders;
 
-
 /// <summary>
 /// Encoder for converting byte array messages 
 /// to string format based on specified rules.
 /// </summary>
 public class ByteMessageEncoder : IMessageEncoder<byte[], string>
 {
-
-    /// <inheritdoc />
+    /// <inheritdoc/>
     /// <exception cref="ArgumentNullException">Thrown when the input message is null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when an invalid EncoderRules value is provided.</exception>
     public string Encode(byte[] message, EncoderRules rule)

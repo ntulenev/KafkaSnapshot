@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace KafkaSnapshot.Import;
 
-///<inheritdoc/>
+/// <inheritdoc/>
 public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
     where TKey : notnull
     where TMessage : notnull
@@ -18,11 +18,11 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
     /// <summary>
     /// Creates <see cref="SnapshotLoader{TKey, TMessage}"/>.
     /// </summary>
-    public SnapshotLoader(ILogger<SnapshotLoader<TKey, TMessage>> logger,
-                          ITopicWatermarkLoader topicWatermarkLoader,
-                          IPartitionSnapshotBatchReader<TKey, TMessage> partitionBatchReader,
-                          ISnapshotBuilder<TKey, TMessage> snapshotBuilder
-                         )
+    public SnapshotLoader(
+        ILogger<SnapshotLoader<TKey, TMessage>> logger,
+        ITopicWatermarkLoader topicWatermarkLoader,
+        IPartitionSnapshotBatchReader<TKey, TMessage> partitionBatchReader,
+        ISnapshotBuilder<TKey, TMessage> snapshotBuilder)
     {
         ArgumentNullException.ThrowIfNull(logger);
         ArgumentNullException.ThrowIfNull(topicWatermarkLoader);
@@ -37,7 +37,7 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
         _logger.LogDebug("Instance created");
     }
 
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     public async Task<IEnumerable<KeyValuePair<TKey, KafkaMessage<TMessage>>>> LoadSnapshotAsync(
         LoadingTopic loadingTopic,
         IDataFilter<TKey> keyFilter,
@@ -50,17 +50,16 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
 
         _logger.LogDebug("Loading topic watermark");
         var topicWatermark = await _topicWatermarkLoader
-                                    .LoadWatermarksAsync(loadingTopic, ct)
-                                    .ConfigureAwait(false);
+            .LoadWatermarksAsync(loadingTopic, ct)
+            .ConfigureAwait(false);
 
         _logger.LogDebug("Loading initial state");
         var initialState = await _partitionBatchReader.ReadAsync(
-                                    topicWatermark.Watermarks,
-                                    loadingTopic,
-                                    keyFilter,
-                                    valueFilter,
-                                    ct)
-                                .ConfigureAwait(false);
+            topicWatermark.Watermarks,
+            loadingTopic,
+            keyFilter,
+            valueFilter,
+            ct).ConfigureAwait(false);
 
         _logger.LogDebug("Creating compacting state");
 
@@ -106,4 +105,3 @@ public class SnapshotLoader<TKey, TMessage> : ISnapshotLoader<TKey, TMessage>
     private readonly IPartitionSnapshotBatchReader<TKey, TMessage> _partitionBatchReader;
     private readonly ISnapshotBuilder<TKey, TMessage> _snapshotBuilder;
 }
-

@@ -19,8 +19,9 @@ public class TopicWatermarkLoader : ITopicWatermarkLoader
     /// </summary>
     /// <param name="kafkaClientFactory">Kafka client factory.</param>
     /// <param name="options">Loader options.</param>
-    public TopicWatermarkLoader(IKafkaClientFactory kafkaClientFactory,
-                                IOptions<TopicWatermarkLoaderConfiguration> options)
+    public TopicWatermarkLoader(
+        IKafkaClientFactory kafkaClientFactory,
+        IOptions<TopicWatermarkLoaderConfiguration> options)
     {
         ArgumentNullException.ThrowIfNull(kafkaClientFactory);
         ArgumentNullException.ThrowIfNull(options);
@@ -96,9 +97,8 @@ public class TopicWatermarkLoader : ITopicWatermarkLoader
 
     /// <inheritdoc />
     public Task<TopicWatermark> LoadWatermarksAsync(
-                        LoadingTopic loadingTopic,
-                        CancellationToken ct
-                        )
+        LoadingTopic loadingTopic,
+        CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(loadingTopic);
 

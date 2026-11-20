@@ -123,6 +123,7 @@ public class StreamingExportTests
     private static JsonFileDataExporter<string, OriginalKeyMarker, string> Exporter(Stream stream)
     {
         var storage = new Mock<IExportFileStorage>(MockBehavior.Strict);
+        storage.Setup(x => x.WriteAsync(It.IsAny<FileName>(), It.IsAny<Func<Stream, Task>>(), It.IsAny<CancellationToken>())).CallBase();
         storage.Setup(x => x.CreateFileStream(It.IsAny<FileName>())).Returns(stream);
         return new(Options.Create(new JsonFileDataExporterConfiguration { UseFileStreaming = true }),
             NullLogger<JsonFileDataExporter<string, OriginalKeyMarker, string>>.Instance, storage.Object,

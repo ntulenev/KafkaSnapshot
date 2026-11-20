@@ -24,10 +24,12 @@ namespace KafkaSnapshot.Export.Tests;
 [Trait("Category", "Unit")]
 public class StreamingExportStartupTests
 {
-    [Theory(DisplayName = "An import failure or cancellation before the first message preserves the previous export.")]
-    [InlineData(false)]
-    [InlineData(true)]
-    public async Task FailedStartupPreservesPreviousExport(bool cancel)
+    [Theory(DisplayName = "An import failure or cancellation while reading preserves the previous export.")]
+    [InlineData(false, false)]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    [InlineData(true, true)]
+    public async Task FailedReadPreservesPreviousExport(bool cancel, bool afterFirst)
     {
         var directory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(directory);
@@ -47,6 +49,11 @@ public class StreamingExportStartupTests
             try
             {
                 await Task.Yield();
+                if (afterFirst)
+                {
+                    yield return new("key", new("value", new(DateTimeOffset.UnixEpoch, 0, 0)));
+                }
+
                 started.SetResult();
                 if (cancel)
                 {
@@ -95,6 +102,7 @@ public class StreamingExportStartupTests
     {
         using var stream = new MemoryStream();
         var storage = new Mock<IExportFileStorage>(MockBehavior.Strict);
+        storage.Setup(x => x.WriteAsync(It.IsAny<FileName>(), It.IsAny<Func<Stream, Task>>(), It.IsAny<CancellationToken>())).CallBase();
         storage.Setup(x => x.CreateFileStream(It.IsAny<FileName>())).Returns(stream);
         var exporter = new JsonFileDataExporter<string, OriginalKeyMarker, string>(
             Options.Create(new JsonFileDataExporterConfiguration { UseFileStreaming = true }),
@@ -114,6 +122,7 @@ public class StreamingExportStartupTests
     public async Task OutputOpenFailureClosesSource()
     {
         var storage = new Mock<IExportFileStorage>(MockBehavior.Strict);
+        storage.Setup(x => x.WriteAsync(It.IsAny<FileName>(), It.IsAny<Func<Stream, Task>>(), It.IsAny<CancellationToken>())).CallBase();
         storage.Setup(x => x.CreateFileStream(It.IsAny<FileName>())).Throws(new IOException("cannot open"));
         var exporter = new JsonFileDataExporter<string, OriginalKeyMarker, string>(
             Options.Create(new JsonFileDataExporterConfiguration { UseFileStreaming = true }),

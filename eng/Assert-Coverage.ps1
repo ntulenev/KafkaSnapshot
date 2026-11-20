@@ -10,7 +10,7 @@ Set-StrictMode -Version Latest
 [xml] $report = Get-Content -LiteralPath $SummaryPath -Raw
 $summary = $report.CoverageReport.Summary
 $expectedAssemblies = @(
-    'KafkaSnapshot.Export', 'KafkaSnapshot.Filters', 'KafkaSnapshot.Import',
+    'KafkaSnapshot.Abstractions', 'KafkaSnapshot.Export', 'KafkaSnapshot.Filters', 'KafkaSnapshot.Import',
     'KafkaSnapshot.Models', 'KafkaSnapshot.Processing', 'KafkaSnapshot.Sorting',
     'KafkaSnapshot.Utility'
 )

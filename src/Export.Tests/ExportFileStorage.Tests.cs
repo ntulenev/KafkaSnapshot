@@ -56,6 +56,35 @@ public class ExportFileStorageTests
         }
     }
 
+    [Fact(DisplayName = "Atomic publication replaces the old snapshot only after writing succeeds.")]
+    public async Task ReadersSeePreviousSnapshotUntilCommit()
+    {
+        var directory = Directory.CreateTempSubdirectory();
+        var file = Path.Combine(directory.FullName, "orders.json");
+        var token = TestContext.Current.CancellationToken;
+        var storage = new ExportFileStorage(Options.Create(new JsonFileDataExporterConfiguration
+        {
+            OutputDirectory = directory.FullName
+        }));
+
+        try
+        {
+            await System.IO.File.WriteAllTextAsync(file, "old", token);
+            await storage.WriteAsync(new FileName("orders.json"), async stream =>
+            {
+                await stream.WriteAsync("new"u8.ToArray(), token);
+                (await System.IO.File.ReadAllTextAsync(file, token)).Should().Be("old");
+            }, token);
+
+            (await System.IO.File.ReadAllTextAsync(file, token)).Should().Be("new");
+            directory.EnumerateFiles().Should().ContainSingle();
+        }
+        finally
+        {
+            directory.Delete(recursive: true);
+        }
+    }
+
     [Fact(DisplayName = "Canceled export does not create the output directory.")]
     public async Task CanceledWriteHasNoSideEffects()
     {

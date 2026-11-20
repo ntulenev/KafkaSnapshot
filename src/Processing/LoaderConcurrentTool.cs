@@ -46,7 +46,7 @@ public sealed class LoaderConcurrentTool : ILoaderTool
         ct.ThrowIfCancellationRequested();
         using var stopped = CancellationTokenSource.CreateLinkedTokenSource(ct);
 #pragma warning disable CA2025 // WhenAll joins every unit before disposing the shared cancellation source.
-        await Task.WhenAll(_units.Select(async unit =>
+        await Task.WhenAll(_units.Select(unit => Task.Run(async () =>
         {
             try
             {
@@ -64,7 +64,7 @@ public sealed class LoaderConcurrentTool : ILoaderTool
                 await stopped.CancelAsync().ConfigureAwait(false);
                 throw;
             }
-        })).ConfigureAwait(false);
+        }, stopped.Token))).ConfigureAwait(false);
 #pragma warning restore CA2025
 
         _logger.LogInformation("Done.");

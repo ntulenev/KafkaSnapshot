@@ -4,6 +4,7 @@ using KafkaSnapshot.Abstractions.Processing;
 using KafkaSnapshot.Models.Names;
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 using Moq;
 
@@ -120,39 +121,22 @@ public class LoaderConcurrentToolTests
         unit2ProcessCalls.Should().Be(1);
     }
 
-    [Fact(DisplayName = "LoaderConcurrentTool skips subsequent units after an immediate processing failure.")]
-    [Trait("Category", "Unit")]
-    public async Task ProcessAsyncStopsSchedulingAfterFailure()
+    [Fact(DisplayName = "Concurrent topics can enter blocking reads together.")]
+    public async Task BlockingTopicReadsCanOverlap()
     {
-        // Arrange
-        using var cts = new CancellationTokenSource();
-        var loggerMock = new Mock<ILogger<LoaderConcurrentTool>>();
-        var logger = loggerMock.Object;
-        var unit1 = new Mock<IProcessingUnit>(MockBehavior.Strict);
-        var unit2 = new Mock<IProcessingUnit>(MockBehavior.Strict);
-        unit1.Setup(x => x.TopicName).Returns(() => new TopicName("unit1"));
-        unit2.Setup(x => x.TopicName).Returns(() => new TopicName("unit2"));
-        var unit1ProcessCalls = 0;
-        var unit2ProcessCalls = 0;
-        unit1.Setup(x => x.ProcessAsync(It.Is<CancellationToken>(current => current.CanBeCanceled)))
-            .Callback(() => unit1ProcessCalls++)
-            .Throws<Exception>();
-        unit2.Setup(x => x.ProcessAsync(It.Is<CancellationToken>(current => current.CanBeCanceled)))
-            .Callback(() => unit2ProcessCalls++)
-            .Returns(Task.CompletedTask);
-        var items = new[]
-        {
-            unit1.Object,unit2.Object
-        };
-        var tool = new LoaderConcurrentTool(logger, items);
+        using var barrier = new Barrier(2);
+        var unit = new Mock<IProcessingUnit>(MockBehavior.Strict);
+        unit.SetupGet(x => x.TopicName).Returns(new TopicName("orders"));
+        unit.Setup(x => x.ProcessAsync(It.IsAny<CancellationToken>()))
+            .Returns<CancellationToken>(ct =>
+            {
+                barrier.SignalAndWait(TestTimeouts.Wait, ct).Should().BeTrue();
+                return Task.CompletedTask;
+            });
 
-        // Act
-        var exception = await Record.ExceptionAsync(() => tool.ProcessAsync(cts.Token));
-
-        // Assert
-        exception.Should().NotBeNull().And.BeOfType<Exception>();
-        unit1ProcessCalls.Should().Be(1);
-        unit2ProcessCalls.Should().Be(0);
+        var tool = new LoaderConcurrentTool(NullLogger<LoaderConcurrentTool>.Instance,
+            [unit.Object, unit.Object]);
+        await tool.ProcessAsync(TestContext.Current.CancellationToken);
     }
 
     [Fact(DisplayName = "LoaderConcurrentTool can't process units if token is cancelled.")]

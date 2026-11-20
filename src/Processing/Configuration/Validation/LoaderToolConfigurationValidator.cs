@@ -24,7 +24,9 @@ public sealed partial class LoaderToolConfigurationValidator :
 
     /// <summary>Validates output paths relative to the configured export directory.</summary>
     public LoaderToolConfigurationValidator(string? outputDirectory)
-        => _outputDirectory = outputDirectory;
+    {
+        _outputDirectory = outputDirectory;
+    }
 
     private static bool TryFailOnTopicRules(
         TopicConfiguration topic,

@@ -86,6 +86,26 @@ public class UtilityConfigurationValidationTests
                 ConfigurationValidationErrorCodes.OutputDirectoryWhitespace);
     }
 
+    [Fact(DisplayName = "Host rejects two topics resolving to the same output before loading.")]
+    public async Task HostRejectsEquivalentDestinations()
+    {
+        using var directory = new TestDirectory();
+        var builder = Host.CreateApplicationBuilder([]);
+        var settings = UtilityTestConfiguration.CreateValidConfig();
+        settings["JsonFileDataExporterConfiguration:OutputDirectory"] = directory.Path;
+        settings["LoaderToolConfiguration:Topics:1:Name"] = "topic-2";
+        settings["LoaderToolConfiguration:Topics:1:ExportFileName"] =
+            Path.Combine(directory.Path, "topic-1.json");
+        builder.Configuration.AddInMemoryCollection(settings);
+        _ = builder.Services.AddKafkaSnapshotUtility(builder.Configuration);
+        using var host = builder.Build();
+
+        var exception = await Record.ExceptionAsync(() => host.StartAsync(TestContext.Current.CancellationToken));
+        exception.Should().BeOfType<OptionsValidationException>().Which.Failures
+            .Should().ContainSingle().Which.Should().StartWith(ConfigurationValidationErrorCodes.ExportFileNameDuplicate);
+        Directory.EnumerateFiles(directory.Path).Should().BeEmpty();
+    }
+
     private sealed class FailBootstrapValidator :
         IValidateOptions<BootstrapServersConfiguration>
     {

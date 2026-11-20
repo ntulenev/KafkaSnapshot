@@ -69,7 +69,9 @@ not tail new records indefinitely. Ctrl+C requests cancellation and consumer cle
 Relative output paths are resolved from the process's working directory. In the
 example above, `OutputDirectory: "snapshots"` writes to `src/Utility/snapshots`.
 Without `OutputDirectory`, files are written directly to the working directory.
-Existing files are overwritten; failure after writing starts can leave a partial file.
+Each export is written to a temporary file in the destination directory. After the
+write succeeds and the stream closes, the utility atomically replaces the destination.
+A failed or canceled write preserves the previous snapshot. Each topic commits independently.
 
 ### Publish and Run Without the SDK
 
@@ -317,7 +319,8 @@ bootstrap servers, a positive metadata timeout, and at least one topic.
 
 `StreamBufferCapacity` limits queued decoded messages **per streaming topic**;
 it is not a total memory limit. Native Kafka prefetch buffers and messages already
-being processed use additional memory. `UseConcurrentLoad` runs topics concurrently;
+being processed use additional memory. `UseConcurrentLoad` starts each topic on a worker, so blocking metadata requests
+and first-match reads can overlap across topics;
 `MaxConcurrentPartitions` limits buffered partition reads per topic and does not
 parallelize the streaming path.
 
@@ -482,7 +485,7 @@ path-combining rules. Parents embedded in `ExportFileName` are not created autom
 | Parameter | Default | Description |
 | --- | --- | --- |
 | `Name` | Required | Kafka topic name. |
-| `ExportFileName` | Required | Output path/name. Values must be unique across entries, compared case-insensitively. |
+| `ExportFileName` | Required | Output path/name. Resolved full paths must be unique across entries. Comparison uses ordinal case-insensitive matching after resolving relative paths and normalizing `.` and `..` segments. |
 | `KeyType` | `Json` | `Json`, `String`, `Long`, or `Ignored`; see the wire-format table below. |
 | `Compacting` | `On` | `On` or `Off`; ignored keys require `Off`. |
 | `FilterKeyType` | `None` | `None`, `Equals`, `Contains`, `GreaterOrEquals`, or `LessOrEquals`. |
@@ -599,18 +602,18 @@ dotnet test src/KafkaSnapshot.slnx --configuration Release
 
 GitHub Actions runs the same coverage script on pushes (including merges into `main`), pull requests, and manual dispatch. The `windows-2025` runner installs the latest stable .NET 10 SDK, publishes a coverage summary, and retains test results and the HTML report as the `test-results-and-coverage` artifact for 14 days. To require this check before merging, select `.NET 10 tests and 100% coverage` in the repository's branch protection settings.
 
-### Current Verification (2026-11-14)
+### Current Verification (2026-11-20)
 
-Measured on the code shipped in `v0.2.4`, using Release builds and merged OpenCover
+Measured on `v0.3.6`, using Release builds and merged OpenCover
 reports. No executable production source is excluded from the coverage gate.
 
 | Check | Result |
 | --- | --- |
-| Default test run | 556 passed; 6 broker cases skipped without a bootstrap address |
+| Default test run | 562 passed; 6 broker cases skipped without a bootstrap address |
 | Separate real-Kafka run | 6 passed |
-| Lines | 1,543 / 1,543 (100%) |
-| Branches | 371 / 371 (100%) |
-| Methods | 309 / 309 (100%) |
+| Lines | 1,566 / 1,566 (100%) |
+| Branches | 377 / 377 (100%) |
+| Methods | 318 / 318 (100%) |
 | Formatting and IDE/analyzer fixes | `dotnet format` verification clean |
 
 Check formatting and analyzer suggestions from the repository root:
@@ -619,7 +622,7 @@ Check formatting and analyzer suggestions from the repository root:
 dotnet format src/KafkaSnapshot.slnx --no-restore --verify-no-changes --severity info
 ```
 
-The seven executable production assemblies are Export, Filters, Import, Models, Processing, Sorting, and Utility. Abstractions contains interfaces with no executable code. Integration tests exercise the full pipeline with fake Kafka clients, command-line startup validation, and native Kafka client creation/disposal. The default suite does not require a broker. Optional real-broker tests exercise snapshot boundaries and payload semantics; secured-cluster authentication remains outside the suite.
+Coverage is required for all eight production assemblies, including the default stream-writing implementation in Abstractions. Integration tests exercise the full pipeline with fake Kafka clients, command-line startup validation, and native Kafka client creation/disposal. The default suite does not require a broker. Optional real-broker tests exercise snapshot boundaries and payload semantics; secured-cluster authentication remains outside the suite.
 
 ### Real Kafka Tests
 
@@ -713,7 +716,10 @@ and an `OffsetRange` instead of Kafka SDK values. `OffsetRange` owns the inclusi
 low/exclusive high boundaries, emptiness, membership, and reading completion rules.
 Negative or reversed intervals are rejected; equal boundaries represent an empty
 snapshot. `KafkaWatermarkMapper` converts broker values at the Import boundary. `IExportFileStorage` owns output paths, directory creation, and file I/O;
-exporters own serialization and dispose the returned streams.
+exporters supply the serializer callback to `IExportFileStorage.WriteAsync`.
+The built-in storage owns the temporary stream, disposal and final replacement.
+Custom storage implementations can override the callback method to provide their own
+publication guarantees. Its default implementation writes through `CreateFileStream`.
 
 With `UseFileStreaming: true`, `ProcessingUnit` connects `StreamSnapshotAsync` to
 async export. Without sorting or compaction, one worker reads partitions in capture
@@ -747,20 +753,22 @@ The application preserves these snapshot rules:
   preserved behavior, not an exhaustive timestamp predicate over the whole log.
 - Compaction keeps the last enumerated message per key. Within a partition this
   follows offset order; across partitions it follows capture traversal order,
-  rather than comparing timestamps or unrelated offsets.
+  rather than comparing timestamps or unrelated offsets. Buffered reads enumerate
+  the completed partition lists in traversal order. Compaction updates a single
+  dictionary and exposes a read-only view of the result.
 - Null payloads, including tombstones, remain explicit decoding errors. Ignored
   keys remain supported. First-match partition selection is applied after filters.
-- The output file is opened only after the first read succeeds (or confirms an
-  empty snapshot). Metadata failures or cancellation before that point preserve
-  the previous file. Failure to open the output disposes the primed source.
+- The async exporter reads the first item (or confirms an empty snapshot) before
+  opening the temporary file. If opening fails, it disposes the primed source.
+  Buffered and streaming exports publish the completed file using a same-directory rename.
 - A buffered partition or concurrent-topic failure cancels sibling work and waits
   for its cleanup before propagating the failure; queued work is not started.
 - Timestamp lookup cannot move reading below the captured low offset or extend
   it beyond the captured high offset.
 - Cancellation, output errors, and early enumeration disposal cancel the producer
   and join its worker before returning. Every reader closes/disposes its consumer.
-  As with the previous file-stream serializer, a failed export may leave a partial
-  output file; atomic file replacement is not implemented.
+  A write failure removes the temporary file. Abrupt process termination can leave
+  a temporary file in the destination directory.
 
 EOF and explicit assignment follow the [Confluent consumer API](https://docs.confluent.io/platform/current/clients/confluent-kafka-dotnet/_site/api/Confluent.Kafka.IConsumer-2.html)
 and [consumer configuration](https://docs.confluent.io/platform/current/clients/confluent-kafka-dotnet/_site/api/Confluent.Kafka.ConsumerConfig.html).

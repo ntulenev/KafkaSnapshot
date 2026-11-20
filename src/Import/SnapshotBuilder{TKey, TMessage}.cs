@@ -1,4 +1,4 @@
-using System.Collections.Frozen;
+using System.Collections.ObjectModel;
 
 using KafkaSnapshot.Abstractions.Sorting;
 using KafkaSnapshot.Models.Message;
@@ -53,18 +53,20 @@ public class SnapshotBuilder<TKey, TMessage>
         {
             _logger.LogDebug("Compacting data");
 
-            result = items.Where(x => x.Key is not null).Aggregate(
-                new Dictionary<TKey, KafkaMessage<TMessage>>(),
-                (d, e) =>
+            var latest = new Dictionary<TKey, KafkaMessage<TMessage>>();
+            foreach (var item in items)
+            {
+                if (item.Key is not null)
                 {
-                    d[e.Key] = e.Value;
-                    return d;
-                }).ToFrozenDictionary();
+                    latest[item.Key] = item.Value;
+                }
+            }
+
+            result = new ReadOnlyDictionary<TKey, KafkaMessage<TMessage>>(latest);
 
             if (_logger.IsEnabled(LogLevel.Debug))
             {
-                var itemCount = result.Count();
-                _logger.LogDebug("Created compacting state for {ItemCount} item(s)", itemCount);
+                _logger.LogDebug("Created compacting state for {ItemCount} item(s)", latest.Count);
             }
         }
         else

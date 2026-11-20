@@ -203,7 +203,7 @@ public class PartitionSnapshotBatchReader<TKey, TMessage>
 
         var consumedEntities = await Task.WhenAll(tasks).ConfigureAwait(false);
 
-        return [.. consumedEntities.SelectMany(consumerResults => consumerResults)];
+        return new PartitionResults<KeyValuePair<TKey, KafkaMessage<TMessage>>>(consumedEntities);
     }
 
     private int ResolveMaxConcurrency(int partitionCount)

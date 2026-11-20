@@ -178,7 +178,12 @@ public class PartitionSnapshotBatchReaderTests
             token);
 
         // Assert
-        result.Should().BeEquivalentTo([firstMessage, secondMessage]);
+        result.Count.Should().Be(2);
+        result.Should().Equal(firstMessage, secondMessage);
+        var untyped = (System.Collections.IEnumerable)result;
+        var enumerator = untyped.GetEnumerator();
+        enumerator.MoveNext().Should().BeTrue();
+        enumerator.Current.Should().Be(firstMessage);
     }
 
     private static LoadingTopic CreateTopic()

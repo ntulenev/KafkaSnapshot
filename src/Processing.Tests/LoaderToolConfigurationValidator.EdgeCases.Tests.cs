@@ -43,6 +43,26 @@ public class LoaderToolConfigurationValidatorEdgeCasesTests
         result.Failures.Should().ContainSingle().Which.Should().StartWith(code);
     }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void RejectsEquivalentOutputPaths(bool absolute)
+    {
+        var directory = Path.Combine(Path.GetTempPath(), "snapshots");
+        var alias = absolute ? Path.Combine(directory, "orders.json") : "./orders.json";
+        var options = new LoaderToolConfiguration
+        {
+            Topics = [
+                new TopicConfiguration { Name = "first", ExportFileName = "orders.json" },
+                new TopicConfiguration { Name = "second", ExportFileName = alias }
+            ]
+        };
+
+        new LoaderToolConfigurationValidator(directory).Validate(null, options)
+            .Failures.Should().ContainSingle().Which.Should()
+            .StartWith(ConfigurationValidationErrorCodes.ExportFileNameDuplicate);
+    }
+
     [Fact(DisplayName = "LoaderToolConfigurationValidator rejects null options.")]
     public void RejectsNullOptions()
     {

@@ -15,6 +15,10 @@ public sealed class FileName
     /// </summary>
     public string Extension { get; }
 
+    /// <summary>Resolves the destination against the configured output directory.</summary>
+    public string ResolvePath(string? outputDirectory)
+        => Path.GetFullPath(Path.Combine(outputDirectory ?? string.Empty, FullName));
+
     /// <summary>
     /// Initializes a new instance of the <see cref="FileName"/> 
     /// class with the specified file name.

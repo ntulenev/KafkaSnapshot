@@ -17,6 +17,15 @@ namespace KafkaSnapshot.Processing.Configuration.Validation;
 public sealed partial class LoaderToolConfigurationValidator :
     IValidateOptions<LoaderToolConfiguration>
 {
+    private readonly string? _outputDirectory;
+
+    /// <summary>Validates output paths relative to the working directory.</summary>
+    public LoaderToolConfigurationValidator() { }
+
+    /// <summary>Validates output paths relative to the configured export directory.</summary>
+    public LoaderToolConfigurationValidator(string? outputDirectory)
+        => _outputDirectory = outputDirectory;
+
     private static bool TryFailOnTopicRules(
         TopicConfiguration topic,
         [NotNullWhen(returnValue: true)] out ValidateOptionsResult result)
@@ -215,13 +224,13 @@ public sealed partial class LoaderToolConfigurationValidator :
         return false;
     }
 
-    private static bool TryFailOnDuplicateFiles(
+    private bool TryFailOnDuplicateFiles(
         LoaderToolConfiguration options,
         [NotNullWhen(returnValue: true)] out ValidateOptionsResult result)
     {
         var fileDuplicates = options.Topics
-                                    .GroupBy(x => x.ExportFileName,
-                                             StringComparer.CurrentCultureIgnoreCase)
+                                    .GroupBy(x => new FileName(x.ExportFileName).ResolvePath(_outputDirectory),
+                                             StringComparer.OrdinalIgnoreCase)
                                     .Where(x => x.Count() > 1)
                                     .Select(x => x.Key)
                                     .ToList();
